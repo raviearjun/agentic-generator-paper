@@ -24,7 +24,6 @@ for filename in os.listdir(DATA_DIR):
         
         try:
             # 1. Parsing (Ekstraksi data dari KG)
-            # Hasil: struktur data Python (dict)
             parsed_data = parse_kg(kg_path) 
             
             # 2. Mapping ke CrewAI
@@ -45,9 +44,6 @@ for filename in os.listdir(DATA_DIR):
 
         except Exception as e:
             print(f"   [ERROR] Gagal memproses {filename}: {e}")
-            # Jika ada error, hentikan loop
-            # Jika hanya error karena tidak ada file dummy_kg.ttl, 
-            # ini akan ditangani oleh parser.py
 
 # Print Hasil
 print(f"\nSelesai. Total {PROCESSED_COUNT} KG berhasil dikonversi.")
