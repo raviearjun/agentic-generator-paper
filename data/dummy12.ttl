@@ -1,0 +1,54 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_HROnboarding a :Objective ;
+    dcterms:title "Employee Onboarding Automation" ;
+    dcterms:description "Manage the flow of new employee registration and resource allocation." .
+
+### Team
+:Team_HR a :Team ;
+    :hasAgentMember :ManagerAgent, :FormAgent, :ITAgent ;
+    :hasWorkflowPattern :Workflow_Main_Onboard .
+
+### Agents
+:ManagerAgent a :Agent ;
+    dcterms:title "HR Manager Agent" ;
+    :hasTask :Task_VerifyHired ;
+    :hasGoal :Goal_OnboardingComplete .
+
+:FormAgent a :Agent ;
+    dcterms:title "Form Processor" ;
+    :hasTask :Task_ProcessForms .
+
+:ITAgent a :Agent ;
+    dcterms:title "IT Provisioning Agent" ;
+    :hasTask :Task_SetupAccount .
+
+### Workflow Steps (Nested)
+:Step_Verify a :WorkflowStep ;
+    :performedBy :ManagerAgent ;
+    :nextStep :Step_Final ;
+    :hasSubPattern :Workflow_Nested_FormsIT ; 
+    :stepOrder "1"^^xsd:int .
+
+:Step_Final a :WorkflowStep ;
+    :performedBy :ManagerAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Forms & IT)
+:Workflow_Nested_FormsIT a :WorkflowPattern ;
+    dcterms:title "Forms and IT Setup" ;
+    :hasWorkflowStep :SubStep_Forms, :SubStep_IT .
+
+:SubStep_Forms a :WorkflowStep ;
+    :performedBy :FormAgent ;
+    :nextStep :SubStep_IT ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_IT a :WorkflowStep ;
+    :performedBy :ITAgent ;
+    :stepOrder "2"^^xsd:int .
+
+:Workflow_Main_Onboard a :WorkflowPattern .

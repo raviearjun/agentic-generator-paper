@@ -1,0 +1,51 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_SmartHome a :Objective ;
+    dcterms:title "Automated Home Climate Control" ;
+    dcterms:description "Use sensor data to detect temperature issues and adjust the thermostat." .
+
+### Team
+:Team_IOT a :Team ;
+    :hasAgentMember :SensorAgent, :DetectorAgent, :ActorAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Home .
+
+### Agents
+:SensorAgent a :Agent ;
+    dcterms:title "Temperature Sensor Reader" ;
+    :hasTask :Task_ReadSensor ;
+    :usesTool :Tool_SensorAPI .
+
+:DetectorAgent a :Agent ;
+    dcterms:title "Anomaly Detector" ;
+    :hasTask :Task_DetectAnomaly ;
+    :hasCapability :Cap_ThresholdCheck .
+
+:ActorAgent a :Agent ;
+    dcterms:title "Thermostat Actor" ;
+    :hasTask :Task_AdjustTemp ;
+    :usesTool :Tool_HVACControl .
+
+### Workflow Steps (Sequential)
+:Step_Read a :WorkflowStep ;
+    :performedBy :SensorAgent ;
+    :nextStep :Step_Detect ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Detect a :WorkflowStep ;
+    :performedBy :DetectorAgent ;
+    :nextStep :Step_Adjust ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Adjust a :WorkflowStep ;
+    :performedBy :ActorAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_SensorAPI a :Tool .
+:Tool_HVACControl a :Tool ;
+    dcterms:title "Home Ventilation Control API" .
+:Cap_ThresholdCheck a :Capability .
+:Workflow_Seq_Home a :WorkflowPattern .

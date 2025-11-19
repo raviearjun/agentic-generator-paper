@@ -1,0 +1,56 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Support a :Objective ;
+    dcterms:title "Automated Customer Support" .
+
+### Team & Agents
+:Team_Support a :Team ;
+    :hasAgentMember :TriageAgent ;
+    :hasWorkflowPattern :Workflow_Main_Support .
+
+:TriageAgent a :Agent ;
+    dcterms:title "Initial Triage Agent" ;
+    :hasTask :Task_IdentifyIssue ;
+    :hasGoal :Goal_ResolveTicket .
+
+### Main Workflow
+:Workflow_Main_Support a :WorkflowPattern ;
+    dcterms:title "Main Triage Flow" ;
+    :hasWorkflowStep :Step_Triage, :Step_End .
+
+:Step_Triage a :WorkflowStep ;
+    :performedBy :TriageAgent ;
+    :nextStep :Step_End ;
+    :hasSubPattern :Workflow_Nested_Diagnosis ; # Triggers the nested workflow
+    :stepOrder "1"^^xsd:int .
+
+:Step_End a :WorkflowStep ;
+    dcterms:title "Ticket Finalization" ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Diagnosis)
+:Workflow_Nested_Diagnosis a :WorkflowPattern ;
+    dcterms:title "Diagnosis Sub-Workflow" ;
+    :hasWorkflowStep :SubStep_DB, :SubStep_Troubleshoot .
+
+:SubStep_DB a :WorkflowStep ;
+    dcterms:title "Check Knowledge Base" ;
+    :performedBy :DBAgent ;
+    :nextStep :SubStep_Troubleshoot ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_Troubleshoot a :WorkflowStep ;
+    dcterms:title "Suggest Fix" ;
+    :performedBy :FixAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Agents (Sub-Agents)
+:DBAgent a :Agent ;
+    dcterms:title "Knowledge Base Agent" ;
+    :usesTool :Tool_InternalDB .
+
+:FixAgent a :Agent ;
+    dcterms:title "Troubleshooting Agent" .

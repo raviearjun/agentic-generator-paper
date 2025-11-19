@@ -1,0 +1,48 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Marketing a :Objective ;
+    dcterms:title "Digital Marketing Campaign Launch" ;
+    dcterms:description "Design strategy, create content, and publish to social platforms." .
+
+### Team
+:Team_Ads a :Team ;
+    :hasAgentMember :StrategyAgent, :ContentAgent, :PublisherAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Marketing .
+
+### Agents
+:StrategyAgent a :Agent ;
+    dcterms:title "Marketing Strategist" ;
+    :hasTask :Task_DesignStrategy .
+
+:ContentAgent a :Agent ;
+    dcterms:title "Creative Content Writer" ;
+    :hasTask :Task_CreateContent ;
+    :hasCapability :Cap_Copywriting .
+
+:PublisherAgent a :Agent ;
+    dcterms:title "Social Media Scheduler" ;
+    :hasTask :Task_Publish ;
+    :usesTool :Tool_SocialScheduler .
+
+### Workflow Steps (Sequential)
+:Step_Design a :WorkflowStep ;
+    :performedBy :StrategyAgent ;
+    :nextStep :Step_Create ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Create a :WorkflowStep ;
+    :performedBy :ContentAgent ;
+    :nextStep :Step_Publish ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Publish a :WorkflowStep ;
+    :performedBy :PublisherAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_SocialScheduler a :Tool .
+:Cap_Copywriting a :Capability .
+:Workflow_Seq_Marketing a :WorkflowPattern .

@@ -1,0 +1,59 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_LitReview a :Objective ;
+    dcterms:title "Literature Review Automation" ;
+    dcterms:description "Automate the search and summarization of recent academic papers." .
+
+### Team
+:Team_Research a :Team ;
+    dcterms:title "Research Team" ;
+    :hasObjective :Objective_LitReview ;
+    :hasAgentMember :SearchAgent, :ReportAgent ;
+    :hasWorkflowPattern :Workflow_Seq_LitReview .
+
+### Agents
+:SearchAgent a :Agent ;
+    dcterms:title "Google Searcher" ;
+    :hasTask :Task_Search ;
+    :usesTool :Tool_GoogleSearch ;
+    :hasGoal :Goal_FindData .
+
+:ReportAgent a :Agent ;
+    dcterms:title "Report Writer" ;
+    :hasTask :Task_Summarize ;
+    :hasGoal :Goal_WriteReport .
+
+### Tasks
+:Task_Search a :Task ;
+    dcterms:description "Search Google Scholar for 10 most relevant papers on LLM agents." .
+
+:Task_Summarize a :Task ;
+    dcterms:description "Synthesize the search results into a structured summary report." .
+
+### Tools
+:Tool_GoogleSearch a :Tool ;
+    dcterms:title "Google Search API" ;
+    :accessesResource :Resource_GoogleAPI .
+
+### Workflow Steps (Sequential)
+:Step_Search a :WorkflowStep ;
+    :performedBy :SearchAgent ;
+    :nextStep :Step_Report ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Report a :WorkflowStep ;
+    :performedBy :ReportAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Workflow Pattern
+:Workflow_Seq_LitReview a :WorkflowPattern ;
+    dcterms:title "Sequential Literature Review" ;
+    :hasWorkflowStep :Step_Search, :Step_Report .
+
+### Goals & Resources
+:Goal_FindData a :Goal .
+:Goal_WriteReport a :Goal .
+:Resource_GoogleAPI a :Resource .

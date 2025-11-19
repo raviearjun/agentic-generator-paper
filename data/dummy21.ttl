@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Monitor a :Objective ;
+    dcterms:title "Automated System Monitoring" ;
+    dcterms:description "Log system data, analyze for anomalies, and send alerts." .
+
+### Team
+:Team_Ops a :Team ;
+    :hasAgentMember :LoggerAgent, :AnalyzerAgent, :AlertAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Monitor .
+
+### Agents
+:LoggerAgent a :Agent ;
+    dcterms:title "System Logger" ;
+    :hasTask :Task_CollectLogs ;
+    :usesTool :Tool_Logstash .
+
+:AnalyzerAgent a :Agent ;
+    dcterms:title "Anomaly Analyzer" ;
+    :hasTask :Task_AnalyzeAnomaly ;
+    :hasCapability :Cap_PatternMatching .
+
+:AlertAgent a :Agent ;
+    dcterms:title "Notification Sender" ;
+    :hasTask :Task_SendAlert ;
+    :usesTool :Tool_SlackAPI .
+
+### Workflow Steps (Sequential)
+:Step_Collect a :WorkflowStep ;
+    :performedBy :LoggerAgent ;
+    :nextStep :Step_Analyze ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Analyze a :WorkflowStep ;
+    :performedBy :AnalyzerAgent ;
+    :nextStep :Step_Alert ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Alert a :WorkflowStep ;
+    :performedBy :AlertAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_Logstash a :Tool .
+:Tool_SlackAPI a :Tool .
+:Cap_PatternMatching a :Capability .
+:Workflow_Seq_Monitor a :WorkflowPattern .

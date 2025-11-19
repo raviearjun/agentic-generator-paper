@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_CyberAudit a :Objective ;
+    dcterms:title "Network Security Audit" .
+
+### Team
+:Team_Security a :Team ;
+    :hasAgentMember :ScannerAgent, :PatchAgent, :AuditorAgent ;
+    :hasWorkflowPattern :Workflow_Par_Security .
+
+### Agents
+:ScannerAgent a :Agent ;
+    dcterms:title "Vulnerability Scanner" ;
+    :hasTask :Task_Scan ;
+    :usesTool :Tool_Nmap .
+
+:PatchAgent a :Agent ;
+    dcterms:title "System Patching Agent" ;
+    :hasTask :Task_Patch ;
+    :usesTool :Tool_Ansible .
+
+:AuditorAgent a :Agent ;
+    dcterms:title "Final Auditor" ;
+    :hasGoal :Goal_Compliance .
+
+### Workflow Steps (Parallel)
+# Parallel Steps
+:Step_Scan a :WorkflowStep ;
+    :performedBy :ScannerAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Patch a :WorkflowStep ;
+    :performedBy :PatchAgent ;
+    :stepOrder "1"^^xsd:int .
+
+# Next Step (Compilation)
+:Step_Scan :nextStep :Step_Audit .
+:Step_Patch :nextStep :Step_Audit .
+
+:Step_Audit a :WorkflowStep ;
+    :performedBy :AuditorAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_Nmap a :Tool .
+:Tool_Ansible a :Tool .
+:Workflow_Par_Security a :WorkflowPattern .

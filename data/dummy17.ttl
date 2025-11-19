@@ -1,0 +1,51 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_RealEstate a :Objective ;
+    dcterms:title "Property Valuation and Recommendation" ;
+    dcterms:description "Search property listings and analyze local market prices simultaneously." .
+
+### Team
+:Team_Property a :Team ;
+    :hasAgentMember :ListingAgent, :PriceAgent, :AdvisorAgent ;
+    :hasWorkflowPattern :Workflow_Par_Estate .
+
+### Agents
+:ListingAgent a :Agent ;
+    dcterms:title "Property Searcher" ;
+    :hasTask :Task_SearchListing ;
+    :usesTool :Tool_MLSAPI .
+
+:PriceAgent a :Agent ;
+    dcterms:title "Pricing Analyst" ;
+    :hasTask :Task_AnalyzePrice ;
+    :usesTool :Tool_PricingAPI .
+
+:AdvisorAgent a :Agent ;
+    dcterms:title "Investment Advisor" ;
+    :hasGoal :Goal_RecommendProperty .
+
+### Workflow Steps (Parallel)
+:Step_Search a :WorkflowStep ;
+    :performedBy :ListingAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Analyze a :WorkflowStep ;
+    :performedBy :PriceAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Search :nextStep :Step_Advice .
+:Step_Analyze :nextStep :Step_Advice .
+
+:Step_Advice a :WorkflowStep ;
+    :performedBy :AdvisorAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_MLSAPI a :Tool ;
+    dcterms:title "Multiple Listing Service API" .
+:Tool_PricingAPI a :Tool ;
+    dcterms:title "Neighborhood Pricing Data" .
+:Workflow_Par_Estate a :WorkflowPattern .

@@ -1,0 +1,48 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Infra a :Objective ;
+    dcterms:title "Cloud Infrastructure Provisioning" ;
+    dcterms:description "Verify requirements, provision infrastructure using IaC tool, and verify deployment status." .
+
+### Team
+:Team_DevOps a :Team ;
+    :hasAgentMember :VerifierAgent, :ProvisionAgent, :StatusAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Infra .
+
+### Agents
+:VerifierAgent a :Agent ;
+    dcterms:title "Requirement Verifier" ;
+    :hasTask :Task_VerifyReq .
+
+:ProvisionAgent a :Agent ;
+    dcterms:title "Cloud Provisioner" ;
+    :hasTask :Task_RunTerraform ;
+    :usesTool :Tool_Terraform .
+
+:StatusAgent a :Agent ;
+    dcterms:title "Deployment Status Checker" ;
+    :hasTask :Task_CheckStatus ;
+    :usesTool :Tool_AWSCLI .
+
+### Workflow Steps (Sequential)
+:Step_Verify a :WorkflowStep ;
+    :performedBy :VerifierAgent ;
+    :nextStep :Step_Provision ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Provision a :WorkflowStep ;
+    :performedBy :ProvisionAgent ;
+    :nextStep :Step_CheckStatus ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_CheckStatus a :WorkflowStep ;
+    :performedBy :StatusAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools
+:Tool_Terraform a :Tool .
+:Tool_AWSCLI a :Tool .
+:Workflow_Seq_Infra a :WorkflowPattern .

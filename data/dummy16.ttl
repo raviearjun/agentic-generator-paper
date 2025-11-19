@@ -1,0 +1,54 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_SupplyChain a :Objective ;
+    dcterms:title "Supply Chain Risk Mitigation" ;
+    dcterms:description "Identify single-source supplier risk and find alternatives." .
+
+### Team
+:Team_SCM a :Team ;
+    :hasAgentMember :RiskManager, :SearchAgent, :VerifierAgent ;
+    :hasWorkflowPattern :Workflow_Main_SCM .
+
+### Agents
+:RiskManager a :Agent ;
+    dcterms:title "SCM Risk Manager" ;
+    :hasTask :Task_IdentifyRisk ;
+    :hasGoal :Goal_MitigateRisk .
+
+:SearchAgent a :Agent ;
+    dcterms:title "Supplier Searcher" ;
+    :hasTask :Task_FindSupplier .
+
+:VerifierAgent a :Agent ;
+    dcterms:title "Quality Verifier" ;
+    :hasTask :Task_CheckQuality .
+
+### Workflow Steps (Nested)
+:Step_Identify a :WorkflowStep ;
+    :performedBy :RiskManager ;
+    :nextStep :Step_FinalReport ;
+    :hasSubPattern :Workflow_Nested_Alternative ; 
+    :stepOrder "1"^^xsd:int .
+
+:Step_FinalReport a :WorkflowStep ;
+    :performedBy :RiskManager ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Alternative Sourcing)
+:Workflow_Nested_Alternative a :WorkflowPattern ;
+    dcterms:title "Alternative Supplier Sourcing" ;
+    :hasWorkflowStep :SubStep_Search, :SubStep_Verify .
+
+:SubStep_Search a :WorkflowStep ;
+    :performedBy :SearchAgent ;
+    :nextStep :SubStep_Verify ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_Verify a :WorkflowStep ;
+    :performedBy :VerifierAgent ;
+    :stepOrder "2"^^xsd:int .
+
+:Workflow_Main_SCM a :WorkflowPattern .

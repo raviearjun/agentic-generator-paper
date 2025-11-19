@@ -1,0 +1,49 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Recipe a :Objective ;
+    dcterms:title "Custom Recipe Generator" ;
+    dcterms:description "Suggest ingredients and check inventory simultaneously before generating the final recipe." .
+
+### Team
+:Team_Chef a :Team ;
+    :hasAgentMember :SuggestAgent, :InventoryAgent, :CreatorAgent ;
+    :hasWorkflowPattern :Workflow_Par_Recipe .
+
+### Agents
+:SuggestAgent a :Agent ;
+    dcterms:title "Ingredient Suggestor" ;
+    :hasTask :Task_SuggestIng ;
+    :hasCapability :Cap_CuisineKnowledge .
+
+:InventoryAgent a :Agent ;
+    dcterms:title "Pantry Checker" ;
+    :hasTask :Task_CheckPantry ;
+    :usesTool :Tool_InventoryDB .
+
+:CreatorAgent a :Agent ;
+    dcterms:title "Recipe Writer" ;
+    :hasGoal :Goal_FinalRecipe .
+
+### Workflow Steps (Parallel)
+:Step_Suggest a :WorkflowStep ;
+    :performedBy :SuggestAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Check a :WorkflowStep ;
+    :performedBy :InventoryAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Suggest :nextStep :Step_Create .
+:Step_Check :nextStep :Step_Create .
+
+:Step_Create a :WorkflowStep ;
+    :performedBy :CreatorAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_InventoryDB a :Tool .
+:Cap_CuisineKnowledge a :Capability .
+:Workflow_Par_Recipe a :WorkflowPattern .

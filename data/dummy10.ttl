@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_NewsAgg a :Objective ;
+    dcterms:title "Trending News Aggregation" ;
+    dcterms:description "Combine information from web news and social media trends." .
+
+### Team
+:Team_Media a :Team ;
+    :hasAgentMember :WebAgent, :SocialAgent, :CompilerAgent ;
+    :hasWorkflowPattern :Workflow_Par_News .
+
+### Agents
+:WebAgent a :Agent ;
+    dcterms:title "Web Search Agent" ;
+    :hasTask :Task_WebSearch ;
+    :usesTool :Tool_GoogleSearch .
+
+:SocialAgent a :Agent ;
+    dcterms:title "Social Trend Analyzer" ;
+    :hasTask :Task_SocialTrend ;
+    :usesTool :Tool_SocialAPI .
+
+:CompilerAgent a :Agent ;
+    dcterms:title "Report Compiler" ;
+    :hasGoal :Goal_TrendingReport .
+
+### Workflow Steps (Parallel)
+:Step_Web a :WorkflowStep ;
+    :performedBy :WebAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Social a :WorkflowStep ;
+    :performedBy :SocialAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Web :nextStep :Step_CompileNews .
+:Step_Social :nextStep :Step_CompileNews .
+
+:Step_CompileNews a :WorkflowStep ;
+    :performedBy :CompilerAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_GoogleSearch a :Tool .
+:Tool_SocialAPI a :Tool ;
+    dcterms:title "Twitter/X Data API" .
+:Workflow_Par_News a :WorkflowPattern .

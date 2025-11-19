@@ -1,0 +1,48 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Ecommerce a :Objective ;
+    dcterms:title "Automated E-commerce Order" ;
+    dcterms:description "Handle product recommendation, order processing, and notification." .
+
+### Team
+:Team_Sales a :Team ;
+    :hasAgentMember :RecommenderAgent, :ProcessorAgent, :NotifyAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Ecommerce .
+
+### Agents
+:RecommenderAgent a :Agent ;
+    dcterms:title "Product Recommender" ;
+    :hasTask :Task_Recommend ;
+    :usesTool :Tool_InventoryDB .
+
+:ProcessorAgent a :Agent ;
+    dcterms:title "Order Processor" ;
+    :hasTask :Task_Process ;
+    :usesTool :Tool_PaymentGateway .
+
+:NotifyAgent a :Agent ;
+    dcterms:title "Customer Notifier" ;
+    :hasTask :Task_Notify .
+
+### Workflow Steps (Sequential)
+:Step_Recommend a :WorkflowStep ;
+    :performedBy :RecommenderAgent ;
+    :nextStep :Step_Process ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Process a :WorkflowStep ;
+    :performedBy :ProcessorAgent ;
+    :nextStep :Step_Notify ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Notify a :WorkflowStep ;
+    :performedBy :NotifyAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools
+:Tool_InventoryDB a :Tool .
+:Tool_PaymentGateway a :Tool .
+:Workflow_Seq_Ecommerce a :WorkflowPattern .

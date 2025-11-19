@@ -1,0 +1,54 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Contract a :Objective ;
+    dcterms:title "Automated Contract Risk Evaluation" ;
+    dcterms:description "Evaluate contract risks by checking clauses against a legal database and calculating risk scores." .
+
+### Team
+:Team_Compliance a :Team ;
+    :hasAgentMember :EvaluatorAgent, :DBSearcher, :CalculatorAgent ;
+    :hasWorkflowPattern :Workflow_Main_Contract .
+
+### Agents
+:EvaluatorAgent a :Agent ;
+    dcterms:title "Lead Contract Evaluator" ;
+    :hasTask :Task_InitialEval ;
+    :hasGoal :Goal_RiskReport .
+
+:DBSearcher a :Agent ;
+    dcterms:title "Legal Database Searcher" ;
+    :hasTask :Task_SearchLegalDB .
+
+:CalculatorAgent a :Agent ;
+    dcterms:title "Risk Calculator" ;
+    :hasTask :Task_CalculateScore .
+
+### Workflow Steps (Nested)
+:Step_Eval a :WorkflowStep ;
+    :performedBy :EvaluatorAgent ;
+    :nextStep :Step_FinalReport ;
+    :hasSubPattern :Workflow_Nested_RiskCalc ; 
+    :stepOrder "1"^^xsd:int .
+
+:Step_FinalReport a :WorkflowStep ;
+    :performedBy :EvaluatorAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Risk Calculation)
+:Workflow_Nested_RiskCalc a :WorkflowPattern ;
+    dcterms:title "Risk Calculation Sub-Workflow" ;
+    :hasWorkflowStep :SubStep_SearchDB, :SubStep_Calculate .
+
+:SubStep_SearchDB a :WorkflowStep ;
+    :performedBy :DBSearcher ;
+    :nextStep :SubStep_Calculate ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_Calculate a :WorkflowStep ;
+    :performedBy :CalculatorAgent ;
+    :stepOrder "2"^^xsd:int .
+
+:Workflow_Main_Contract a :WorkflowPattern .

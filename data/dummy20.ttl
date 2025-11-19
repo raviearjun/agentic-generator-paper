@@ -1,0 +1,49 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Weather a :Objective ;
+    dcterms:title "Advanced Weather Forecasting" ;
+    dcterms:description "Combine satellite and ground station data for an accurate forecast model." .
+
+### Team
+:Team_Meteorology a :Team ;
+    :hasAgentMember :SatelliteAgent, :GroundAgent, :ModelerAgent ;
+    :hasWorkflowPattern :Workflow_Par_Weather .
+
+### Agents
+:SatelliteAgent a :Agent ;
+    dcterms:title "Satellite Data Loader" ;
+    :hasTask :Task_LoadSatData ;
+    :usesTool :Tool_NASAAPI .
+
+:GroundAgent a :Agent ;
+    dcterms:title "Ground Station Reader" ;
+    :hasTask :Task_LoadGroundData ;
+    :usesTool :Tool_NOAAAPI .
+
+:ModelerAgent a :Agent ;
+    dcterms:title "Forecasting Modeler" ;
+    :hasGoal :Goal_AccurateForecast .
+
+### Workflow Steps (Parallel)
+:Step_Sat a :WorkflowStep ;
+    :performedBy :SatelliteAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Ground a :WorkflowStep ;
+    :performedBy :GroundAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Sat :nextStep :Step_Model .
+:Step_Ground :nextStep :Step_Model .
+
+:Step_Model a :WorkflowStep ;
+    :performedBy :ModelerAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_NASAAPI a :Tool .
+:Tool_NOAAAPI a :Tool .
+:Workflow_Par_Weather a :WorkflowPattern .

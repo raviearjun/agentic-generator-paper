@@ -1,0 +1,49 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_LegalReview a :Objective ;
+    dcterms:title "Contract Review and Clause Extraction" ;
+    dcterms:description "Extract key clauses from legal documents for comparison." .
+
+### Team
+:Team_Legal a :Team ;
+    :hasAgentMember :ScraperAgent, :NLPAgent, :ReviewerAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Legal .
+
+### Agents
+:ScraperAgent a :Agent ;
+    dcterms:title "Document Scraper" ;
+    :hasTask :Task_Retrieve ;
+    :usesTool :Tool_PDFParser .
+
+:NLPAgent a :Agent ;
+    dcterms:title "Clause Extractor" ;
+    :hasTask :Task_Extract ;
+    :hasCapability :Cap_NLP .
+
+:ReviewerAgent a :Agent ;
+    dcterms:title "Compliance Reviewer" ;
+    :hasTask :Task_Compare ;
+    :hasGoal :Goal_ComplianceReport .
+
+### Workflow Steps (Sequential)
+:Step_Retrieve a :WorkflowStep ;
+    :performedBy :ScraperAgent ;
+    :nextStep :Step_Extract ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Extract a :WorkflowStep ;
+    :performedBy :NLPAgent ;
+    :nextStep :Step_Compare ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Compare a :WorkflowStep ;
+    :performedBy :ReviewerAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_PDFParser a :Tool .
+:Cap_NLP a :Capability .
+:Workflow_Seq_Legal a :WorkflowPattern .

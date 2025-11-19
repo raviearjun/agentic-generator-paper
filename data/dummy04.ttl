@@ -1,0 +1,61 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_DataAnalysis a :Objective ;
+    dcterms:title "Quarterly Sales Analysis" .
+
+### Team
+:Team_Data a :Team ;
+    :hasAgentMember :LoaderAgent, :AnalyzerAgent, :VisualizerAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Analysis .
+
+### Agents
+:LoaderAgent a :Agent ;
+    dcterms:title "Data Loading Agent" ;
+    :hasTask :Task_LoadData ;
+    :usesTool :Tool_Pandas .
+
+:AnalyzerAgent a :Agent ;
+    dcterms:title "Statistical Analyst" ;
+    :hasTask :Task_Analyze ;
+    :hasCapability :Cap_StatisticalModeling .
+
+:VisualizerAgent a :Agent ;
+    dcterms:title "Visualization Expert" ;
+    :hasTask :Task_Visualize ;
+    :usesTool :Tool_Matplotlib .
+
+### Tasks
+:Task_LoadData a :Task ;
+    :requiresCapability :Cap_DataLoading ;
+    dcterms:description "Load and preprocess sales data from CSV file." .
+
+:Task_Analyze a :Task ;
+    dcterms:description "Run time-series analysis on the cleaned data." .
+
+:Task_Visualize a :Task ;
+    dcterms:description "Generate a chart of key sales trends." .
+
+### Workflow Steps (Sequential)
+:Step_Load a :WorkflowStep ;
+    :performedBy :LoaderAgent ;
+    :nextStep :Step_Analyze ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Analyze a :WorkflowStep ;
+    :performedBy :AnalyzerAgent ;
+    :nextStep :Step_Visualize ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Visualize a :WorkflowStep ;
+    :performedBy :VisualizerAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Capabilities & Tools
+:Cap_DataLoading a :Capability .
+:Cap_StatisticalModeling a :Capability .
+:Tool_Pandas a :Tool .
+:Tool_Matplotlib a :Tool .
+:Workflow_Seq_Analysis a :WorkflowPattern .

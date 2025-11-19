@@ -1,0 +1,54 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_BugFix a :Objective ;
+    dcterms:title "Automated Bug Fixing" ;
+    dcterms:description "Triage a bug report, fix the code, and verify the fix." .
+
+### Team
+:Team_Bugs a :Team ;
+    :hasAgentMember :TriageAgent, :CoderAgent, :TesterAgent ;
+    :hasWorkflowPattern :Workflow_Main_BugFix .
+
+### Agents
+:TriageAgent a :Agent ;
+    dcterms:title "Bug Triage Specialist" ;
+    :hasTask :Task_AnalyzeBug ;
+    :hasGoal :Goal_DeployFix .
+
+:CoderAgent a :Agent ;
+    dcterms:title "Code Patch Developer" ;
+    :hasTask :Task_WriteFix .
+
+:TesterAgent a :Agent ;
+    dcterms:title "Verification Tester" ;
+    :hasTask :Task_VerifyFix .
+
+### Workflow Steps (Nested)
+:Step_Analyze a :WorkflowStep ;
+    :performedBy :TriageAgent ;
+    :nextStep :Step_Close ;
+    :hasSubPattern :Workflow_Nested_FixVerify ; 
+    :stepOrder "1"^^xsd:int .
+
+:Step_Close a :WorkflowStep ;
+    :performedBy :TriageAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Fix and Verify)
+:Workflow_Nested_FixVerify a :WorkflowPattern ;
+    dcterms:title "Code Fixing Sub-Workflow" ;
+    :hasWorkflowStep :SubStep_Fix, :SubStep_Verify .
+
+:SubStep_Fix a :WorkflowStep ;
+    :performedBy :CoderAgent ;
+    :nextStep :SubStep_Verify ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_Verify a :WorkflowStep ;
+    :performedBy :TesterAgent ;
+    :stepOrder "2"^^xsd:int .
+
+:Workflow_Main_BugFix a :WorkflowPattern .

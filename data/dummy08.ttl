@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_CodeGen a :Objective ;
+    dcterms:title "Feature Implementation Pipeline" ;
+    dcterms:description "Generate, write, and test a new software feature." .
+
+### Team
+:Team_Dev a :Team ;
+    :hasAgentMember :PlannerAgent, :CoderAgent, :TesterAgent ;
+    :hasWorkflowPattern :Workflow_Seq_CodeGen .
+
+### Agents
+:PlannerAgent a :Agent ;
+    dcterms:title "Project Planner" ;
+    :hasTask :Task_Design ;
+    :hasCapability :Cap_SystemDesign .
+
+:CoderAgent a :Agent ;
+    dcterms:title "Senior Developer" ;
+    :hasTask :Task_Code ;
+    :usesTool :Tool_IDE .
+
+:TesterAgent a :Agent ;
+    dcterms:title "QA Tester" ;
+    :hasTask :Task_Test ;
+    :usesTool :Tool_Pytest .
+
+### Workflow Steps (Sequential)
+:Step_Design a :WorkflowStep ;
+    :performedBy :PlannerAgent ;
+    :nextStep :Step_Code ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Code a :WorkflowStep ;
+    :performedBy :CoderAgent ;
+    :nextStep :Step_Test ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Test a :WorkflowStep ;
+    :performedBy :TesterAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_IDE a :Tool .
+:Tool_Pytest a :Tool .
+:Cap_SystemDesign a :Capability .
+:Workflow_Seq_CodeGen a :WorkflowPattern .

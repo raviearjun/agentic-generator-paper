@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Diagnosis a :Objective ;
+    dcterms:title "Patient Medical Diagnosis" ;
+    dcterms:description "Analyze lab results and patient history to suggest a diagnosis." .
+
+### Team
+:Team_Medical a :Team ;
+    :hasAgentMember :LabAgent, :HistoryAgent, :DiagnosticianAgent ;
+    :hasWorkflowPattern :Workflow_Par_Diagnosis .
+
+### Agents
+:LabAgent a :Agent ;
+    dcterms:title "Lab Data Analyst" ;
+    :hasTask :Task_AnalyzeLab ;
+    :usesTool :Tool_LabAPI .
+
+:HistoryAgent a :Agent ;
+    dcterms:title "Patient History Searcher" ;
+    :hasTask :Task_CheckHistory ;
+    :usesTool :Tool_EHR .
+
+:DiagnosticianAgent a :Agent ;
+    dcterms:title "Chief Diagnostician" ;
+    :hasGoal :Goal_FinalDiagnosis .
+
+### Workflow Steps (Parallel)
+:Step_Lab a :WorkflowStep ;
+    :performedBy :LabAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_History a :WorkflowStep ;
+    :performedBy :HistoryAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Lab :nextStep :Step_CompileDiag .
+:Step_History :nextStep :Step_CompileDiag .
+
+:Step_CompileDiag a :WorkflowStep ;
+    :performedBy :DiagnosticianAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_LabAPI a :Tool .
+:Tool_EHR a :Tool ;
+    dcterms:title "Electronic Health Record System" .
+:Workflow_Par_Diagnosis a :WorkflowPattern .

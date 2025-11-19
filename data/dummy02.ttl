@@ -1,0 +1,51 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_TravelPlan a :Objective ;
+    dcterms:title "Customized Travel Planning" ;
+    dcterms:description "Plan a 3-day trip including flights and local activities." .
+
+### Team
+:Team_Travel a :Team ;
+    :hasAgentMember :FlightAgent, :ActivityAgent, :PlannerAgent ;
+    :hasWorkflowPattern :Workflow_Par_Travel .
+
+### Agents
+:FlightAgent a :Agent ;
+    dcterms:title "Flight & Hotel Agent" ;
+    :hasTask :Task_Bookings ;
+    :usesTool :Tool_FlightAPI .
+
+:ActivityAgent a :Agent ;
+    dcterms:title "Local Guide Agent" ;
+    :hasTask :Task_Activities ;
+    :usesTool :Tool_MapAPI .
+
+:PlannerAgent a :Agent ;
+    dcterms:title "Itinerary Compiler" ;
+    :hasGoal :Goal_FinalItinerary .
+
+### Workflow Steps (Parallel then Sequence)
+# Parallel Steps (Simultaneous)
+:Step_Flights a :WorkflowStep ;
+    :performedBy :FlightAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Activities a :WorkflowStep ;
+    :performedBy :ActivityAgent ;
+    :stepOrder "1"^^xsd:int .
+
+# Next Step (After both parallel steps complete)
+:Step_Flights :nextStep :Step_Compile .
+:Step_Activities :nextStep :Step_Compile .
+
+:Step_Compile a :WorkflowStep ;
+    :performedBy :PlannerAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Workflow Pattern
+:Workflow_Par_Travel a :WorkflowPattern ;
+    dcterms:title "Parallel Trip Research" ;
+    :hasWorkflowStep :Step_Flights, :Step_Activities, :Step_Compile .

@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Movie a :Objective ;
+    dcterms:title "Personalized Movie Recommendation" ;
+    dcterms:description "Analyze user history, recommend a movie, and present the synopsis." .
+
+### Team
+:Team_Cinema a :Team ;
+    :hasAgentMember :HistoryAgent, :RecommendAgent, :SynopsAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Movie .
+
+### Agents
+:HistoryAgent a :Agent ;
+    dcterms:title "User History Analyzer" ;
+    :hasTask :Task_AnalyzePref ;
+    :usesTool :Tool_UserProfileDB .
+
+:RecommendAgent a :Agent ;
+    dcterms:title "Recommendation Engine" ;
+    :hasTask :Task_RecommendMovie ;
+    :hasCapability :Cap_CollaborativeFiltering .
+
+:SynopsAgent a :Agent ;
+    dcterms:title "Synopsis Presenter" ;
+    :hasTask :Task_PresentSynops ;
+    :usesTool :Tool_TMDBAPI .
+
+### Workflow Steps (Sequential)
+:Step_Analyze a :WorkflowStep ;
+    :performedBy :HistoryAgent ;
+    :nextStep :Step_Recommend ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Recommend a :WorkflowStep ;
+    :performedBy :RecommendAgent ;
+    :nextStep :Step_Present ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Present a :WorkflowStep ;
+    :performedBy :SynopsAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools & Capabilities
+:Tool_UserProfileDB a :Tool .
+:Tool_TMDBAPI a :Tool .
+:Cap_CollaborativeFiltering a :Capability .
+:Workflow_Seq_Movie a :WorkflowPattern .

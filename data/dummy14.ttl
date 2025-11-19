@@ -1,0 +1,50 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Translation a :Objective ;
+    dcterms:title "High-Context Translation" ;
+    dcterms:description "Translate text using both direct translation and contextual knowledge for accuracy." .
+
+### Team
+:Team_Linguist a :Team ;
+    :hasAgentMember :DirectAgent, :ContextAgent, :MergeAgent ;
+    :hasWorkflowPattern :Workflow_Par_Translation .
+
+### Agents
+:DirectAgent a :Agent ;
+    dcterms:title "Machine Translator" ;
+    :hasTask :Task_DirectTranslate ;
+    :usesTool :Tool_GoogleTranslate .
+
+:ContextAgent a :Agent ;
+    dcterms:title "Contextual Checker" ;
+    :hasTask :Task_ContextCheck ;
+    :usesTool :Tool_DictionaryDB .
+
+:MergeAgent a :Agent ;
+    dcterms:title "Final Editor" ;
+    :hasGoal :Goal_AccurateTranslation .
+
+### Workflow Steps (Parallel)
+:Step_Direct a :WorkflowStep ;
+    :performedBy :DirectAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Context a :WorkflowStep ;
+    :performedBy :ContextAgent ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Direct :nextStep :Step_Merge .
+:Step_Context :nextStep :Step_Merge .
+
+:Step_Merge a :WorkflowStep ;
+    :performedBy :MergeAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_GoogleTranslate a :Tool .
+:Tool_DictionaryDB a :Tool ;
+    dcterms:title "Terminology Knowledge Base" .
+:Workflow_Par_Translation a :WorkflowPattern .

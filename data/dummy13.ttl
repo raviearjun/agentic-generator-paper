@@ -1,0 +1,49 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Stock a :Objective ;
+    dcterms:title "Stock Price Prediction" ;
+    dcterms:description "Collect market data, apply a prediction model, and generate a forecast report." .
+
+### Team
+:Team_FinanceAlgo a :Team ;
+    :hasAgentMember :DataAgent, :ModelAgent, :ReporterAgent ;
+    :hasWorkflowPattern :Workflow_Seq_Stock .
+
+### Agents
+:DataAgent a :Agent ;
+    dcterms:title "Market Data Collector" ;
+    :hasTask :Task_Collect ;
+    :usesTool :Tool_YahooFinance .
+
+:ModelAgent a :Agent ;
+    dcterms:title "Prediction Model Agent" ;
+    :hasTask :Task_Predict ;
+    :usesTool :Tool_TensorFlow .
+
+:ReporterAgent a :Agent ;
+    dcterms:title "Forecast Reporter" ;
+    :hasTask :Task_Report ;
+    :hasGoal :Goal_InvestmentDecision .
+
+### Workflow Steps (Sequential)
+:Step_Collect a :WorkflowStep ;
+    :performedBy :DataAgent ;
+    :nextStep :Step_Predict ;
+    :stepOrder "1"^^xsd:int .
+
+:Step_Predict a :WorkflowStep ;
+    :performedBy :ModelAgent ;
+    :nextStep :Step_Report ;
+    :stepOrder "2"^^xsd:int .
+
+:Step_Report a :WorkflowStep ;
+    :performedBy :ReporterAgent ;
+    :stepOrder "3"^^xsd:int .
+
+### Tools
+:Tool_YahooFinance a :Tool .
+:Tool_TensorFlow a :Tool .
+:Workflow_Seq_Stock a :WorkflowPattern .

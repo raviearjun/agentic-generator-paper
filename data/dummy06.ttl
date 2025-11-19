@@ -1,0 +1,58 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Objective
+:Objective_Fraud a :Objective ;
+    dcterms:title "Financial Fraud Detection" ;
+    dcterms:description "Detect suspicious transactions and verify customer details." .
+
+### Team
+:Team_Finance a :Team ;
+    :hasAgentMember :AnalystAgent, :VerifierAgent, :RiskAgent ;
+    :hasWorkflowPattern :Workflow_Main_Fraud .
+
+### Agents
+:AnalystAgent a :Agent ;
+    dcterms:title "Lead Fraud Analyst" ;
+    :hasTask :Task_InitialScreen ;
+    :hasGoal :Goal_RiskFlag .
+
+:VerifierAgent a :Agent ;
+    dcterms:title "Transaction Verifier" ;
+    :hasTask :Task_VerifyDetail ;
+    :usesTool :Tool_KYCDB .
+
+:RiskAgent a :Agent ;
+    dcterms:title "Compliance Officer" ;
+    :hasTask :Task_RiskScore .
+
+### Workflow Steps (Nested)
+:Step_Screen a :WorkflowStep ;
+    :performedBy :AnalystAgent ;
+    :nextStep :Step_Report ;
+    :hasSubPattern :Workflow_Nested_Verification ; 
+    :stepOrder "1"^^xsd:int .
+
+:Step_Report a :WorkflowStep ;
+    :performedBy :RiskAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Nested Sub-Workflow (Verification)
+:Workflow_Nested_Verification a :WorkflowPattern ;
+    dcterms:title "KYC Verification Sub-Workflow" ;
+    :hasWorkflowStep :SubStep_Verify, :SubStep_Score .
+
+:SubStep_Verify a :WorkflowStep ;
+    :performedBy :VerifierAgent ;
+    :nextStep :SubStep_Score ;
+    :stepOrder "1"^^xsd:int .
+
+:SubStep_Score a :WorkflowStep ;
+    :performedBy :RiskAgent ;
+    :stepOrder "2"^^xsd:int .
+
+### Tools
+:Tool_KYCDB a :Tool ;
+    dcterms:title "Internal KYC Database" .
+:Workflow_Main_Fraud a :WorkflowPattern .
