@@ -12,18 +12,16 @@ if not os.path.exists(OUTPUT_DIR):
     
 print("Memulai Konversi KG ke Script Agentic AI")
 
-# Iterasi setiap file di folder 'data'
 for filename in os.listdir(DATA_DIR):
-    # Hanya proses file KG (.ttl atau .rdf)
     if filename.endswith(".ttl") or filename.endswith(".rdf"):
         
         kg_path = os.path.join(DATA_DIR, filename)
-        base_name = os.path.splitext(filename)[0] # Contoh: 'pattern_1'
+        base_name = os.path.splitext(filename)[0]
 
         print(f"\n[Processing] {filename}")
         
         try:
-            # 1. Parsing (Ekstraksi data dari KG)
+            # 1. Parsing 
             parsed_data = parse_kg(kg_path) 
             
             # 2. Mapping ke CrewAI
