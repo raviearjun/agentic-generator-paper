@@ -78,7 +78,7 @@ if __name__ == "__main__":
 # Quick test
 if __name__ == "__main__":
     from parser import parse_kg
-    parsed = parse_kg("data/dummy_kg.ttl")
+    parsed = parse_kg("kg_g3/crewai/email_auto_responder_flow.rdf")
 
     code = generate_crewai_code(parsed)
 
