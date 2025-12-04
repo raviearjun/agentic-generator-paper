@@ -39,14 +39,14 @@ for root, dirs, files in os.walk(DATA_DIR):
             # 2. Mapping ke CrewAI
             crewai_code = generate_crewai_code(parsed_data)
             crewai_output_path = os.path.join(OUTPUT_DIR, f"crewai_{base_name}.py")
-            with open(crewai_output_path, "w") as f:
+            with open(crewai_output_path, "w", encoding="utf-8") as f:
                 f.write(crewai_code)
             print(f"   -> CrewAI Code Generated: {crewai_output_path}")
 
             # 3. Mapping ke AutoGen
             autogen_code = generate_autogen_code(parsed_data)
             autogen_output_path = os.path.join(OUTPUT_DIR, f"autogen_{base_name}.py")
-            with open(autogen_output_path, "w") as f:
+            with open(autogen_output_path, "w", encoding="utf-8") as f:
                 f.write(autogen_code)
             print(f"   -> AutoGen Code Generated: {autogen_output_path}")
             
