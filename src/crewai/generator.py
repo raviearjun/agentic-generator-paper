@@ -228,6 +228,121 @@ def _build_main_context(project: CrewProject) -> Dict[str, Any]:
     }
 
 
+# ─────────────────────── .env.example builder ───────────────────────
+
+# Maps tool class names to the env vars they require at runtime.
+_TOOL_ENV_VARS: Dict[str, List[str]] = {
+    "SerperDevTool":         ["SERPER_API_KEY"],
+    "BrowserbaseLoadTool":   ["BROWSERBASE_API_KEY"],
+    "SECTools":              ["SEC_API_API_KEY"],
+    "ScrapeWebsiteTool":     [],   # no extra key needed
+    "WebsiteSearchTool":     [],
+    "FileReadTool":          [],
+    "TXTSearchTool":         [],
+    "DirectoryReadTool":     [],
+    "DOCXSearchTool":        [],
+    "PDFSearchTool":         [],
+    "CSVSearchTool":         [],
+    "JSONSearchTool":        [],
+    "MDXSearchTool":         [],
+    "YoutubeVideoSearchTool": [],
+}
+
+# Maps LLM provider to its required env vars.
+_LLM_PROVIDER_ENV_VARS: Dict[str, List[str]] = {
+    "openai":      ["OPENAI_API_KEY"],
+    "azure":       ["AZURE_OPENAI_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT", "AZURE_OPENAI_VERSION"],
+    "azureopenai": ["AZURE_OPENAI_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT", "AZURE_OPENAI_VERSION"],
+    "anthropic":   ["ANTHROPIC_API_KEY"],
+    "ollama":      [],   # runs locally, no key needed
+    "nvidia":      ["NVIDIA_API_KEY"],
+    "nvidia_nim":  ["NVIDIA_API_KEY"],
+    "cohere":      ["COHERE_API_KEY"],
+    "gemini":      ["GEMINI_API_KEY"],
+    "groq":        ["GROQ_API_KEY"],
+    "mistral":     ["MISTRAL_API_KEY"],
+    "huggingface": ["HUGGINGFACEHUB_API_TOKEN"],
+}
+
+
+def build_env_example(project: CrewProject) -> str:
+    """
+    Generate .env.example content from a CrewProject IR.
+
+    Logic:
+      - OPENAI_API_KEY is always included (default LLM unless overridden).
+      - If any agent uses a non-default LLM provider, swap/add provider keys.
+      - Tool-specific keys (e.g. SERPER_API_KEY) are added based on tools used.
+      - Keys already defined in project.env_vars (from KG) are merged in.
+      - All values are placeholders, never real secrets.
+    """
+    # ordered dict to preserve insertion order and avoid duplicates
+    entries: Dict[str, str] = {}
+
+    # ── 1. Default: always start with OPENAI_API_KEY ──
+    entries["OPENAI_API_KEY"] = "your_openai_api_key_here"
+
+    # ── 2. LLM provider keys ──
+    for agent in project.agents:
+        if agent.llm and agent.llm.provider:
+            provider_key = agent.llm.provider.lower().replace("-", "").replace("_", "")
+            for prov_pattern, env_vars in _LLM_PROVIDER_ENV_VARS.items():
+                if prov_pattern.replace("_", "") in provider_key:
+                    # If non-OpenAI provider found, remove the default OPENAI key
+                    if prov_pattern not in ("openai",):
+                        entries.pop("OPENAI_API_KEY", None)
+                    for var in env_vars:
+                        entries[var] = f"your_{var.lower()}_here"
+                    break
+
+    # ── 3. Tool-specific API keys ──
+    for tool in project.tools:
+        class_key = tool.class_name
+        # exact match first, then case-insensitive
+        matched = _TOOL_ENV_VARS.get(class_key)
+        if matched is None:
+            for k, v in _TOOL_ENV_VARS.items():
+                if k.lower() == class_key.lower():
+                    matched = v
+                    break
+        if matched:
+            for var in matched:
+                entries[var] = f"your_{var.lower()}_here"
+
+    # ── 4. Merge env_vars already found in the KG (overwrite placeholder with KG value) ──
+    for cfg in project.env_vars:
+        entries[cfg.key] = cfg.value
+
+    # ── 5. Build file content with section comments ──
+    lines: List[str] = [
+        "# .env.example – copy to .env and fill in your actual keys",
+        "# Never commit the real .env file to version control.",
+        "",
+    ]
+
+    # Separate LLM keys from tool keys for readability
+    llm_vars   = {"OPENAI_API_KEY", "ANTHROPIC_API_KEY", "AZURE_OPENAI_KEY",
+                  "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT", "AZURE_OPENAI_VERSION",
+                  "NVIDIA_API_KEY", "COHERE_API_KEY", "GEMINI_API_KEY",
+                  "GROQ_API_KEY", "MISTRAL_API_KEY", "HUGGINGFACEHUB_API_TOKEN"}
+    tool_keys  = {k: v for k, v in entries.items() if k not in llm_vars}
+    model_keys = {k: v for k, v in entries.items() if k in llm_vars}
+
+    if model_keys:
+        lines.append("# LLM API Keys")
+        for k, v in model_keys.items():
+            lines.append(f"{k}={v}")
+        lines.append("")
+
+    if tool_keys:
+        lines.append("# Tool API Keys")
+        for k, v in tool_keys.items():
+            lines.append(f"{k}={v}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 # ─────────────────────── pyproject.toml builder ───────────────────────
 
 # Maps LLM provider names (from KG :LanguageModel) to their PyPI packages.
@@ -339,12 +454,13 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
     Output structure:
         <output_dir>/
         ├── pyproject.toml
+        ├── .env.example        ← always generated (safe placeholders)
+        ├── .env                ← only when KG defines env_vars
         ├── config/
         │   ├── agents.yaml
         │   └── tasks.yaml
         ├── crew.py
-        ├── main.py
-        └── .env
+        └── main.py
 
     Returns:
         The output directory path.
@@ -380,11 +496,16 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
     with open(os.path.join(output_dir, "main.py"), "w", encoding="utf-8") as f:
         f.write(main_code)
 
-    # ── .env file ──
+    # ── .env file (only when KG explicitly provides values) ──
     if project.env_vars:
         with open(os.path.join(output_dir, ".env"), "w", encoding="utf-8") as f:
             for ev in project.env_vars:
                 f.write(f"{ev.key}={ev.value}\n")
+
+    # ── .env.example (always generated – safe placeholder version) ──
+    env_example_content = build_env_example(project)
+    with open(os.path.join(output_dir, ".env.example"), "w", encoding="utf-8") as f:
+        f.write(env_example_content)
 
     # ── pyproject.toml ──
     pyproject_content = build_pyproject_toml(project)
@@ -393,7 +514,7 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
 
     print(
         f"  [Generated] {output_dir}/ "
-        f"(agents.yaml, tasks.yaml, crew.py, main.py, pyproject.toml"
+        f"(agents.yaml, tasks.yaml, crew.py, main.py, pyproject.toml, .env.example"
         f"{', .env' if project.env_vars else ''})"
     )
 

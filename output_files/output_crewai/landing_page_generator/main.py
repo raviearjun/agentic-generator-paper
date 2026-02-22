@@ -6,6 +6,10 @@ Pipeline: 3-Layer Conversion Pipeline
 """
 
 import sys
+from dotenv import load_dotenv
+
+# Load .env from this directory BEFORE importing crew (which triggers crewai init)
+load_dotenv()
 
 from crew import ExpandIdeaCrewteam
 
