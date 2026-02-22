@@ -17,7 +17,7 @@ from crew import MyCrew
 def run():
     """Run the MyCrew."""
     inputs = {
-        'question': '',  # TODO: provide a value
+        'question': 'What are the best Meta Quest 3 games available in 2024 and what makes them stand out?',
     }
     MyCrew().crew().kickoff(inputs=inputs)
 

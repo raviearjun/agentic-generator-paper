@@ -18,7 +18,7 @@ from crewai.project import CrewBase, agent, crew, task
 from {{ module }} import {{ classes | join(', ') }}
 {% endfor %}
 {% endif %}
-{% if has_custom_llm %}
+{% if agents | selectattr("llm") | selectattr("llm.provider", "equalto", "ollama") | list | length > 0 %}
 from langchain.llms import Ollama
 {% endif %}
 
@@ -38,7 +38,7 @@ from langchain.llms import Ollama
 {% endfor %}
 {% endif %}
 
-{% if has_custom_llm %}
+{% if agents | selectattr("llm") | selectattr("llm.provider", "equalto", "ollama") | list | length > 0 %}
 # ===========================================================
 # Custom LLM
 # ===========================================================

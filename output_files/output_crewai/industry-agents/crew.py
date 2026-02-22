@@ -8,7 +8,6 @@ Pipeline: 3-Layer Conversion Pipeline
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
-from langchain.llms import Ollama
 
 # ===========================================================
 # Tool Instances
@@ -22,9 +21,6 @@ from langchain.llms import Ollama
 #   Implement as a custom BaseTool or replace with a crewai_tools equivalent.
 # serper_dev_tool = SomeCustomTool(verbose="True (tool verbosity flag placeholder)")
 
-# ===========================================================
-# Custom LLM
-# ===========================================================
 
 
 @CrewBase

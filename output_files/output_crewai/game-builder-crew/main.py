@@ -17,7 +17,7 @@ from crew import GameBuilderCrew
 def run():
     """Run the GameBuilderCrew."""
     inputs = {
-        'game': '',  # TODO: provide a value
+        'game': 'a 2D space shooter game in Python using pygame, with player ship, enemies, bullets, scoring, and game over screen',
     }
     GameBuilderCrew().crew().kickoff(inputs=inputs)
 
