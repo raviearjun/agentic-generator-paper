@@ -34,7 +34,8 @@ class MarkDownValidatorCrew:
         return Agent(
             config=self.agents_config['requirements_manager'],
             tools=[markdown_validation_tool],
-            verbose=True,
+            allow_delegation=False,
+            verbose=False,
         )
 
     # ── Tasks ───────────────────────────────────────────

@@ -1,0 +1,16 @@
+task_1:
+  description: |
+    Do something as part of task 1
+
+    If you do your BEST WORK, I'll give you a $10,000 commission!
+
+    Make sure to use the most recent data as possible.
+
+    Use this variable: {{var1}}
+    And also this variable: {{var2}}
+  expected_output: The expected output of the task
+task_2:
+  description: "Take the input from task 1 and do something with it.\n           \
+    \                            \nIf you do your BEST WORK, I'll give you a $10,000\
+    \ commission!\n\nMake sure to do something else.\n"
+  expected_output: The expected output of the task

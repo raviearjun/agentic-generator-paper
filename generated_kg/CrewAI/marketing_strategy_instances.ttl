@@ -1,13 +1,13 @@
 # Execution time: 103.17 seconds
 # Model used: gpt-5-mini
 
-Issues / Assumptions:
-- The ontology does not include a "Crew" class or an explicit Process enumeration; Team is used to represent the crew and Process value (sequential) is recorded as configuration metadata.
-- The ontology lacks explicit properties for certain implementation details (e.g., agent backstory, memory boolean, verbose flag, exact tool class names and constructor parameters). These are captured as Prompt or Config literals where appropriate.
-- Pydantic output schemas (MarketStrategy, CampaignIdea, Copy) structure cannot be modeled as schema classes in the ontology. They are represented as Resource individuals with descriptive literals preserving field names and types.
-- Runtime/SDK concepts (decorators, training iteration counts, kickoff/train methods, Python code structures) cannot be represented and are intentionally omitted; instead semantic intent (tasks, agents, prompts, configs, workflow) is modeled.
-- Tool-specific configuration (e.g., API keys) and exact language model selection are not present in source; language model usage is left unspecified. If needed, a LanguageModel individual can be added once concrete model details are known.
-- The agents.yaml contains an agent (chief_creative_director) that is present in configuration but not instantiated in crew.py. It is included as a Config and agentPrompt but not linked as a team member since it is not created by the crew in code.
+# Issues / Assumptions:
+# - The ontology does not include a "Crew" class or an explicit Process enumeration; Team is used to represent the crew and Process value (sequential) is recorded as configuration metadata.
+# - The ontology lacks explicit properties for certain implementation details (e.g., agent backstory, memory boolean, verbose flag, exact tool class names and constructor parameters). These are captured as Prompt or Config literals where appropriate.
+# - Pydantic output schemas (MarketStrategy, CampaignIdea, Copy) structure cannot be modeled as schema classes in the ontology. They are represented as Resource individuals with descriptive literals preserving field names and types.
+# - Runtime/SDK concepts (decorators, training iteration counts, kickoff/train methods, Python code structures) cannot be represented and are intentionally omitted; instead semantic intent (tasks, agents, prompts, configs, workflow) is modeled.
+# - Tool-specific configuration (e.g., API keys) and exact language model selection are not present in source; language model usage is left unspecified. If needed, a LanguageModel individual can be added once concrete model details are known.
+# - The agents.yaml contains an agent (chief_creative_director) that is present in configuration but not instantiated in crew.py. It is included as a Config and agentPrompt but not linked as a team member since it is not created by the crew in code.
 
 @prefix : <http://www.w3id.org/agentic-ai/onto#> .
 @prefix pp: <http://purl.org/net/p-plan#> .
@@ -51,7 +51,7 @@ Issues / Assumptions:
                     :ScrapeWebsiteTool ;
     :hasAgentGoal :lead_market_analyst_goal ;
     :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew as lead_market_analyst with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)."
+    rdfs:comment "Configured in agents.yaml and instantiated in crew as lead_market_analyst with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)." .
 
 :chief_marketing_strategist_agent rdf:type :LLMAgent ;
     rdfs:label "Chief Marketing Strategist (agent)" ;
@@ -63,7 +63,7 @@ Issues / Assumptions:
                     :ScrapeWebsiteTool ;
     :hasAgentGoal :chief_marketing_strategist_goal ;
     :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)."
+    rdfs:comment "Configured in agents.yaml and instantiated in crew with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)." .
 
 :creative_content_creator_agent rdf:type :LLMAgent ;
     rdfs:label "Creative Content Creator (agent)" ;
@@ -73,7 +73,7 @@ Issues / Assumptions:
     :hasAgentConfig :creative_content_creator_config ;
     :hasAgentGoal :creative_content_creator_goal ;
     :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew without external tools (only default). Verbose true, memory false (captured in config)."
+    rdfs:comment "Configured in agents.yaml and instantiated in crew without external tools (only default). Verbose true, memory false (captured in config)." .
 
 ### Uninstantiated agent present in agents.yaml (configuration only)
 :chief_creative_director_config_agent_prompt rdf:type :Prompt ;
@@ -88,7 +88,7 @@ Issues / Assumptions:
     :configValue "Oversee the work done by your team to make sure it is the best possible and aligned with the product goals, review, approve, ask clarifying questions or delegate follow-up work if necessary." ;
     :configKey "backstory" ;
     :configValue "You are the Chief Content Officer at a leading digital marketing agency specializing in product branding. You ensure your team crafts the best possible content for the customer." ;
-    rdfs:comment "Present in agents.yaml but no @agent method instantiates this agent in crew.py; included for fidelity of original configuration."
+    rdfs:comment "Present in agents.yaml but no @agent method instantiates this agent in crew.py; included for fidelity of original configuration." .
 
 #################################################################
 # Agent prompts and configs

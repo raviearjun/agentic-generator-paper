@@ -34,7 +34,6 @@ class MeetingPreparationCrew:
         return Agent(
             config=self.agents_config['researcher_agent_1'],
             tools=[exa_search_tool],
-            verbose=True,
         )
 
     @agent
@@ -42,7 +41,6 @@ class MeetingPreparationCrew:
         return Agent(
             config=self.agents_config['industry_analyst_agent_1'],
             tools=[exa_search_tool],
-            verbose=True,
         )
 
     @agent
@@ -50,7 +48,6 @@ class MeetingPreparationCrew:
         return Agent(
             config=self.agents_config['meeting_strategy_agent_1'],
             tools=[exa_search_tool],
-            verbose=True,
         )
 
     @agent
@@ -58,7 +55,6 @@ class MeetingPreparationCrew:
         return Agent(
             config=self.agents_config['briefing_coordinator_agent_1'],
             tools=[exa_search_tool],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

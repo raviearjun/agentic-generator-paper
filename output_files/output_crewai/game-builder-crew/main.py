@@ -6,10 +6,11 @@ Pipeline: 3-Layer Conversion Pipeline
 """
 
 import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env from this directory BEFORE importing crew (which triggers crewai init)
-load_dotenv()
+load_dotenv(Path(__file__).parent / ".env")
 
 from crew import GameBuilderCrew
 
@@ -17,7 +18,7 @@ from crew import GameBuilderCrew
 def run():
     """Run the GameBuilderCrew."""
     inputs = {
-        'game': 'a 2D space shooter game in Python using pygame, with player ship, enemies, bullets, scoring, and game over screen',
+        'game': '',  # TODO: provide a value
     }
     GameBuilderCrew().crew().kickoff(inputs=inputs)
 

@@ -9,3 +9,5 @@ requirements_manager:
     \ other tools to use.\n\nbackstory: You are an expert business analyst and software\
     \ QA specialist. \nYou provide high quality, thorough, insightful, and actionable\
     \ feedback via a detailed list of changes and actionable tasks.\n"
+  allow_delegation: false
+  verbose: false

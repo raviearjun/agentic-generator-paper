@@ -79,6 +79,10 @@ def build_agents_yaml(project: CrewProject) -> str:
         entry["role"] = _wrap_multiline(agent.role)
         entry["goal"] = _wrap_multiline(agent.goal)
         entry["backstory"] = _wrap_multiline(agent.backstory)
+        if agent.allow_delegation is not None:
+            entry["allow_delegation"] = agent.allow_delegation
+        if agent.verbose is not None:
+            entry["verbose"] = agent.verbose
         data[agent.var_name] = entry
 
     dumper = _setup_yaml_dumper()

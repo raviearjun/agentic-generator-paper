@@ -1,0 +1,23 @@
+[project]
+name = "marketing_posts_crew_team"
+version = "0.1.0"
+description = "Team that coordinates agents and tasks for the marketing_posts solution. Process"
+authors = [{name = "Your Name", email = "you@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10,<=3.13"
+
+dependencies = [
+    "crewai[tools]>=0.152.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+marketing_posts_crew_team = "main:run"
+train      = "main:train"
+
+[tool.uv]
+dev-dependencies = []
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"

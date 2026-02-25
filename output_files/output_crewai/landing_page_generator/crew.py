@@ -61,7 +61,6 @@ class ExpandIdeaCrewteam:
         return Agent(
             config=self.agents_config['senior_idea_analyst'],
             tools=[search_internet_tool, scrape_website_tool],
-            verbose=True,
         )
 
     @agent
@@ -69,7 +68,6 @@ class ExpandIdeaCrewteam:
         return Agent(
             config=self.agents_config['senior_strategist'],
             tools=[search_internet_tool, scrape_website_tool],
-            verbose=True,
         )
 
     @agent
@@ -77,7 +75,6 @@ class ExpandIdeaCrewteam:
         return Agent(
             config=self.agents_config['senior_react_engineer'],
             tools=[search_internet_tool, scrape_website_tool, write_file_tool, learn_templates_tool, copy_template_tool, read_file_tool, list_directory_tool],
-            verbose=True,
         )
 
     @agent
@@ -85,7 +82,6 @@ class ExpandIdeaCrewteam:
         return Agent(
             config=self.agents_config['senior_content_editor'],
             tools=[write_file_tool, read_file_tool, list_directory_tool],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

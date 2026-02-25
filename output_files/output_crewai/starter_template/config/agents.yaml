@@ -1,0 +1,18 @@
+agent_1_name:
+  role: Define agent 1 role here
+  goal: Define agent 1 goal here
+  backstory: |
+    Role: Define agent 1 role here
+    Backstory: Define agent 1 backstory here
+    Goal: Define agent 1 goal here
+  allow_delegation: false
+  verbose: true
+agent_2_name:
+  role: Define agent 2 role here
+  goal: Define agent 2 goal here
+  backstory: |
+    Role: Define agent 2 role here
+    Backstory: Define agent 2 backstory here
+    Goal: Define agent 2 goal here
+  allow_delegation: false
+  verbose: true

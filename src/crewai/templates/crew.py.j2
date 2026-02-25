@@ -73,7 +73,9 @@ class {{ crew_name }}:
 {% if agent_item.allow_delegation is not none %}
             allow_delegation={{ agent_item.allow_delegation }},
 {% endif %}
-            verbose=True,
+{% if agent_item.verbose is not none %}
+            verbose={{ agent_item.verbose }},
+{% endif %}
         )
 {% endfor %}
 

@@ -99,7 +99,7 @@ class AgentModel(BaseModel):
     tool_var_names: List[str] = Field(default_factory=list, description="Tool variable names")
     llm: Optional[LanguageModelModel] = Field(None, description="Language model if not default")
     allow_delegation: Optional[bool] = Field(None, description="Allow delegation flag")
-    verbose: bool = Field(True, description="Verbose flag")
+    verbose: Optional[bool] = Field(None, description="Verbose flag (None = not specified in KG → omit from output)")
 
 
 # ──────────────────────────────────────────────

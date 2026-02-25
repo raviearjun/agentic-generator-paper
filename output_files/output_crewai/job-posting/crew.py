@@ -33,7 +33,6 @@ class JobPostingCrewTeam:
         return Agent(
             config=self.agents_config['research_agent'],
             tools=[website_search_tool, serper_dev_tool],
-            verbose=True,
         )
 
     @agent
@@ -41,7 +40,6 @@ class JobPostingCrewTeam:
         return Agent(
             config=self.agents_config['writer_agent'],
             tools=[website_search_tool, serper_dev_tool, file_read_tool],
-            verbose=True,
         )
 
     @agent
@@ -49,7 +47,6 @@ class JobPostingCrewTeam:
         return Agent(
             config=self.agents_config['review_agent'],
             tools=[website_search_tool, serper_dev_tool, file_read_tool],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

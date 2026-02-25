@@ -36,7 +36,7 @@ class RecruitmentCrew:
         return Agent(
             config=self.agents_config['researcher'],
             tools=[tool_serperdev, tool_scrapewebsite, tool_linkedin],
-            allow_delegation=True,
+            allow_delegation=False,
             verbose=True,
         )
 
@@ -45,7 +45,7 @@ class RecruitmentCrew:
         return Agent(
             config=self.agents_config['matcher'],
             tools=[tool_serperdev, tool_scrapewebsite],
-            allow_delegation=True,
+            allow_delegation=False,
             verbose=True,
         )
 
@@ -54,7 +54,7 @@ class RecruitmentCrew:
         return Agent(
             config=self.agents_config['communicator'],
             tools=[tool_serperdev, tool_scrapewebsite],
-            allow_delegation=True,
+            allow_delegation=False,
             verbose=True,
         )
 
@@ -62,7 +62,7 @@ class RecruitmentCrew:
     def reporter(self) -> Agent:
         return Agent(
             config=self.agents_config['reporter'],
-            allow_delegation=True,
+            allow_delegation=False,
             verbose=True,
         )
 

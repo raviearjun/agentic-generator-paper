@@ -6,10 +6,11 @@ Pipeline: 3-Layer Conversion Pipeline
 """
 
 import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env from this directory BEFORE importing crew (which triggers crewai init)
-load_dotenv()
+load_dotenv(Path(__file__).parent / ".env")
 
 from crew import MyCrew
 
@@ -17,7 +18,7 @@ from crew import MyCrew
 def run():
     """Run the MyCrew."""
     inputs = {
-        'question': 'What are the best Meta Quest 3 games available in 2024 and what makes them stand out?',
+        'question': '',  # TODO: provide a value
     }
     MyCrew().crew().kickoff(inputs=inputs)
 

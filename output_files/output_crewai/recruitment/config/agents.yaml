@@ -3,17 +3,25 @@ researcher:
   goal: |
     Find potential candidates for the job specified in inputs (job_requirements). Use multiple public resources to assemble candidate brief profiles and contact info.
   backstory: Job Candidate Researcher
+  allow_delegation: false
+  verbose: true
 matcher:
   role: Candidate Matcher and Scorer
   goal: |
     Evaluate candidates relative to the job_requirements, compute scores and rank candidates with justifications.
   backstory: Candidate Matcher and Scorer
+  allow_delegation: false
+  verbose: true
 communicator:
   role: Candidate Outreach Strategist
   goal: Produce outreach methods and message templates tailored to prioritized candidates.
   backstory: Candidate Outreach Strategist
+  allow_delegation: false
+  verbose: true
 reporter:
   role: Candidate Reporting Specialist
   goal: |
     Assemble a concise report for recruiters with profiles, scores, and outreach plan; follow output formatting instruction from tasks configuration.
   backstory: Candidate Reporting Specialist
+  allow_delegation: false
+  verbose: true

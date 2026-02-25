@@ -1,0 +1,25 @@
+spamfilter:
+  role: spamfilter
+  goal: Decide whether a text is spam or contains vulgar language and should be filtered
+    (STOP signal).
+  backstory: spamfilter
+analyst:
+  role: analyse
+  goal: Analyze discussion, create dialogue-heavy screenplay and format according
+    to requested template.
+  backstory: analyse
+scriptwriter:
+  role: scriptwriter
+  goal: Analyze discussion, create dialogue-heavy screenplay and format according
+    to requested template.
+  backstory: scriptwriter
+formatter:
+  role: formatter
+  goal: Analyze discussion, create dialogue-heavy screenplay and format according
+    to requested template.
+  backstory: formatter
+scorer:
+  role: scorer
+  goal: Analyze discussion, create dialogue-heavy screenplay and format according
+    to requested template.
+  backstory: scorer

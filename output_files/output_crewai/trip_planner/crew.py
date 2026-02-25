@@ -41,7 +41,6 @@ class MyCrew:
         return Agent(
             config=self.agents_config['city_selection_agent'],
             tools=[search_tools, browser_tools],
-            verbose=True,
         )
 
     @agent
@@ -49,7 +48,6 @@ class MyCrew:
         return Agent(
             config=self.agents_config['local_expert_agent'],
             tools=[search_tools, browser_tools],
-            verbose=True,
         )
 
     @agent
@@ -57,7 +55,6 @@ class MyCrew:
         return Agent(
             config=self.agents_config['travel_concierge_agent'],
             tools=[search_tools, browser_tools, calculator_tools],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

@@ -8,6 +8,8 @@ product_competitor_agent:
     AllowDelegation: False
     Verbose: True
     Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet
+  allow_delegation: false
+  verbose: true
 strategy_planner_agent:
   role: Chief Marketing Strategist
   goal: Chief Marketing Strategist
@@ -17,6 +19,7 @@ strategy_planner_agent:
     Backstory: You are the Chief Marketing Strategist at a leading digital marketing agency known for bespoke strategies.
     Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
     Verbose: True
+  verbose: true
 creative_content_creator_agent:
   role: Creative Content Creator
   goal: Creative Content Creator
@@ -26,6 +29,7 @@ creative_content_creator_agent:
     Backstory: As a Creative Content Creator at a top-tier agency, you craft narratives that resonate with social audiences.
     Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
     Verbose: True
+  verbose: true
 senior_photographer_agent:
   role: Senior Photographer
   goal: Senior Photographer
@@ -36,6 +40,8 @@ senior_photographer_agent:
     Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
     AllowDelegation: False
     Verbose: True
+  allow_delegation: false
+  verbose: true
 chief_creative_director_agent:
   role: Chief Creative Director
   goal: Chief Creative Director
@@ -45,3 +51,4 @@ chief_creative_director_agent:
     Backstory: Chief Content Officer specialized in product branding.
     Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
     Verbose: True
+  verbose: true

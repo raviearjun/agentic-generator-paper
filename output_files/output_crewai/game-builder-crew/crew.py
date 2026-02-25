@@ -24,21 +24,18 @@ class GameBuilderCrew:
     def senior_engineer_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['senior_engineer_agent'],
-            verbose=True,
         )
 
     @agent
     def qa_engineer_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['qa_engineer_agent'],
-            verbose=True,
         )
 
     @agent
     def chief_qa_engineer_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['chief_qa_engineer_agent'],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

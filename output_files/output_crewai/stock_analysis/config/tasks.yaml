@@ -1,0 +1,19 @@
+research:
+  description: |
+    Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others.
+  expected_output: Return a comprehensive summary and return the stock ticker as {company_stock}.
+filings_analysis:
+  description: |
+    Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock} in question. Focus on key sections like Management's Discussion and analysis, financial statements, insider trading activity, and any disclosed risks. Extract relevant data and insights that could influence the stock's future performance.
+  expected_output: Final answer should highlight significant findings, red flags or
+    positive indicators from filings.
+financial_analysis:
+  description: |
+    Conduct a thorough analysis of {company_stock}'s stock financial health and market performance. This includes examining key financial metrics such as P/E ratio, EPS growth, revenue trends, and debt-to-equity ratio. Also, analyze the stock's performance in comparison to its industry peers and overall market trends.
+  expected_output: |
+    Final report must include assessment, strengths and weaknesses, comparison to competitors, and use most recent data possible.
+recommend:
+  description: |
+    Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. MUST consider financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings.
+  expected_output: |
+    Final answer MUST be a recommendation: a full super detailed report, clear investment stance and strategy with supporting evidence, well formatted for the customer.

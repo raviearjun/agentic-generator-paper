@@ -24,7 +24,6 @@ class MyCrew:
     def meta_quest_expert(self) -> Agent:
         return Agent(
             config=self.agents_config['meta_quest_expert'],
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

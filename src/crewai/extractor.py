@@ -113,6 +113,27 @@ WHERE {
 }
 """
 
+# Fallback: detect process type from WorkflowPattern label/desc or Team desc
+WORKFLOW_PATTERN_TEXT_QUERY = PREFIXES + """
+SELECT ?label ?desc ?comment ?title
+WHERE {
+    ?wp a :WorkflowPattern .
+    OPTIONAL { ?wp rdfs:label ?label }
+    OPTIONAL { ?wp dcterms:description ?desc }
+    OPTIONAL { ?wp rdfs:comment ?comment }
+    OPTIONAL { ?wp dcterms:title ?title }
+}
+"""
+
+TEAM_DESC_QUERY = PREFIXES + """
+SELECT ?desc ?comment
+WHERE {
+    ?team a :Team .
+    OPTIONAL { ?team dcterms:description ?desc }
+    OPTIONAL { ?team rdfs:comment ?comment }
+}
+"""
+
 # ── Language Models ──
 
 LLM_QUERY = PREFIXES + """
@@ -213,6 +234,31 @@ WHERE {
            :hasAgentConfig ?cfg .
     ?cfg :configKey "allow_delegation" ;
          :configValue ?value .
+}
+"""
+
+AGENT_VERBOSE_QUERY = PREFIXES + """
+SELECT ?agent ?value
+WHERE {
+    ?agent a :LLMAgent ;
+           :hasAgentConfig ?cfg .
+    ?cfg :configKey "verbose" ;
+         :configValue ?value .
+}
+"""
+
+# Fallback: extract delegation/verbose from description, comment, prompt text
+AGENT_TEXT_FIELDS_QUERY = PREFIXES + """
+SELECT ?agent ?desc ?comment ?promptCtx ?promptInstr
+WHERE {
+    ?agent a :LLMAgent .
+    OPTIONAL { ?agent dcterms:description ?desc }
+    OPTIONAL { ?agent rdfs:comment ?comment }
+    OPTIONAL {
+        ?agent :agentPrompt ?prompt .
+        OPTIONAL { ?prompt :promptContext ?promptCtx }
+        OPTIONAL { ?prompt :promptInstruction ?promptInstr }
+    }
 }
 """
 
@@ -338,6 +384,131 @@ WHERE {
 
 # ─────────────────────── Extraction functions ───────────────────────
 
+def _infer_process_from_text(text: str) -> Optional[ProcessType]:
+    """
+    Infer process type from free-text label/description/comment.
+
+    Checks for 'hierarchical' first (rarer, more specific),
+    then 'sequential'.  Returns None if neither keyword found.
+    """
+    if not text:
+        return None
+    lower = text.lower()
+    if "hierarchical" in lower:
+        return ProcessType.HIERARCHICAL
+    if "sequential" in lower:
+        return ProcessType.SEQUENTIAL
+    return None
+
+
+def _parse_bool_from_text(text: str, key: str) -> Optional[bool]:
+    """
+    Extract a boolean flag from free text using multiple patterns.
+
+    Recognizes:
+        allow_delegation=False
+        allow_delegation: False
+        AllowDelegation: False
+        allow_delegation = True
+        verbose=True
+        verbose: 2  (truthy)
+    """
+    if not text:
+        return None
+    # Normalize key variants (e.g. AllowDelegation -> allow_delegation)
+    key_pattern = re.escape(key)
+    # Also match CamelCase variant: allow_delegation -> AllowDelegation
+    camel_variant = "".join(w.capitalize() for w in key.split("_"))
+    camel_pattern = re.escape(camel_variant)
+    pattern = rf"(?:{key_pattern}|{camel_pattern})\s*[:=]\s*(\S+)"
+    m = re.search(pattern, text, re.IGNORECASE)
+    if m:
+        val = m.group(1).strip().strip("'\",;.")
+        if val.lower() in ("false", "0", "no", "none"):
+            return False
+        if val.lower() in ("true", "1", "yes") or val.isdigit():
+            return True
+    return None
+
+
+# ── Strategy 1.5 helpers: raw TTL parsing for Config KV pairs ──
+
+AGENT_CONFIG_LINK_QUERY = PREFIXES + """
+SELECT ?agent ?cfg
+WHERE {
+    ?agent a :LLMAgent ;
+           :hasAgentConfig ?cfg .
+}
+"""
+
+
+def _parse_config_kv_from_ttl(raw_ttl: str) -> Dict[str, List[Tuple[str, str]]]:
+    """
+    Parse raw Turtle text to extract ordered configKey→configValue pairs
+    per Config node.  This recovers the pairing that SPARQL loses due to
+    the cartesian product on multi-KV Config nodes.
+
+    Uses a position-based approach: find all Config declarations and all
+    KV pairs in the file, then associate each KV pair with the nearest
+    preceding Config node.
+
+    Returns {config_local_name: [(key, value), ...]}
+    """
+    result: Dict[str, List[Tuple[str, str]]] = {}
+
+    # Find Config node declarations and their positions
+    config_decl_pattern = re.compile(r':(\S+)\s+a\s+:Config\b')
+    config_positions: List[Tuple[int, str]] = []  # (pos, local_name)
+    for m in config_decl_pattern.finditer(raw_ttl):
+        config_positions.append((m.start(), m.group(1)))
+
+    if not config_positions:
+        return result
+
+    # Find all KV pairs and their positions
+    kv_pattern = re.compile(
+        r':configKey\s+"([^"]*?)"\s*;\s*:configValue\s+"((?:[^"\\]|\\.)*)"\s*',
+    )
+    for kv_m in kv_pattern.finditer(raw_ttl):
+        kv_pos = kv_m.start()
+        key, value = kv_m.group(1), kv_m.group(2)
+        # Find the nearest preceding Config node
+        owner = None
+        for cfg_pos, cfg_local in reversed(config_positions):
+            if cfg_pos <= kv_pos:
+                owner = cfg_local
+                break
+        if owner:
+            result.setdefault(owner, []).append((key, value))
+
+    return result
+
+
+def _find_config_value_for_agent(
+    g: Graph,
+    agent_iri: str,
+    target_key: str,
+    ttl_kv: Dict[str, List[Tuple[str, str]]],
+) -> Optional[str]:
+    """
+    Find the configValue paired with *target_key* for a specific agent,
+    using the raw-TTL-parsed KV pairs to get the correct pairing.
+    """
+    # Get all Config IRIs linked to this agent
+    for row in g.query(AGENT_CONFIG_LINK_QUERY):
+        a_iri = _s(row.agent)
+        if a_iri != agent_iri:
+            continue
+        cfg_iri = _s(row.cfg)
+        # Extract local name from the full IRI (after # or last /)
+        cfg_local = cfg_iri.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
+        if cfg_local in ttl_kv:
+            for kv_key, kv_val in ttl_kv[cfg_local]:
+                if kv_key == target_key:
+                    return kv_val
+    return None
+
+
 def _extract_team(g: Graph) -> Tuple[str, str, ProcessType]:
     """Extract team name, description, and process type."""
     crew_name = "MyCrew"
@@ -355,12 +526,43 @@ def _extract_team(g: Graph) -> Tuple[str, str, ProcessType]:
                 crew_name = "MyCrew"
         description = _s(row.desc)
 
-    # Check for explicit process config
+    # ── Strategy 1: explicit configKey "process" (most authoritative) ──
     process_results = list(g.query(TEAM_PROCESS_QUERY))
+    detected = False
     for row in process_results:
         val = _s(row.configValue).lower()
         if "hierarchical" in val:
             process = ProcessType.HIERARCHICAL
+            detected = True
+        elif "sequential" in val:
+            process = ProcessType.SEQUENTIAL
+            detected = True
+
+    # ── Strategy 2: WorkflowPattern labels/descriptions (common fallback) ──
+    if not detected:
+        for row in g.query(WORKFLOW_PATTERN_TEXT_QUERY):
+            for field_val in [_s(row.label), _s(row.desc), _s(row.comment), _s(row.title)]:
+                inferred = _infer_process_from_text(field_val)
+                if inferred is not None:
+                    process = inferred
+                    detected = True
+                    # Hierarchical is rarer and more specific — if found, stop
+                    if inferred == ProcessType.HIERARCHICAL:
+                        break
+            if detected and process == ProcessType.HIERARCHICAL:
+                break
+
+    # ── Strategy 3: Team description/comment text ──
+    if not detected:
+        for row in g.query(TEAM_DESC_QUERY):
+            for field_val in [_s(row.desc), _s(row.comment)]:
+                inferred = _infer_process_from_text(field_val)
+                if inferred is not None:
+                    process = inferred
+                    detected = True
+                    break
+            if detected:
+                break
 
     return crew_name, description, process
 
@@ -440,6 +642,7 @@ def _extract_agents(
     g: Graph,
     tools_map: Dict[str, ToolModel],
     lm_map: Dict[str, LanguageModelModel],
+    raw_ttl: str = "",
 ) -> Dict[str, AgentModel]:
     """Extract LLMAgent individuals with full property resolution."""
     agents: Dict[str, AgentModel] = {}
@@ -511,12 +714,84 @@ def _extract_agents(
         if iri in agents and lm_iri in lm_map:
             agents[iri].llm = lm_map[lm_iri]
 
-    # allow_delegation config
+    # allow_delegation config (Strategy 1: explicit configKey)
+    # Collect boolean-like values per agent first to handle cartesian products
+    # from multi-KV Config nodes (same node has role, goal, backstory, etc.)
+    _deleg_bools: Dict[str, Set[bool]] = {}
     for row in g.query(AGENT_DELEGATION_QUERY):
         iri = _s(row.agent)
-        if iri in agents:
-            val = _s(row.value).lower()
-            agents[iri].allow_delegation = val in ("true", "1", "yes")
+        if iri not in agents:
+            continue
+        val = _s(row.value).strip().lower()
+        if val in ("true", "false", "0", "1", "yes", "no"):
+            _deleg_bools.setdefault(iri, set()).add(val in ("true", "1", "yes"))
+    for iri, bools in _deleg_bools.items():
+        if len(bools) == 1:  # unambiguous — only one distinct boolean value
+            agents[iri].allow_delegation = bools.pop()
+        # else: ambiguous (both True & False found from cartesian product) → skip
+
+    # verbose config (Strategy 1: explicit configKey)
+    _verbose_bools: Dict[str, Set[bool]] = {}
+    for row in g.query(AGENT_VERBOSE_QUERY):
+        iri = _s(row.agent)
+        if iri not in agents:
+            continue
+        val = _s(row.value).strip().lower()
+        if val in ("true", "false", "0", "1", "yes", "no", "none") or val.isdigit():
+            if val in ("false", "0", "no", "none"):
+                _verbose_bools.setdefault(iri, set()).add(False)
+            else:
+                _verbose_bools.setdefault(iri, set()).add(True)
+    for iri, bools in _verbose_bools.items():
+        if len(bools) == 1:  # unambiguous
+            agents[iri].verbose = bools.pop()
+        # else: ambiguous → skip, let Strategy 2 handle it
+
+    # Strategy 1.5: parse raw TTL text to recover key→value pairing
+    # RDF loses configKey→configValue pairing on multi-KV nodes, but the
+    # original Turtle syntax keeps them adjacent:
+    #   :configKey "allow_delegation" ; :configValue "False" ;
+    # We use regex on the raw file to extract the actual pairs.
+    if raw_ttl:
+        _ttl_kv = _parse_config_kv_from_ttl(raw_ttl)
+        for iri, agent in agents.items():
+            if agent.allow_delegation is None:
+                _found_deleg = _find_config_value_for_agent(
+                    g, iri, "allow_delegation", _ttl_kv
+                )
+                if _found_deleg is not None:
+                    agent.allow_delegation = _found_deleg.lower() in ("true", "1", "yes")
+            if agent.verbose is None:
+                _found_verbose = _find_config_value_for_agent(
+                    g, iri, "verbose", _ttl_kv
+                )
+                if _found_verbose is not None:
+                    val = _found_verbose.lower()
+                    agent.verbose = val not in ("false", "0", "no", "none")
+
+    # Strategy 2: extract delegation + verbose from text fields
+    # (dcterms:description, rdfs:comment, promptContext, promptInstruction)
+    for row in g.query(AGENT_TEXT_FIELDS_QUERY):
+        iri = _s(row.agent)
+        if iri not in agents:
+            continue
+        agent = agents[iri]
+        # Concatenate all text fields for this agent
+        all_text = " ".join(filter(None, [
+            _s(row.desc), _s(row.comment),
+            _s(row.promptCtx), _s(row.promptInstr),
+        ]))
+        if not all_text.strip():
+            continue
+        # Only fill if Strategy 1 didn't find a value
+        if agent.allow_delegation is None:
+            parsed = _parse_bool_from_text(all_text, "allow_delegation")
+            if parsed is not None:
+                agent.allow_delegation = parsed
+        if agent.verbose is None:
+            parsed = _parse_bool_from_text(all_text, "verbose")
+            if parsed is not None:
+                agent.verbose = parsed
 
     # Final defaults
     for agent in agents.values():
@@ -708,6 +983,13 @@ def extract_crew_project(file_path: str) -> CrewProject:
     """
     g = load_graph(file_path)
 
+    # Read raw TTL text for Strategy 1.5 (Config KV pair recovery)
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw_ttl = f.read()
+    except Exception:
+        raw_ttl = ""
+
     # 1. Team metadata
     crew_name, description, process = _extract_team(g)
     crew_var_name = _safe_var(crew_name)
@@ -719,7 +1001,7 @@ def extract_crew_project(file_path: str) -> CrewProject:
     tools_map = _extract_tools(g)
 
     # 4. Agents
-    agents_map = _extract_agents(g, tools_map, lm_map)
+    agents_map = _extract_agents(g, tools_map, lm_map, raw_ttl)
 
     # 5. Tasks
     tasks_map = _extract_tasks(g, agents_map)

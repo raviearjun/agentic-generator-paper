@@ -123,9 +123,9 @@
     dcterms:description "Configuration for agent_1_name (mirrors initialization in agents.py)." .
 
 :CustomAgent1_Prompt rdf:type :Prompt ;
-    :promptInstruction "Role: Define agent 1 role here
+    :promptInstruction """Role: Define agent 1 role here
 Backstory: Define agent 1 backstory here
-Goal: Define agent 1 goal here" ;
+Goal: Define agent 1 goal here""" ;
     :promptContext "agent settings: allow_delegation=False; verbose=True; llm=ChatOpenAI(gpt-3.5-turbo)" ;
     dcterms:description "Agent-level prompt assembled from agent metadata. Intended to represent an agent's internal prompt used when acting independently of specific tasks." .
 
@@ -159,9 +159,9 @@ Goal: Define agent 1 goal here" ;
     dcterms:description "Configuration for agent_2_name (mirrors initialization in agents.py)." .
 
 :CustomAgent2_Prompt rdf:type :Prompt ;
-    :promptInstruction "Role: Define agent 2 role here
+    :promptInstruction """Role: Define agent 2 role here
 Backstory: Define agent 2 backstory here
-Goal: Define agent 2 goal here" ;
+Goal: Define agent 2 goal here""" ;
     :promptContext "agent settings: allow_delegation=False; verbose=True; llm=ChatOpenAI(gpt-3.5-turbo)" ;
     dcterms:description "Agent-level prompt assembled from agent metadata. Intended to represent an agent's internal prompt used when acting independently of specific tasks." .
 

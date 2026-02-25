@@ -1,0 +1,30 @@
+task1_analysis:
+  description: |
+    Analyse in much detail the following discussion:
+    ### DISCUSSION:
+    (see :discussion_newsgroup_01)
+  expected_output: |
+    A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points.
+task2_scriptwriting:
+  description: |
+    Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.
+  expected_output: |
+    A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes.
+task3_formatting:
+  description: "Format the script exactly like this:\n  ## (person 1):\n  (first text\
+    \ line from person 1)\n         \n  ## (person 2):\n  (first text line from person\
+    \ 2)\n         \n  ## (person 1):\n  (second text line from person 1)\n      \
+    \   \n  ## (person 2):\n  (second text line from person 2)\n"
+  expected_output: |
+    A formatted script with the specified structure, ensuring each line is formatted according to the provided template.
+task0_spam_check:
+  description: |
+    Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
+    ### NEWGROUP POST:
+    (see linked resource :discussion_newsgroup_01)
+  expected_output: Either "STOP" if the post contains vulgar language or is spam,
+    or no response if it does not.
+task4_scoring:
+  description: 'Score the following script: ### SCRIPT: (link to formatted script)'
+  expected_output: A score from 1 to 10, possibly followed by an explanation (first
+    line is numeric score).
