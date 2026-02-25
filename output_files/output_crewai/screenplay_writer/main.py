@@ -6,10 +6,11 @@ Pipeline: 3-Layer Conversion Pipeline
 """
 
 import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env from this directory BEFORE importing crew (which triggers crewai init)
-load_dotenv()
+load_dotenv(Path(__file__).parent / ".env")
 
 from crew import AICrewforscreenwriting
 
