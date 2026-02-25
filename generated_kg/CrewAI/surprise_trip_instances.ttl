@@ -94,8 +94,6 @@
     dcterms:description "Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group" ;
     rdfs:label "Goal: personalized activity planner" .
 
----
-
 :agent_restaurant_scout rdf:type :LLMAgent ;
     rdfs:label "restaurant_scout" ;
     :agentID "restaurant_scout" ;
@@ -134,8 +132,6 @@
 :goal_restaurant_scout rdf:type :Goal ;
     dcterms:description "Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities" ;
     rdfs:label "Goal: restaurant scout" .
-
----
 
 :agent_itinerary_compiler rdf:type :LLMAgent ;
     rdfs:label "itinerary_compiler" ;
@@ -234,8 +230,6 @@ Traveler's information: - origin: {origin} - destination: {destination} - age: {
 :obj_personalized_activity_planning rdf:type :Objective ;
     dcterms:description "Produce a per-day list of recommended activities and events including details and suitability rationale." .
 
----
-
 :restaurant_scenic_location_scout_task rdf:type :Task ;
     rdfs:label "restaurant_scenic_location_scout_task" ;
     :performedByAgent :agent_restaurant_scout ;
@@ -272,8 +266,6 @@ Traveler's information: - origin: {origin} - destination: {destination} - age: {
 
 :obj_restaurant_scout rdf:type :Objective ;
     dcterms:description "Produce recommended restaurants and scenic locations with ratings and descriptions for each relevant day." .
-
----
 
 :itinerary_compilation_task rdf:type :Task ;
     rdfs:label "itinerary_compilation_task" ;

@@ -1,0 +1,25 @@
+[project]
+name = "surprise_travel"
+version = "0.1.0"
+description = "SurpriseTravel crew coordinating agents to plan a surprise travel itinerary.
+  "
+authors = [{name = "Your Name", email = "you@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10,<=3.13"
+
+dependencies = [
+    "crewai[tools]>=0.152.0",
+    "python-dotenv>=1.0.1",
+    # TODO: add PyPI package for custom tool "MyCustomTool"
+]
+
+[project.scripts]
+surprise_travel = "main:run"
+train      = "main:train"
+
+[tool.uv]
+dev-dependencies = []
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"

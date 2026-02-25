@@ -1,0 +1,38 @@
+personalized_activity_planning_task:
+  description: |
+    Research and find cool things to do at {destination}.
+        Focus on activities and events that match the traveler's interests and age group.
+        Utilize internet search tools and recommendation engines to gather the information.
+
+        Traveler's information:
+
+        - origin: {origin}
+        - destination: {destination}
+        - age of the traveler: {age}
+        - hotel localtion: {hotel_location}
+        - flight infromation: {flight_information}
+        - how long is the trip: {trip_duration}
+  expected_output: |
+    List of recommended activities and events with name, location, description, suitability, reviews, ratings.
+restaurant_scenic_location_scout_task:
+  description: |
+    Find highly-rated restaurants and dining experiences at {destination}.
+        Recommend scenic locations and fun activities that align with the traveler's preferences.
+        Use internet search tools, restaurant review sites, and travel guides.
+        Make sure to find a variety of options to suit different tastes and budgets, and ratings for them.
+
+        Traveler's information:
+        - origin: {origin}
+        - destination: {destination}
+        - age of the traveler: {age}
+        - hotel localtion: {hotel_location}
+        - flight infromation: {flight_information}
+        - how long is the trip: {trip_duration}
+  expected_output: List of restaurants and scenic locations with ratings and descriptions.
+itinerary_compilation_task:
+  description: |
+    Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}.
+        Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences.
+        Use text formatting and document creation tools to organize the information.
+  expected_output: A detailed itinerary document (structured) matching the Itinerary
+    schema.

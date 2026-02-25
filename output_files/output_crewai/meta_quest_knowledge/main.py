@@ -17,7 +17,7 @@ from crew import MyCrew
 def run():
     """Run the MyCrew."""
     inputs = {
-        'question': 'Whos prabowo',  # TODO: provide a value
+        'question': '',  # TODO: provide a value
     }
     MyCrew().crew().kickoff(inputs=inputs)
 

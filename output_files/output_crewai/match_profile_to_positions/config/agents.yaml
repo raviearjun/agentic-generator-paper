@@ -1,0 +1,8 @@
+cv_reader:
+  role: CV Reader
+  goal: CV Reader
+  backstory: CV Reader
+matcher:
+  role: Matcher
+  goal: Matcher
+  backstory: Matcher

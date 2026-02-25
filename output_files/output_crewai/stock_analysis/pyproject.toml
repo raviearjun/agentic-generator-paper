@@ -1,0 +1,29 @@
+[project]
+name = "stock_analysis"
+version = "0.1.0"
+description = "Team that coordinates a set of LLM agents and tasks to perform stock/filings/res"
+authors = [{name = "Your Name", email = "you@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10,<=3.13"
+
+dependencies = [
+    "crewai[tools]>=0.152.0",
+    "python-dotenv>=1.0.1",
+    "langchain-community>=0.3.0",
+    # TODO: add PyPI package for custom tool "CalculatorTool"
+    # TODO: add PyPI package for custom tool "SEC10KToolgeneric"
+    # TODO: add PyPI package for custom tool "SEC10KToolAMZN"
+    # TODO: add PyPI package for custom tool "SEC10QToolgeneric"
+    # TODO: add PyPI package for custom tool "SEC10QToolAMZN"
+]
+
+[project.scripts]
+stock_analysis = "main:run"
+train      = "main:train"
+
+[tool.uv]
+dev-dependencies = []
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"

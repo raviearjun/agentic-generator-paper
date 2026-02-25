@@ -175,7 +175,7 @@ keith
     rdfs:label "analyst agent prompt" ;
     :promptContext "role: analyse; goal: Distill arguments and identify who said what; backstory: Expert discussion analyst." ;
     :promptInstruction "Analyse in much detail the following discussion. Identify who said what and reword if necessary while preserving main discussion points." ;
-    :promptInputData dcterms:description """### DISCUSSION:
+    :promptInputData """### DISCUSSION:
 (see linked resource :discussion_newsgroup_01)""" ;
     :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
 
@@ -331,7 +331,7 @@ keith
     :promptInstruction """Analyse in much detail the following discussion:
 ### DISCUSSION:
 (complete discussion content from :discussion_newsgroup_01)""" ;
-    :promptInputData dcterms:description """(full discussion text)""" ;
+    :promptInputData """(full discussion text)""" ;
     :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
 
 :resource_task1_analysis a beam:Instance ;
@@ -350,7 +350,7 @@ keith
 :prompt_task2 a :Prompt ;
     rdfs:label "task2 prompt" ;
     :promptInstruction "Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes." ;
-    :promptInputData dcterms:description "Input should be the analysis output from :resource_task1_analysis" ;
+    :promptInputData "Input should be the analysis output from :resource_task1_analysis" ;
     :promptOutputIndicator "A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes." .
 
 :resource_task2_script_draft a beam:Instance ;
@@ -383,7 +383,7 @@ keith
 ## (person X):
 (text line)
 ... and remove actions between brackets (e.g., (smiling)).""" ;
-    :promptInputData dcterms:description "Input is the draft script produced by :resource_task2_script_draft" ;
+    :promptInputData "Input is the draft script produced by :resource_task2_script_draft" ;
     :promptOutputIndicator "A formatted script with the specified structure, ensuring each line is formatted according to the provided template." .
 
 :resource_task3_formatted_script a beam:Instance ;
@@ -402,7 +402,7 @@ keith
 :prompt_task4 a :Prompt ;
     rdfs:label "task4 prompt" ;
     :promptInstruction """Score the provided script using a 1-10 scale and the following factors: Clarity, Relevance, Conciseness, Politeness, Engagement, Flow, Coherence, Responsiveness, Language Use, Emotional Intelligence. Return the numeric score (1-10) on the first line; an explanation may follow but the first line shall be the numeric value.""" ;
-    :promptInputData dcterms:description "Input: the formatted script resource :resource_task3_formatted_script" ;
+    :promptInputData "Input: the formatted script resource :resource_task3_formatted_script" ;
     :promptOutputIndicator "A score from 1 to 10, possibly followed by an explanation (first line is numeric score)." .
 
 :resource_task4_score a beam:Instance ;

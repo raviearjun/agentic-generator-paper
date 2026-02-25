@@ -1,0 +1,17 @@
+read_cv_task:
+  description: 'Task: extract structured summary from input CV file.'
+  expected_output: |
+    A structured summary of the CV, including:
+    - Professional Summary
+    - Technical Skills
+    - Work History
+    - Education
+    - Key Achievements
+match_cv_task:
+  description: 'Task: match structured CV summary against job opportunities CSV and
+    produce ranked list.'
+  expected_output: |
+    A ranked list of job opportunities that best match the CV, including:
+    - Job Title
+    - Match Score (based on skills and experience)
+    - Key Matching Points
