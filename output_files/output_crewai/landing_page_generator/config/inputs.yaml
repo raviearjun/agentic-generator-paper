@@ -1,0 +1,9 @@
+# Runtime inputs for crew.kickoff(inputs=...)
+# Edit values below before running the crew.
+#
+# When a key maps to a list, main.py uses the FIRST item as the
+# runtime value.  Reorder or edit the list to choose a different example.
+#
+# Variables marked 'required' have no default — you must provide a value.
+
+idea: ""  # required — provide a value before running

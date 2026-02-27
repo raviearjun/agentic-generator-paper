@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 130.60 seconds
 # Model used: gpt-5-mini
 
@@ -9,16 +20,6 @@
 # - Sample runtime input values (from main.run) are captured as a beam:Instance resource with description; the ontology has no dedicated "input" property to link this resource to a Task/Team/Run. I include it as a standalone resource.
 # - The example/custom tool file exists in source but is commented-out in crew setup. I include an individual for the example tool and mark it as "example / not used by default".
 # - Any details not expressible with existing classes/properties (e.g., Process enum, training iteration semantics, boolean flags with semantics) are included as Config key/value literals.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
 
 ################################################################################
 # Team (Crew)
@@ -392,3 +393,37 @@ This resource is the output_json schema referenced by itinerary_compilation_task
     """ .
 
 # End of instance data.
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_origin a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "origin" ;
+    agento-ext:inputValue "São Paulo, GRU" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_destination a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "destination" ;
+    agento-ext:inputValue "New York, JFK" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_age a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "age" ;
+    agento-ext:inputValue "31" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_hotel_location a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "hotel_location" ;
+    agento-ext:inputValue "Brooklyn" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_flight_information a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "flight_information" ;
+    agento-ext:inputValue "GOL 1234, leaving at June 30th, 2024, 10:00" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_trip_duration a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "trip_duration" ;
+    agento-ext:inputValue "14 days" ;
+    agento-ext:isDefaultValue true .

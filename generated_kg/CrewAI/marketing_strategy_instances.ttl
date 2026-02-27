@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 103.17 seconds
 # Model used: gpt-5-mini
 
@@ -8,16 +19,6 @@
 # - Runtime/SDK concepts (decorators, training iteration counts, kickoff/train methods, Python code structures) cannot be represented and are intentionally omitted; instead semantic intent (tasks, agents, prompts, configs, workflow) is modeled.
 # - Tool-specific configuration (e.g., API keys) and exact language model selection are not present in source; language model usage is left unspecified. If needed, a LanguageModel individual can be added once concrete model details are known.
 # - The agents.yaml contains an agent (chief_creative_director) that is present in configuration but not instantiated in crew.py. It is included as a Config and agentPrompt but not linked as a team member since it is not created by the crew in code.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 #################################################################
 # Team / Crew
@@ -437,3 +438,17 @@ Marketing copies for each campaign idea.""" .
 #################################################################
 # End of instance data
 #################################################################
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_customer_domain a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "customer_domain" ;
+    agento-ext:inputValue "crewai.com" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_project_description a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "project_description" ;
+    agento-ext:inputValue "CrewAI, a leading provider of multi-agent systems, aims to revolutionize marketing automation for its enterprise clients. This project involves developing an innovative marketing strategy to showcase CrewAI's advanced AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities. The campaign will target tech-savvy decision-makers in medium to large enterprises, highlighting success stories and the transformative potential of CrewAI's platform." ;
+    agento-ext:isDefaultValue true .

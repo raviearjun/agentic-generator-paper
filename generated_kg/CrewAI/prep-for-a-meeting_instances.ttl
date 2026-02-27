@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 90.72 seconds
 # Model used: gpt-5-mini
 
@@ -8,16 +19,6 @@
 # - The ontology does not have an explicit property for Task.expected_output. We modeled expected outputs using Prompt.promptOutputIndicator and linked prompts to tasks via taskPrompt.
 # - Implementation-specific constructs (function signatures, module structure, Python code) are not added as ontology elements; their semantic content (prompts, descriptions, parameters, tools used, config keys) is preserved as literals.
 # - No new classes or properties were created; only existing classes and properties from the provided ontology were used.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 #################################################################
 # Team / Workflow pattern for the Meeting Preparation solution
@@ -334,3 +335,22 @@ strategic recommendations.""" .
 #################################################################
 # End of instance data
 #################################################################
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_participants a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "participants" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_context a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "context" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_objective a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "objective" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .

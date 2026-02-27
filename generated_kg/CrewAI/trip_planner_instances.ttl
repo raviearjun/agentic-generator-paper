@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 143.77 seconds
 # Model used: gpt-5-mini
 
@@ -10,16 +21,6 @@
 # - There is no property to encode the "expected_output" field of a Task directly. I created Prompt instances for tasks and stored expected outputs in promptOutputIndicator. The Task itself retains its description via dcterms:description.
 # - Some tool-internal behavior (e.g., how BrowserTools spawns a sub-Crew/Agent to summarize chunks) is implementation detail and not modeled; instead the semantic effect (a tool that scrapes & summarizes web content) is captured as capability and producedKnowledge (KnowledgeBase).
 # - The ontology has no property for "source code reference" or "file path". I preserved content and strings (e.g., prompt/instruction text and API endpoint URLs) in literal properties.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 ################################################################################
 # Team / System representing the crew
@@ -483,3 +484,27 @@ Traveler Interests: {interests}
 :CalculatorTools <http://purl.org/dc/terms/description> """CalculatorTools.calculate(operation) validates the input string against regex '^[0-9+\\-*/().% ]+$', parses an AST, evaluates using a whitelist of arithmetic operators (Add, Sub, Mult, Div, Pow, Mod, Unary ops). Returns numeric result or an error string.""" .
 
 # End of TTL instance document.
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_origin a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "origin" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_cities a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "cities" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_range a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "range" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_interests a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "interests" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .

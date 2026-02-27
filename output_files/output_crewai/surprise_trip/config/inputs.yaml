@@ -1,0 +1,14 @@
+# Runtime inputs for crew.kickoff(inputs=...)
+# Edit values below before running the crew.
+#
+# When a key maps to a list, main.py uses the FIRST item as the
+# runtime value.  Reorder or edit the list to choose a different example.
+#
+# Variables marked 'required' have no default — you must provide a value.
+
+origin: "São Paulo, GRU"
+destination: "New York, JFK"
+age: 31
+hotel_location: Brooklyn
+flight_information: "GOL 1234, leaving at June 30th, 2024, 10:00"
+trip_duration: 14 days

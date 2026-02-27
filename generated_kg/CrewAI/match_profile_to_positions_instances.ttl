@@ -1,3 +1,15 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 58.64 seconds
 # Model used: gpt-5-mini
 
@@ -10,17 +22,6 @@
 # - The crew "agents_config" and "tasks_config" YAML files are represented as Config individuals with keys and values. The mapping of YAML structure to multiple configKey/configValue pairs is used because the ontology only offers configKey/configValue dataproperties.
 # - Code-level constructs (decorators, SDK classes) are intentionally omitted; the semantic entities (agents, tasks, tools, prompts, files, workflow) are modeled to allow reconstruction of the high-level solution.
 # - The "job_opportunities_parser" agent configuration exists in agents.yaml but is not instantiated in the code; it is included as a Config individual but no LLMAgent individual is created for it.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 #################################################################
 # Team / Crew
@@ -310,3 +311,17 @@ CV file: {path_to_cv}""" ;
 
 # No human participants present in the provided code/run configuration.
 # End of individuals.
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_path_to_cv a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "path_to_cv" ;
+    agento-ext:inputValue "./src/match_to_proposal/data/cv.md" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_path_to_jobs_csv a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "path_to_jobs_csv" ;
+    agento-ext:inputValue "./src/match_to_proposal/data/jobs.csv" ;
+    agento-ext:isDefaultValue true .

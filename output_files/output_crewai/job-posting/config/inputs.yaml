@@ -1,0 +1,13 @@
+# Runtime inputs for crew.kickoff(inputs=...)
+# Edit values below before running the crew.
+#
+# When a key maps to a list, main.py uses the FIRST item as the
+# runtime value.  Reorder or edit the list to choose a different example.
+#
+# Variables marked 'required' have no default — you must provide a value.
+
+company_domain: careers.wbd.com
+company_description: |
+  Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world's most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We're home to the world's best storytellers, creating world-class products for consumers
+hiring_needs: "Production Assistant, for a TV production set in Los Angeles in June 2025"
+specific_benefits: "Weekly Pay, Employee Meals, healthcare"

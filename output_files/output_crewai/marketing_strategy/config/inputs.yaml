@@ -1,0 +1,11 @@
+# Runtime inputs for crew.kickoff(inputs=...)
+# Edit values below before running the crew.
+#
+# When a key maps to a list, main.py uses the FIRST item as the
+# runtime value.  Reorder or edit the list to choose a different example.
+#
+# Variables marked 'required' have no default — you must provide a value.
+
+customer_domain: crewai.com
+project_description: |
+  CrewAI, a leading provider of multi-agent systems, aims to revolutionize marketing automation for its enterprise clients. This project involves developing an innovative marketing strategy to showcase CrewAI's advanced AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities. The campaign will target tech-savvy decision-makers in medium to large enterprises, highlighting success stories and the transformative potential of CrewAI's platform.

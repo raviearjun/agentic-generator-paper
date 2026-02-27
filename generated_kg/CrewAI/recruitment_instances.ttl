@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 104.84 seconds
 # Model used: gpt-5-mini
 
@@ -8,16 +19,6 @@
 # - The ontology does not model training parameters (train iterations) or explicit process enumeration (Process.sequential). I model the workflow as a WorkflowPattern with ordered WorkflowStep individuals; training info is kept in a Config literal.
 # - Detailed mapping of which specific Tool is invoked inside which Task (beyond which tools are available to an agent) is not expressible exactly with existing properties. I connect agents to their available Tools via agentToolUsage, and Tasks to the performing agent. Consumers should infer tool usage from agent-tool associations.
 # - Low-level scraping/navigation code (Driver, Client) and credentials are implementation details and not modeled beyond noting the environment variable name in a Tool config. No sensitive values are included.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 #################################################################
 # Recruitment crew instance graph
@@ -477,3 +478,45 @@ Summarize the findings from the previous tasks and provide clear recommendations
 #################################################################
 # End of instance data
 #################################################################
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_job_requirements a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "job_requirements" ;
+    agento-ext:inputValue """job_requirement:
+  title: >
+    Ruby on Rails and React Engineer
+  description: >
+    We are seeking a skilled Ruby on Rails and React engineer to join our team.
+    The ideal candidate will have experience in both backend and frontend development,
+    with a passion for building high-quality web applications.
+
+  responsibilities: >
+    - Develop and maintain web applications using Ruby on Rails and React.
+    - Collaborate with teams to define and implement new features.
+    - Write clean, maintainable, and efficient code.
+    - Ensure application performance and responsiveness.
+    - Identify and resolve bottlenecks and bugs.
+
+  requirements: >
+    - Proven experience with Ruby on Rails and React.
+    - Strong understanding of object-oriented programming.
+    - Proficiency with JavaScript, HTML, CSS, and React.
+    - Experience with SQL or NoSQL databases.
+    - Familiarity with code versioning tools, such as Git.
+
+  preferred_qualifications: >
+    - Experience with cloud services (AWS, Google Cloud, or Azure).
+    - Familiarity with Docker and Kubernetes.
+    - Knowledge of GraphQL.
+    - Bachelor's degree in Computer Science or a related field.
+
+  perks_and_benefits: >
+    - Competitive salary and bonuses.
+    - Health, dental, and vision insurance.
+    - Flexible working hours and remote work options.
+    - Professional development opportunities.
+""" ;
+    agento-ext:isDefaultValue true .

@@ -7,33 +7,50 @@ Pipeline: 3-Layer Conversion Pipeline
 
 import sys
 from pathlib import Path
+
+import yaml
 from dotenv import load_dotenv
 
 # Load .env from this directory BEFORE importing crew (which triggers crewai init)
-load_dotenv(Path(__file__).parent / ".env")
+_HERE = Path(__file__).parent
+load_dotenv(_HERE / ".env")
 
 from crew import JobPostingCrewTeam
 
 
+def _load_inputs() -> dict:
+    """Load kickoff inputs from config/inputs.yaml.
+
+    When a key maps to a list, the **first** item is used as the
+    runtime value.  Reorder or edit the list in the YAML file to
+    choose a different example.  Every value is cast to ``str``
+    so that CrewAI template interpolation works consistently.
+    """
+    inputs_path = _HERE / "config" / "inputs.yaml"
+    if not inputs_path.exists():
+        return {}
+    with open(inputs_path, encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not data:
+        return {}
+    result = {}
+    for k, v in data.items():
+        if isinstance(v, list) and v:
+            result[k] = str(v[0])
+        else:
+            result[k] = str(v) if v is not None else ""
+    return result
+
+
 def run():
     """Run the JobPostingCrewTeam."""
-    inputs = {
-        'company_domain': 'careers.wbd.com',
-        'company_description': 'Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world’s most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We\'re home to the world’s best storytellers, creating world-class products for consumers',
-        'hiring_needs': 'Production Assistant, for a TV production set in Los Angeles in June 2025',
-        'specific_benefits': 'Weekly Pay, Employee Meals, healthcare',
-    }
+    inputs = _load_inputs()
     JobPostingCrewTeam().crew().kickoff(inputs=inputs)
 
 
 def train():
     """Train the JobPostingCrewTeam for a given number of iterations."""
-    inputs = {
-        'company_domain': 'careers.wbd.com',
-        'company_description': 'Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world’s most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We\'re home to the world’s best storytellers, creating world-class products for consumers',
-        'hiring_needs': 'Production Assistant, for a TV production set in Los Angeles in June 2025',
-        'specific_benefits': 'Weekly Pay, Employee Meals, healthcare',
-    }
+    inputs = _load_inputs()
     try:
         JobPostingCrewTeam().crew().train(
             n_iterations=int(sys.argv[1]),

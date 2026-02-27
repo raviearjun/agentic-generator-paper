@@ -7,29 +7,50 @@ Pipeline: 3-Layer Conversion Pipeline
 
 import sys
 from pathlib import Path
+
+import yaml
 from dotenv import load_dotenv
 
 # Load .env from this directory BEFORE importing crew (which triggers crewai init)
-load_dotenv(Path(__file__).parent / ".env")
+_HERE = Path(__file__).parent
+load_dotenv(_HERE / ".env")
 
 from crew import MyCrew
 
 
+def _load_inputs() -> dict:
+    """Load kickoff inputs from config/inputs.yaml.
+
+    When a key maps to a list, the **first** item is used as the
+    runtime value.  Reorder or edit the list in the YAML file to
+    choose a different example.  Every value is cast to ``str``
+    so that CrewAI template interpolation works consistently.
+    """
+    inputs_path = _HERE / "config" / "inputs.yaml"
+    if not inputs_path.exists():
+        return {}
+    with open(inputs_path, encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not data:
+        return {}
+    result = {}
+    for k, v in data.items():
+        if isinstance(v, list) and v:
+            result[k] = str(v[0])
+        else:
+            result[k] = str(v) if v is not None else ""
+    return result
+
+
 def run():
     """Run the MyCrew."""
-    inputs = {
-        'var1': '',  # TODO: provide a value
-        'var2': '',  # TODO: provide a value
-    }
+    inputs = _load_inputs()
     MyCrew().crew().kickoff(inputs=inputs)
 
 
 def train():
     """Train the MyCrew for a given number of iterations."""
-    inputs = {
-        'var1': '',  # TODO: provide a value
-        'var2': '',  # TODO: provide a value
-    }
+    inputs = _load_inputs()
     try:
         MyCrew().crew().train(
             n_iterations=int(sys.argv[1]),

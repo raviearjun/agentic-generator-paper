@@ -1,3 +1,11 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 218.00 seconds
 # Model used: gpt-5-mini
 
@@ -9,13 +17,6 @@
 # - The ontology has no property to encode "allow_delegation" semantics of Agents nor the "verbose" flag. These are listed in agent dct:description and agent Prompt promptContext.
 # - The ontology does not contain explicit "crew kickoff" or runtime orchestration semantics. Those execution semantics are not modeled; outputs are represented as produced Resource instances and linkages between Tasks and Teams/Agents.
 # - No new classes/properties were added (per instructions). Where needed, rich textual literals (dc:description, Prompt properties) are used to preserve omitted semantics.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 #################################################################
 # Agents (LLMAgent individuals)
@@ -657,3 +658,17 @@ Verbose: True""" ;
 #################################################################
 # End of instance population
 #################################################################
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_product_website a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "product_website" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_product_details a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "product_details" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .

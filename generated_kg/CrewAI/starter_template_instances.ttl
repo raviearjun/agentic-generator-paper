@@ -1,3 +1,15 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 95.72 seconds
 # Model used: gpt-5-mini
 
@@ -9,17 +21,6 @@
 # - Secrets (OPENAI_API_KEY, OPENAI_ORGANIZATION_ID) are represented as placeholder strings and not actual secrets. They are modeled in a Config instance linked to the Team. No secrets are exposed.
 # - Some implementation details of the source (e.g., Python class names, import statements, SDK-specific constructs) are intentionally omitted as instructed; only semantic-level artifacts (agents, goals, prompts, tasks, tools, models, configs, workflow) are represented.
 # - There is no explicit property for "expected_output" on Task in the ontology. I preserved expected outputs on the Task's Prompt using :promptOutputIndicator, and the Task's description (dcterms:description) also contains the original expected_output mention when present.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@base <http://www.w3id.org/agentic-ai/onto#> .
 
 #################################################################
 # Instances for the Crew AI template solution
@@ -267,3 +268,17 @@ Make sure to do something else.
 #################################################################
 # End of instance population
 #################################################################
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_var1 a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "var1" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_var2 a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "var2" ;
+    agento-ext:inputValue "" ;
+    agento-ext:isDefaultValue false .

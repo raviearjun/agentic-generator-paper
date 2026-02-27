@@ -1,3 +1,14 @@
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix pp: <http://purl.org/net/p-plan#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
+
 # Execution time: 100.66 seconds
 # Model used: gpt-5-mini
 
@@ -8,16 +19,6 @@
 # - The ontology does not provide a "Crew" class. I map the Crew instance to the existing Team class and represent its workflow as a WorkflowPattern with WorkflowStep individuals. Iteration across inputs (weaviate_features) is described in literals and via resource items but not as separate task runs.
 # - Implementation-specific flags (verbose=True) and SDK specifics (e.g., kickoff_for_each, client.collections.get) are captured as config key/value literals but the execution semantics and code are not modeled.
 # - No new classes or properties were added; all information is mapped into the existing schema as faithfully as possible.
-
-@prefix : <http://www.w3id.org/agentic-ai/onto#> .
-@prefix pp: <http://purl.org/net/p-plan#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix beam: <http://w3id.org/beam/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
 
 #################################################################
 # Team / Crew
@@ -353,3 +354,27 @@ Make sure you find any interesting and relevant information using the web and We
 # The feature items are captured in Feature_* resources above for fidelity.
 
 # End of data.
+
+################################################################################
+# KickoffInputBundle (agento-ext) — Uniform runtime inputs for pipeline extraction
+################################################################################
+
+:KickoffInput_weaviate_feature a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "weaviate_feature" ;
+    agento-ext:inputValue "MUVERA" ;
+    agento-ext:isDefaultValue true .
+
+:KickoffInput_weaviate_feature_multi_tenancy a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "weaviate_feature" ;
+    agento-ext:inputValue "Multi-tenancy" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_weaviate_feature_compliance a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "weaviate_feature" ;
+    agento-ext:inputValue "Compliance" ;
+    agento-ext:isDefaultValue false .
+
+:KickoffInput_weaviate_feature_hybrid_search a agento-ext:KickoffInputBundle ;
+    agento-ext:inputKey "weaviate_feature" ;
+    agento-ext:inputValue "Hybrid Search" ;
+    agento-ext:isDefaultValue false .
