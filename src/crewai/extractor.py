@@ -350,7 +350,7 @@ WHERE {
 }
 """
 
-# ── Default inputs (from :Context / beam:Resource) ──
+# ── Default inputs (from :Context / beam:Resource) — LEGACY fallback ──
 
 DEFAULT_INPUTS_QUERY = PREFIXES + """
 SELECT ?resource ?desc
@@ -366,6 +366,19 @@ WHERE {
         ?resource dcterms:description ?desc .
         FILTER(CONTAINS(LCASE(STR(?desc)), "input"))
     }
+}
+"""
+
+# ── Uniform inputs (agento-ext:KickoffInputBundle) — PRIMARY ──
+
+KICKOFF_INPUTS_QUERY = PREFIXES + """
+PREFIX agento_ext: <http://www.w3id.org/agentic-ai/ext#>
+SELECT ?key ?value ?isDefault
+WHERE {
+    ?bundle a agento_ext:KickoffInputBundle ;
+            agento_ext:inputKey ?key ;
+            agento_ext:inputValue ?value ;
+            agento_ext:isDefaultValue ?isDefault .
 }
 """
 
@@ -925,7 +938,46 @@ def _extract_input_variables(
     tasks_map: Dict[str, TaskModel],
     agents_map: Dict[str, AgentModel],
 ) -> List[InputVariableModel]:
-    """Extract all template placeholder variables from prompts and descriptions."""
+    """Extract all template placeholder variables from prompts and KickoffInputBundle.
+
+    Strategy:
+      1. PRIMARY: Query agento-ext:KickoffInputBundle triples (uniform, authoritative).
+         If found, use these exclusively — they have key, value, and isDefault flag.
+      2. FALLBACK: Legacy extraction from task descriptions + promptInputData +
+         Context/Resource descriptions (for TTL files not yet migrated).
+    """
+    # ── Strategy 1: agento-ext:KickoffInputBundle (primary) ──
+    kickoff_results = list(g.query(KICKOFF_INPUTS_QUERY))
+    if kickoff_results:
+        # Collect all values per key (one key may have multiple example bundles)
+        key_data: Dict[str, dict] = {}  # key → {default, is_default, alternatives}
+        for row in kickoff_results:
+            key = _s(row.key)
+            value = _s(row.value)
+            is_default_str = _s(row.isDefault).lower()
+            is_default = is_default_str in ("true", "1", "yes")
+
+            if key not in key_data:
+                key_data[key] = {"default": "", "is_default": False, "alternatives": []}
+
+            if is_default and not key_data[key]["is_default"]:
+                # First default wins
+                key_data[key]["default"] = value
+                key_data[key]["is_default"] = True
+            elif value:
+                key_data[key]["alternatives"].append(value)
+
+        return [
+            InputVariableModel(
+                name=key,
+                default_value=data["default"],
+                has_default=data["is_default"] and bool(data["default"]),
+                alternative_values=data["alternatives"],
+            )
+            for key, data in key_data.items()
+        ]
+
+    # ── Strategy 2: Legacy fallback (task descriptions + promptInputData) ──
     all_vars: Dict[str, str] = {}  # name → default_value
 
     # From task descriptions
@@ -956,7 +1008,7 @@ def _extract_input_variables(
                     all_vars[key] = val
 
     return [
-        InputVariableModel(name=name, default_value=default)
+        InputVariableModel(name=name, default_value=default, has_default=bool(default))
         for name, default in all_vars.items()
     ]
 

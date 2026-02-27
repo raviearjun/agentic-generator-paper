@@ -107,6 +107,87 @@ def build_tasks_yaml(project: CrewProject) -> str:
     return yaml.dump(data, Dumper=dumper, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
 
+def build_inputs_yaml(project: CrewProject) -> str:
+    """
+    Build config/inputs.yaml content from the CrewProject IR.
+
+    Each input variable becomes a top-level key.  When there are multiple
+    example values from the KG (default + alternatives) the key maps to a
+    YAML *list* — the first item is used as the runtime default by main.py.
+    When only a single value exists the key maps to a scalar.
+
+    This file is the single source of truth for crew.kickoff(inputs=...).
+    """
+    if not project.input_variables:
+        return "# No runtime inputs required for this crew.\n"
+
+    lines: List[str] = [
+        "# Runtime inputs for crew.kickoff(inputs=...)",
+        "# Edit values below before running the crew.",
+        "#",
+        "# When a key maps to a list, main.py uses the FIRST item as the",
+        "# runtime value.  Reorder or edit the list to choose a different example.",
+        "#",
+        "# Variables marked 'required' have no default — you must provide a value.",
+        "",
+    ]
+
+    for var in project.input_variables:
+        # Collect ALL values for this key (default first, then alternatives)
+        all_values: List[str] = []
+        if var.has_default and var.default_value:
+            all_values.append(var.default_value)
+        all_values.extend(var.alternative_values)
+
+        if not all_values:
+            # No examples at all — mark as required
+            lines.append(f'{var.name}: ""  # required — provide a value before running')
+            continue
+
+        if len(all_values) == 1:
+            # Single value → emit as scalar
+            _append_yaml_scalar(lines, var.name, all_values[0])
+        else:
+            # Multiple values → emit as YAML list
+            lines.append(f"{var.name}:")
+            for val in all_values:
+                _append_yaml_list_item(lines, val)
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _append_yaml_scalar(lines: List[str], key: str, value: str) -> None:
+    """Append a YAML scalar entry (key: value) to *lines*."""
+    if "\n" in value or len(value) > 100:
+        lines.append(f"{key}: |")
+        for vline in value.split("\n"):
+            lines.append(f"  {vline}")
+    else:
+        needs_quote = any(c in value for c in ":{},[]&*#?|-><!%@`")
+        if needs_quote:
+            escaped = value.replace('"', '\\"')
+            lines.append(f'{key}: "{escaped}"')
+        else:
+            lines.append(f"{key}: {value}")
+
+
+def _append_yaml_list_item(lines: List[str], value: str) -> None:
+    """Append a YAML list item (- value) to *lines*."""
+    if "\n" in value or len(value) > 100:
+        # Block-scalar list item:  - |
+        lines.append("  - |")
+        for vline in value.split("\n"):
+            lines.append(f"    {vline}")
+    else:
+        needs_quote = any(c in value for c in ":{},[]&*#?|-><!%@`")
+        if needs_quote:
+            escaped = value.replace('"', '\\"')
+            lines.append(f'  - "{escaped}"')
+        else:
+            lines.append(f"  - {value}")
+
+
 # ─────────────────────── Jinja2 setup ───────────────────────
 
 def _create_jinja_env() -> Environment:
@@ -384,6 +465,7 @@ def build_pyproject_toml(project: CrewProject) -> str:
     deps: List[str] = [
         'crewai[tools]>=0.152.0',
         'python-dotenv>=1.0.1',
+        'pyyaml>=6.0.1',
     ]
     unknown_tools: List[str] = []
 
@@ -462,7 +544,8 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
         ├── .env                ← only when KG defines env_vars
         ├── config/
         │   ├── agents.yaml
-        │   └── tasks.yaml
+        │   ├── tasks.yaml
+        │   └── inputs.yaml     ← runtime inputs (from KickoffInputBundle)
         ├── crew.py
         └── main.py
 
@@ -476,12 +559,16 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
     # ── Layer 3A: YAML generation (PyYAML) ──
     agents_yaml = build_agents_yaml(project)
     tasks_yaml = build_tasks_yaml(project)
+    inputs_yaml = build_inputs_yaml(project)
 
     with open(os.path.join(config_dir, "agents.yaml"), "w", encoding="utf-8") as f:
         f.write(agents_yaml)
 
     with open(os.path.join(config_dir, "tasks.yaml"), "w", encoding="utf-8") as f:
         f.write(tasks_yaml)
+
+    with open(os.path.join(config_dir, "inputs.yaml"), "w", encoding="utf-8") as f:
+        f.write(inputs_yaml)
 
     # ── Layer 3B: Python generation (Jinja2) ──
     env = _create_jinja_env()
@@ -518,7 +605,7 @@ def generate_project(project: CrewProject, output_dir: str) -> str:
 
     print(
         f"  [Generated] {output_dir}/ "
-        f"(agents.yaml, tasks.yaml, crew.py, main.py, pyproject.toml, .env.example"
+        f"(agents.yaml, tasks.yaml, inputs.yaml, crew.py, main.py, pyproject.toml, .env.example"
         f"{', .env' if project.env_vars else ''})"
     )
 

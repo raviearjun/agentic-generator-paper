@@ -151,6 +151,11 @@ class InputVariableModel(BaseModel):
     """A template placeholder variable extracted from prompts."""
     name: str = Field(..., description="Variable name (e.g. 'company_domain')")
     default_value: str = Field("", description="Default value if found in KG")
+    has_default: bool = Field(False, description="True if KG provides a concrete default value")
+    alternative_values: List[str] = Field(
+        default_factory=list,
+        description="Other example values from KG (non-default KickoffInputBundle entries)",
+    )
 
 
 # ──────────────────────────────────────────────
