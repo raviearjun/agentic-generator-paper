@@ -6,4 +6,4 @@
 #
 # Variables marked 'required' have no default — you must provide a value.
 
-question: "How often should I take breaks?"
+question: "Who's Prabowo Subianto?" # required, no default

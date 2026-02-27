@@ -176,8 +176,7 @@ keith
     rdfs:label "analyst agent prompt" ;
     :promptContext "role: analyse; goal: Distill arguments and identify who said what; backstory: Expert discussion analyst." ;
     :promptInstruction "Analyse in much detail the following discussion. Identify who said what and reword if necessary while preserving main discussion points." ;
-    :promptInputData """### DISCUSSION:
-(see linked resource :discussion_newsgroup_01)""" ;
+    :promptInputData "{discussion}" ;
     :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
 
 :agent_scriptwriter a :LLMAgent ;
@@ -298,7 +297,7 @@ keith
     rdfs:label "task0: spam check" ;
     dcterms:description """Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
 ### NEWGROUP POST:
-(see linked resource :discussion_newsgroup_01)""" ;
+{discussion}""" ;
     :taskPrompt :prompt_task0 ;
     :performedByAgent :agent_spamfilter ;
     :requiresResource :discussion_newsgroup_01 ;
@@ -309,7 +308,7 @@ keith
     :promptInstruction """Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
 ### NEWGROUP POST:
 """ ;
-    :promptInputData """(the discussion text provided in :discussion_newsgroup_01)""" ;
+    :promptInputData "{discussion}" ;
     :promptOutputIndicator "Either \"STOP\" if the post contains vulgar language or is spam, or no response if it does not." .
 
 :resource_task0_decision a beam:Instance ;
@@ -321,7 +320,7 @@ keith
     rdfs:label "task1: analysis" ;
     dcterms:description """Analyse in much detail the following discussion:
 ### DISCUSSION:
-(see :discussion_newsgroup_01)""" ;
+{discussion}""" ;
     :taskPrompt :prompt_task1 ;
     :performedByAgent :agent_analyst ;
     :requiresResource :discussion_newsgroup_01 ;
@@ -331,8 +330,8 @@ keith
     rdfs:label "task1 prompt" ;
     :promptInstruction """Analyse in much detail the following discussion:
 ### DISCUSSION:
-(complete discussion content from :discussion_newsgroup_01)""" ;
-    :promptInputData """(full discussion text)""" ;
+{discussion}""" ;
+    :promptInputData "{discussion}" ;
     :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
 
 :resource_task1_analysis a beam:Instance ;

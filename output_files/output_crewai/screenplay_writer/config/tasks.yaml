@@ -2,7 +2,7 @@ task1_analysis:
   description: |
     Analyse in much detail the following discussion:
     ### DISCUSSION:
-    (see :discussion_newsgroup_01)
+    {discussion}
   expected_output: |
     A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points.
 task2_scriptwriting:
@@ -21,7 +21,7 @@ task0_spam_check:
   description: |
     Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
     ### NEWGROUP POST:
-    (see linked resource :discussion_newsgroup_01)
+    {discussion}
   expected_output: Either "STOP" if the post contains vulgar language or is spam,
     or no response if it does not.
 task4_scoring:
