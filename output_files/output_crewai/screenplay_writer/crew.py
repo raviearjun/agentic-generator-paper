@@ -24,30 +24,40 @@ class AICrewforscreenwriting:
     def spamfilter(self) -> Agent:
         return Agent(
             config=self.agents_config['spamfilter'],
+            allow_delegation=False,
+            verbose=True,
         )
 
     @agent
     def analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['analyst'],
+            allow_delegation=False,
+            verbose=True,
         )
 
     @agent
     def scriptwriter(self) -> Agent:
         return Agent(
             config=self.agents_config['scriptwriter'],
+            allow_delegation=False,
+            verbose=True,
         )
 
     @agent
     def formatter(self) -> Agent:
         return Agent(
             config=self.agents_config['formatter'],
+            allow_delegation=False,
+            verbose=True,
         )
 
     @agent
     def scorer(self) -> Agent:
         return Agent(
             config=self.agents_config['scorer'],
+            allow_delegation=False,
+            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 85.09 seconds
 # Model used: gpt-5-mini
 
@@ -27,6 +29,7 @@
 #################################################################
 
 ### Team (Crew)
+
 :MarkDownValidatorCrewTeam rdf:type :Team ;
     rdfs:label "MarkDownValidatorCrew" ;
     <http://purl.org/dc/terms/title> "MarkDownValidatorCrew" ;
@@ -37,11 +40,13 @@
     :hasTeamGoal :MarkDownValidatorCrewGoal .
 
 ### Team goal (from agent/task configs)
+
 :MarkDownValidatorCrewGoal rdf:type :Goal ;
     <http://purl.org/dc/terms/description> "Provide a detailed list of the markdown linting results. Give a summary with actionable tasks to address the validation results. Write your response as if you were handing it to a developer to fix the issues. DO NOT provide examples of how to fix the issues or recommend other tools to use." ;
     rdfs:label "Markdown validation crew goal" .
 
 ### Team system config (files and usage)
+
 :CrewSystemConfig rdf:type :Config ;
     rdfs:label "MarkDownValidatorCrew system config" ;
     :configKey "agents_config_path" ;
@@ -50,59 +55,6 @@
 
 #################################################################
 # Agent
-#################################################################
-
-:RequirementsManagerAgent rdf:type :LLMAgent ;
-    rdfs:label "RequirementsManager (LLM Agent)" ;
-    :agentID "Requirements_Manager" ;
-    :agentRole "Requirements Manager" ;
-    :hasAgentConfig :AgentsYamlConfig ;
-    :hasAgentGoal :RequirementsManagerGoal ;
-    :agentPrompt :RequirementsManagerAgentPrompt ;
-    :agentToolUsage :markdown_validation_tool ;
-    :useLanguageModel :DefaultLanguageModel ;
-    rdfs:comment "An LLM-based agent configured to run a syntax review task using the markdown_validation_tool. allow_delegation=False, verbose=False (behavioral flags recorded in configuration descriptions)." .
-
-### Agent goal and backstory (from agents.yaml)
-:RequirementsManagerGoal rdf:type :Goal ;
-    <http://purl.org/dc/terms/description> "Provide a detailed list of the markdown linting results. Give a summary with actionable tasks to address the validation results. Write your response as if you were handing it to a developer to fix the issues. DO NOT provide examples of how to fix the issues or recommend other tools to use." ;
-    rdfs:label "Requirements Manager goal" .
-
-:RequirementsManagerAgentPrompt rdf:type :Prompt ;
-    rdfs:label "Requirements Manager agent prompt" ;
-    :promptInstruction """role: Requirements Manager
-
-goal: Provide a detailed list of the markdown linting results. 
-Give a summary with actionable tasks to address the validation results. 
-Write your response as if you were handing it to a developer to fix the issues. 
-DO NOT provide examples of how to fix the issues or recommend other tools to use.
-
-backstory: You are an expert business analyst and software QA specialist. 
-You provide high quality, thorough, insightful, and actionable feedback via a detailed list of changes and actionable tasks.""" ;
-    :promptContext "Agent backstory: expert business analyst and software QA specialist." ;
-    :promptOutputIndicator "A detailed list of changes and actionable tasks for the developer; do not provide example fixes or recommend other tools." .
-
-### Agents config file as a Config instance (preserve content)
-:AgentsYamlConfig rdf:type :Config ;
-    rdfs:label "agents.yaml" ;
-    :configKey "file_path" ;
-    :configValue "config/agents.yaml" ;
-    <http://purl.org/dc/terms/description> """Contents of config/agents.yaml (preserved):
-Requirements_Manager:
-  role: >
-    Requirements Manager
-  goal: >
-    Provide a detailed list of the markdown linting results. 
-    Give a summary with actionable tasks to address the validation results. 
-    Write your response as if you were handing it to a developer to fix the issues. 
-    DO NOT provide examples of how to fix the issues or recommend other tools to use.
-  backstory: >
-    You are an expert business analyst and software QA specialist. 
-    You provide high quality, thorough, insightful, and actionable feedback via a detailed list of changes and actionable tasks.
-""" .
-
-#################################################################
-# Language Model used by the Agent
 #################################################################
 
 :DefaultLanguageModel rdf:type :LanguageModel ;
@@ -266,13 +218,12 @@ return it as your Final Answer.
 #################################################################
 
 ### Agent uses the tool to perform the task
-:RequirementsManagerAgent :agentToolUsage :markdown_validation_tool .
 
-### Task is performed by the agent and the produced resource is the validation output
 :syntax_review_task :performedByAgent :RequirementsManagerAgent ;
     :producedResource :ValidationReportResource .
 
 ### Tool accesses the input file resource (resourceUsage) and uses PyMarkdownApi internally
+
 :markdown_validation_tool :resourceUsage :InputMarkdownFile ;
     rdfs:comment "The tool reads the file path provided and performs file existence check before invoking the PyMarkdownApi scan." .
 
@@ -301,3 +252,26 @@ Note: The exact procedural behavior (kickoff, train) belongs to the framework (c
     agento-ext:inputKey "filename" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:RequirementsManagerGoal rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Provide a detailed list of the markdown linting results. Give a summary with actionable tasks to address the validation results. Write your response as if you were handing it to a developer to fix the issues. DO NOT provide examples of how to fix the issues or recommend other tools to use." .
+
+:RequirementsManagerAgent rdf:type :LLMAgent ;
+    rdfs:label "RequirementsManager (LLM Agent)" ;
+    :agentID "Requirements_Manager" ;
+    :agentRole "Requirements Manager" ;
+    :hasAgentGoal :RequirementsManagerGoal ;
+    :agentToolUsage :markdown_validation_tool ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentPrompt :prompt_RequirementsManagerAgent .
+
+:prompt_RequirementsManagerAgent rdf:type :Prompt ;
+    rdfs:label "Requirements Manager agent prompt" ;
+    :promptContext """You are an expert business analyst and software QA specialist. 
+You provide high quality, thorough, insightful, and actionable feedback via a detailed list of changes and actionable tasks.""" .

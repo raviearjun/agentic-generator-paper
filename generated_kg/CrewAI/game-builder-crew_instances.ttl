@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 127.47 seconds
 # Model used: gpt-5-mini
 
@@ -28,6 +30,7 @@
 #################################################################
 
 ### Team / Crew
+
 :GameBuilderCrew rdf:type :Team ;
     rdfs:label "GameBuilderCrew" ;
     :hasAgentMember :senior_engineer_agent ,
@@ -38,11 +41,13 @@
     :hasTeamGoal :goal_create_game .
 
 ### Team-level goal
+
 :goal_create_game rdf:type :Goal ;
     rdfs:label "Create Game (Team Goal)" ;
     <http://purl.org/dc/terms/description> """Produce a working python game implementation given a textual game description input. The system assembles agents and tasks to generate, review, and evaluate final python code for a game (examples include Pac-Man and Snake).""" .
 
 ### System configuration (crew)
+
 :gamebuilder_system_config rdf:type :Config ;
     :configKey "agents_config" ;
     :configValue "config/agents.yaml" .
@@ -64,126 +69,7 @@
 #################################################################
 
 ### Senior Engineer Agent
-:senior_engineer_agent rdf:type :LLMAgent ;
-    rdfs:label "senior_engineer_agent" ;
-    :agentID "senior_engineer_agent" ;
-    :agentRole "Senior Software Engineer" ;
-    :hasAgentConfig :senior_engineer_config_role ,
-                    :senior_engineer_config_goal ,
-                    :senior_engineer_config_backstory ;
-    :hasAgentGoal :goal_create_software ;
-    :agentPrompt :senior_engineer_prompt ;
-    :useLanguageModel :gpt_model_1 .
 
-:goal_create_software rdf:type :Goal ;
-    rdfs:label "Create software as needed" ;
-    <http://purl.org/dc/terms/description> "Create software as needed" .
-
-:senior_engineer_config_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue """Senior Software Engineer""" .
-
-:senior_engineer_config_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue """Create software as needed""" .
-
-:senior_engineer_config_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue """You are a Senior Software Engineer at a leading tech think tank.
-Your expertise in programming in python. and do your best to produce perfect code""" .
-
-:senior_engineer_prompt rdf:type :Prompt ;
-    rdfs:label "senior_engineer_agent prompt" ;
-    :promptInstruction """You are a Senior Software Engineer at a leading tech think tank.
-Your expertise in programming in python. and do your best to produce perfect code""" ;
-    :promptContext "Role: Senior Software Engineer" ;
-    :promptOutputIndicator "Produce the full python code for the requested game. Output must be only the python code and nothing else." .
-
-### QA Engineer Agent
-:qa_engineer_agent rdf:type :LLMAgent ;
-    rdfs:label "qa_engineer_agent" ;
-    :agentID "qa_engineer_agent" ;
-    :agentRole "Software Quality Control Engineer" ;
-    :hasAgentConfig :qa_engineer_config_role ,
-                    :qa_engineer_config_goal ,
-                    :qa_engineer_config_backstory ;
-    :hasAgentGoal :goal_create_perfect_code ;
-    :agentPrompt :qa_engineer_prompt ;
-    :useLanguageModel :gpt_model_1 .
-
-:goal_create_perfect_code rdf:type :Goal ;
-    rdfs:label "Create Perfect code" ;
-    <http://purl.org/dc/terms/description> "Create Perfect code, by analyzing the code that is given for errors" .
-
-:qa_engineer_config_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue """Software Quality Control Engineer""" .
-
-:qa_engineer_config_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue """Create Perfect code, by analyzing the code that is given for errors""" .
-
-:qa_engineer_config_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue """You are a software engineer that specializes in checking code
-for errors. You have an eye for detail and a knack for finding
-hidden bugs.
-You check for missing imports, variable declarations, mismatched
-brackets and syntax errors.
-You also check for security vulnerabilities, and logic errors""" .
-
-:qa_engineer_prompt rdf:type :Prompt ;
-    rdfs:label "qa_engineer_agent prompt" ;
-    :promptInstruction """You are a software engineer that specializes in checking code
-for errors. You have an eye for detail and a knack for finding
-hidden bugs.
-You check for missing imports, variable declarations, mismatched
-brackets and syntax errors.
-You also check for security vulnerabilities, and logic errors""" ;
-    :promptContext "Role: Software Quality Control Engineer" ;
-    :promptOutputIndicator "Produce the corrected and validated full python code only, nothing else." .
-
-### Chief QA Engineer Agent
-:chief_qa_engineer_agent rdf:type :LLMAgent ;
-    rdfs:label "chief_qa_engineer_agent" ;
-    :agentID "chief_qa_engineer_agent" ;
-    :agentRole "Chief Software Quality Control Engineer" ;
-    :hasAgentConfig :chief_qa_engineer_config_role ,
-                    :chief_qa_engineer_config_goal ,
-                    :chief_qa_engineer_config_backstory ;
-    :hasAgentGoal :goal_ensure_code_does_job ;
-    :agentPrompt :chief_qa_engineer_prompt ;
-    :useLanguageModel :gpt_model_1 .
-
-:goal_ensure_code_does_job rdf:type :Goal ;
-    rdfs:label "Ensure the code does the job that it is supposed to do" ;
-    <http://purl.org/dc/terms/description> "Ensure that the code fulfills the functional requirements of the game description and is complete." .
-
-:chief_qa_engineer_config_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue """Chief Software Quality Control Engineer""" .
-
-:chief_qa_engineer_config_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue """Ensure that the code does the job that it is supposed to do""" .
-
-:chief_qa_engineer_config_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue """You feel that programmers always do only half the job, so you are
-super dedicate to make high quality code.""" .
-
-:chief_qa_engineer_prompt rdf:type :Prompt ;
-    rdfs:label "chief_qa_engineer_agent prompt" ;
-    :promptInstruction """You feel that programmers always do only half the job, so you are
-super dedicate to make high quality code.""" ;
-    :promptContext "Role: Chief Software Quality Control Engineer" ;
-    :promptOutputIndicator "Produce the final vetted python code only." .
-
-#################################################################
-# Tasks
-#################################################################
-
-### Code Task
 :code_task rdf:type :Task ;
     rdfs:label "code_task" ;
     <http://purl.org/dc/terms/description> """You will create a game using python, these are the instructions:
@@ -210,6 +96,7 @@ Instructions
     <http://purl.org/dc/terms/description> "Python code produced by senior_engineer_agent in response to the game description input." .
 
 ### Review Task
+
 :review_task rdf:type :Task ;
     rdfs:label "review_task" ;
     <http://purl.org/dc/terms/description> """You will create a game using python, these are the instructions:
@@ -247,6 +134,7 @@ and security vulnerabilities.
     <http://purl.org/dc/terms/description> "Code after QA review by qa_engineer_agent; errors fixed and issues annotated in code response (final output is the corrected python code)." .
 
 ### Evaluate Task
+
 :evaluate_task rdf:type :Task ;
     rdfs:label "evaluate_task" ;
     <http://purl.org/dc/terms/description> """You are helping create a game using python, these are the instructions:
@@ -477,6 +365,7 @@ High Score:
 #################################################################
 
 # The crew runtime uses 'inputs' mapping 'game' to an example such as example3_snake when kickoff/train is invoked.
+
 :runtime_inputs_example3 rdf:type :Context ;
     rdfs:label "runtime inputs example (snake)" ;
     <http://purl.org/dc/terms/description> "The runtime inputs map contains key 'game' -> example3_snake (see example3_snake instance)." ;
@@ -650,3 +539,61 @@ Mechanics Used in the Game:
     agento-ext:inputKey "game" ;
     agento-ext:inputValue "Build a Pacman game, where the pacman moves up, down, left, right with the use of keyboard arrows. each food dot he eats, he gets a point. ghosts appear at random times and move randomly and if they hit pacman, it loses a life, he has three lives, then game over. if he finishes all food points in one level, he moves on to the next level, in which pacman moves faster, and more ghosts appear." ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_create_software rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Create software as needed" .
+
+:goal_create_perfect_code rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Create Perfect code, by analyzing the code that is given for errors" .
+
+:goal_ensure_code_does_job rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Ensure that the code does the job that it is supposed to do" .
+
+:senior_engineer_agent rdf:type :LLMAgent ;
+    rdfs:label "senior_engineer_agent" ;
+    :agentID "senior_engineer_agent" ;
+    :agentRole "Senior Software Engineer" ;
+    :hasAgentGoal :goal_create_software ;
+    :useLanguageModel :gpt_model_1 ;
+    :agentPrompt :prompt_senior_engineer_agent .
+
+:prompt_senior_engineer_agent rdf:type :Prompt ;
+    rdfs:label "senior_engineer_agent prompt" ;
+    :promptContext """You are a Senior Software Engineer at a leading tech think tank.
+Your expertise in programming in python. and do your best to produce perfect code""" .
+
+:qa_engineer_agent rdf:type :LLMAgent ;
+    rdfs:label "qa_engineer_agent" ;
+    :agentID "qa_engineer_agent" ;
+    :agentRole "Software Quality Control Engineer" ;
+    :hasAgentGoal :goal_create_perfect_code ;
+    :useLanguageModel :gpt_model_1 ;
+    :agentPrompt :prompt_qa_engineer_agent .
+
+:prompt_qa_engineer_agent rdf:type :Prompt ;
+    rdfs:label "qa_engineer_agent prompt" ;
+    :promptContext """You are a software engineer that specializes in checking code
+for errors. You have an eye for detail and a knack for finding
+hidden bugs.
+You check for missing imports, variable declarations, mismatched
+brackets and syntax errors.
+You also check for security vulnerabilities, and logic errors""" .
+
+:chief_qa_engineer_agent rdf:type :LLMAgent ;
+    rdfs:label "chief_qa_engineer_agent" ;
+    :agentID "chief_qa_engineer_agent" ;
+    :agentRole "Chief Software Quality Control Engineer" ;
+    :hasAgentGoal :goal_ensure_code_does_job ;
+    :useLanguageModel :gpt_model_1 ;
+    :agentPrompt :prompt_chief_qa_engineer_agent .
+
+:prompt_chief_qa_engineer_agent rdf:type :Prompt ;
+    rdfs:label "chief_qa_engineer_agent prompt" ;
+    :promptContext """You feel that programmers always do only half the job, so you are
+super dedicate to make high quality code.""" .

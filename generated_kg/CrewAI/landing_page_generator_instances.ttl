@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 141.68 seconds
 # Model used: gpt-5-mini
 
@@ -26,100 +28,13 @@
 #################################################################
 
 ### Language model used by agents
+
 :gpt4 rdf:type :LanguageModel ;
       rdfs:label "gpt-4 (default in project runtime)" ;
       <http://purl.org/dc/terms/description> "The code warns that by default the system will use gpt-4 (cost implications). This LanguageModel instance represents that runtime choice." .
 
 #################################################################
 # Agents (LLM agents) and their persona/configuration/goals/prompts
-#################################################################
-
-:seniorIdeaAnalystAgent rdf:type :LLMAgent ;
-    rdfs:label "Senior Idea Analyst (agent)" ;
-    :agentID "senior_idea_analyst" ;
-    :agentRole "Senior Idea Analyst" ;
-    :hasAgentConfig :cfg_senior_idea_analyst ;
-    :hasAgentGoal :goal_senior_idea_analyst ;
-    :agentPrompt :prompt_agent_senior_idea_analyst ;
-    :useLanguageModel :gpt4 ;
-    rdfs:comment "Agent defined in config/agents.yaml and registered in ExpandIdeaCrew" .
-
-:seniorStrategistAgent rdf:type :LLMAgent ;
-    rdfs:label "Senior Communications Strategist (agent)" ;
-    :agentID "senior_strategist" ;
-    :agentRole "Senior Communications Strategist" ;
-    :hasAgentConfig :cfg_senior_strategist ;
-    :hasAgentGoal :goal_senior_strategist ;
-    :agentPrompt :prompt_agent_senior_strategist ;
-    :useLanguageModel :gpt4 ;
-    rdfs:comment "Agent defined in config/agents.yaml and registered in ExpandIdeaCrew" .
-
-:seniorReactEngineerAgent rdf:type :LLMAgent ;
-    rdfs:label "Senior React Engineer (agent)" ;
-    :agentID "senior_react_engineer" ;
-    :agentRole "Senior React Engineer" ;
-    :hasAgentConfig :cfg_senior_react_engineer ;
-    :hasAgentGoal :goal_senior_react_engineer ;
-    :agentPrompt :prompt_agent_senior_react_engineer ;
-    :useLanguageModel :gpt4 ;
-    rdfs:comment "Agent defined in config/agents.yaml and used in ChooseTemplateCrew and CreateContentCrew" .
-
-:seniorContentEditorAgent rdf:type :LLMAgent ;
-    rdfs:label "Senior Content Editor (agent)" ;
-    :agentID "senior_content_editor" ;
-    :agentRole "Senior Content Editor" ;
-    :hasAgentConfig :cfg_senior_content_editor ;
-    :hasAgentGoal :goal_senior_content_editor ;
-    :agentPrompt :prompt_agent_senior_content_editor ;
-    :useLanguageModel :gpt4 ;
-    rdfs:comment "Agent defined in config/agents.yaml and used in CreateContentCrew" .
-
-#################################################################
-# Agent persona configs (Config instances)
-#################################################################
-
-:cfg_senior_idea_analyst rdf:type :Config ;
-    :configKey "role" ; :configValue "Senior Idea Analyst" ;
-    :configKey "goal" ; :configValue "Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from." ;
-    :configKey "backstory" ; :configValue "Recognized as a thought leader, I thrive on refining concepts into campaigns that resonate with audiences." .
-
-:cfg_senior_strategist rdf:type :Config ;
-    :configKey "role" ; :configValue "Senior Communications Strategist" ;
-    :configKey "goal" ; :configValue "Craft compelling stories using the Golden Circle method to captivate and engage people around an idea." ;
-    :configKey "backstory" ; :configValue "A narrative craftsman for top-tier launches, I reveal the 'why' behind projects, aligning with visions and speaking to audiences." .
-
-:cfg_senior_react_engineer rdf:type :Config ;
-    :configKey "role" ; :configValue "Senior React Engineer" ;
-    :configKey "goal" ; :configValue "Build an intuitive, aesthetically pleasing, and high-converting landing page." ;
-    :configKey "backstory" ; :configValue "A coding virtuoso and design enthusiast, expert in Tailwind, you're known for crafting beautiful websites that provide seamless user experiences." .
-
-:cfg_senior_content_editor rdf:type :Config ;
-    :configKey "role" ; :configValue "Senior Content Editor" ;
-    :configKey "goal" ; :configValue "Ensure the landing page content is clear, concise, and captivating." ;
-    :configKey "backstory" ; :configValue "With a keen eye for detail and a passion for storytelling, you have refined content for leading brands, turning bland text into engaging stories." .
-
-#################################################################
-# Agent goals (Goal instances)
-#################################################################
-
-:goal_senior_idea_analyst rdf:type :Goal ;
-    <http://purl.org/dc/terms/title> "Expand and validate product idea" ;
-    <http://purl.org/dc/terms/description> "Understand and expand the idea into a comprehensive idea report, detailing value proposition and features." .
-
-:goal_senior_strategist rdf:type :Goal ;
-    <http://purl.org/dc/terms/title> "Craft messaging with Golden Circle" ;
-    <http://purl.org/dc/terms/description> "Provide WHY, HOW, WHAT messaging and core message for the idea." .
-
-:goal_senior_react_engineer rdf:type :Goal ;
-    <http://purl.org/dc/terms/title> "Choose and adapt template to idea" ;
-    <http://purl.org/dc/terms/description> "Select a Tailwind template that fits the idea and copy it into the working folder; then update components." .
-
-:goal_senior_content_editor rdf:type :Goal ;
-    <http://purl.org/dc/terms/title> "Create and QA content for landing page" ;
-    <http://purl.org/dc/terms/description> "Produce content for components, update components, and QA them according to rules." .
-
-#################################################################
-# Tools (Tool instances) and capabilities
 #################################################################
 
 :SearchInternetTool rdf:type :Tool ;
@@ -151,6 +66,7 @@
     <http://purl.org/dc/terms/description> "List directories in workdir (used by agent toolkits)." .
 
 ### Capabilities and associations (Tool -> Capability; Agents -> Capability)
+
 :cap_search rdf:type :Capability ;
     rdfs:label "web search" ;
     rdfs:comment "Capability to search internet and return snippets." .
@@ -180,29 +96,22 @@
     rdfs:comment "Capability to list directories in the workspace." .
 
 # Associate Tools with Capabilities
+
 :SearchInternetTool :hasCapability :cap_search .
+
 :ScrapeWebsiteTool :hasCapability :cap_scrape .
+
 :WriteFileTool :hasCapability :cap_write_file .
+
 :LearnTemplatesTool :hasCapability :cap_learn_templates .
+
 :CopyTemplateTool :hasCapability :cap_copy_template .
+
 :ReadFileTool :hasCapability :cap_read_file .
+
 :ListDirectoryTool :hasCapability :cap_list_directory .
 
 # Agents gain capabilities via their tool assignments
-:seniorIdeaAnalystAgent :hasAgentCapability :cap_search , :cap_scrape .
-:seniorStrategistAgent :hasAgentCapability :cap_search .
-:seniorReactEngineerAgent :hasAgentCapability :cap_search , :cap_scrape , :cap_learn_templates , :cap_copy_template , :cap_write_file , :cap_read_file , :cap_list_directory .
-:seniorContentEditorAgent :hasAgentCapability :cap_write_file , :cap_read_file , :cap_list_directory .
-
-# Agents use specific tools (agent -> Tool)
-:seniorIdeaAnalystAgent :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool .
-:seniorStrategistAgent :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool .
-:seniorReactEngineerAgent :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool , :LearnTemplatesTool , :CopyTemplateTool , :WriteFileTool , :ReadFileTool , :ListDirectoryTool .
-:seniorContentEditorAgent :agentToolUsage :WriteFileTool , :ReadFileTool , :ListDirectoryTool .
-
-#################################################################
-# Knowledge base and resources (templates config, templates folder, generated outputs)
-#################################################################
 
 :TemplatesConfig rdf:type :KnowledgeBase ;
     rdfs:label "config/templates.json (templates listing)" ;
@@ -513,6 +422,7 @@ qa_component_task:
 #################################################################
 
 # ExpandIdeaCrew modeled as a Team with a WorkflowPattern
+
 :ExpandIdeaCrewTeam rdf:type :Team ;
     rdfs:label "ExpandIdeaCrew (team)" ;
     :hasAgentMember :seniorIdeaAnalystAgent , :seniorStrategistAgent ;
@@ -538,6 +448,7 @@ qa_component_task:
     <http://purl.org/dc/terms/description> "Refine the idea using Golden Circle messaging; runs refine_idea_task." .
 
 # ChooseTemplateCrew modeled as a Team with a WorkflowPattern
+
 :ChooseTemplateCrewTeam rdf:type :Team ;
     rdfs:label "ChooseTemplateCrew (team)" ;
     :hasAgentMember :seniorReactEngineerAgent ;
@@ -562,6 +473,7 @@ qa_component_task:
     <http://purl.org/dc/terms/description> "Read copied template's page.jsx to determine which components should remain and write updated page.jsx." .
 
 # CreateContentCrew modeled as a Team with a WorkflowPattern
+
 :CreateContentCrewTeam rdf:type :Team ;
     rdfs:label "CreateContentCrew (team)" ;
     :hasAgentMember :seniorContentEditorAgent , :seniorReactEngineerAgent ;
@@ -609,7 +521,9 @@ qa_component_task:
     <http://purl.org/dc/terms/description> "Top-level sequence: ExpandIdea -> ChooseTemplate -> CreateContent. ExpandIdeaWorkflowPattern is the first sub-pattern; nextPattern points to the subsequent pattern." .
 
 # link patterns in order
+
 :ExpandIdeaWorkflowPattern :nextPattern :ChooseTemplateWorkflowPattern .
+
 :ChooseTemplateWorkflowPattern :nextPattern :CreateContentWorkflowPattern .
 
 #################################################################
@@ -625,12 +539,15 @@ qa_component_task:
     <http://purl.org/dc/terms/description> "The JSON array that choose_template_task must return listing the most important 4 components' full paths to update; later used by CreateContentCrew." .
 
 # Relationship: choose_template_task produces the components list and copies template to workdir
+
 :task_chooseTemplate :producedResource :CopiedTemplateFolderResource , :ComponentsPathListResource .
 
 # update_page_task writes an updated page.jsx and returns the pruned component list (UpdatedPageComponentListResource defined above)
+
 :task_updatePage :producedResource :UpdatedPageComponentListResource .
 
 # The CreateContentCrew uses Created/UpdatedComponentFilesResource and the zip is the final packaged output
+
 :UpdatedComponentFilesResource :producedResource :GeneratedProjectZip .
 
 #################################################################
@@ -647,14 +564,6 @@ qa_component_task:
 #################################################################
 
 # agents participatedIn tasks (using beam:participatedIn semantics and humanParticipatedIn for humans if any)
-:seniorIdeaAnalystAgent beam:participatedIn :task_expandIdea .
-:seniorStrategistAgent beam:participatedIn :task_refineIdea .
-:seniorReactEngineerAgent beam:participatedIn :task_chooseTemplate , :task_updatePage .
-:seniorContentEditorAgent beam:participatedIn :task_componentContent , :task_updateComponent , :task_qaComponent .
-
-#################################################################
-# Additional notes recorded as descriptions inside config/prompt/Tool resources
-#################################################################
 
 :SearchTools_notes rdf:type :Context ;
     rdfs:label "SearchTools implementation notes" ;
@@ -680,3 +589,77 @@ qa_component_task:
     agento-ext:inputKey "idea" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_senior_idea_analyst rdf:type :Goal ;
+    <http://purl.org/dc/terms/title> "Expand and validate product idea" ;
+    <http://purl.org/dc/terms/description> "Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from." .
+
+:goal_senior_strategist rdf:type :Goal ;
+    <http://purl.org/dc/terms/title> "Craft messaging with Golden Circle" ;
+    <http://purl.org/dc/terms/description> "Craft compelling stories using the Golden Circle method to captivate and engage people around an idea." .
+
+:goal_senior_react_engineer rdf:type :Goal ;
+    <http://purl.org/dc/terms/title> "Choose and adapt template to idea" ;
+    <http://purl.org/dc/terms/description> "Build an intuitive, aesthetically pleasing, and high-converting landing page." .
+
+:goal_senior_content_editor rdf:type :Goal ;
+    <http://purl.org/dc/terms/title> "Create and QA content for landing page" ;
+    <http://purl.org/dc/terms/description> "Ensure the landing page content is clear, concise, and captivating." .
+
+:seniorIdeaAnalystAgent rdf:type :LLMAgent ;
+    rdfs:label "Senior Idea Analyst (agent)" ;
+    :agentID "senior_idea_analyst" ;
+    :agentRole "Senior Idea Analyst" ;
+    :hasAgentGoal :goal_senior_idea_analyst ;
+    :hasAgentCapability :cap_search , :cap_scrape ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool ;
+    :useLanguageModel :gpt4 ;
+    :agentPrompt :prompt_seniorIdeaAnalystAgent .
+
+:prompt_seniorIdeaAnalystAgent rdf:type :Prompt ;
+    :promptContext "Recognized as a thought leader, I thrive on refining concepts into campaigns that resonate with audiences." .
+
+:seniorStrategistAgent rdf:type :LLMAgent ;
+    rdfs:label "Senior Communications Strategist (agent)" ;
+    :agentID "senior_strategist" ;
+    :agentRole "Senior Communications Strategist" ;
+    :hasAgentGoal :goal_senior_strategist ;
+    :hasAgentCapability :cap_search ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool ;
+    :useLanguageModel :gpt4 ;
+    :agentPrompt :prompt_seniorStrategistAgent .
+
+:prompt_seniorStrategistAgent rdf:type :Prompt ;
+    :promptContext "A narrative craftsman for top-tier launches, I reveal the 'why' behind projects, aligning with visions and speaking to audiences." .
+
+:seniorReactEngineerAgent rdf:type :LLMAgent ;
+    rdfs:label "Senior React Engineer (agent)" ;
+    :agentID "senior_react_engineer" ;
+    :agentRole "Senior React Engineer" ;
+    :hasAgentGoal :goal_senior_react_engineer ;
+    :hasAgentCapability :cap_search , :cap_scrape , :cap_learn_templates , :cap_copy_template , :cap_write_file , :cap_read_file , :cap_list_directory ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool , :LearnTemplatesTool , :CopyTemplateTool , :WriteFileTool , :ReadFileTool , :ListDirectoryTool ;
+    :useLanguageModel :gpt4 ;
+    :agentPrompt :prompt_seniorReactEngineerAgent .
+
+:prompt_seniorReactEngineerAgent rdf:type :Prompt ;
+    :promptContext "A coding virtuoso and design enthusiast, expert in Tailwind, you're known for crafting beautiful websites that provide seamless user experiences." .
+
+:seniorContentEditorAgent rdf:type :LLMAgent ;
+    rdfs:label "Senior Content Editor (agent)" ;
+    :agentID "senior_content_editor" ;
+    :agentRole "Senior Content Editor" ;
+    :hasAgentGoal :goal_senior_content_editor ;
+    :hasAgentCapability :cap_write_file , :cap_read_file , :cap_list_directory ;
+    :agentToolUsage :WriteFileTool , :ReadFileTool , :ListDirectoryTool ;
+    :useLanguageModel :gpt4 ;
+    :agentPrompt :prompt_seniorContentEditorAgent .
+
+:prompt_seniorContentEditorAgent rdf:type :Prompt ;
+    :promptContext "With a keen eye for detail and a passion for storytelling, you have refined content for leading brands, turning bland text into engaging stories." .

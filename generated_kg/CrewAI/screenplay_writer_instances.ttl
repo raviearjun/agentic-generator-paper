@@ -7,6 +7,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 141.64 seconds
 # Model used: gpt-5-mini
 
@@ -23,6 +25,7 @@
 #################################################################
 # Resources / Input data (the discussion)
 #################################################################
+
 
 :discussion_newsgroup_01 a beam:Instance ;
     dcterms:title "alt.atheism newsgroup post (Keith / Robert thread)" ;
@@ -89,18 +92,6 @@ keith
 # Goals / Objectives
 #################################################################
 
-:goal_filter_spam a :Goal ;
-    dcterms:title "Filter spam/vulgar messages" ;
-    dcterms:description "Decide whether a text is spam or contains vulgar language and should be filtered (STOP signal)." .
-
-:goal_create_screenplay a :Goal ;
-    dcterms:title "Create screenplay from discussion" ;
-    dcterms:description "Analyze discussion, create dialogue-heavy screenplay and format according to requested template." .
-
-#################################################################
-# Capabilities
-#################################################################
-
 :capability_spam_detection a :Capability ;
     rdfs:label "Spam detection / vulgar content detection" .
 
@@ -134,116 +125,6 @@ keith
 
 #################################################################
 # Agents (LLMAgents) and their Prompts/Configs
-#################################################################
-
-:agent_spamfilter a :LLMAgent ;
-    rdfs:label "spamfilter" ;
-    :agentID "spamfilter" ;
-    :agentRole "spamfilter" ;
-    :hasAgentGoal :goal_filter_spam ;
-    :hasAgentConfig :config_spamfilter ;
-    :agentPrompt :prompt_agent_spamfilter ;
-    :hasAgentCapability :capability_spam_detection ;
-    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
-    dcterms:description "Agent used to filter spam and vulgar posts." .
-
-:config_spamfilter a :Config ;
-    :configKey "role" , "goal" , "backstory" , "allow_delegation" , "verbose" ;
-    :configValue "spamfilter" , "Decide whether a text is spam or not." , "You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language." , "False" , "True" .
-
-:prompt_agent_spamfilter a :Prompt ;
-    rdfs:label "spamfilter agent prompt" ;
-    :promptContext "role: spamfilter; goal: Decide whether a text is spam or not.; backstory: You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language." ;
-    :promptInstruction "You are an expert spam filter. You should read the provided newsgroup post and decide whether it contains vulgar language or is spam. If it is spam or vulgar, return exactly the token STOP (no other text). Otherwise return no response." ;
-    :promptOutputIndicator "Either \"STOP\" if the post contains vulgar language or is spam, or no response if it does not." .
-
-:agent_analyst a :LLMAgent ;
-    rdfs:label "analyst" ;
-    :agentID "analyst" ;
-    :agentRole "analyse" ;
-    :hasAgentGoal :goal_create_screenplay ;
-    :hasAgentConfig :config_analyst ;
-    :agentPrompt :prompt_agent_analyst ;
-    :hasAgentCapability :capability_analysis ;
-    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
-    dcterms:description "Agent that distills arguments and identifies speakers in the discussion." .
-
-:config_analyst a :Config ;
-    :configKey "role" , "goal" , "backstory" , "allow_delegation" , "verbose" ;
-    :configValue "analyse" , "You will distill all arguments from all discussion members. Identify who said what. You can reword what they said as long as the main discussion points remain." , "You are an expert discussion analyst." , "False" , "True" .
-
-:prompt_agent_analyst a :Prompt ;
-    rdfs:label "analyst agent prompt" ;
-    :promptContext "role: analyse; goal: Distill arguments and identify who said what; backstory: Expert discussion analyst." ;
-    :promptInstruction "Analyse in much detail the following discussion. Identify who said what and reword if necessary while preserving main discussion points." ;
-    :promptInputData "{discussion}" ;
-    :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
-
-:agent_scriptwriter a :LLMAgent ;
-    rdfs:label "scriptwriter" ;
-    :agentID "scriptwriter" ;
-    :agentRole "scriptwriter" ;
-    :hasAgentGoal :goal_create_screenplay ;
-    :hasAgentConfig :config_scriptwriter ;
-    :agentPrompt :prompt_agent_scriptwriter ;
-    :hasAgentCapability :capability_scriptwriting ;
-    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
-    dcterms:description "Agent that turns analyzed discussion into a dialogue-heavy screenplay." .
-
-:config_scriptwriter a :Config ;
-    :configKey "role" , "goal" , "backstory" , "allow_delegation" , "verbose" ;
-    :configValue "scriptwriter" , "Turn a conversation into a movie script. Only write the dialogue parts. Do not start the sentence with an action. Do not specify situational descriptions. Do not write parentheticals." , "You are an expert on writing natural sounding movie script dialogues. You only focus on the text part and you HATE directional notes." , "False" , "True" .
-
-:prompt_agent_scriptwriter a :Prompt ;
-    rdfs:label "scriptwriter agent prompt" ;
-    :promptContext "role: scriptwriter; goal: Produce dialogue-only screenplay; backstory: hates directional notes" ;
-    :promptInstruction "Create a dialogue heavy screenplay from the discussion between two persons. Do NOT write parentheticals; skip directional notes; output only dialogue parts arranged as alternating lines between two persons." ;
-    :promptOutputIndicator "A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes." .
-
-:agent_formatter a :LLMAgent ;
-    rdfs:label "formatter" ;
-    :agentID "formatter" ;
-    :agentRole "formatter" ;
-    :hasAgentGoal :goal_create_screenplay ;
-    :hasAgentConfig :config_formatter ;
-    :agentPrompt :prompt_agent_formatter ;
-    :hasAgentCapability :capability_formatting ;
-    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
-    dcterms:description "Agent that formats script text and removes bracketed actions." .
-
-:config_formatter a :Config ;
-    :configKey "role" , "goal" , "backstory" , "allow_delegation" , "verbose" ;
-    :configValue "formatter" , "Format the text as asked. Leave out actions from discussion members that happen between brackets, eg (smiling)." , "You are an expert text formatter." , "False" , "True" .
-
-:prompt_agent_formatter a :Prompt ;
-    rdfs:label "formatter agent prompt" ;
-    :promptContext "role: formatter; goal: Format text and remove bracketed actions; backstory: expert text formatter." ;
-    :promptInstruction "Format the script exactly like the specified template; remove parentheticals and bracketed directions. Ensure output uses the exact template structure provided." ;
-    :promptOutputIndicator "A formatted script with the specified structure, ensuring each line is formatted according to the provided template." .
-
-:agent_scorer a :LLMAgent ;
-    rdfs:label "scorer" ;
-    :agentID "scorer" ;
-    :agentRole "scorer" ;
-    :hasAgentGoal :goal_create_screenplay ;
-    :hasAgentConfig :config_scorer ;
-    :agentPrompt :prompt_agent_scorer ;
-    :hasAgentCapability :capability_scoring ;
-    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
-    dcterms:description "Agent that scores the dialogue on a 1-10 scale based on multiple qualitative factors." .
-
-:config_scorer a :Config ;
-    :configKey "role" , "goal" , "backstory" , "allow_delegation" , "verbose" ;
-    :configValue "scorer" , "You score a dialogue assessing various aspects of the exchange between the participants using a 1-10 scale ..." , "You are an expert at scoring conversations on a scale of 1 to 10." , "False" , "True" .
-
-:prompt_agent_scorer a :Prompt ;
-    rdfs:label "scorer agent prompt" ;
-    :promptContext "role: scorer; goal: Score dialogue 1-10; backstory: scoring expert" ;
-    :promptInstruction """You score a dialogue assessing various aspects of the exchange between the participants using a 1-10 scale, where 1 is the lowest performance and 10 is the highest. Consider clarity, relevance, conciseness, politeness, engagement, flow, coherence, responsiveness, language use, and emotional intelligence.""" ;
-    :promptOutputIndicator "A score from 1 to 10, possibly followed by explanation (the first line contains the numeric score)." .
-
-#################################################################
-# Config / Team / Crew representation
 #################################################################
 
 :ai_crew_team_01 a :Team ;
@@ -293,6 +174,7 @@ keith
 #################################################################
 
 # Task 0: spam / vulgarity filter
+
 :task0 a :Task ;
     rdfs:label "task0: spam check" ;
     dcterms:description """Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
@@ -316,6 +198,7 @@ keith
     dcterms:description "Output of spamfilter: either the token STOP (string) or empty/no response." .
 
 # Task 1: analysis
+
 :task1 a :Task ;
     rdfs:label "task1: analysis" ;
     dcterms:description """Analyse in much detail the following discussion:
@@ -339,6 +222,7 @@ keith
     dcterms:description "Detailed analysis identifying speakers, arguments, and distilled points, produced by analyst agent." .
 
 # Task 2: scriptwriter
+
 :task2 a :Task ;
     rdfs:label "task2: scriptwriting" ;
     dcterms:description "Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes." ;
@@ -358,6 +242,7 @@ keith
     dcterms:description "Unformatted dialogue-heavy screenplay draft produced by scriptwriter agent (dialogue only, no parentheticals)." .
 
 # Task 3: formatter
+
 :task3 a :Task ;
     rdfs:label "task3: formatting" ;
     dcterms:description """Format the script exactly like this:
@@ -391,6 +276,7 @@ keith
     dcterms:description "Final formatted script output suitable for scoring and display. This resource is the input to the scoring task." .
 
 # Task 4: scoring
+
 :task4 a :Task ;
     rdfs:label "task4: scoring" ;
     dcterms:description "Score the following script: ### SCRIPT: (link to formatted script)" ;
@@ -414,18 +300,23 @@ keith
 #################################################################
 
 # map Task produced resources to the workflow sequence (explicitly)
+
 :step_analysis_01 :hasAssociatedTask :task1 .
+
 :task1 :producedResource :resource_task1_analysis .
 
 :step_scriptwriting_01 :hasAssociatedTask :task2 .
+
 :task2 :requiresResource :resource_task1_analysis ;
        :producedResource :resource_task2_script_draft .
 
 :step_formatting_01 :hasAssociatedTask :task3 .
+
 :task3 :requiresResource :resource_task2_script_draft ;
        :producedResource :resource_task3_formatted_script .
 
 # final scoring uses formatted script
+
 :task4 :requiresResource :resource_task3_formatted_script ;
       :performedByAgent :agent_scorer ;
       :producedResource :resource_task4_score .
@@ -435,20 +326,15 @@ keith
 #################################################################
 
 # Agents participated in tasks (where relevant)
-:agent_spamfilter beam:participatedIn :task0 .
-:agent_analyst beam:participatedIn :task1 .
-:agent_scriptwriter beam:participatedIn :task2 .
-:agent_formatter beam:participatedIn :task3 .
-:agent_scorer beam:participatedIn :task4 .
-
-#################################################################
-# Titles / labels for readability
-#################################################################
 
 :task0 dcterms:title "Spam / Vulgarity Filter Task" .
+
 :task1 dcterms:title "Discussion Analysis Task" .
+
 :task2 dcterms:title "Scriptwriting Task" .
+
 :task3 dcterms:title "Formatting Task" .
+
 :task4 dcterms:title "Scoring Task" .
 
 ################################################################################
@@ -516,3 +402,139 @@ violating the liberty or happiness of an innocent person?
 keith
 """ ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_filter_spam a :Goal ;
+    dcterms:title "Filter spam/vulgar messages" ;
+    dcterms:description "Decide whether a text is spam or not." .
+
+:goal_agent_analyst a :Goal ;
+    dcterms:title "Create screenplay from discussion" ;
+    dcterms:description "You will distill all arguments from all discussion members. Identify who said what. You can reword what they said as long as the main discussion points remain." .
+
+:goal_agent_scriptwriter a :Goal ;
+    dcterms:title "Create screenplay from discussion" ;
+    dcterms:description "Turn a conversation into a movie script. Only write the dialogue parts. Do not start the sentence with an action. Do not specify situational descriptions. Do not write parentheticals." .
+
+:goal_agent_formatter a :Goal ;
+    dcterms:title "Create screenplay from discussion" ;
+    dcterms:description "Format the text as asked. Leave out actions from discussion members that happen between brackets, eg (smiling)." .
+
+:goal_agent_scorer a :Goal ;
+    dcterms:title "Create screenplay from discussion" ;
+    dcterms:description "You score a dialogue assessing various aspects of the exchange between the participants using a 1-10 scale ..." .
+
+:agent_spamfilter a :LLMAgent ;
+    rdfs:label "spamfilter" ;
+    :agentID "spamfilter" ;
+    :agentRole "spamfilter" ;
+    :hasAgentGoal :goal_filter_spam ;
+    :hasAgentConfig :cfg_agent_spamfilter_delegation , :cfg_agent_spamfilter_verbose ;
+    :hasAgentCapability :capability_spam_detection ;
+    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
+    :agentPrompt :prompt_agent_spamfilter .
+
+:cfg_agent_spamfilter_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_spamfilter_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_spamfilter a :Prompt ;
+    rdfs:label "spamfilter agent prompt" ;
+    :promptContext "You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language." .
+
+:agent_analyst a :LLMAgent ;
+    rdfs:label "analyst" ;
+    :agentID "analyst" ;
+    :agentRole "analyse" ;
+    :hasAgentGoal :goal_agent_analyst ;
+    :hasAgentConfig :cfg_agent_analyst_delegation , :cfg_agent_analyst_verbose ;
+    :hasAgentCapability :capability_analysis ;
+    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
+    :agentPrompt :prompt_agent_analyst .
+
+:cfg_agent_analyst_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_analyst_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_analyst a :Prompt ;
+    rdfs:label "analyst agent prompt" ;
+    :promptContext "You are an expert discussion analyst." .
+
+:agent_scriptwriter a :LLMAgent ;
+    rdfs:label "scriptwriter" ;
+    :agentID "scriptwriter" ;
+    :agentRole "scriptwriter" ;
+    :hasAgentGoal :goal_agent_scriptwriter ;
+    :hasAgentConfig :cfg_agent_scriptwriter_delegation , :cfg_agent_scriptwriter_verbose ;
+    :hasAgentCapability :capability_scriptwriting ;
+    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
+    :agentPrompt :prompt_agent_scriptwriter .
+
+:cfg_agent_scriptwriter_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_scriptwriter_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_scriptwriter a :Prompt ;
+    rdfs:label "scriptwriter agent prompt" ;
+    :promptContext "You are an expert on writing natural sounding movie script dialogues. You only focus on the text part and you HATE directional notes." .
+
+:agent_formatter a :LLMAgent ;
+    rdfs:label "formatter" ;
+    :agentID "formatter" ;
+    :agentRole "formatter" ;
+    :hasAgentGoal :goal_agent_formatter ;
+    :hasAgentConfig :cfg_agent_formatter_delegation , :cfg_agent_formatter_verbose ;
+    :hasAgentCapability :capability_formatting ;
+    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
+    :agentPrompt :prompt_agent_formatter .
+
+:cfg_agent_formatter_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_formatter_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_formatter a :Prompt ;
+    rdfs:label "formatter agent prompt" ;
+    :promptContext "You are an expert text formatter." .
+
+:agent_scorer a :LLMAgent ;
+    rdfs:label "scorer" ;
+    :agentID "scorer" ;
+    :agentRole "scorer" ;
+    :hasAgentGoal :goal_agent_scorer ;
+    :hasAgentConfig :cfg_agent_scorer_delegation , :cfg_agent_scorer_verbose ;
+    :hasAgentCapability :capability_scoring ;
+    :useLanguageModel :LM_mistral_official , :LM_together_ai , :LM_anyscale ;
+    :agentPrompt :prompt_agent_scorer .
+
+:cfg_agent_scorer_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_scorer_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_scorer a :Prompt ;
+    rdfs:label "scorer agent prompt" ;
+    :promptContext "You are an expert at scoring conversations on a scale of 1 to 10." .

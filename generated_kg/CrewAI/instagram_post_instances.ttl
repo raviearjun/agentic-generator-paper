@@ -6,6 +6,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 218.00 seconds
 # Model used: gpt-5-mini
 
@@ -22,81 +24,6 @@
 # Agents (LLMAgent individuals)
 #################################################################
 
-:agent_ProductCompetitor rdf:type :LLMAgent ;
-    :agentID "product_competitor_agent" ;
-    :agentRole "Lead Market Analyst" ;
-    dct:description """
-Role: Lead Market Analyst
-Goal: Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.
-Backstory: As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet
-AllowDelegation: False
-Verbose: True
-Notes: Uses an Ollama model indicated by environment variable MODEL (see Config entries).""" ;
-    :agentPrompt :prompt_Agent_ProductCompetitor ;
-    :useLanguageModel :lm_Ollama ;
-    :hasAgentCapability :cap_web_scraping , :cap_internet_search .
-
-:agent_StrategyPlanner rdf:type :LLMAgent ;
-    :agentID "strategy_planner_agent" ;
-    :agentRole "Chief Marketing Strategist" ;
-    dct:description """
-Role: Chief Marketing Strategist
-Goal: Synthesize amazing insights from product analysis to formulate incredible marketing strategies.
-Backstory: You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True
-Notes: Uses an Ollama model indicated by environment variable MODEL (see Config entries).""" ;
-    :agentPrompt :prompt_Agent_StrategyPlanner ;
-    :useLanguageModel :lm_Ollama ;
-    :hasAgentCapability :cap_strategy_planning , :cap_internet_search , :cap_instagram_search .
-
-:agent_CreativeContentCreator rdf:type :LLMAgent ;
-    :agentID "creative_content_creator_agent" ;
-    :agentRole "Creative Content Creator" ;
-    dct:description """
-Role: Creative Content Creator
-Goal: Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact Instagram ad copies.
-Backstory: As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences on social media.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True
-Notes: Uses an Ollama model indicated by environment variable MODEL (see Config entries).""" ;
-    :agentPrompt :prompt_Agent_CreativeContentCreator ;
-    :useLanguageModel :lm_Ollama ;
-    :hasAgentCapability :cap_copywriting , :cap_internet_search , :cap_instagram_search .
-
-:agent_SeniorPhotographer rdf:type :LLMAgent ;
-    :agentID "senior_photographer_agent" ;
-    :agentRole "Senior Photographer" ;
-    dct:description """
-Role: Senior Photographer
-Goal: Take the most amazing photographs for instagram ads that capture emotions and convey a compelling message.
-Backstory: As a Senior Photographer at a leading digital marketing agency, you are an expert at taking amazing photographs that inspire and engage.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-AllowDelegation: False
-Verbose: True
-Notes: This agent receives an 'ad copy' (produced by the Copy Crew) as input to a task that asks for 3 photograph options and descriptions; model usage: Ollama (MODEL env var).""" ;
-    :agentPrompt :prompt_Agent_SeniorPhotographer ;
-    :useLanguageModel :lm_Ollama ;
-    :hasAgentCapability :cap_photography_review , :cap_internet_search , :cap_instagram_search .
-
-:agent_ChiefCreativeDirector rdf:type :LLMAgent ;
-    :agentID "chief_creative_director_agent" ;
-    :agentRole "Chief Creative Director" ;
-    dct:description """
-Role: Chief Creative Director
-Goal: Oversee the work done by your team to make sure it's the best possible and aligned with the product's goals, review, approve, ask clarifying question or delegate follow up work if necessary to make decisions.
-Backstory: You're the Chief Content Officer of leading digital marketing specialized in product branding.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True
-Notes: This agent reviews photos returned by the photographer and may delegate follow-up tasks. Uses Ollama model (MODEL env var).""" ;
-    :agentPrompt :prompt_Agent_ChiefCreativeDirector ;
-    :useLanguageModel :lm_Ollama ;
-    :hasAgentCapability :cap_review_and_approval , :cap_internet_search , :cap_instagram_search .
-
-#################################################################
-# Language Model
-#################################################################
 
 :lm_Ollama rdf:type :LanguageModel ;
     rdfs:label "Ollama (local model)" ;
@@ -557,90 +484,24 @@ each with 1 paragraph description following the examples provided above.
     :contributesToGoal :goal_MarketingCampaign .
 
 # Link agents / teams to goals / objectives
-:agent_ProductCompetitor :hasGoal :goal_MarketingCampaign ;
-    :hasObjective :objective_CopyCrew .
-
-:agent_StrategyPlanner :hasGoal :goal_MarketingCampaign ;
-    :hasObjective :objective_CopyCrew .
-
-:agent_CreativeContentCreator :hasGoal :goal_MarketingCampaign ;
-    :hasObjective :objective_CopyCrew .
-
-:agent_SeniorPhotographer :hasGoal :goal_MarketingCampaign ;
-    :hasObjective :objective_ImageCrew .
-
-:agent_ChiefCreativeDirector :hasGoal :goal_MarketingCampaign ;
-    :hasObjective :objective_ImageCrew .
 
 :team_CopyCrew :hasTeamGoal :goal_MarketingCampaign .
+
 :team_ImageCrew :hasTeamGoal :goal_MarketingCampaign .
 
 #################################################################
 # Tool <-> Capability associations (Tool.hasCapability already set above)
 #################################################################
 # (Also link Tools to Team/Agent contexts via hasToolConfig on Team)
+
 :team_CopyCrew :hasToolConfig :config_SERPER_API_KEY .
+
 :team_CopyCrew :hasToolConfig :config_BROWSERLESS_API_KEY .
+
 :team_ImageCrew :hasToolConfig :config_BROWSERLESS_API_KEY .
 
 #################################################################
 # Additional notes preserved as Prompt individuals representing agent backstories
-#################################################################
-
-:prompt_Agent_ProductCompetitor rdf:type :Prompt ;
-    rdfs:label "Agent Prompt - Product Competitor Agent" ;
-    :promptContext "Agent backstory and role description for Lead Market Analyst" ;
-    :promptInstruction """Role: Lead Market Analyst
-Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.
-Backstory: As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.
-AllowDelegation: False
-Verbose: True
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet""" ;
-    :promptOutputIndicator "Structured, detailed analysis and candidate actions for further tasks." .
-
-:prompt_Agent_StrategyPlanner rdf:type :Prompt ;
-    rdfs:label "Agent Prompt - Strategy Planner Agent" ;
-    :promptContext "Agent backstory and role description for Chief Marketing Strategist" ;
-    :promptInstruction """Role: Chief Marketing Strategist
-Synthesize insights from product analysis into marketing strategies.
-Backstory: You are the Chief Marketing Strategist at a leading digital marketing agency known for bespoke strategies.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True""" ;
-    :promptOutputIndicator "Campaign strategy and creative idea outputs." .
-
-:prompt_Agent_CreativeContentCreator rdf:type :Prompt ;
-    rdfs:label "Agent Prompt - Creative Content Creator Agent" ;
-    :promptContext "Agent backstory and role description for Creative Content Creator" ;
-    :promptInstruction """Role: Creative Content Creator
-Develop compelling content for social media campaigns, focus on Instagram ad copies.
-Backstory: As a Creative Content Creator at a top-tier agency, you craft narratives that resonate with social audiences.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True""" ;
-    :promptOutputIndicator "Three ad copy options aligned with campaign strategy." .
-
-:prompt_Agent_SeniorPhotographer rdf:type :Prompt ;
-    rdfs:label "Agent Prompt - Senior Photographer" ;
-    :promptContext "Agent backstory and role description for Senior Photographer" ;
-    :promptInstruction """Role: Senior Photographer
-Take the most amazing photographs for instagram ads that capture emotions and convey a compelling message.
-Backstory: As a Senior Photographer at a leading digital marketing agency, you are an expert at taking amazing photographs that inspire and engage.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-AllowDelegation: False
-Verbose: True""" ;
-    :promptOutputIndicator "Three creative photograph paragraphs to be reviewed." .
-
-:prompt_Agent_ChiefCreativeDirector rdf:type :Prompt ;
-    rdfs:label "Agent Prompt - Chief Creative Director" ;
-    :promptContext "Agent backstory and role description for Chief Creative Director" ;
-    :promptInstruction """Role: Chief Creative Director
-Oversee and review team outputs, approve or delegate follow-up work to align with product goals.
-Backstory: Chief Content Officer specialized in product branding.
-Tools: BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram
-Verbose: True""" ;
-    :promptOutputIndicator "Reviewed photograph options with approval status and possible delegations." .
-
-#################################################################
-# Provenance / simple annotations for important files and values
 #################################################################
 
 :artifact_tasks_py rdf:type beam:Instance ;
@@ -672,3 +533,114 @@ Verbose: True""" ;
     agento-ext:inputKey "product_details" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_agent_ProductCompetitor rdf:type :Goal ;
+    dct:title "product_competitor_agent goal" ;
+    dct:description "Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies." .
+
+:agent_ProductCompetitor rdf:type :LLMAgent ;
+    :agentID "product_competitor_agent" ;
+    :agentRole "Lead Market Analyst" ;
+    :hasAgentGoal :goal_agent_ProductCompetitor ;
+    :hasAgentConfig :cfg_agent_ProductCompetitor_verbose ;
+    :hasAgentCapability :cap_web_scraping , :cap_internet_search ;
+    :useLanguageModel :lm_Ollama ;
+    :agentPrompt :prompt_agent_ProductCompetitor .
+
+:cfg_agent_ProductCompetitor_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_ProductCompetitor rdf:type :Prompt ;
+    rdfs:label "Agent Prompt - Product Competitor Agent" ;
+    :promptContext "As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes." .
+
+:goal_agent_StrategyPlanner rdf:type :Goal ;
+    dct:title "strategy_planner_agent goal" ;
+    dct:description "Synthesize amazing insights from product analysis to formulate incredible marketing strategies." .
+
+:agent_StrategyPlanner rdf:type :LLMAgent ;
+    :agentID "strategy_planner_agent" ;
+    :agentRole "Chief Marketing Strategist" ;
+    :hasAgentGoal :goal_agent_StrategyPlanner ;
+    :hasAgentConfig :cfg_agent_StrategyPlanner_verbose ;
+    :hasAgentCapability :cap_strategy_planning , :cap_internet_search , :cap_instagram_search ;
+    :useLanguageModel :lm_Ollama ;
+    :agentPrompt :prompt_agent_StrategyPlanner .
+
+:cfg_agent_StrategyPlanner_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_StrategyPlanner rdf:type :Prompt ;
+    rdfs:label "Agent Prompt - Strategy Planner Agent" ;
+    :promptContext "You are the Chief Marketing Strategist at a leading digital marketing agency known for bespoke strategies." .
+
+:goal_agent_CreativeContentCreator rdf:type :Goal ;
+    dct:title "creative_content_creator_agent goal" ;
+    dct:description "Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact Instagram ad copies." .
+
+:agent_CreativeContentCreator rdf:type :LLMAgent ;
+    :agentID "creative_content_creator_agent" ;
+    :agentRole "Creative Content Creator" ;
+    :hasAgentGoal :goal_agent_CreativeContentCreator ;
+    :hasAgentConfig :cfg_agent_CreativeContentCreator_verbose ;
+    :hasAgentCapability :cap_copywriting , :cap_internet_search , :cap_instagram_search ;
+    :useLanguageModel :lm_Ollama ;
+    :agentPrompt :prompt_agent_CreativeContentCreator .
+
+:cfg_agent_CreativeContentCreator_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_CreativeContentCreator rdf:type :Prompt ;
+    rdfs:label "Agent Prompt - Creative Content Creator Agent" ;
+    :promptContext "As a Creative Content Creator at a top-tier agency, you craft narratives that resonate with social audiences." .
+
+:goal_agent_SeniorPhotographer rdf:type :Goal ;
+    dct:title "senior_photographer_agent goal" ;
+    dct:description "Take the most amazing photographs for instagram ads that capture emotions and convey a compelling message." .
+
+:agent_SeniorPhotographer rdf:type :LLMAgent ;
+    :agentID "senior_photographer_agent" ;
+    :agentRole "Senior Photographer" ;
+    :hasAgentGoal :goal_agent_SeniorPhotographer ;
+    :hasAgentConfig :cfg_agent_SeniorPhotographer_verbose ;
+    :hasAgentCapability :cap_photography_review , :cap_internet_search , :cap_instagram_search ;
+    :useLanguageModel :lm_Ollama ;
+    :agentPrompt :prompt_agent_SeniorPhotographer .
+
+:cfg_agent_SeniorPhotographer_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_SeniorPhotographer rdf:type :Prompt ;
+    rdfs:label "Agent Prompt - Senior Photographer" ;
+    :promptContext "As a Senior Photographer at a leading digital marketing agency, you are an expert at taking amazing photographs that inspire and engage." .
+
+:goal_agent_ChiefCreativeDirector rdf:type :Goal ;
+    dct:title "chief_creative_director_agent goal" ;
+    dct:description "Oversee the work done by your team to make sure it's the best possible and aligned with the product's goals, review, approve, ask clarifying question or delegate follow up work if necessary to make decisions." .
+
+:agent_ChiefCreativeDirector rdf:type :LLMAgent ;
+    :agentID "chief_creative_director_agent" ;
+    :agentRole "Chief Creative Director" ;
+    :hasAgentGoal :goal_agent_ChiefCreativeDirector ;
+    :hasAgentConfig :cfg_agent_ChiefCreativeDirector_verbose ;
+    :hasAgentCapability :cap_review_and_approval , :cap_internet_search , :cap_instagram_search ;
+    :useLanguageModel :lm_Ollama ;
+    :agentPrompt :prompt_agent_ChiefCreativeDirector .
+
+:cfg_agent_ChiefCreativeDirector_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_ChiefCreativeDirector rdf:type :Prompt ;
+    rdfs:label "Agent Prompt - Chief Creative Director" ;
+    :promptContext "Chief Content Officer specialized in product branding." .

@@ -10,6 +10,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 117.22 seconds
 # Model used: gpt-5-mini
 
@@ -24,6 +26,7 @@
 ########################################################################
 # Team (Crew) and workflow pattern
 ########################################################################
+
 
 :JobPostingCrew rdf:type :Team ;
     rdfs:label "JobPosting Crew (Team)" ;
@@ -77,43 +80,7 @@
     rdfs:comment "System-level config references used by JobPostingCrew (process stored as config because ontology lacks a process property)." .
 
 # Agent-specific configs derived from config/agents.yaml
-:ResearchAgentConfig_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Research Analyst" .
 
-:ResearchAgentConfig_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Analyze the company website and provided description to extract insights on culture, values, and specific needs." .
-
-:ResearchAgentConfig_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "Expert in analyzing company cultures and identifying key values and needs from various sources, including websites and brief descriptions." .
-
-:WriterAgentConfig_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Job Description Writer" .
-
-:WriterAgentConfig_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting." .
-
-:WriterAgentConfig_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "Skilled in crafting compelling job descriptions that resonate with the company's values and attract the right candidates." .
-
-:ReviewAgentConfig_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Review and Editing Specialist" .
-
-:ReviewAgentConfig_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Review the job posting for clarity, engagement, grammatical accuracy, and alignment with company values and refine it to ensure perfection." .
-
-:ReviewAgentConfig_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "A meticulous editor with an eye for detail, ensuring every piece of content is clear, engaging, and grammatically perfect." .
-
-# Task configs derived from config/tasks.yaml (each task's description and expected_output)
 :ResearchCompanyCultureTaskConfig_description rdf:type :Config ;
     :configKey "description" ;
     :configValue """Analyze the provided company website and the hiring manager's company's domain {company_domain},
@@ -184,53 +151,6 @@ the job role and the company as an attractive choice for potential candidates.""
 # Agents (LLMAgents)
 ########################################################################
 
-:ResearchAgent rdf:type :LLMAgent ;
-    rdfs:label "research_agent" ;
-    :agentID "research_agent" ;
-    :agentRole "Research Analyst" ;
-    :hasAgentConfig :ResearchAgentConfig_role , :ResearchAgentConfig_goal , :ResearchAgentConfig_backstory ;
-    :agentPrompt :ResearchAgent_BackstoryPrompt ;
-    :agentToolUsage :WebsiteSearchTool , :SerperDevTool ;
-    rdfs:comment "Agent configured as Research Analyst; uses web search tools to analyze company data." .
-
-:WriterAgent rdf:type :LLMAgent ;
-    rdfs:label "writer_agent" ;
-    :agentID "writer_agent" ;
-    :agentRole "Job Description Writer" ;
-    :hasAgentConfig :WriterAgentConfig_role , :WriterAgentConfig_goal , :WriterAgentConfig_backstory ;
-    :agentPrompt :WriterAgent_BackstoryPrompt ;
-    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
-    rdfs:comment "Agent responsible for drafting job postings using insights and the job description file." .
-
-:ReviewAgent rdf:type :LLMAgent ;
-    rdfs:label "review_agent" ;
-    :agentID "review_agent" ;
-    :agentRole "Review and Editing Specialist" ;
-    :hasAgentConfig :ReviewAgentConfig_role , :ReviewAgentConfig_goal , :ReviewAgentConfig_backstory ;
-    :agentPrompt :ReviewAgent_BackstoryPrompt ;
-    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
-    rdfs:comment "Agent responsible for reviewing and editing drafts for clarity and alignment." .
-
-# Agent backstories stored as prompts
-:ResearchAgent_BackstoryPrompt rdf:type :Prompt ;
-    :promptInstruction "Expert in analyzing company cultures and identifying key values and needs from various sources, including websites and brief descriptions." ;
-    :promptContext "Role: Research Analyst" ;
-    :promptOutputIndicator "A report summarizing insights on company culture, values, unique selling points, and suggestions for job posting." .
-
-:WriterAgent_BackstoryPrompt rdf:type :Prompt ;
-    :promptInstruction "Skilled in crafting compelling job descriptions that resonate with the company's values and attract the right candidates." ;
-    :promptContext "Role: Job Description Writer" ;
-    :promptOutputIndicator "A draft job posting (detailed, engaging, fits company tone)." .
-
-:ReviewAgent_BackstoryPrompt rdf:type :Prompt ;
-    :promptInstruction "A meticulous editor with an eye for detail, ensuring every piece of content is clear, engaging, and grammatically perfect." ;
-    :promptContext "Role: Review and Editing Specialist" ;
-    :promptOutputIndicator "A polished job posting formatted in markdown with feedback." .
-
-########################################################################
-# Tools and resources
-########################################################################
-
 :WebsiteSearchTool rdf:type :Tool ;
     rdfs:label "WebsiteSearchTool" ;
     rdfs:comment "Tool used for general website search queries (instantiated in the solution as a web search tool)." .
@@ -254,6 +174,7 @@ the job role and the company as an attractive choice for potential candidates.""
     :configValue "A tool to read the job description example file." .
 
 # The job description file as a resource (beam:Instance)
+
 :JobDescriptionFile rdf:type beam:Instance ;
     rdfs:label "job_description_example.md" ;
     dcterms:description """
@@ -347,6 +268,7 @@ and qualifications that align with the company's needs and values.""" ;
 the company's culture, ongoing projects, and the specific role's requirements.""" .
 
 # The expected structured output model (ResearchRoleRequirements Pydantic model)
+
 :ResearchRoleRequirementsOutput rdf:type beam:SemanticModel , :KnowledgeBase ;
     rdfs:label "ResearchRoleRequirements (structured output model)" ;
     dcterms:description """Output model with fields:
@@ -453,9 +375,13 @@ These are preserved as the default input bundle used to initiate the crew." """ 
 ########################################################################
 
 :ResearchCompanyCultureTask :contributesToObjective :CreateJobPostingObjective .
+
 :ResearchRoleRequirementsTask :contributesToObjective :CreateJobPostingObjective .
+
 :DraftJobPostingTask :contributesToObjective :CreateJobPostingObjective .
+
 :ReviewAndEditJobPostingTask :contributesToObjective :CreateJobPostingObjective .
+
 :IndustryAnalysisTask :contributesToObjective :CreateJobPostingObjective .
 
 ########################################################################
@@ -463,9 +389,13 @@ These are preserved as the default input bundle used to initiate the crew." """ 
 ########################################################################
 
 :DraftJobPostingTask :producedResource :DraftJobPostingResource .
+
 :ReviewAndEditJobPostingTask :producedResource :FinalJobPostingResource .
+
 :ResearchRoleRequirementsTask :producedResource :ResearchRoleRequirementsOutput .
+
 :ResearchCompanyCultureTask :producedResource :CompanyCultureReportResource .
+
 :IndustryAnalysisTask :producedResource :IndustryAnalysisReportResource .
 
 ########################################################################
@@ -473,18 +403,6 @@ These are preserved as the default input bundle used to initiate the crew." """ 
 ########################################################################
 
 :FileReadTool :resourceUsage :JobDescriptionFile .
-:ResearchAgent :agentResourceUsage :JobDescriptionFile .
-:WriterAgent :agentResourceUsage :JobDescriptionFile .
-:ReviewAgent :agentResourceUsage :JobDescriptionFile .
-
-# Tools are used by agents (explicit)
-:ResearchAgent :agentToolUsage :WebsiteSearchTool , :SerperDevTool .
-:WriterAgent :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool .
-:ReviewAgent :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool .
-
-########################################################################
-# Notes about training and runtime (captured as non-executable configuration)
-########################################################################
 
 :TrainingAndRuntimeNotes rdf:type :Context ;
     rdfs:label "Runtime notes" ;
@@ -518,3 +436,54 @@ These behaviors are not executable within the ontology and are therefore capture
     agento-ext:inputKey "specific_benefits" ;
     agento-ext:inputValue "Weekly Pay, Employee Meals, healthcare" ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_ResearchAgent rdf:type :Goal ;
+    dcterms:title "research_agent goal" ;
+    dcterms:description "Analyze the company website and provided description to extract insights on culture, values, and specific needs." .
+
+:ResearchAgent rdf:type :LLMAgent ;
+    rdfs:label "research_agent" ;
+    :agentID "research_agent" ;
+    :agentRole "Research Analyst" ;
+    :hasAgentGoal :goal_ResearchAgent ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool ;
+    :agentPrompt :prompt_ResearchAgent .
+
+:prompt_ResearchAgent rdf:type :Prompt ;
+    :promptContext "Expert in analyzing company cultures and identifying key values and needs from various sources, including websites and brief descriptions." .
+
+:goal_WriterAgent rdf:type :Goal ;
+    dcterms:title "writer_agent goal" ;
+    dcterms:description "Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting." .
+
+:WriterAgent rdf:type :LLMAgent ;
+    rdfs:label "writer_agent" ;
+    :agentID "writer_agent" ;
+    :agentRole "Job Description Writer" ;
+    :hasAgentGoal :goal_WriterAgent ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
+    :agentPrompt :prompt_WriterAgent .
+
+:prompt_WriterAgent rdf:type :Prompt ;
+    :promptContext "Skilled in crafting compelling job descriptions that resonate with the company's values and attract the right candidates." .
+
+:goal_ReviewAgent rdf:type :Goal ;
+    dcterms:title "review_agent goal" ;
+    dcterms:description "Review the job posting for clarity, engagement, grammatical accuracy, and alignment with company values and refine it to ensure perfection." .
+
+:ReviewAgent rdf:type :LLMAgent ;
+    rdfs:label "review_agent" ;
+    :agentID "review_agent" ;
+    :agentRole "Review and Editing Specialist" ;
+    :hasAgentGoal :goal_ReviewAgent ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
+    :agentPrompt :prompt_ReviewAgent .
+
+:prompt_ReviewAgent rdf:type :Prompt ;
+    :promptContext "A meticulous editor with an eye for detail, ensuring every piece of content is clear, engaging, and grammatically perfect." .

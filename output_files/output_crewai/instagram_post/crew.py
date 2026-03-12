@@ -50,7 +50,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['product_competitor_agent'],
             llm=product_competitor_agent_llm,
-            allow_delegation=False,
             verbose=True,
         )
 
@@ -75,7 +74,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['senior_photographer_agent'],
             llm=senior_photographer_agent_llm,
-            allow_delegation=False,
             verbose=True,
         )
 

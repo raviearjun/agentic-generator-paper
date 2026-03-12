@@ -9,6 +9,8 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 130.60 seconds
 # Model used: gpt-5-mini
 
@@ -24,6 +26,7 @@
 ################################################################################
 # Team (Crew)
 ################################################################################
+
 
 :SurpriseTravelCrew rdf:type :Team ;
     rdfs:label "SurpriseTravelCrew" ;
@@ -54,127 +57,6 @@
 
 ################################################################################
 # Agents
-################################################################################
-
-:agent_personalized_activity_planner rdf:type :LLMAgent ;
-    rdfs:label "personalized_activity_planner" ;
-    :agentID "personalized_activity_planner" ;
-    :agentRole "Activity Planner" ;
-    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
-    :hasAgentConfig :cfg_pa_role , :cfg_pa_goal , :cfg_pa_backstory , :cfg_pa_verbose , :cfg_pa_allow_delegation ;
-    :hasAgentGoal :goal_personalized_activity_planner ;
-    :agentPrompt :prompt_agent_personalized_activity_planner ;
-    dcterms:description "An agent that researches and finds activities and events matching the traveler's interests and age group." .
-
-:cfg_pa_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Activity Planner" .
-
-:cfg_pa_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group" .
-
-:cfg_pa_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers." .
-
-:cfg_pa_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" .
-
-:cfg_pa_allow_delegation rdf:type :Config ;
-    :configKey "allow_delegation" ;
-    :configValue "False" .
-
-:prompt_agent_personalized_activity_planner rdf:type :Prompt ;
-    :promptInstruction "Role: Activity Planner\nBackstory: You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers." ;
-    :promptContext "Use internet search tools and recommendation engines to gather information; produce day-by-day activities with name, location, description and suitability rationale." ;
-    :promptOutputIndicator "A list of recommended activities and events for each day of the trip. Each entry should include the activity name, location, a brief description, and why it's suitable for the traveler. And potential reviews and ratings of the activities." .
-
-:goal_personalized_activity_planner rdf:type :Goal ;
-    dcterms:description "Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group" ;
-    rdfs:label "Goal: personalized activity planner" .
-
-:agent_restaurant_scout rdf:type :LLMAgent ;
-    rdfs:label "restaurant_scout" ;
-    :agentID "restaurant_scout" ;
-    :agentRole "Restaurant Scout" ;
-    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
-    :hasAgentConfig :cfg_rs_role , :cfg_rs_goal , :cfg_rs_backstory , :cfg_rs_verbose , :cfg_rs_allow_delegation ;
-    :hasAgentGoal :goal_restaurant_scout ;
-    :agentPrompt :prompt_agent_restaurant_scout ;
-    dcterms:description "An agent that finds highly-rated restaurants and scenic locations aligned with traveler preferences." .
-
-:cfg_rs_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Restaurant Scout" .
-
-:cfg_rs_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities" .
-
-:cfg_rs_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "As a food lover, you know the best spots in town for a delightful culinary experience. You also have a knack for finding picturesque and entertaining locations." .
-
-:cfg_rs_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" .
-
-:cfg_rs_allow_delegation rdf:type :Config ;
-    :configKey "allow_delegation" ;
-    :configValue "False" .
-
-:prompt_agent_restaurant_scout rdf:type :Prompt ;
-    :promptInstruction "Role: Restaurant Scout\nBackstory: As a food lover, you know the best spots in town for a delightful culinary experience. You also have a knack for finding picturesque and entertaining locations." ;
-    :promptContext "Use internet search tools, restaurant review sites, and travel guides to find restaurants and scenic locations aligned with traveler preferences." ;
-    :promptOutputIndicator "A list of recommended restaurants, scenic locations, and fun activities for each day of the trip. Each entry should include the name, location (address), type of cuisine or activity, and a brief description and ratings." .
-
-:goal_restaurant_scout rdf:type :Goal ;
-    dcterms:description "Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities" ;
-    rdfs:label "Goal: restaurant scout" .
-
-:agent_itinerary_compiler rdf:type :LLMAgent ;
-    rdfs:label "itinerary_compiler" ;
-    :agentID "itinerary_compiler" ;
-    :agentRole "Itinerary Compiler" ;
-    :agentToolUsage :SerperDevTool ;
-    :hasAgentConfig :cfg_ic_role , :cfg_ic_goal , :cfg_ic_backstory , :cfg_ic_verbose , :cfg_ic_allow_delegation ;
-    :hasAgentGoal :goal_itinerary_compiler ;
-    :agentPrompt :prompt_agent_itinerary_compiler ;
-    dcterms:description "An agent that compiles researched information into a comprehensive day-by-day itinerary, integrating flights and hotel information." .
-
-:cfg_ic_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Itinerary Compiler" .
-
-:cfg_ic_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Compile all researched information into a comprehensive day-by-day itinerary, ensuring the integration of flights and hotel information" .
-
-:cfg_ic_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "With an eye for detail, you organize all the information into a coherent and enjoyable travel plan." .
-
-:cfg_ic_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" .
-
-:cfg_ic_allow_delegation rdf:type :Config ;
-    :configKey "allow_delegation" ;
-    :configValue "False" .
-
-:prompt_agent_itinerary_compiler rdf:type :Prompt ;
-    :promptInstruction "Role: Itinerary Compiler\nBackstory: With an eye for detail, you organize all the information into a coherent and enjoyable travel plan." ;
-    :promptContext "Compile all researched information into a comprehensive day-by-day itinerary for the trip; ensure integration of flights, hotel information, activities, and restaurants. Use text formatting and document creation tools." ;
-    :promptOutputIndicator "A detailed itinerary document, including a day-by-day plan with flights, hotel details, activities, restaurants, and scenic locations." .
-
-:goal_itinerary_compiler rdf:type :Goal ;
-    dcterms:description "Compile all researched information into a comprehensive day-by-day itinerary, ensuring the integration of flights and hotel information" ;
-    rdfs:label "Goal: itinerary compiler" .
-
-################################################################################
-# Tools
 ################################################################################
 
 :SerperDevTool rdf:type :Tool ;
@@ -372,8 +254,11 @@ This resource is the output_json schema referenced by itinerary_compilation_task
 ################################################################################
 
 # Each task contributes to an objective (above) which can connect to an agent goal (where relevant).
+
 :obj_personalized_activity_planning :contributesToGoal :goal_personalized_activity_planner .
+
 :obj_restaurant_scout :contributesToGoal :goal_restaurant_scout .
+
 :obj_itinerary_compilation :contributesToGoal :goal_itinerary_compiler .
 
 ################################################################################
@@ -427,3 +312,78 @@ This resource is the output_json schema referenced by itinerary_compilation_task
     agento-ext:inputKey "trip_duration" ;
     agento-ext:inputValue "14 days" ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_personalized_activity_planner rdf:type :Goal ;
+    dcterms:description "Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group" .
+
+:goal_restaurant_scout rdf:type :Goal ;
+    dcterms:description "Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities" .
+
+:goal_itinerary_compiler rdf:type :Goal ;
+    dcterms:description "Compile all researched information into a comprehensive day-by-day itinerary, ensuring the integration of flights and hotel information" .
+
+:agent_personalized_activity_planner rdf:type :LLMAgent ;
+    rdfs:label "personalized_activity_planner" ;
+    :agentID "personalized_activity_planner" ;
+    :agentRole "Activity Planner" ;
+    :hasAgentGoal :goal_personalized_activity_planner ;
+    :hasAgentConfig :cfg_agent_personalized_activity_planner_delegation , :cfg_agent_personalized_activity_planner_verbose ;
+    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
+    :agentPrompt :prompt_agent_personalized_activity_planner .
+
+:cfg_agent_personalized_activity_planner_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_personalized_activity_planner_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_personalized_activity_planner rdf:type :Prompt ;
+    :promptContext "You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers." .
+
+:agent_restaurant_scout rdf:type :LLMAgent ;
+    rdfs:label "restaurant_scout" ;
+    :agentID "restaurant_scout" ;
+    :agentRole "Restaurant Scout" ;
+    :hasAgentGoal :goal_restaurant_scout ;
+    :hasAgentConfig :cfg_agent_restaurant_scout_delegation , :cfg_agent_restaurant_scout_verbose ;
+    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
+    :agentPrompt :prompt_agent_restaurant_scout .
+
+:cfg_agent_restaurant_scout_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_restaurant_scout_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_restaurant_scout rdf:type :Prompt ;
+    :promptContext "As a food lover, you know the best spots in town for a delightful culinary experience. You also have a knack for finding picturesque and entertaining locations." .
+
+:agent_itinerary_compiler rdf:type :LLMAgent ;
+    rdfs:label "itinerary_compiler" ;
+    :agentID "itinerary_compiler" ;
+    :agentRole "Itinerary Compiler" ;
+    :hasAgentGoal :goal_itinerary_compiler ;
+    :hasAgentConfig :cfg_agent_itinerary_compiler_delegation , :cfg_agent_itinerary_compiler_verbose ;
+    :agentToolUsage :SerperDevTool ;
+    :agentPrompt :prompt_agent_itinerary_compiler .
+
+:cfg_agent_itinerary_compiler_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_itinerary_compiler_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_itinerary_compiler rdf:type :Prompt ;
+    :promptContext "With an eye for detail, you organize all the information into a coherent and enjoyable travel plan." .

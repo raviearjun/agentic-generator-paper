@@ -10,6 +10,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 57.23 seconds
 # Model used: gpt-5-mini
 
@@ -27,6 +29,7 @@
 #################################################################
 
 ### Team / Crew
+
 :MetaQuestKnowledge_Crew rdf:type :Team ;
     dcterms:title "MetaQuestKnowledge Crew" ;
     dcterms:description "Crew coordinating agents and tasks to answer Meta Quest questions using available knowledge sources (PDF)." ;
@@ -38,45 +41,19 @@
     :hasObjective :MetaQuest_Answering_Objective .
 
 ### Agent (LLM Agent)
-:meta_quest_expert rdf:type :LLMAgent ;
-    dcterms:title "meta_quest_expert" ;
-    :agentID "meta_quest_expert" ;
-    :agentRole "Meta Quest Expert" ;
-    dcterms:description "An LLM-based agent configured to answer questions about Meta Quest using provided knowledge sources and a task-driven prompt. Created from agents configuration 'config/agents.yaml'." ;
-    :hasAgentGoal :MetaQuest_Answering_Goal ;
-    :hasAgentConfig :agents_config_file ;
-    :agentPrompt :meta_quest_expert_agent_prompt ;
-    :hasKnowledge :meta_quest_manual_pdf_kb ;
-    :agentResourceUsage :meta_quest_manual_pdf_kb ;
-    :useLanguageModel :openai_runtime_model .
 
-### Language Model (runtime-specified)
 :openai_runtime_model rdf:type :LanguageModel ;
     dcterms:title "OpenAI model (runtime-specified)" ;
     dcterms:description "Language model used by the agent. The specific model name is supplied at runtime (openai_model_name parameter in test function); not fixed in source. Represented here as a runtime-specified language model." .
 
 ### Knowledge Base (PDF)
+
 :meta_quest_manual_pdf_kb rdf:type :KnowledgeBase ;
     dcterms:title "Meta Quest Manual (PDF)" ;
     dcterms:reference "meta_quest_manual.pdf" ;
     dcterms:description "PDF knowledge source provided to the crew via PDFKnowledgeSource (file path preserved). Contains domain knowledge for answering user questions about Meta Quest." .
 
 ### Config files (content preserved)
-:agents_config_file rdf:type :Config ;
-    dcterms:title "agents.yaml (config/agents.yaml)" ;
-    :configKey "path" ;
-    :configValue "config/agents.yaml" ;
-    dcterms:description """meta_quest_expert:
-  role: >
-    Meta Quest Expert
-  goal: >
-    Provide the best possible answers to questions about Meta Quest
-  backstory: >
-    You're a seasoned expert in the world of Meta Quest. You're known for your
-    ability to provide the best possible answers to questions about this
-    cutting-edge technology, ensuring that your audience is well-informed and
-    satisfied with the latest advancements in the field.
-""" .
 
 :tasks_config_file rdf:type :Config ;
     dcterms:title "tasks.yaml (config/tasks.yaml)" ;
@@ -94,15 +71,13 @@
 """ .
 
 ### Goal and Objective
-:MetaQuest_Answering_Goal rdf:type :Goal ;
-    dcterms:title "Provide the best possible answers to questions about Meta Quest" ;
-    dcterms:description "Goal expressed in agents configuration to provide best answers to questions about Meta Quest." .
 
 :MetaQuest_Answering_Objective rdf:type :Objective ;
     dcterms:title "Answer user questions about Meta Quest" ;
     dcterms:description "Objective assigned to the crew: answer user questions by using available knowledge sources (PDF manual) and agent capabilities." .
 
 ### Task and Prompt
+
 :answer_question_task rdf:type :Task ;
     dcterms:title "answer_question_task" ;
     dcterms:description "Answer the user question with the most relevant information from the context and available knowledge sources. Question: {question}\n\nDo not answer questions that are not related to the context or knowledge sources." ;
@@ -123,15 +98,7 @@ Do not answer questions that are not related to the context or knowledge sources
     dcterms:description "Task-level prompt/template as declared in config/tasks.yaml. The placeholder {question} is intended to be interpolated at runtime with actual user input." .
 
 ### Agent-level Prompt (agent backstory / role as an agent prompt)
-:meta_quest_expert_agent_prompt rdf:type :Prompt ;
-    dcterms:title "meta_quest_expert_agent_prompt" ;
-    :promptInstruction """Role: Meta Quest Expert
-Goal: Provide the best possible answers to questions about Meta Quest
-Backstory: You're a seasoned expert in the world of Meta Quest. You're known for your ability to provide the best possible answers to questions about this cutting-edge technology, ensuring that your audience is well-informed and satisfied with the latest advancements in the field.
-""" ;
-    :promptContext "Agent-level instruction/backstory used to guide the agent's independent reasoning and responses." .
 
-### Workflow pattern and steps (sequential)
 :meta_quest_sequential_workflow rdf:type :WorkflowPattern ;
     dcterms:title "MetaQuest Knowledge Sequential Workflow" ;
     dcterms:description "A sequential workflow: start -> answer question -> end. Process type: sequential (Process.sequential in source code)." ;
@@ -162,6 +129,7 @@ Backstory: You're a seasoned expert in the world of Meta Quest. You're known for
 
 # Note: CLI/runtime functions (train, replay, test) and related runtime parameters (n_iterations, filename, openai_model_name) are not modeled as executable constructs in the ontology.
 # They are documented here for traceability:
+
 :meta_quest_runtime_notes rdf:type :Context ;
     dcterms:description """Runtime operations observed in the repository:
 - run(): kicks off crew with inputs {'question': 'How often should I take breaks?'}.
@@ -184,3 +152,24 @@ These runtime operations and parameters are preserved as documentation rather th
     agento-ext:inputKey "question" ;
     agento-ext:inputValue "How often should I take breaks?" ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:MetaQuest_Answering_Goal rdf:type :Goal ;
+    dcterms:title "Provide the best possible answers to questions about Meta Quest" ;
+    dcterms:description "Goal expressed in agents configuration to provide best answers to questions about Meta Quest." .
+
+:meta_quest_expert rdf:type :LLMAgent ;
+    :agentID "meta_quest_expert" ;
+    :agentRole "Meta Quest Expert" ;
+    :hasAgentGoal :MetaQuest_Answering_Goal ;
+    :useLanguageModel :openai_runtime_model ;
+    :hasKnowledge :meta_quest_manual_pdf_kb ;
+    :agentPrompt :prompt_meta_quest_expert .
+
+:prompt_meta_quest_expert rdf:type :Prompt ;
+    :promptContext "You're a seasoned expert in the world of Meta Quest. You're known for your ability to provide the best possible answers to questions about this cutting-edge technology, ensuring that your audience is well-informed and satisfied with the latest advancements in the field." .

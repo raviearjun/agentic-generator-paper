@@ -8,7 +8,11 @@ Extraction strategy:
   1. Team / Crew metadata + process type
   2. LanguageModel individuals
   3. Tool individuals (excluding LLMAgent)
-  4. Agent individuals (with config fallback for role/goal/backstory)
+  4. Agent individuals — canonical pattern:
+       role      → :agentRole literal
+       goal      → :hasAgentGoal → Goal → dcterms:description
+       backstory → :agentPrompt → Prompt → :promptContext
+       allow_delegation / verbose → separate Config per key
   5. Task individuals (with prompt/config fallback for description/expected_output)
   6. Workflow ordering (WorkflowStep chain)
   7. Resource dependency → task context resolution
@@ -169,43 +173,37 @@ WHERE {
 }
 """
 
-# ── Agents ──
+# ── Agents (canonical pattern — single consolidated query) ──
+# Extracts all single-valued agent properties in one pass:
+#   role, goal, backstory, allow_delegation, verbose
+# Multi-valued relations (tools, LLM) remain as separate queries.
 
 AGENTS_QUERY = PREFIXES + """
-SELECT DISTINCT ?agent ?agentID ?role ?label
+SELECT DISTINCT ?agent ?agentID ?role ?label ?goalDesc ?backstory
+                ?delegation ?verbose
 WHERE {
     ?agent a :LLMAgent .
     OPTIONAL { ?agent :agentID ?agentID }
     OPTIONAL { ?agent :agentRole ?role }
     OPTIONAL { ?agent rdfs:label ?label }
-}
-"""
-
-AGENT_GOAL_FROM_GOAL_QUERY = PREFIXES + """
-SELECT ?agent ?goalDesc
-WHERE {
-    ?agent a :LLMAgent ;
-           :hasAgentGoal ?goal .
-    ?goal dcterms:description ?goalDesc .
-}
-"""
-
-AGENT_CONFIG_QUERY = PREFIXES + """
-SELECT ?agent ?key ?value
-WHERE {
-    ?agent a :LLMAgent ;
-           :hasAgentConfig ?cfg .
-    ?cfg :configKey ?key ;
-         :configValue ?value .
-}
-"""
-
-AGENT_BACKSTORY_FROM_PROMPT_QUERY = PREFIXES + """
-SELECT ?agent ?instruction
-WHERE {
-    ?agent a :LLMAgent ;
-           :agentPrompt ?prompt .
-    ?prompt :promptInstruction ?instruction .
+    OPTIONAL {
+        ?agent :hasAgentGoal ?goal .
+        ?goal dcterms:description ?goalDesc .
+    }
+    OPTIONAL {
+        ?agent :agentPrompt ?prompt .
+        ?prompt :promptContext ?backstory .
+    }
+    OPTIONAL {
+        ?agent :hasAgentConfig ?cfgD .
+        ?cfgD :configKey "allow_delegation" ;
+              :configValue ?delegation .
+    }
+    OPTIONAL {
+        ?agent :hasAgentConfig ?cfgV .
+        ?cfgV :configKey "verbose" ;
+              :configValue ?verbose .
+    }
 }
 """
 
@@ -227,40 +225,7 @@ WHERE {
 }
 """
 
-AGENT_DELEGATION_QUERY = PREFIXES + """
-SELECT ?agent ?value
-WHERE {
-    ?agent a :LLMAgent ;
-           :hasAgentConfig ?cfg .
-    ?cfg :configKey "allow_delegation" ;
-         :configValue ?value .
-}
-"""
 
-AGENT_VERBOSE_QUERY = PREFIXES + """
-SELECT ?agent ?value
-WHERE {
-    ?agent a :LLMAgent ;
-           :hasAgentConfig ?cfg .
-    ?cfg :configKey "verbose" ;
-         :configValue ?value .
-}
-"""
-
-# Fallback: extract delegation/verbose from description, comment, prompt text
-AGENT_TEXT_FIELDS_QUERY = PREFIXES + """
-SELECT ?agent ?desc ?comment ?promptCtx ?promptInstr
-WHERE {
-    ?agent a :LLMAgent .
-    OPTIONAL { ?agent dcterms:description ?desc }
-    OPTIONAL { ?agent rdfs:comment ?comment }
-    OPTIONAL {
-        ?agent :agentPrompt ?prompt .
-        OPTIONAL { ?prompt :promptContext ?promptCtx }
-        OPTIONAL { ?prompt :promptInstruction ?promptInstr }
-    }
-}
-"""
 
 # ── Tasks ──
 
@@ -414,112 +379,9 @@ def _infer_process_from_text(text: str) -> Optional[ProcessType]:
     return None
 
 
-def _parse_bool_from_text(text: str, key: str) -> Optional[bool]:
-    """
-    Extract a boolean flag from free text using multiple patterns.
-
-    Recognizes:
-        allow_delegation=False
-        allow_delegation: False
-        AllowDelegation: False
-        allow_delegation = True
-        verbose=True
-        verbose: 2  (truthy)
-    """
-    if not text:
-        return None
-    # Normalize key variants (e.g. AllowDelegation -> allow_delegation)
-    key_pattern = re.escape(key)
-    # Also match CamelCase variant: allow_delegation -> AllowDelegation
-    camel_variant = "".join(w.capitalize() for w in key.split("_"))
-    camel_pattern = re.escape(camel_variant)
-    pattern = rf"(?:{key_pattern}|{camel_pattern})\s*[:=]\s*(\S+)"
-    m = re.search(pattern, text, re.IGNORECASE)
-    if m:
-        val = m.group(1).strip().strip("'\",;.")
-        if val.lower() in ("false", "0", "no", "none"):
-            return False
-        if val.lower() in ("true", "1", "yes") or val.isdigit():
-            return True
-    return None
 
 
-# ── Strategy 1.5 helpers: raw TTL parsing for Config KV pairs ──
-
-AGENT_CONFIG_LINK_QUERY = PREFIXES + """
-SELECT ?agent ?cfg
-WHERE {
-    ?agent a :LLMAgent ;
-           :hasAgentConfig ?cfg .
-}
-"""
-
-
-def _parse_config_kv_from_ttl(raw_ttl: str) -> Dict[str, List[Tuple[str, str]]]:
-    """
-    Parse raw Turtle text to extract ordered configKey→configValue pairs
-    per Config node.  This recovers the pairing that SPARQL loses due to
-    the cartesian product on multi-KV Config nodes.
-
-    Uses a position-based approach: find all Config declarations and all
-    KV pairs in the file, then associate each KV pair with the nearest
-    preceding Config node.
-
-    Returns {config_local_name: [(key, value), ...]}
-    """
-    result: Dict[str, List[Tuple[str, str]]] = {}
-
-    # Find Config node declarations and their positions
-    config_decl_pattern = re.compile(r':(\S+)\s+a\s+:Config\b')
-    config_positions: List[Tuple[int, str]] = []  # (pos, local_name)
-    for m in config_decl_pattern.finditer(raw_ttl):
-        config_positions.append((m.start(), m.group(1)))
-
-    if not config_positions:
-        return result
-
-    # Find all KV pairs and their positions
-    kv_pattern = re.compile(
-        r':configKey\s+"([^"]*?)"\s*;\s*:configValue\s+"((?:[^"\\]|\\.)*)"\s*',
-    )
-    for kv_m in kv_pattern.finditer(raw_ttl):
-        kv_pos = kv_m.start()
-        key, value = kv_m.group(1), kv_m.group(2)
-        # Find the nearest preceding Config node
-        owner = None
-        for cfg_pos, cfg_local in reversed(config_positions):
-            if cfg_pos <= kv_pos:
-                owner = cfg_local
-                break
-        if owner:
-            result.setdefault(owner, []).append((key, value))
-
-    return result
-
-
-def _find_config_value_for_agent(
-    g: Graph,
-    agent_iri: str,
-    target_key: str,
-    ttl_kv: Dict[str, List[Tuple[str, str]]],
-) -> Optional[str]:
-    """
-    Find the configValue paired with *target_key* for a specific agent,
-    using the raw-TTL-parsed KV pairs to get the correct pairing.
-    """
-    # Get all Config IRIs linked to this agent
-    for row in g.query(AGENT_CONFIG_LINK_QUERY):
-        a_iri = _s(row.agent)
-        if a_iri != agent_iri:
-            continue
-        cfg_iri = _s(row.cfg)
-        # Extract local name from the full IRI (after # or last /)
-        cfg_local = cfg_iri.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
-        if cfg_local in ttl_kv:
-            for kv_key, kv_val in ttl_kv[cfg_local]:
-                if kv_key == target_key:
-                    return kv_val
-    return None
+# ── Strategy 1.5 helpers removed: canonical KG uses separate Config per key ──
 
 
 def _extract_team(g: Graph) -> Tuple[str, str, ProcessType]:
@@ -655,12 +517,19 @@ def _extract_agents(
     g: Graph,
     tools_map: Dict[str, ToolModel],
     lm_map: Dict[str, LanguageModelModel],
-    raw_ttl: str = "",
 ) -> Dict[str, AgentModel]:
-    """Extract LLMAgent individuals with full property resolution."""
+    """Extract LLMAgent individuals from canonical KG pattern.
+
+    Single consolidated SPARQL query extracts all scalar properties:
+      role      → :agentRole literal
+      goal      → :hasAgentGoal → Goal → dcterms:description
+      backstory → :agentPrompt → Prompt → :promptContext
+      delegation/verbose → separate Config individuals per key
+
+    Multi-valued relations (tools, LLM) use separate queries.
+    """
     agents: Dict[str, AgentModel] = {}
 
-    # Primary properties
     for row in g.query(AGENTS_QUERY):
         iri = _s(row.agent)
         if iri in agents:
@@ -669,49 +538,35 @@ def _extract_agents(
         label = _s(row.label)
         role = _s(row.role)
 
-        # Determine var_name: prefer agentID or label
         var_name = agent_id or label or _safe_var(iri)
         var_name = _safe_var(var_name) if not re.match(r'^[a-z_][a-z0-9_]*$', var_name) else var_name
+
+        # Parse allow_delegation
+        deleg_val = _s(row.delegation).strip().lower()
+        allow_delegation = None
+        if deleg_val:
+            allow_delegation = deleg_val in ("true", "1", "yes")
+
+        # Parse verbose
+        verbose_val = _s(row.verbose).strip().lower()
+        verbose = None
+        if verbose_val:
+            verbose = verbose_val not in ("false", "0", "no", "none")
 
         agents[iri] = AgentModel(
             iri=iri,
             var_name=var_name,
             agent_id=agent_id,
             role=role,
-            goal="",
-            backstory="",
+            goal=_s(row.goalDesc),
+            backstory=_s(row.backstory),
             tool_var_names=[],
             llm=None,
-            allow_delegation=None,
+            allow_delegation=allow_delegation,
+            verbose=verbose,
         )
 
-    # Goal from :hasAgentGoal → Goal → dcterms:description
-    for row in g.query(AGENT_GOAL_FROM_GOAL_QUERY):
-        iri = _s(row.agent)
-        if iri in agents and not agents[iri].goal:
-            agents[iri].goal = _s(row.goalDesc)
-
-    # Config fallback for role/goal/backstory
-    for row in g.query(AGENT_CONFIG_QUERY):
-        iri = _s(row.agent)
-        if iri not in agents:
-            continue
-        key = _s(row.key).lower()
-        value = _s(row.value)
-        if key == "goal" and not agents[iri].goal:
-            agents[iri].goal = value
-        elif key == "backstory" and not agents[iri].backstory:
-            agents[iri].backstory = value
-        elif key == "role" and not agents[iri].role:
-            agents[iri].role = value
-
-    # Backstory from prompt
-    for row in g.query(AGENT_BACKSTORY_FROM_PROMPT_QUERY):
-        iri = _s(row.agent)
-        if iri in agents and not agents[iri].backstory:
-            agents[iri].backstory = _s(row.instruction)
-
-    # Agent → Tool links
+    # Agent → Tool links (multi-valued, separate query)
     for row in g.query(AGENT_TOOLS_QUERY):
         iri = _s(row.agent)
         tool_iri = _s(row.tool)
@@ -720,91 +575,12 @@ def _extract_agents(
             if tool_var not in agents[iri].tool_var_names:
                 agents[iri].tool_var_names.append(tool_var)
 
-    # Agent → LanguageModel
+    # Agent → LanguageModel (multi-valued, separate query)
     for row in g.query(AGENT_LLM_QUERY):
         iri = _s(row.agent)
         lm_iri = _s(row.lm)
         if iri in agents and lm_iri in lm_map:
             agents[iri].llm = lm_map[lm_iri]
-
-    # allow_delegation config (Strategy 1: explicit configKey)
-    # Collect boolean-like values per agent first to handle cartesian products
-    # from multi-KV Config nodes (same node has role, goal, backstory, etc.)
-    _deleg_bools: Dict[str, Set[bool]] = {}
-    for row in g.query(AGENT_DELEGATION_QUERY):
-        iri = _s(row.agent)
-        if iri not in agents:
-            continue
-        val = _s(row.value).strip().lower()
-        if val in ("true", "false", "0", "1", "yes", "no"):
-            _deleg_bools.setdefault(iri, set()).add(val in ("true", "1", "yes"))
-    for iri, bools in _deleg_bools.items():
-        if len(bools) == 1:  # unambiguous — only one distinct boolean value
-            agents[iri].allow_delegation = bools.pop()
-        # else: ambiguous (both True & False found from cartesian product) → skip
-
-    # verbose config (Strategy 1: explicit configKey)
-    _verbose_bools: Dict[str, Set[bool]] = {}
-    for row in g.query(AGENT_VERBOSE_QUERY):
-        iri = _s(row.agent)
-        if iri not in agents:
-            continue
-        val = _s(row.value).strip().lower()
-        if val in ("true", "false", "0", "1", "yes", "no", "none") or val.isdigit():
-            if val in ("false", "0", "no", "none"):
-                _verbose_bools.setdefault(iri, set()).add(False)
-            else:
-                _verbose_bools.setdefault(iri, set()).add(True)
-    for iri, bools in _verbose_bools.items():
-        if len(bools) == 1:  # unambiguous
-            agents[iri].verbose = bools.pop()
-        # else: ambiguous → skip, let Strategy 2 handle it
-
-    # Strategy 1.5: parse raw TTL text to recover key→value pairing
-    # RDF loses configKey→configValue pairing on multi-KV nodes, but the
-    # original Turtle syntax keeps them adjacent:
-    #   :configKey "allow_delegation" ; :configValue "False" ;
-    # We use regex on the raw file to extract the actual pairs.
-    if raw_ttl:
-        _ttl_kv = _parse_config_kv_from_ttl(raw_ttl)
-        for iri, agent in agents.items():
-            if agent.allow_delegation is None:
-                _found_deleg = _find_config_value_for_agent(
-                    g, iri, "allow_delegation", _ttl_kv
-                )
-                if _found_deleg is not None:
-                    agent.allow_delegation = _found_deleg.lower() in ("true", "1", "yes")
-            if agent.verbose is None:
-                _found_verbose = _find_config_value_for_agent(
-                    g, iri, "verbose", _ttl_kv
-                )
-                if _found_verbose is not None:
-                    val = _found_verbose.lower()
-                    agent.verbose = val not in ("false", "0", "no", "none")
-
-    # Strategy 2: extract delegation + verbose from text fields
-    # (dcterms:description, rdfs:comment, promptContext, promptInstruction)
-    for row in g.query(AGENT_TEXT_FIELDS_QUERY):
-        iri = _s(row.agent)
-        if iri not in agents:
-            continue
-        agent = agents[iri]
-        # Concatenate all text fields for this agent
-        all_text = " ".join(filter(None, [
-            _s(row.desc), _s(row.comment),
-            _s(row.promptCtx), _s(row.promptInstr),
-        ]))
-        if not all_text.strip():
-            continue
-        # Only fill if Strategy 1 didn't find a value
-        if agent.allow_delegation is None:
-            parsed = _parse_bool_from_text(all_text, "allow_delegation")
-            if parsed is not None:
-                agent.allow_delegation = parsed
-        if agent.verbose is None:
-            parsed = _parse_bool_from_text(all_text, "verbose")
-            if parsed is not None:
-                agent.verbose = parsed
 
     # Final defaults
     for agent in agents.values():
@@ -1035,13 +811,6 @@ def extract_crew_project(file_path: str) -> CrewProject:
     """
     g = load_graph(file_path)
 
-    # Read raw TTL text for Strategy 1.5 (Config KV pair recovery)
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            raw_ttl = f.read()
-    except Exception:
-        raw_ttl = ""
-
     # 1. Team metadata
     crew_name, description, process = _extract_team(g)
     crew_var_name = _safe_var(crew_name)
@@ -1053,7 +822,7 @@ def extract_crew_project(file_path: str) -> CrewProject:
     tools_map = _extract_tools(g)
 
     # 4. Agents
-    agents_map = _extract_agents(g, tools_map, lm_map, raw_ttl)
+    agents_map = _extract_agents(g, tools_map, lm_map)
 
     # 5. Tasks
     tasks_map = _extract_tasks(g, agents_map)

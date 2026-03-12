@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 90.72 seconds
 # Model used: gpt-5-mini
 
@@ -23,6 +25,7 @@
 #################################################################
 # Team / Workflow pattern for the Meeting Preparation solution
 #################################################################
+
 
 :MeetingPrepCrew rdf:type :Team ;
     rdfs:label "Meeting Preparation Crew" ;
@@ -50,97 +53,6 @@
 :Goal_MeetingPrepObjective rdf:type :Goal ;
     rdfs:label "Prepare meeting briefing and strategy" ;
     <http://purl.org/dc/terms/description> """Prepare comprehensive research, industry analysis, strategic talking points, and a concise briefing document to support an upcoming meeting. This goal represents the overall purpose of the Meeting Preparation Crew created in main.py.""" .
-
-:Goal_Researcher rdf:type :Goal ;
-    <http://purl.org/dc/terms/description> "Conduct thorough research on people and companies involved in the meeting" .
-
-:Goal_IndustryAnalyst rdf:type :Goal ;
-    <http://purl.org/dc/terms/description> "Analyze the current industry trends, challenges, and opportunities relevant to the meeting context" .
-
-:Goal_MeetingStrategy rdf:type :Goal ;
-    <http://purl.org/dc/terms/description> "Develop talking points, questions, and strategic angles for the meeting" .
-
-:Goal_BriefingCoordinator rdf:type :Goal ;
-    <http://purl.org/dc/terms/description> "Compile research, analysis, and strategy into a concise briefing document" .
-
-#################################################################
-# Agents (LLM Agents)
-#################################################################
-
-:ResearcherAgent rdf:type :LLMAgent ;
-    rdfs:label "Research Specialist (agent)" ;
-    :agentID "researcher_agent_1" ;
-    :agentRole "Research Specialist" ;
-    :hasAgentGoal :Goal_Researcher ;
-    :agentPrompt :Prompt_Researcher_Backstory ;
-    :agentToolUsage :ExaSearchTool ;
-    :hasAgentConfig :Config_OPENAI_API_KEY ;
-    rdfs:comment "Agent created by MeetingPreparationAgents.research_agent()" .
-
-:IndustryAnalystAgent rdf:type :LLMAgent ;
-    rdfs:label "Industry Analyst (agent)" ;
-    :agentID "industry_analyst_agent_1" ;
-    :agentRole "Industry Analyst" ;
-    :hasAgentGoal :Goal_IndustryAnalyst ;
-    :agentPrompt :Prompt_IndustryAnalyst_Backstory ;
-    :agentToolUsage :ExaSearchTool ;
-    :hasAgentConfig :Config_OPENAI_API_KEY ;
-    rdfs:comment "Agent created by MeetingPreparationAgents.industry_analysis_agent()" .
-
-:MeetingStrategyAgent rdf:type :LLMAgent ;
-    rdfs:label "Meeting Strategy Advisor (agent)" ;
-    :agentID "meeting_strategy_agent_1" ;
-    :agentRole "Meeting Strategy Advisor" ;
-    :hasAgentGoal :Goal_MeetingStrategy ;
-    :agentPrompt :Prompt_MeetingStrategy_Backstory ;
-    :agentToolUsage :ExaSearchTool ;
-    :hasAgentConfig :Config_OPENAI_API_KEY ;
-    rdfs:comment "Agent created by MeetingPreparationAgents.meeting_strategy_agent()" .
-
-:BriefingCoordinatorAgent rdf:type :LLMAgent ;
-    rdfs:label "Briefing Coordinator (agent)" ;
-    :agentID "briefing_coordinator_agent_1" ;
-    :agentRole "Briefing Coordinator" ;
-    :hasAgentGoal :Goal_BriefingCoordinator ;
-    :agentPrompt :Prompt_BriefingCoordinator_Backstory ;
-    :agentToolUsage :ExaSearchTool ;
-    :hasAgentConfig :Config_OPENAI_API_KEY ;
-    rdfs:comment "Agent created by MeetingPreparationAgents.summary_and_briefing_agent()" .
-
-#################################################################
-# Agent backstories modeled as Prompts (agentPrompt)
-#################################################################
-
-:Prompt_Researcher_Backstory rdf:type :Prompt ;
-    rdfs:label "Research Specialist Backstory Prompt" ;
-    :promptInstruction """As a Research Specialist, your mission is to uncover detailed information
-about the individuals and entities participating in the meeting. Your insights
-will lay the groundwork for strategic meeting preparation.""" ;
-    :promptContext "Role: Research Specialist; Goal: Conduct thorough research on people and companies involved in the meeting" .
-
-:Prompt_IndustryAnalyst_Backstory rdf:type :Prompt ;
-    rdfs:label "Industry Analyst Backstory Prompt" ;
-    :promptInstruction """As an Industry Analyst, your analysis will identify key trends,
-challenges facing the industry, and potential opportunities that
-could be leveraged during the meeting for strategic advantage.""" ;
-    :promptContext "Role: Industry Analyst; Goal: Analyze industry trends and opportunities" .
-
-:Prompt_MeetingStrategy_Backstory rdf:type :Prompt ;
-    rdfs:label "Meeting Strategy Advisor Backstory Prompt" ;
-    :promptInstruction """As a Strategy Advisor, your expertise will guide the development of
-talking points, insightful questions, and strategic angles
-to ensure the meeting's objectives are achieved.""" ;
-    :promptContext "Role: Meeting Strategy Advisor; Goal: Develop talking points and strategies" .
-
-:Prompt_BriefingCoordinator_Backstory rdf:type :Prompt ;
-    rdfs:label "Briefing Coordinator Backstory Prompt" ;
-    :promptInstruction """As the Briefing Coordinator, your role is to consolidate the research,
-analysis, and strategic insights into a concise briefing document.""" ;
-    :promptContext "Role: Briefing Coordinator; Goal: Compile information into briefing document" .
-
-#################################################################
-# Tool: ExaSearchTool and Capabilities
-#################################################################
 
 :ExaSearchTool rdf:type :Tool ;
     rdfs:label "ExaSearchTool" ;
@@ -174,16 +86,6 @@ validates input is a list of string ids; returns extracted contents (first ~1000
     :configKey "EXA_API_KEY" ;
     :configValue "Your Key (from .env.example)" ;
     rdfs:comment "Environment variable used by ExaSearchTool._exa() to instantiate Exa(api_key=...)" .
-
-:Config_OPENAI_API_KEY rdf:type :Config ;
-    rdfs:label "OPENAI_API_KEY (config)" ;
-    :configKey "OPENAI_API_KEY" ;
-    :configValue "Your key (from .env.example)" ;
-    rdfs:comment "Environment variable referenced in .env.example; used by the broader agent runtime (crewai) to access an LLM, preserved here as configuration." .
-
-#################################################################
-# Tasks and their Prompts (extracted from tasks.py)
-#################################################################
 
 :Task_Research rdf:type :Task ;
     rdfs:label "research_task" ;
@@ -354,3 +256,76 @@ strategic recommendations.""" .
     agento-ext:inputKey "objective" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:Goal_Researcher rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Conduct thorough research on people and companies involved in the meeting" .
+
+:Goal_IndustryAnalyst rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Analyze the current industry trends, challenges, and opportunities relevant to the meeting context" .
+
+:Goal_MeetingStrategy rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Develop talking points, questions, and strategic angles for the meeting" .
+
+:Goal_BriefingCoordinator rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Compile research, analysis, and strategy into a concise briefing document" .
+
+:ResearcherAgent rdf:type :LLMAgent ;
+    rdfs:label "Research Specialist (agent)" ;
+    :agentID "researcher_agent_1" ;
+    :agentRole "Research Specialist" ;
+    :hasAgentGoal :Goal_Researcher ;
+    :agentToolUsage :ExaSearchTool ;
+    :agentPrompt :prompt_ResearcherAgent .
+
+:prompt_ResearcherAgent rdf:type :Prompt ;
+    rdfs:label "Research Specialist Backstory Prompt" ;
+    :promptContext """As a Research Specialist, your mission is to uncover detailed information
+about the individuals and entities participating in the meeting. Your insights
+will lay the groundwork for strategic meeting preparation.""" .
+
+:IndustryAnalystAgent rdf:type :LLMAgent ;
+    rdfs:label "Industry Analyst (agent)" ;
+    :agentID "industry_analyst_agent_1" ;
+    :agentRole "Industry Analyst" ;
+    :hasAgentGoal :Goal_IndustryAnalyst ;
+    :agentToolUsage :ExaSearchTool ;
+    :agentPrompt :prompt_IndustryAnalystAgent .
+
+:prompt_IndustryAnalystAgent rdf:type :Prompt ;
+    rdfs:label "Industry Analyst Backstory Prompt" ;
+    :promptContext """As an Industry Analyst, your analysis will identify key trends,
+challenges facing the industry, and potential opportunities that
+could be leveraged during the meeting for strategic advantage.""" .
+
+:MeetingStrategyAgent rdf:type :LLMAgent ;
+    rdfs:label "Meeting Strategy Advisor (agent)" ;
+    :agentID "meeting_strategy_agent_1" ;
+    :agentRole "Meeting Strategy Advisor" ;
+    :hasAgentGoal :Goal_MeetingStrategy ;
+    :agentToolUsage :ExaSearchTool ;
+    :agentPrompt :prompt_MeetingStrategyAgent .
+
+:prompt_MeetingStrategyAgent rdf:type :Prompt ;
+    rdfs:label "Meeting Strategy Advisor Backstory Prompt" ;
+    :promptContext """As a Strategy Advisor, your expertise will guide the development of
+talking points, insightful questions, and strategic angles
+to ensure the meeting's objectives are achieved.""" .
+
+:BriefingCoordinatorAgent rdf:type :LLMAgent ;
+    rdfs:label "Briefing Coordinator (agent)" ;
+    :agentID "briefing_coordinator_agent_1" ;
+    :agentRole "Briefing Coordinator" ;
+    :hasAgentGoal :Goal_BriefingCoordinator ;
+    :agentToolUsage :ExaSearchTool ;
+    :agentPrompt :prompt_BriefingCoordinatorAgent .
+
+:prompt_BriefingCoordinatorAgent rdf:type :Prompt ;
+    rdfs:label "Briefing Coordinator Backstory Prompt" ;
+    :promptContext """As the Briefing Coordinator, your role is to consolidate the research,
+analysis, and strategic insights into a concise briefing document.""" .

@@ -36,6 +36,8 @@ class MyCrew:
         return Agent(
             config=self.agents_config['cv_reader'],
             tools=[file_read_tool],
+            allow_delegation=False,
+            verbose=True,
         )
 
     @agent
@@ -43,6 +45,8 @@ class MyCrew:
         return Agent(
             config=self.agents_config['matcher'],
             tools=[file_read_tool, csv_search_tool],
+            allow_delegation=False,
+            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

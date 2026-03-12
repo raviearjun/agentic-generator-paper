@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 103.17 seconds
 # Model used: gpt-5-mini
 
@@ -23,6 +25,7 @@
 #################################################################
 # Team / Crew
 #################################################################
+
 
 :MarketingPostsCrewTeam rdf:type :Team ;
     rdfs:label "MarketingPosts Crew (Team)" ;
@@ -39,106 +42,7 @@
     :configValue "sequential" .
 
 #################################################################
-# Agents
-#################################################################
-
-:lead_market_analyst_agent rdf:type :LLMAgent ;
-    rdfs:label "Lead Market Analyst (agent)" ;
-    :agentID "lead_market_analyst" ;
-    :agentRole "Lead Market Analyst" ;
-    :agentPrompt :lead_market_analyst_prompt ;
-    :hasAgentConfig :lead_market_analyst_config ;
-    :agentToolUsage :SerperDevTool ,
-                    :ScrapeWebsiteTool ;
-    :hasAgentGoal :lead_market_analyst_goal ;
-    :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew as lead_market_analyst with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)." .
-
-:chief_marketing_strategist_agent rdf:type :LLMAgent ;
-    rdfs:label "Chief Marketing Strategist (agent)" ;
-    :agentID "chief_marketing_strategist" ;
-    :agentRole "Chief Marketing Strategist" ;
-    :agentPrompt :chief_marketing_strategist_prompt ;
-    :hasAgentConfig :chief_marketing_strategist_config ;
-    :agentToolUsage :SerperDevTool ,
-                    :ScrapeWebsiteTool ;
-    :hasAgentGoal :chief_marketing_strategist_goal ;
-    :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew with tools SerperDevTool and ScrapeWebsiteTool. Verbose true, memory false (captured in config)." .
-
-:creative_content_creator_agent rdf:type :LLMAgent ;
-    rdfs:label "Creative Content Creator (agent)" ;
-    :agentID "creative_content_creator" ;
-    :agentRole "Creative Content Creator" ;
-    :agentPrompt :creative_content_creator_prompt ;
-    :hasAgentConfig :creative_content_creator_config ;
-    :hasAgentGoal :creative_content_creator_goal ;
-    :operatesIn :MarketingProjectContext ;
-    rdfs:comment "Configured in agents.yaml and instantiated in crew without external tools (only default). Verbose true, memory false (captured in config)." .
-
-### Uninstantiated agent present in agents.yaml (configuration only)
-:chief_creative_director_config_agent_prompt rdf:type :Prompt ;
-    rdfs:label "Chief Creative Director (config prompt placeholder)" ;
-    :promptInstruction "Oversee the work done by your team to make sure it is the best possible and aligned with the product goals. Review, approve, ask clarifying questions or delegate follow-up work if necessary. Backstory: You are the Chief Content Officer at a leading digital marketing agency specializing in product branding. Ensure your team crafts the best possible content for the customer." .
-
-:chief_creative_director_config rdf:type :Config ;
-    rdfs:label "chief_creative_director (config entry present in agents.yaml but not instantiated by crew)" ;
-    :configKey "role" ;
-    :configValue "Chief Creative Director" ;
-    :configKey "goal" ;
-    :configValue "Oversee the work done by your team to make sure it is the best possible and aligned with the product goals, review, approve, ask clarifying questions or delegate follow-up work if necessary." ;
-    :configKey "backstory" ;
-    :configValue "You are the Chief Content Officer at a leading digital marketing agency specializing in product branding. You ensure your team crafts the best possible content for the customer." ;
-    rdfs:comment "Present in agents.yaml but no @agent method instantiates this agent in crew.py; included for fidelity of original configuration." .
-
-#################################################################
 # Agent prompts and configs
-#################################################################
-
-:lead_market_analyst_prompt rdf:type :Prompt ;
-    rdfs:label "Lead Market Analyst Prompt" ;
-    :promptInstruction "Lead Market Analyst\nGoal: Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.\nBackstory: As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes." ;
-    :promptContext "Role and backstory for agent" .
-
-:lead_market_analyst_config rdf:type :Config ;
-    rdfs:label "lead_market_analyst config" ;
-    :configKey "config_source" ;
-    :configValue "config/agents.yaml: lead_market_analyst" ;
-    :configKey "verbose" ;
-    :configValue "true" ;
-    :configKey "memory" ;
-    :configValue "false" .
-
-:chief_marketing_strategist_prompt rdf:type :Prompt ;
-    rdfs:label "Chief Marketing Strategist Prompt" ;
-    :promptInstruction "Chief Marketing Strategist\nGoal: Synthesize amazing insights from product analysis to formulate incredible marketing strategies.\nBackstory: You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success." ;
-    :promptContext "Role and backstory for agent" .
-
-:chief_marketing_strategist_config rdf:type :Config ;
-    rdfs:label "chief_marketing_strategist config" ;
-    :configKey "config_source" ;
-    :configValue "config/agents.yaml: chief_marketing_strategist" ;
-    :configKey "verbose" ;
-    :configValue "true" ;
-    :configKey "memory" ;
-    :configValue "false" .
-
-:creative_content_creator_prompt rdf:type :Prompt ;
-    rdfs:label "Creative Content Creator Prompt" ;
-    :promptInstruction "Creative Content Creator\nGoal: Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies.\nBackstory: As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences. Your expertise lies in turning marketing strategies into engaging stories and visual content that capture attention and inspire action." ;
-    :promptContext "Role and backstory for agent" .
-
-:creative_content_creator_config rdf:type :Config ;
-    rdfs:label "creative_content_creator config" ;
-    :configKey "config_source" ;
-    :configValue "config/agents.yaml: creative_content_creator" ;
-    :configKey "verbose" ;
-    :configValue "true" ;
-    :configKey "memory" ;
-    :configValue "false" .
-
-#################################################################
-# Tools
 #################################################################
 
 :SerperDevTool rdf:type :Tool ;
@@ -314,25 +218,6 @@ Marketing copies for each campaign idea.""" .
     rdfs:label "Marketing project goal" ;
     <http://purl.org/dc/terms/description> "Boost awareness and adoption of CrewAI's services among enterprise clients. Create a comprehensive marketing campaign focusing on ease of use, scalability, and integration capabilities." .
 
-:lead_market_analyst_goal rdf:type :Goal ;
-    rdfs:label "Lead Market Analyst personal goal" ;
-    <http://purl.org/dc/terms/description> "Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies." ;
-    :contributesToGoal :marketing_project_goal .
-
-:chief_marketing_strategist_goal rdf:type :Goal ;
-    rdfs:label "Chief Marketing Strategist personal goal" ;
-    <http://purl.org/dc/terms/description> "Synthesize amazing insights from product analysis to formulate incredible marketing strategies." ;
-    :contributesToGoal :marketing_project_goal .
-
-:creative_content_creator_goal rdf:type :Goal ;
-    rdfs:label "Creative Content Creator personal goal" ;
-    <http://purl.org/dc/terms/description> "Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies." ;
-    :contributesToGoal :marketing_project_goal .
-
-#################################################################
-# Workflow Pattern and Steps (sequential order as defined in crew.py)
-#################################################################
-
 :MarketingPostsWorkflow rdf:type :WorkflowPattern ;
     rdfs:label "MarketingPosts Workflow Pattern" ;
     <http://purl.org/dc/terms/description> "Workflow pattern representing the sequential process of tasks defined in the MarketingPosts crew." ;
@@ -404,10 +289,6 @@ Marketing copies for each campaign idea.""" .
 # Linking of capabilities to agents (high-level)
 #################################################################
 
-:lead_market_analyst_agent :hasAgentCapability :analyze_market_capability .
-:chief_marketing_strategist_agent :hasAgentCapability :formulate_strategy_capability .
-:creative_content_creator_agent :hasAgentCapability :create_content_capability .
-
 :analyze_market_capability rdf:type :Capability ;
     rdfs:label "analyze market" ;
     rdfs:comment "Capability to research and analyze markets, competitors, and customers." .
@@ -452,3 +333,74 @@ Marketing copies for each campaign idea.""" .
     agento-ext:inputKey "project_description" ;
     agento-ext:inputValue "CrewAI, a leading provider of multi-agent systems, aims to revolutionize marketing automation for its enterprise clients. This project involves developing an innovative marketing strategy to showcase CrewAI's advanced AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities. The campaign will target tech-savvy decision-makers in medium to large enterprises, highlighting success stories and the transformative potential of CrewAI's platform." ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:lead_market_analyst_goal rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies." .
+
+:chief_marketing_strategist_goal rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Synthesize amazing insights from product analysis to formulate incredible marketing strategies." .
+
+:creative_content_creator_goal rdf:type :Goal ;
+    <http://purl.org/dc/terms/description> "Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies." .
+
+:lead_market_analyst_agent rdf:type :LLMAgent ;
+    rdfs:label "Lead Market Analyst (agent)" ;
+    :agentID "lead_market_analyst" ;
+    :agentRole "Lead Market Analyst" ;
+    :hasAgentGoal :lead_market_analyst_goal ;
+    :hasAgentConfig :cfg_lead_market_analyst_agent_verbose ;
+    :hasAgentCapability :analyze_market_capability ;
+    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
+    :operatesIn :MarketingProjectContext ;
+    :agentPrompt :prompt_lead_market_analyst_agent .
+
+:cfg_lead_market_analyst_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_lead_market_analyst_agent rdf:type :Prompt ;
+    rdfs:label "Lead Market Analyst Prompt" ;
+    :promptContext "As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes." .
+
+:chief_marketing_strategist_agent rdf:type :LLMAgent ;
+    rdfs:label "Chief Marketing Strategist (agent)" ;
+    :agentID "chief_marketing_strategist" ;
+    :agentRole "Chief Marketing Strategist" ;
+    :hasAgentGoal :chief_marketing_strategist_goal ;
+    :hasAgentConfig :cfg_chief_marketing_strategist_agent_verbose ;
+    :hasAgentCapability :formulate_strategy_capability ;
+    :agentToolUsage :SerperDevTool , :ScrapeWebsiteTool ;
+    :operatesIn :MarketingProjectContext ;
+    :agentPrompt :prompt_chief_marketing_strategist_agent .
+
+:cfg_chief_marketing_strategist_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_chief_marketing_strategist_agent rdf:type :Prompt ;
+    rdfs:label "Chief Marketing Strategist Prompt" ;
+    :promptContext "You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success." .
+
+:creative_content_creator_agent rdf:type :LLMAgent ;
+    rdfs:label "Creative Content Creator (agent)" ;
+    :agentID "creative_content_creator" ;
+    :agentRole "Creative Content Creator" ;
+    :hasAgentGoal :creative_content_creator_goal ;
+    :hasAgentConfig :cfg_creative_content_creator_agent_verbose ;
+    :hasAgentCapability :create_content_capability ;
+    :operatesIn :MarketingProjectContext ;
+    :agentPrompt :prompt_creative_content_creator_agent .
+
+:cfg_creative_content_creator_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_creative_content_creator_agent rdf:type :Prompt ;
+    rdfs:label "Creative Content Creator Prompt" ;
+    :promptContext "As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences. Your expertise lies in turning marketing strategies into engaging stories and visual content that capture attention and inspire action." .

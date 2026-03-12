@@ -10,6 +10,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 95.72 seconds
 # Model used: gpt-5-mini
 
@@ -27,6 +29,7 @@
 #################################################################
 
 ### Team (Crew)
+
 :CustomCrewTeam rdf:type :Team ;
     dcterms:title "CustomCrew (example crew from main.py)" ;
     dcterms:description "A Crew defined in main.py that composes two custom agents and two custom tasks. Verbose=True, debug default False." ;
@@ -35,6 +38,7 @@
     :hasSystemConfig :CustomCrewSystemConfig .
 
 ### System config / environment placeholders
+
 :CustomCrewSystemConfig rdf:type :Config ;
     :configKey "OPENAI_API_KEY" ;
     :configValue "{{OPENAI_API_KEY_PLACEHOLDER}}" ;
@@ -95,80 +99,6 @@
 
 # Agents are LLMAgents (Tool subclass per ontology)
 #################################################################
-:CustomAgent1 rdf:type :LLMAgent ;
-    dcterms:title "custom_agent_1 (agent_1_name)" ;
-    :agentID "agent_1_name" ;
-    :agentRole "Define agent 1 role here" ;
-    dcterms:description "Define agent 1 backstory here" ;
-    :hasAgentGoal :CustomAgent1Goal ;
-    :useLanguageModel :LM_gpt35 ;
-    :hasAgentConfig :CustomAgent1_Config ;
-    :agentPrompt :CustomAgent1_Prompt ;
-    :agentToolUsage :DuckDuckGoTool .
-
-:CustomAgent1Goal rdf:type :Goal ;
-    dcterms:description "Define agent 1 goal here" ;
-    dcterms:title "Agent 1 goal" .
-
-:CustomAgent1_Config rdf:type :Config ;
-    :configKey "llm_wrapper" ;
-    :configValue "ChatOpenAI" ;
-    :configKey "model_name" ;
-    :configValue "gpt-3.5-turbo" ;
-    :configKey "temperature" ;
-    :configValue "0.7" ;
-    :configKey "allow_delegation" ;
-    :configValue "False" ;
-    :configKey "verbose" ;
-    :configValue "True" ;
-    dcterms:description "Configuration for agent_1_name (mirrors initialization in agents.py)." .
-
-:CustomAgent1_Prompt rdf:type :Prompt ;
-    :promptInstruction """Role: Define agent 1 role here
-Backstory: Define agent 1 backstory here
-Goal: Define agent 1 goal here""" ;
-    :promptContext "agent settings: allow_delegation=False; verbose=True; llm=ChatOpenAI(gpt-3.5-turbo)" ;
-    dcterms:description "Agent-level prompt assembled from agent metadata. Intended to represent an agent's internal prompt used when acting independently of specific tasks." .
-
-#################################################################
-:CustomAgent2 rdf:type :LLMAgent ;
-    dcterms:title "custom_agent_2 (agent_2_name)" ;
-    :agentID "agent_2_name" ;
-    :agentRole "Define agent 2 role here" ;
-    dcterms:description "Define agent 2 backstory here" ;
-    :hasAgentGoal :CustomAgent2Goal ;
-    :useLanguageModel :LM_gpt35 ;
-    :hasAgentConfig :CustomAgent2_Config ;
-    :agentPrompt :CustomAgent2_Prompt ;
-    :agentToolUsage :DuckDuckGoTool .
-
-:CustomAgent2Goal rdf:type :Goal ;
-    dcterms:description "Define agent 2 goal here" ;
-    dcterms:title "Agent 2 goal" .
-
-:CustomAgent2_Config rdf:type :Config ;
-    :configKey "llm_wrapper" ;
-    :configValue "ChatOpenAI" ;
-    :configKey "model_name" ;
-    :configValue "gpt-3.5-turbo" ;
-    :configKey "temperature" ;
-    :configValue "0.7" ;
-    :configKey "allow_delegation" ;
-    :configValue "False" ;
-    :configKey "verbose" ;
-    :configValue "True" ;
-    dcterms:description "Configuration for agent_2_name (mirrors initialization in agents.py)." .
-
-:CustomAgent2_Prompt rdf:type :Prompt ;
-    :promptInstruction """Role: Define agent 2 role here
-Backstory: Define agent 2 backstory here
-Goal: Define agent 2 goal here""" ;
-    :promptContext "agent settings: allow_delegation=False; verbose=True; llm=ChatOpenAI(gpt-3.5-turbo)" ;
-    dcterms:description "Agent-level prompt assembled from agent metadata. Intended to represent an agent's internal prompt used when acting independently of specific tasks." .
-
-#################################################################
-# Tasks and their prompts
-#################################################################
 
 :Task_1 rdf:type :Task ;
     dcterms:title "task_1_name" ;
@@ -206,6 +136,7 @@ And also this variable: {{var2}}
     dcterms:description "Represents the output produced by task_1_name; used as input to task_2_name. Created by Task_1." .
 
 #################################################################
+
 :Task_2 rdf:type :Task ;
     dcterms:title "task_2_name" ;
     dcterms:description """Take the input from task 1 and do something with it.
@@ -282,3 +213,57 @@ Make sure to do something else.
     agento-ext:inputKey "var2" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:CustomAgent1Goal rdf:type :Goal ;
+    dcterms:title "Agent 1 goal" ;
+    dcterms:description "Define agent 1 goal here" .
+
+:CustomAgent2Goal rdf:type :Goal ;
+    dcterms:title "Agent 2 goal" ;
+    dcterms:description "Define agent 2 goal here" .
+
+:CustomAgent1 rdf:type :LLMAgent ;
+    :agentID "agent_1_name" ;
+    :agentRole "Define agent 1 role here" ;
+    :hasAgentGoal :CustomAgent1Goal ;
+    :hasAgentConfig :cfg_CustomAgent1_delegation , :cfg_CustomAgent1_verbose ;
+    :agentToolUsage :DuckDuckGoTool ;
+    :useLanguageModel :LM_gpt35 ;
+    :agentPrompt :prompt_CustomAgent1 .
+
+:cfg_CustomAgent1_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_CustomAgent1_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_CustomAgent1 rdf:type :Prompt ;
+    :promptContext "Define agent 1 backstory here" .
+
+:CustomAgent2 rdf:type :LLMAgent ;
+    :agentID "agent_2_name" ;
+    :agentRole "Define agent 2 role here" ;
+    :hasAgentGoal :CustomAgent2Goal ;
+    :hasAgentConfig :cfg_CustomAgent2_delegation , :cfg_CustomAgent2_verbose ;
+    :agentToolUsage :DuckDuckGoTool ;
+    :useLanguageModel :LM_gpt35 ;
+    :agentPrompt :prompt_CustomAgent2 .
+
+:cfg_CustomAgent2_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_CustomAgent2_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_CustomAgent2 rdf:type :Prompt ;
+    :promptContext "Define agent 2 backstory here" .

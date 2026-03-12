@@ -8,6 +8,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 113.06 seconds
 # Model used: gpt-5-mini
 
@@ -22,6 +24,7 @@
 #################################################################
 # Team / Crew
 #################################################################
+
 
 :StockAnalysisCrew rdf:type :Team ;
     rdfs:label "Stock Analysis Crew" ;
@@ -173,127 +176,6 @@
 # Agents (LLMAgent instances)
 #################################################################
 
-:LLM_FinancialAgent_1 rdf:type :LLMAgent ;
-    rdfs:label "financial_agent (method: financial_agent)" ;
-    :agentID "financial_agent" ;
-    :agentRole "The Best Financial Analyst" ;
-    dcterms:description "Agent configured using agents.yaml entry 'financial_analyst'. Contains tools for scraping, website search, math calcs, and SEC filing search for AMZN; intended to perform financial analysis tasks." ;
-    :agentPrompt :Prompt_FinancialAgent_System ;
-    :hasAgentConfig :Config_FA_role , :Config_FA_goal , :Config_FA_backstory ;
-    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator , :SEC10QTool_AMZN , :SEC10KTool_AMZN ;
-    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
-    :useLanguageModel :LM_Ollama_llama3_1 .
-
-:LLM_FinancialAnalystAgent rdf:type :LLMAgent ;
-    rdfs:label "financial_analyst_agent (method: financial_analyst_agent)" ;
-    :agentID "financial_analyst_agent" ;
-    :agentRole "The Best Financial Analyst" ;
-    dcterms:description "Second agent factory in code with same configuration name 'financial_analyst'. Similar toolset but some tool instantiations use no explicit stock_name (generic SEC tools)." ;
-    :agentPrompt :Prompt_FinancialAnalystAgent_System ;
-    :hasAgentConfig :Config_FA_role , :Config_FA_goal , :Config_FA_backstory ;
-    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator , :SEC10QTool_Generic , :SEC10KTool_Generic ;
-    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
-    :useLanguageModel :LM_Ollama_llama3_1 .
-
-:LLM_ResearchAnalystAgent rdf:type :LLMAgent ;
-    rdfs:label "research_analyst_agent" ;
-    :agentID "research_analyst_agent" ;
-    :agentRole "Staff Research Analyst" ;
-    dcterms:description "Agent configured using agents.yaml entry 'research_analyst'. Tools: scraping, and SEC filings (10-Q, 10-K for AMZN). WebsiteSearch tool is commented out in the code, so not included here." ;
-    :agentPrompt :Prompt_ResearchAnalyst_System ;
-    :hasAgentConfig :Config_RA_role , :Config_RA_goal , :Config_RA_backstory ;
-    :agentToolUsage :Tool_ScrapeWebsite , :SEC10QTool_AMZN , :SEC10KTool_AMZN ;
-    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
-    :useLanguageModel :LM_Ollama_llama3_1 .
-
-:LLM_InvestmentAdvisorAgent rdf:type :LLMAgent ;
-    rdfs:label "investment_advisor_agent" ;
-    :agentID "investment_advisor_agent" ;
-    :agentRole "Private Investment Advisor" ;
-    dcterms:description "Agent configured using agents.yaml entry 'investment_advisor'. Tools: scraping, website search, calculator. Responsible for synthesizing analyses into a recommendation." ;
-    :agentPrompt :Prompt_InvestmentAdvisor_System ;
-    :hasAgentConfig :Config_IA_role , :Config_IA_goal , :Config_IA_backstory ;
-    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator ;
-    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation ;
-    :useLanguageModel :LM_Ollama_llama3_1 .
-
-#################################################################
-# Agent configuration entries (preserve YAML fields as Config individuals)
-#################################################################
-
-:Config_FA_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "The Best Financial Analyst" ;
-    dcterms:description "agents.yaml: financial_analyst.role" .
-
-:Config_FA_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Impress all customers with your financial data and market trends analysis" ;
-    dcterms:description "agents.yaml: financial_analyst.goal" .
-
-:Config_FA_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." ;
-    dcterms:description "agents.yaml: financial_analyst.backstory" .
-
-:Config_RA_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Staff Research Analyst" ;
-    dcterms:description "agents.yaml: research_analyst.role" .
-
-:Config_RA_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Being the best at gathering, interpreting data and amazing your customer with it" ;
-    dcterms:description "agents.yaml: research_analyst.goal" .
-
-:Config_RA_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "Known as the BEST research analyst, you're skilled in sifting through news, company announcements, and market sentiments. Now you're working on a super important customer." ;
-    dcterms:description "agents.yaml: research_analyst.backstory" .
-
-:Config_IA_role rdf:type :Config ;
-    :configKey "role" ;
-    :configValue "Private Investment Advisor" ;
-    dcterms:description "agents.yaml: investment_advisor.role" .
-
-:Config_IA_goal rdf:type :Config ;
-    :configKey "goal" ;
-    :configValue "Impress your customers with full analyses over stocks and complete investment recommendations" ;
-    dcterms:description "agents.yaml: investment_advisor.goal" .
-
-:Config_IA_backstory rdf:type :Config ;
-    :configKey "backstory" ;
-    :configValue "You're the most experienced investment advisor and you combine various analytical insights to formulate strategic investment advice. You are now working for a super important customer you need to impress." ;
-    dcterms:description "agents.yaml: investment_advisor.backstory" .
-
-#################################################################
-# Prompts (system prompts for agents and task prompts)
-#################################################################
-
-:Prompt_FinancialAgent_System rdf:type :Prompt ;
-    rdfs:label "Financial Agent system prompt" ;
-    :promptInstruction "Role: The Best Financial Analyst\nGoal: Impress all customers with your financial data and market trends analysis\nBackstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." ;
-    :promptContext "This prompt is used as the agent/system instruction for the financial agent to guide independent behaviour." .
-
-:Prompt_FinancialAnalystAgent_System rdf:type :Prompt ;
-    rdfs:label "Financial Analyst Agent (duplicate) system prompt" ;
-    :promptInstruction "Role: The Best Financial Analyst\nGoal: Impress all customers with your financial data and market trends analysis\nBackstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." ;
-    :promptContext "This prompt is produced from the second factory for financial_analyst_agent in the code (duplicate configuration)." .
-
-:Prompt_ResearchAnalyst_System rdf:type :Prompt ;
-    rdfs:label "Research Analyst system prompt" ;
-    :promptInstruction "Role: Staff Research Analyst\nGoal: Being the best at gathering, interpreting data and amazing your customer with it\nBackstory: Known as the BEST research analyst, you're skilled in sifting through news, company announcements, and market sentiments. Now you're working on a super important customer." ;
-    :promptContext "System prompt for the research analyst agent." .
-
-:Prompt_InvestmentAdvisor_System rdf:type :Prompt ;
-    rdfs:label "Investment Advisor system prompt" ;
-    :promptInstruction "Role: Private Investment Advisor\nGoal: Impress your customers with full analyses over stocks and complete investment recommendations\nBackstory: You're the most experienced investment advisor and you combine various analytical insights to formulate strategic investment advice. You are now working for a super important customer you need to impress." ;
-    :promptContext "System prompt for the investment advisor agent." .
-
-#################################################################
-# Tasks and Task Prompts (from config/tasks.yaml)
-#################################################################
-
 :Task_financial_analysis rdf:type :Task ;
     rdfs:label "financial_analysis" ;
     dcterms:description """
@@ -398,8 +280,11 @@
     :stepOrder 4 .
 
 # Sequential links between steps
+
 :Step_1_Research :nextStep :Step_2_FilingsAnalysis .
+
 :Step_2_FilingsAnalysis :nextStep :Step_3_FinancialAnalysis .
+
 :Step_3_FinancialAnalysis :nextStep :Step_4_Recommend .
 
 #################################################################
@@ -407,19 +292,27 @@
 #################################################################
 
 # Research task uses scraping and website search tools
+
 :Task_research :requiresResource :News_Summary_Resource .
+
 :Task_research :performedBy :Tool_ScrapeWebsite .  # semantically: the task uses the tool to perform work (best available mapping)
+
 :Task_research :requiresResource :AMZN_10Q_KB .
 
 # Filings analysis task relies on SEC RAG tools and their KBs
+
 :Task_filings_analysis :performedBy :SEC10KTool_AMZN , :SEC10QTool_AMZN .
+
 :Task_filings_analysis :requiresResource :AMZN_10K_KB , :AMZN_10Q_KB .
 
 # Financial analysis task uses calculator and other tools for numeric metrics
+
 :Task_financial_analysis :performedBy :Tool_Calculator , :Tool_ScrapeWebsite , :Tool_WebsiteSearch .
+
 :Task_financial_analysis :requiresResource :FinancialAnalysis_ReportResource .
 
 # Recommend task synthesizes prior outputs
+
 :Task_recommend :performedBy :Tool_Calculator , :Tool_WebsiteSearch .
 
 #################################################################
@@ -427,6 +320,7 @@
 #################################################################
 
 # The crew's main entry 'run' uses inputs: query and company_stock (example: AMZN)
+
 :Input_Query rdf:type :Context ;
     rdfs:label "input:query" ;
     dcterms:description "User input prompt example: 'What is the company you want to analyze?'" .
@@ -447,3 +341,81 @@
     agento-ext:inputKey "company_stock" ;
     agento-ext:inputValue "AMZN" ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_LLM_FinancialAgent_1 rdf:type :Goal ;
+    dcterms:title "financial_agent (method: financial_agent) goal" ;
+    dcterms:description "Impress all customers with your financial data and market trends analysis" .
+
+:LLM_FinancialAgent_1 rdf:type :LLMAgent ;
+    rdfs:label "financial_agent (method: financial_agent)" ;
+    :agentID "financial_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :hasAgentGoal :goal_LLM_FinancialAgent_1 ;
+    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
+    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator , :SEC10QTool_AMZN , :SEC10KTool_AMZN ;
+    :useLanguageModel :LM_Ollama_llama3_1 ;
+    :agentPrompt :prompt_LLM_FinancialAgent_1 .
+
+:prompt_LLM_FinancialAgent_1 rdf:type :Prompt ;
+    rdfs:label "Financial Agent system prompt" ;
+    :promptContext "The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." .
+
+:goal_LLM_FinancialAnalystAgent rdf:type :Goal ;
+    dcterms:title "financial_analyst_agent (method: financial_analyst_agent) goal" ;
+    dcterms:description "Impress all customers with your financial data and market trends analysis" .
+
+:LLM_FinancialAnalystAgent rdf:type :LLMAgent ;
+    rdfs:label "financial_analyst_agent (method: financial_analyst_agent)" ;
+    :agentID "financial_analyst_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :hasAgentGoal :goal_LLM_FinancialAnalystAgent ;
+    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
+    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator , :SEC10QTool_Generic , :SEC10KTool_Generic ;
+    :useLanguageModel :LM_Ollama_llama3_1 ;
+    :agentPrompt :prompt_LLM_FinancialAnalystAgent .
+
+:prompt_LLM_FinancialAnalystAgent rdf:type :Prompt ;
+    rdfs:label "Financial Analyst Agent (duplicate) system prompt" ;
+    :promptContext "The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." .
+
+:goal_LLM_ResearchAnalystAgent rdf:type :Goal ;
+    dcterms:title "research_analyst_agent goal" ;
+    dcterms:description "Being the best at gathering, interpreting data and amazing your customer with it" .
+
+:LLM_ResearchAnalystAgent rdf:type :LLMAgent ;
+    rdfs:label "research_analyst_agent" ;
+    :agentID "research_analyst_agent" ;
+    :agentRole "Staff Research Analyst" ;
+    :hasAgentGoal :goal_LLM_ResearchAnalystAgent ;
+    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_SEC10Q_Search , :Capability_SEC10K_Search ;
+    :agentToolUsage :Tool_ScrapeWebsite , :SEC10QTool_AMZN , :SEC10KTool_AMZN ;
+    :useLanguageModel :LM_Ollama_llama3_1 ;
+    :agentPrompt :prompt_LLM_ResearchAnalystAgent .
+
+:prompt_LLM_ResearchAnalystAgent rdf:type :Prompt ;
+    rdfs:label "Research Analyst system prompt" ;
+    :promptContext "Known as the BEST research analyst, you're skilled in sifting through news, company announcements, and market sentiments. Now you're working on a super important customer." .
+
+:goal_LLM_InvestmentAdvisorAgent rdf:type :Goal ;
+    dcterms:title "investment_advisor_agent goal" ;
+    dcterms:description "Impress your customers with full analyses over stocks and complete investment recommendations" .
+
+:LLM_InvestmentAdvisorAgent rdf:type :LLMAgent ;
+    rdfs:label "investment_advisor_agent" ;
+    :agentID "investment_advisor_agent" ;
+    :agentRole "Private Investment Advisor" ;
+    :hasAgentGoal :goal_LLM_InvestmentAdvisorAgent ;
+    :hasAgentCapability :Capability_ScrapeWebsite , :Capability_WebsiteSearch , :Capability_Calculation ;
+    :agentToolUsage :Tool_ScrapeWebsite , :Tool_WebsiteSearch , :Tool_Calculator ;
+    :useLanguageModel :LM_Ollama_llama3_1 ;
+    :agentPrompt :prompt_LLM_InvestmentAdvisorAgent .
+
+:prompt_LLM_InvestmentAdvisorAgent rdf:type :Prompt ;
+    rdfs:label "Investment Advisor system prompt" ;
+    :promptContext "You're the most experienced investment advisor and you combine various analytical insights to formulate strategic investment advice. You are now working for a super important customer you need to impress." .

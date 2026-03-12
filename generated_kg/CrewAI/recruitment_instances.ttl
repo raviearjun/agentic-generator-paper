@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 104.84 seconds
 # Model used: gpt-5-mini
 
@@ -23,6 +25,7 @@
 #################################################################
 # Recruitment crew instance graph
 #################################################################
+
 
 :RecruitmentCrew a :Team ;
     rdfs:label "Recruitment Crew" ;
@@ -42,101 +45,6 @@
 
 #################################################################
 # Agents (LLMAgents)
-#################################################################
-
-:agent_researcher a :LLMAgent ;
-    :agentID "researcher" ;
-    :agentRole "Job Candidate Researcher" ;
-    :hasAgentGoal :goal_research_candidates ;
-    :agentPrompt :prompt_agent_researcher ;
-    :hasAgentConfig :config_researcher ;
-    :agentToolUsage :tool_serperdev , :tool_scrapewebsite , :tool_linkedin ;
-    :hasAgentCapability :cap_research ;
-    rdfs:label "Researcher Agent" .
-
-:agent_matcher a :LLMAgent ;
-    :agentID "matcher" ;
-    :agentRole "Candidate Matcher and Scorer" ;
-    :hasAgentGoal :goal_match_and_score ;
-    :agentPrompt :prompt_agent_matcher ;
-    :hasAgentConfig :config_matcher ;
-    :agentToolUsage :tool_serperdev , :tool_scrapewebsite ;
-    :hasAgentCapability :cap_match_score ;
-    rdfs:label "Matcher Agent" .
-
-:agent_communicator a :LLMAgent ;
-    :agentID "communicator" ;
-    :agentRole "Candidate Outreach Strategist" ;
-    :hasAgentGoal :goal_outreach_strategy ;
-    :agentPrompt :prompt_agent_communicator ;
-    :hasAgentConfig :config_communicator ;
-    :agentToolUsage :tool_serperdev , :tool_scrapewebsite ;
-    :hasAgentCapability :cap_outreach ;
-    rdfs:label "Communicator Agent" .
-
-:agent_reporter a :LLMAgent ;
-    :agentID "reporter" ;
-    :agentRole "Candidate Reporting Specialist" ;
-    :hasAgentGoal :goal_report_candidates ;
-    :agentPrompt :prompt_agent_reporter ;
-    :hasAgentConfig :config_reporter ;
-    :hasAgentCapability :cap_report ;
-    rdfs:label "Reporter Agent" .
-
-#################################################################
-# Agent Goals
-#################################################################
-
-:goal_research_candidates a :Goal ;
-    rdfs:label "Find potential candidates for the job" ;
-    <http://purl.org/dc/terms/description> "Find potential candidates for the job specified in inputs (job_requirements). Use multiple public resources to assemble candidate brief profiles and contact info." .
-
-:goal_match_and_score a :Goal ;
-    rdfs:label "Match the candidates to the best jobs and score them" ;
-    <http://purl.org/dc/terms/description> "Evaluate candidates relative to the job_requirements, compute scores and rank candidates with justifications." .
-
-:goal_outreach_strategy a :Goal ;
-    rdfs:label "Develop outreach strategies for the selected candidates" ;
-    <http://purl.org/dc/terms/description> "Produce outreach methods and message templates tailored to prioritized candidates." .
-
-:goal_report_candidates a :Goal ;
-    rdfs:label "Report the best candidates to the recruiters" ;
-    <http://purl.org/dc/terms/description> "Assemble a concise report for recruiters with profiles, scores, and outreach plan; follow output formatting instruction from tasks configuration." .
-
-#################################################################
-# Agent Prompts (agent base prompt composed from agent config fields)
-#################################################################
-
-:prompt_agent_researcher a :Prompt ;
-    :promptInstruction """role: Job Candidate Researcher
-goal: Find potential candidates for the job
-backstory: You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions.""" ;
-    :promptContext "Agent-level base instruction for researcher." ;
-    rdfs:label "Researcher Agent Prompt" .
-
-:prompt_agent_matcher a :Prompt ;
-    :promptInstruction """role: Candidate Matcher and Scorer
-goal: Match the candidates to the best jobs and score them
-backstory: You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach.""" ;
-    :promptContext "Agent-level base instruction for matcher." ;
-    rdfs:label "Matcher Agent Prompt" .
-
-:prompt_agent_communicator a :Prompt ;
-    :promptInstruction """role: Candidate Outreach Strategist
-goal: Develop outreach strategies for the selected candidates
-backstory: You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates.""" ;
-    :promptContext "Agent-level base instruction for communicator." ;
-    rdfs:label "Communicator Agent Prompt" .
-
-:prompt_agent_reporter a :Prompt ;
-    :promptInstruction """role: Candidate Reporting Specialist
-goal: Report the best candidates to the recruiters
-backstory: You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue.""" ;
-    :promptContext "Agent-level base instruction for reporter." ;
-    rdfs:label "Reporter Agent Prompt" .
-
-#################################################################
-# Capabilities
 #################################################################
 
 :cap_research a :Capability ;
@@ -178,8 +86,11 @@ backstory: You are proficient at compiling and presenting detailed reports for r
     :hasCapability :cap_linkedin_retrieval .
 
 # Capabilities used by tools
+
 :cap_searching a :Capability ; rdfs:label "search_api" .
+
 :cap_web_scraping a :Capability ; rdfs:label "web_scraping" .
+
 :cap_linkedin_retrieval a :Capability ; rdfs:label "retrieve_linkedin_profiles" .
 
 #################################################################
@@ -206,38 +117,6 @@ backstory: You are proficient at compiling and presenting detailed reports for r
 
 #################################################################
 # Agent-specific Config (from config/agents.yaml)
-#################################################################
-
-:config_researcher a :Config ;
-    :configKey "role" ; :configValue "Job Candidate Researcher" ;
-    :configKey "goal" ; :configValue "Find potential candidates for the job" ;
-    :configKey "backstory" ; :configValue "You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions." ;
-    :configKey "allow_delegation" ; :configValue "False" ;
-    :configKey "verbose" ; :configValue "True" .
-
-:config_matcher a :Config ;
-    :configKey "role" ; :configValue "Candidate Matcher and Scorer" ;
-    :configKey "goal" ; :configValue "Match the candidates to the best jobs and score them" ;
-    :configKey "backstory" ; :configValue "You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach." ;
-    :configKey "allow_delegation" ; :configValue "False" ;
-    :configKey "verbose" ; :configValue "True" .
-
-:config_communicator a :Config ;
-    :configKey "role" ; :configValue "Candidate Outreach Strategist" ;
-    :configKey "goal" ; :configValue "Develop outreach strategies for the selected candidates" ;
-    :configKey "backstory" ; :configValue "You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates." ;
-    :configKey "allow_delegation" ; :configValue "False" ;
-    :configKey "verbose" ; :configValue "True" .
-
-:config_reporter a :Config ;
-    :configKey "role" ; :configValue "Candidate Reporting Specialist" ;
-    :configKey "goal" ; :configValue "Report the best candidates to the recruiters" ;
-    :configKey "backstory" ; :configValue "You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue." ;
-    :configKey "allow_delegation" ; :configValue "False" ;
-    :configKey "verbose" ; :configValue "True" .
-
-#################################################################
-# Tasks (from config/tasks.yaml and crew binding)
 #################################################################
 
 :task_research_candidates a :Task ;
@@ -464,15 +343,13 @@ Summarize the findings from the previous tasks and provide clear recommendations
 #################################################################
 
 # Indicate participation: agents participated in tasks (beam:participatedIn domain is prov:Agent)
-:agent_researcher beam:participatedIn :task_research_candidates .
-:agent_matcher beam:participatedIn :task_match_and_score .
-:agent_communicator beam:participatedIn :task_outreach_strategy .
-:agent_reporter beam:participatedIn :task_report_candidates .
 
-# Tasks produce resources
 :task_research_candidates :producedResource :resource_candidates .
+
 :task_match_and_score :producedResource :resource_scored_candidates .
+
 :task_outreach_strategy :producedResource :resource_outreach_strategy .
+
 :task_report_candidates :producedResource :resource_final_report .
 
 #################################################################
@@ -520,3 +397,108 @@ Summarize the findings from the previous tasks and provide clear recommendations
     - Professional development opportunities.
 """ ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_research_candidates a :Goal ;
+    <http://purl.org/dc/terms/description> "Find potential candidates for the job" .
+
+:goal_match_and_score a :Goal ;
+    <http://purl.org/dc/terms/description> "Match the candidates to the best jobs and score them" .
+
+:goal_outreach_strategy a :Goal ;
+    <http://purl.org/dc/terms/description> "Develop outreach strategies for the selected candidates" .
+
+:goal_report_candidates a :Goal ;
+    <http://purl.org/dc/terms/description> "Report the best candidates to the recruiters" .
+
+:agent_researcher a :LLMAgent ;
+    rdfs:label "Researcher Agent" ;
+    :agentID "researcher" ;
+    :agentRole "Job Candidate Researcher" ;
+    :hasAgentGoal :goal_research_candidates ;
+    :hasAgentConfig :cfg_agent_researcher_delegation , :cfg_agent_researcher_verbose ;
+    :hasAgentCapability :cap_research ;
+    :agentToolUsage :tool_serperdev , :tool_scrapewebsite , :tool_linkedin ;
+    :agentPrompt :prompt_agent_researcher .
+
+:cfg_agent_researcher_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_researcher_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_researcher a :Prompt ;
+    rdfs:label "Researcher Agent Prompt" ;
+    :promptContext "You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions." .
+
+:agent_matcher a :LLMAgent ;
+    rdfs:label "Matcher Agent" ;
+    :agentID "matcher" ;
+    :agentRole "Candidate Matcher and Scorer" ;
+    :hasAgentGoal :goal_match_and_score ;
+    :hasAgentConfig :cfg_agent_matcher_delegation , :cfg_agent_matcher_verbose ;
+    :hasAgentCapability :cap_match_score ;
+    :agentToolUsage :tool_serperdev , :tool_scrapewebsite ;
+    :agentPrompt :prompt_agent_matcher .
+
+:cfg_agent_matcher_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_matcher_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_matcher a :Prompt ;
+    rdfs:label "Matcher Agent Prompt" ;
+    :promptContext "You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach." .
+
+:agent_communicator a :LLMAgent ;
+    rdfs:label "Communicator Agent" ;
+    :agentID "communicator" ;
+    :agentRole "Candidate Outreach Strategist" ;
+    :hasAgentGoal :goal_outreach_strategy ;
+    :hasAgentConfig :cfg_agent_communicator_delegation , :cfg_agent_communicator_verbose ;
+    :hasAgentCapability :cap_outreach ;
+    :agentToolUsage :tool_serperdev , :tool_scrapewebsite ;
+    :agentPrompt :prompt_agent_communicator .
+
+:cfg_agent_communicator_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_communicator_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_communicator a :Prompt ;
+    rdfs:label "Communicator Agent Prompt" ;
+    :promptContext "You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates." .
+
+:agent_reporter a :LLMAgent ;
+    rdfs:label "Reporter Agent" ;
+    :agentID "reporter" ;
+    :agentRole "Candidate Reporting Specialist" ;
+    :hasAgentGoal :goal_report_candidates ;
+    :hasAgentConfig :cfg_agent_reporter_delegation , :cfg_agent_reporter_verbose ;
+    :hasAgentCapability :cap_report ;
+    :agentPrompt :prompt_agent_reporter .
+
+:cfg_agent_reporter_delegation a :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_agent_reporter_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_agent_reporter a :Prompt ;
+    rdfs:label "Reporter Agent Prompt" ;
+    :promptContext "You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue." .

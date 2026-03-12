@@ -32,6 +32,7 @@ class MarketingPostsCrewTeam:
         return Agent(
             config=self.agents_config['lead_market_analyst'],
             tools=[serper_dev_tool, scrape_website_tool],
+            verbose=True,
         )
 
     @agent
@@ -39,12 +40,14 @@ class MarketingPostsCrewTeam:
         return Agent(
             config=self.agents_config['chief_marketing_strategist'],
             tools=[serper_dev_tool, scrape_website_tool],
+            verbose=True,
         )
 
     @agent
     def creative_content_creator(self) -> Agent:
         return Agent(
             config=self.agents_config['creative_content_creator'],
+            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

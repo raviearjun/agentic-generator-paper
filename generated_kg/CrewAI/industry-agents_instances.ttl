@@ -9,6 +9,8 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 100.66 seconds
 # Model used: gpt-5-mini
 
@@ -23,6 +25,7 @@
 #################################################################
 # Team / Crew
 #################################################################
+
 
 :BlogCrew rdf:type :Team ;
     rdfs:label "Blog Crew (Industry specialized agents example)" ;
@@ -58,62 +61,6 @@
 
 #################################################################
 # Agents (LLM agents)
-#################################################################
-
-:BiomedicalMarketingAgent rdf:type :LLMAgent ;
-    rdfs:label "Biomedical Marketing Agent" ;
-    :agentID "biomed_agent_1" ;
-    :agentRole "Industry researcher focused on biomedical trends and their applications in AI" ;
-    dct:description """backstory: As a former biomedical product marketer turned AI strategist, you understand the complex language and regulatory landscape of biomedical innovation. With a keen eye on genomics, clinical research, and medical devices, it now leverages LLMs and vector search to explore how Weaviate’s capabilities can streamline scientific discovery and patient-centric campaigns.""" ;
-    :hasAgentConfig :BiomedAgentConfig_llm , :BiomedAgentConfig_verbose , :BiomedAgentConfig_tools ;
-    :useLanguageModel :GPT4OMini ;
-    :agentPrompt :BiomedAgentPrompt .
-
-:HealthcareMarketingAgent rdf:type :LLMAgent ;
-    rdfs:label "Healthcare Marketing Agent" ;
-    :agentID "healthcare_agent_1" ;
-    :agentRole "AI-savvy marketer specializing in healthcare systems, digital health, and patient engagement." ;
-    dct:description """backstory: Rooted in public health communications, this agent has evolved into a digital health consultant. You focus on how retrieval-augmented generation (RAG), semantic search, and hybrid models can be applied to solve healthcare-specific challenges—from patient triage to clinical support systems.""" ;
-    :hasAgentConfig :HealthcareAgentConfig_llm , :HealthcareAgentConfig_verbose , :HealthcareAgentConfig_tools ;
-    :useLanguageModel :GPT4OMini ;
-    :agentPrompt :HealthcareAgentPrompt .
-
-:FinancialMarketingAgent rdf:type :LLMAgent ;
-    rdfs:label "Financial Marketing Agent" ;
-    :agentID "financial_agent_1" ;
-    :agentRole "Insight analyst exploring innovations in finance, wealth tech, and regulatory tech" ;
-    dct:description """backstory: With experience at a fintech startup and a background in capital markets, this agent specializes in using structured + unstructured data to surface insights for analysts and advisors. Now, it’s looking into how vector databases and LLMs can automate tasks like fraud detection, investor personalization, and market research.""" ;
-    :hasAgentConfig :FinancialAgentConfig_llm , :FinancialAgentConfig_verbose , :FinancialAgentConfig_tools ;
-    :useLanguageModel :GPT4OMini ;
-    :agentPrompt :FinancialAgentPrompt .
-
-#################################################################
-# Agent Prompts (agent-level prompt structures capturing role, goal, backstory)
-#################################################################
-
-:BiomedAgentPrompt rdf:type :Prompt ;
-    :promptInstruction """Role: Industry researcher focused on biomedical trends and their applications in AI.
-Goal: Continuously track the latest biomedical advancements and identify how Weaviate’s features can support AI applications in biomedical research, diagnostics, and personalized medicine.
-Backstory: As a former biomedical product marketer turned AI strategist, you understand the complex language and regulatory landscape of biomedical innovation. With a keen eye on genomics, clinical research, and medical devices, it now leverages LLMs and vector search to explore how Weaviate’s capabilities can streamline scientific discovery and patient-centric campaigns.
-Usage: Use web search and Weaviate vector search tools to find relevant materials, analyze, and produce an industry-specific analysis for the provided Weaviate feature ({weaviate_feature}).""" ;
-    :promptOutputIndicator "Produce an industry-specific analysis describing why the specified Weaviate feature is useful for biomedical applications and include relevant references and reasoning." .
-
-:HealthcareAgentPrompt rdf:type :Prompt ;
-    :promptInstruction """Role: AI-savvy marketer specializing in healthcare systems, digital health, and patient engagement.
-Goal: Stay updated on healthcare policy shifts, digital health trends, and explore how Weaviate’s features can optimize workflows in hospital systems, EHR integration, and health communication.
-Backstory: Rooted in public health communications, this agent has evolved into a digital health consultant. You focus on how retrieval-augmented generation (RAG), semantic search, and hybrid models can be applied to solve healthcare-specific challenges—from patient triage to clinical support systems.
-Usage: Use web search and Weaviate vector search tools to find relevant materials, analyze, and produce an industry-specific analysis for the provided Weaviate feature ({weaviate_feature}).""" ;
-    :promptOutputIndicator "Produce an industry-specific analysis describing why the specified Weaviate feature is useful for healthcare applications and include relevant references and operational considerations." .
-
-:FinancialAgentPrompt rdf:type :Prompt ;
-    :promptInstruction """Role: Insight analyst exploring innovations in finance, wealth tech, and regulatory tech.
-Goal: Monitor financial sector trends including AI in trading, compliance automation, and client advisory, and assess how Weaviate’s tools can enable cutting-edge financial applications.
-Backstory: With experience at a fintech startup and a background in capital markets, this agent specializes in using structured + unstructured data to surface insights for analysts and advisors. Now, it’s looking into how vector databases and LLMs can automate tasks like fraud detection, investor personalization, and market research.
-Usage: Use web search and Weaviate vector search tools to find relevant materials, analyze, and produce an industry-specific analysis for the provided Weaviate feature ({weaviate_feature}).""" ;
-    :promptOutputIndicator "Produce an industry-specific analysis describing why the specified Weaviate feature is useful for financial applications, focusing on regulatory risk, productization, and integration." .
-
-#################################################################
-# Language Model
 #################################################################
 
 :GPT4OMini rdf:type :LanguageModel ;
@@ -193,55 +140,6 @@ Usage: Use web search and Weaviate vector search tools to find relevant material
 
 #################################################################
 # Agent Configs (agent-specific key/value configs)
-#################################################################
-
-:BiomedAgentConfig_llm rdf:type :Config ;
-    :configKey "llm" ;
-    :configValue "gpt-4o-mini" ;
-    rdfs:label "BioMed Agent Config: llm" .
-
-:BiomedAgentConfig_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" ;
-    rdfs:label "BioMed Agent Config: verbose" .
-
-:BiomedAgentConfig_tools rdf:type :Config ;
-    :configKey "tools" ;
-    :configValue "SerperDevTool, WeaviateVectorSearchTool" ;
-    rdfs:label "BioMed Agent Config: tools" .
-
-:HealthcareAgentConfig_llm rdf:type :Config ;
-    :configKey "llm" ;
-    :configValue "gpt-4o-mini" ;
-    rdfs:label "Healthcare Agent Config: llm" .
-
-:HealthcareAgentConfig_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" ;
-    rdfs:label "Healthcare Agent Config: verbose" .
-
-:HealthcareAgentConfig_tools rdf:type :Config ;
-    :configKey "tools" ;
-    :configValue "SerperDevTool, WeaviateVectorSearchTool" ;
-    rdfs:label "Healthcare Agent Config: tools" .
-
-:FinancialAgentConfig_llm rdf:type :Config ;
-    :configKey "llm" ;
-    :configValue "gpt-4o-mini" ;
-    rdfs:label "Financial Agent Config: llm" .
-
-:FinancialAgentConfig_verbose rdf:type :Config ;
-    :configKey "verbose" ;
-    :configValue "True" ;
-    rdfs:label "Financial Agent Config: verbose" .
-
-:FinancialAgentConfig_tools rdf:type :Config ;
-    :configKey "tools" ;
-    :configValue "SerperDevTool, WeaviateVectorSearchTool" ;
-    rdfs:label "Financial Agent Config: tools" .
-
-#################################################################
-# Tasks (one per agent) and associated Prompts + Outputs
 #################################################################
 
 :BioMedAgentTask rdf:type :Task ;
@@ -378,3 +276,69 @@ Make sure you find any interesting and relevant information using the web and We
     agento-ext:inputKey "weaviate_feature" ;
     agento-ext:inputValue "Hybrid Search" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_BiomedicalMarketingAgent rdf:type :Goal ;
+    dct:title "Biomedical Marketing Agent goal" ;
+    dct:description "Continuously track the latest biomedical advancements and identify how Weaviate’s features can support AI applications in biomedical research, diagnostics, and personalized medicine." .
+
+:BiomedicalMarketingAgent rdf:type :LLMAgent ;
+    rdfs:label "Biomedical Marketing Agent" ;
+    :agentID "biomed_agent_1" ;
+    :agentRole "Industry researcher focused on biomedical trends and their applications in AI" ;
+    :hasAgentGoal :goal_BiomedicalMarketingAgent ;
+    :hasAgentConfig :cfg_BiomedicalMarketingAgent_verbose ;
+    :useLanguageModel :GPT4OMini ;
+    :agentPrompt :prompt_BiomedicalMarketingAgent .
+
+:cfg_BiomedicalMarketingAgent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_BiomedicalMarketingAgent rdf:type :Prompt ;
+    :promptContext "As a former biomedical product marketer turned AI strategist, you understand the complex language and regulatory landscape of biomedical innovation. With a keen eye on genomics, clinical research, and medical devices, it now leverages LLMs and vector search to explore how Weaviate’s capabilities can streamline scientific discovery and patient-centric campaigns." .
+
+:goal_HealthcareMarketingAgent rdf:type :Goal ;
+    dct:title "Healthcare Marketing Agent goal" ;
+    dct:description "Stay updated on healthcare policy shifts, digital health trends, and explore how Weaviate’s features can optimize workflows in hospital systems, EHR integration, and health communication." .
+
+:HealthcareMarketingAgent rdf:type :LLMAgent ;
+    rdfs:label "Healthcare Marketing Agent" ;
+    :agentID "healthcare_agent_1" ;
+    :agentRole "AI-savvy marketer specializing in healthcare systems, digital health, and patient engagement." ;
+    :hasAgentGoal :goal_HealthcareMarketingAgent ;
+    :hasAgentConfig :cfg_HealthcareMarketingAgent_verbose ;
+    :useLanguageModel :GPT4OMini ;
+    :agentPrompt :prompt_HealthcareMarketingAgent .
+
+:cfg_HealthcareMarketingAgent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_HealthcareMarketingAgent rdf:type :Prompt ;
+    :promptContext "Rooted in public health communications, this agent has evolved into a digital health consultant. You focus on how retrieval-augmented generation (RAG), semantic search, and hybrid models can be applied to solve healthcare-specific challenges—from patient triage to clinical support systems." .
+
+:goal_FinancialMarketingAgent rdf:type :Goal ;
+    dct:title "Financial Marketing Agent goal" ;
+    dct:description "Monitor financial sector trends including AI in trading, compliance automation, and client advisory, and assess how Weaviate’s tools can enable cutting-edge financial applications." .
+
+:FinancialMarketingAgent rdf:type :LLMAgent ;
+    rdfs:label "Financial Marketing Agent" ;
+    :agentID "financial_agent_1" ;
+    :agentRole "Insight analyst exploring innovations in finance, wealth tech, and regulatory tech" ;
+    :hasAgentGoal :goal_FinancialMarketingAgent ;
+    :hasAgentConfig :cfg_FinancialMarketingAgent_verbose ;
+    :useLanguageModel :GPT4OMini ;
+    :agentPrompt :prompt_FinancialMarketingAgent .
+
+:cfg_FinancialMarketingAgent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_FinancialMarketingAgent rdf:type :Prompt ;
+    :promptContext "With experience at a fintech startup and a background in capital markets, this agent specializes in using structured + unstructured data to surface insights for analysts and advisors. Now, it’s looking into how vector databases and LLMs can automate tasks like fraud detection, investor personalization, and market research." .

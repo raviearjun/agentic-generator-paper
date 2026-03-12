@@ -9,6 +9,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 143.77 seconds
 # Model used: gpt-5-mini
 
@@ -26,6 +28,7 @@
 # Team / System representing the crew
 ################################################################################
 
+
 :TripPlannerCrew a :Team ;
     <http://purl.org/dc/terms/title> "Trip Planner Crew" ;
     <http://purl.org/dc/terms/description> "A crew composed of multiple LLM agents and tools to plan trips: city selection, local expertise gathering, and travel concierge planning." ;
@@ -35,83 +38,6 @@
 
 ################################################################################
 # Agents (LLM Agents)
-################################################################################
-
-:CitySelectionAgent a :LLMAgent ;
-    :agentID "city_selection_agent" ;
-    :agentRole "City Selection Expert" ;
-    <http://purl.org/dc/terms/description> "An expert in analyzing travel data to pick ideal destinations" ;
-    :agentPrompt :CitySelectionAgent_BackstoryPrompt ;
-    :hasAgentGoal :CitySelectionGoal ;
-    :hasAgentCapability :CitySelectionCapability ;
-    :agentToolUsage :SearchTools , :BrowserTools ;
-    :useLanguageModel :OpenAI_LanguageModel ;
-    :hasAgentConfig :OpenAIConfig ;
-    :interactsWith :LocalExpertAgent , :TravelConciergeAgent .
-
-:LocalExpertAgent a :LLMAgent ;
-    :agentID "local_expert_agent" ;
-    :agentRole "Local Expert at this city" ;
-    <http://purl.org/dc/terms/description> "A knowledgeable local guide with extensive information about the city, it's attractions and customs" ;
-    :agentPrompt :LocalExpertAgent_BackstoryPrompt ;
-    :hasAgentGoal :LocalExpertGoal ;
-    :hasAgentCapability :LocalExpertCapability ;
-    :agentToolUsage :SearchTools , :BrowserTools ;
-    :useLanguageModel :OpenAI_LanguageModel ;
-    :hasAgentConfig :OpenAIConfig ;
-    :hasKnowledge :WebContentSummaryKB ;
-    :interactsWith :CitySelectionAgent , :TravelConciergeAgent .
-
-:TravelConciergeAgent a :LLMAgent ;
-    :agentID "travel_concierge_agent" ;
-    :agentRole "Amazing Travel Concierge" ;
-    <http://purl.org/dc/terms/description> "Specialist in travel planning and logistics with decades of experience" ;
-    :agentPrompt :TravelConciergeAgent_BackstoryPrompt ;
-    :hasAgentGoal :TravelConciergeGoal ;
-    :hasAgentCapability :TravelConciergeCapability ;
-    :agentToolUsage :SearchTools , :BrowserTools , :CalculatorTools ;
-    :useLanguageModel :OpenAI_LanguageModel ;
-    :hasAgentConfig :OpenAIConfig ;
-    :hasKnowledge :TripMemory ;
-    :interactsWith :CitySelectionAgent , :LocalExpertAgent .
-
-################################################################################
-# Agent Backstories encoded as Prompts (backstories stored using agentPrompt)
-################################################################################
-
-:CitySelectionAgent_BackstoryPrompt a :Prompt ;
-    :promptInstruction "An expert in analyzing travel data to pick ideal destinations" ;
-    :promptContext "Role: City Selection Expert; purpose: select the best city based on weather, season, and prices." ;
-    :promptOutputIndicator "Use tools to find weather patterns, seasonal events, and travel costs. Produce a detailed report." .
-
-:LocalExpertAgent_BackstoryPrompt a :Prompt ;
-    :promptInstruction "A knowledgeable local guide with extensive information about the city, it's attractions and customs" ;
-    :promptContext "Role: Local Expert; purpose: compile an in-depth city guide with hidden gems and local insights." ;
-    :promptOutputIndicator "Produce a comprehensive city guide tailored to traveler interests." .
-
-:TravelConciergeAgent_BackstoryPrompt a :Prompt ;
-    :promptInstruction "Specialist in travel planning and logistics with decades of experience" ;
-    :promptContext "Role: Travel Concierge; purpose: produce a full 7-day itinerary, budget breakdown and packing suggestions." ;
-    :promptOutputIndicator "Produce a markdown-formatted 7-day itinerary including hotels, restaurants, weather, packing list, and budget." .
-
-################################################################################
-# Goals
-################################################################################
-
-:CitySelectionGoal a :Goal ;
-    <http://purl.org/dc/terms/title> "Select the best city" ;
-    <http://purl.org/dc/terms/description> "Select the best city based on weather patterns, seasonal events, and travel costs" .
-
-:LocalExpertGoal a :Goal ;
-    <http://purl.org/dc/terms/title> "Provide the best city insights" ;
-    <http://purl.org/dc/terms/description> "Provide in-depth local guide content, hidden gems, and practical tips." .
-
-:TravelConciergeGoal a :Goal ;
-    <http://purl.org/dc/terms/title> "Create amazing travel itineraries" ;
-    <http://purl.org/dc/terms/description> "Create a 7-day travel itinerary with detailed daily plans, budgets, packing suggestions, and logistics." .
-
-################################################################################
-# Capabilities (for agents and tools)
 ################################################################################
 
 :CitySelectionCapability a :Capability ;
@@ -200,11 +126,6 @@
     :configKey "BROWSERLESS_API_KEY" ;
     :configValue "2TVmWmGeQ9ziDXq4bcbbb03e8ff6ea65f0e6de71db1498ce5" ;
     <http://purl.org/dc/terms/description> "API key value provided in .env for Browserless (HTML content fetch) access." .
-
-:OpenAIConfig a :Config ;
-    :configKey "OPENAI_API_KEY" ;
-    :configValue "<OPENAI_API_KEY>" ;
-    <http://purl.org/dc/terms/description> "OpenAI API key provided in .env." .
 
 :EnvConfig a :Config ;
     <http://purl.org/dc/terms/title> ".env system configuration" ;
@@ -431,16 +352,15 @@ Traveler Interests: {interests}
 ################################################################################
 
 # Agents -> Tools (already linked with agentToolUsage), specify that these tools enable capabilities
+
 :SearchTools :hasCapability :SearchInternetCapability .
+
 :BrowserTools :hasCapability :ScrapeAndSummarizeCapability .
+
 :CalculatorTools :hasCapability :CalculateCapability .
 
 # Agents use language model
-:CitySelectionAgent :useLanguageModel :OpenAI_LanguageModel .
-:LocalExpertAgent :useLanguageModel :OpenAI_LanguageModel .
-:TravelConciergeAgent :useLanguageModel :OpenAI_LanguageModel .
 
-# Tasks require/consume resources and produce resources
 :IdentifyTask :requiresResource :SerperAPI ;
     :producedResource :CitySelectionReportResource .
 
@@ -458,13 +378,6 @@ Traveler Interests: {interests}
     <http://purl.org/dc/terms/description> "Report chosen city and related data (flights, weather, attractions) used by LocalExpertAgent and TravelConciergeAgent." .
 
 # Agents store intermediate information in KnowledgeBase / Memory
-:CitySelectionAgent :hasKnowledge :WebContentSummaryKB .
-:LocalExpertAgent :hasKnowledge :WebContentSummaryKB .
-:TravelConciergeAgent :hasKnowledge :TripMemory .
-
-################################################################################
-# Produced outputs mapping (link tasks -> resources)
-################################################################################
 
 :CityGuideResource a beam:Resource ;
     <http://purl.org/dc/terms/description> "Comprehensive city guide produced by Local Expert task - used as input to planning." .
@@ -477,6 +390,7 @@ Traveler Interests: {interests}
 ################################################################################
 
 # Implementation notes preserved as description literals
+
 :SearchTools <http://purl.org/dc/terms/description> """SearchTools.search_internet(query) sends POST to https://google.serper.dev/search with JSON payload { "q": query } and X-API-KEY header (SERPER_API_KEY). Returns top organic results formatted as Title/Link/Snippet for up to 4 results, or an error string if API returns no organic key.""" .
 
 :BrowserTools <http://purl.org/dc/terms/description> """BrowserTools.scrape_and_summarize_website(website) calls Browserless content API, partitions HTML with unstructured.partition.html, splits content into chunks (~8000 char), and for each chunk runs an internal Agent (Principal Researcher) and Task to produce a concise summary. Summaries are concatenated and returned.""" .
@@ -508,3 +422,63 @@ Traveler Interests: {interests}
     agento-ext:inputKey "interests" ;
     agento-ext:inputValue "" ;
     agento-ext:isDefaultValue false .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:CitySelectionGoal a :Goal ;
+    <http://purl.org/dc/terms/title> "Select the best city" ;
+    <http://purl.org/dc/terms/description> "Select the best city based on weather patterns, seasonal events, and travel costs" .
+
+:LocalExpertGoal a :Goal ;
+    <http://purl.org/dc/terms/title> "Provide the best city insights" ;
+    <http://purl.org/dc/terms/description> "Provide in-depth local guide content, hidden gems, and practical tips." .
+
+:TravelConciergeGoal a :Goal ;
+    <http://purl.org/dc/terms/title> "Create amazing travel itineraries" ;
+    <http://purl.org/dc/terms/description> "Create a 7-day travel itinerary with detailed daily plans, budgets, packing suggestions, and logistics." .
+
+:CitySelectionAgent a :LLMAgent ;
+    :agentID "city_selection_agent" ;
+    :agentRole "City Selection Expert" ;
+    :hasAgentGoal :CitySelectionGoal ;
+    :hasAgentCapability :CitySelectionCapability ;
+    :agentToolUsage :SearchTools , :BrowserTools ;
+    :useLanguageModel :OpenAI_LanguageModel ;
+    :hasKnowledge :WebContentSummaryKB ;
+    :interactsWith :LocalExpertAgent , :TravelConciergeAgent ;
+    :agentPrompt :prompt_CitySelectionAgent .
+
+:prompt_CitySelectionAgent a :Prompt ;
+    :promptContext "An expert in analyzing travel data to pick ideal destinations" .
+
+:LocalExpertAgent a :LLMAgent ;
+    :agentID "local_expert_agent" ;
+    :agentRole "Local Expert at this city" ;
+    :hasAgentGoal :LocalExpertGoal ;
+    :hasAgentCapability :LocalExpertCapability ;
+    :agentToolUsage :SearchTools , :BrowserTools ;
+    :useLanguageModel :OpenAI_LanguageModel ;
+    :hasKnowledge :WebContentSummaryKB ;
+    :interactsWith :CitySelectionAgent , :TravelConciergeAgent ;
+    :agentPrompt :prompt_LocalExpertAgent .
+
+:prompt_LocalExpertAgent a :Prompt ;
+    :promptContext "A knowledgeable local guide with extensive information about the city, it's attractions and customs" .
+
+:TravelConciergeAgent a :LLMAgent ;
+    :agentID "travel_concierge_agent" ;
+    :agentRole "Amazing Travel Concierge" ;
+    :hasAgentGoal :TravelConciergeGoal ;
+    :hasAgentCapability :TravelConciergeCapability ;
+    :agentToolUsage :SearchTools , :BrowserTools , :CalculatorTools ;
+    :useLanguageModel :OpenAI_LanguageModel ;
+    :hasKnowledge :TripMemory ;
+    :interactsWith :CitySelectionAgent , :LocalExpertAgent ;
+    :agentPrompt :prompt_TravelConciergeAgent .
+
+:prompt_TravelConciergeAgent a :Prompt ;
+    :promptContext "Specialist in travel planning and logistics with decades of experience" .

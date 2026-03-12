@@ -10,6 +10,8 @@
 @base <http://www.w3id.org/agentic-ai/onto#> .
 @prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .
 
+
+
 # Execution time: 58.64 seconds
 # Model used: gpt-5-mini
 
@@ -27,6 +29,7 @@
 # Team / Crew
 #################################################################
 
+
 :MatchToProposalCrew rdf:type :Team ;
     dcterms:title "MatchToProposal Crew" ;
     dcterms:description "A Crew that coordinates reading CVs and matching them to job opportunities. Constructed with two agents (cv_reader, matcher) and two tasks run sequentially." ;
@@ -36,28 +39,6 @@
 
 #################################################################
 # Agents (LLMAgents)
-#################################################################
-
-:cv_reader_agent rdf:type :LLMAgent ;
-    :agentID "cv_reader" ;
-    :agentRole "CV Reader" ;
-    dcterms:description "Agent responsible for extracting structured information from CV files." ;
-    :agentPrompt :Prompt_cv_reader_agent ;
-    :hasAgentConfig :Config_agents_cv_reader ;
-    :agentToolUsage :FileReadTool ;
-    :useLanguageModel :DefaultLanguageModel .
-
-:matcher_agent rdf:type :LLMAgent ;
-    :agentID "matcher" ;
-    :agentRole "Matcher" ;
-    dcterms:description "Agent responsible for matching the structured CV output to job opportunities and producing a ranked list." ;
-    :agentPrompt :Prompt_matcher_agent ;
-    :hasAgentConfig :Config_agents_matcher ;
-    :agentToolUsage :FileReadTool , :CSVSearchTool ;
-    :useLanguageModel :DefaultLanguageModel .
-
-#################################################################
-# Language Model placeholder (because code does not specify model)
 #################################################################
 
 :DefaultLanguageModel rdf:type :LanguageModel ;
@@ -87,27 +68,6 @@
 # Configurations (Config individuals)
 # Each Config captures key/value pairs from YAML or runtime flags.
 #################################################################
-
-:Config_agents_cv_reader rdf:type :Config ;
-    :configKey "role" ; :configValue "CV Reader" ;
-    :configKey "goal" ; :configValue "Extract relevant information from the CV, such as skills, experience, and education." ;
-    :configKey "backstory" ; :configValue "With years of experience in HR, you excel at quickly identifying key qualifications in resumes." ;
-    :configKey "tools" ; :configValue "FileReadTool" ;
-    :configKey "verbose" ; :configValue "True" ;
-    :configKey "allow_delegation" ; :configValue "False" .
-
-:Config_agents_matcher rdf:type :Config ;
-    :configKey "role" ; :configValue "Matcher" ;
-    :configKey "goal" ; :configValue "Match the CV to the job opportunities based on skills and experience." ;
-    :configKey "backstory" ; :configValue "A seasoned recruiter, you specialize in finding the perfect fit between candidates and job roles." ;
-    :configKey "tools" ; :configValue "FileReadTool, CSVSearchTool" ;
-    :configKey "verbose" ; :configValue "True" ;
-    :configKey "allow_delegation" ; :configValue "False" .
-
-:Config_agents_job_opportunities_parser rdf:type :Config ;
-    :configKey "role" ; :configValue "Job Opportunities Parser" ;
-    :configKey "goal" ; :configValue "Extract job descriptions from the CSV file, including job title, required skills, and responsibilities." ;
-    :configKey "backstory" ; :configValue "A data analyst who has transitioned into HR, you have a knack for organizing and interpreting job data." .
 
 :Config_tasks_read_cv rdf:type :Config ;
     :configKey "description" ;
@@ -162,16 +122,6 @@
 # Prompts (for agents and tasks)
 #################################################################
 
-:Prompt_cv_reader_agent rdf:type :Prompt ;
-    :promptInstruction "Role: CV Reader\nGoal: Extract relevant information from the CV, such as skills, experience, and education.\nBackstory: With years of experience in HR, you excel at quickly identifying key qualifications in resumes." ;
-    :promptContext "Agent-level prompt to orient behavior. Use FileReadTool to access CV file. Produce a structured CV summary." ;
-    :promptOutputIndicator "A structured summary of the CV (Professional Summary, Technical Skills, Work History, Education, Key Achievements)." .
-
-:Prompt_matcher_agent rdf:type :Prompt ;
-    :promptInstruction "Role: Matcher\nGoal: Match the CV to the job opportunities based on skills and experience.\nBackstory: A seasoned recruiter, you specialize in finding the perfect fit between candidates and job roles." ;
-    :promptContext "Agent-level prompt to orient behavior. Use CSVSearchTool and FileReadTool to access jobs CSV and CV summary." ;
-    :promptOutputIndicator "A ranked list of job opportunities with match scores and key matching points." .
-
 :Prompt_read_cv_task rdf:type :Prompt ;
     :promptInstruction """Extract relevant information from the given CV. Focus on skills, experience,
 education, and key achievements.
@@ -204,10 +154,9 @@ CV file: {path_to_cv}""" ;
 - Key Matching Points""" .
 
 # Link prompts to tasks and agents
-:cv_reader_agent :agentPrompt :Prompt_cv_reader_agent .
-:matcher_agent :agentPrompt :Prompt_matcher_agent .
 
 :read_cv_task :taskPrompt :Prompt_read_cv_task .
+
 :match_cv_task :taskPrompt :Prompt_match_cv_task .
 
 #################################################################
@@ -302,7 +251,9 @@ CV file: {path_to_cv}""" ;
 #################################################################
 
 # Tools used by agents (already set via :agentToolUsage above). Also indicate toolUsage relationships for completeness.
+
 :FileReadTool :resourceUsage :Resource_input_cv_md .
+
 :CSVSearchTool :resourceUsage :Resource_input_jobs_csv .
 
 #################################################################
@@ -325,3 +276,57 @@ CV file: {path_to_cv}""" ;
     agento-ext:inputKey "path_to_jobs_csv" ;
     agento-ext:inputValue "./src/match_to_proposal/data/jobs.csv" ;
     agento-ext:isDefaultValue true .
+
+#################################################################
+# Agents (Canonical Pattern)
+#################################################################
+
+# Goals
+
+:goal_cv_reader_agent rdf:type :Goal ;
+    dcterms:title "cv_reader goal" ;
+    dcterms:description "Extract relevant information from the CV, such as skills, experience, and education." .
+
+:cv_reader_agent rdf:type :LLMAgent ;
+    :agentID "cv_reader" ;
+    :agentRole "CV Reader" ;
+    :hasAgentGoal :goal_cv_reader_agent ;
+    :hasAgentConfig :cfg_cv_reader_agent_delegation , :cfg_cv_reader_agent_verbose ;
+    :agentToolUsage :FileReadTool ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentPrompt :prompt_cv_reader_agent .
+
+:cfg_cv_reader_agent_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_cv_reader_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_cv_reader_agent rdf:type :Prompt ;
+    :promptContext "With years of experience in HR, you excel at quickly identifying key qualifications in resumes." .
+
+:goal_matcher_agent rdf:type :Goal ;
+    dcterms:title "matcher goal" ;
+    dcterms:description "Match the CV to the job opportunities based on skills and experience." .
+
+:matcher_agent rdf:type :LLMAgent ;
+    :agentID "matcher" ;
+    :agentRole "Matcher" ;
+    :hasAgentGoal :goal_matcher_agent ;
+    :hasAgentConfig :cfg_matcher_agent_delegation , :cfg_matcher_agent_verbose ;
+    :agentToolUsage :FileReadTool , :CSVSearchTool ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentPrompt :prompt_matcher_agent .
+
+:cfg_matcher_agent_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:cfg_matcher_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:prompt_matcher_agent rdf:type :Prompt ;
+    :promptContext "A seasoned recruiter, you specialize in finding the perfect fit between candidates and job roles." .
