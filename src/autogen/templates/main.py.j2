@@ -1,13 +1,8 @@
 import asyncio
 
-from team import (
-    team,
-    TASK_PROMPT,
-)
+from team import *
 
-from autogen_agentchat.conditions import (
-    MaxMessageTermination,
-)
+
 
 INPUTS = {
 
@@ -26,38 +21,59 @@ INPUTS = {
 
 async def main():
 
+    {% if not workflow_tree %}
+
     {% if input_variables %}
-
-    task = TASK_PROMPT.format(
-        **INPUTS
-    )
-
+    task = TASK_PROMPT.format(**INPUTS)
     {% else %}
-
     task = TASK_PROMPT
+    {% endif %}
 
     {% endif %}
 
+    {% if not workflow_tree %}
     print("\n" + "=" * 80)
     print("TASK")
     print("=" * 80)
     print(task)
+    {% endif %}
 
     print("\n" + "=" * 80)
     print("STREAM")
     print("=" * 80)
 
-    # Prevent infinite loops
-    team._termination_condition = MaxMessageTermination(
-        max_messages=20
-    )
+
 
     try:
+
+        {% if workflow_tree %}
+
+        for pattern_name, pattern in workflow_tree.items():
+
+            print("\n" + "=" * 80)
+            print(f"WORKFLOW PATTERN: {pattern_name}")
+            print(pattern["prompt"])
+            print("=" * 80)
+
+            async for msg in pattern["team"].run_stream(
+                task=pattern["prompt"]
+            ):
+                print("\n" + "-" * 60)
+                print(type(msg).__name__)
+
+                if hasattr(msg, "source"):
+                    print(f"SOURCE: {msg.source}")
+
+                if hasattr(msg, "content"):
+                    print(msg.content)
+                else:
+                    print(msg)
+
+        {% else %}
 
         async for msg in team.run_stream(
             task=task
         ):
-
             print("\n" + "-" * 60)
             print(type(msg).__name__)
 
@@ -66,9 +82,10 @@ async def main():
 
             if hasattr(msg, "content"):
                 print(msg.content)
-
             else:
                 print(msg)
+
+        {% endif %}
 
         print("\n" + "=" * 80)
         print("DONE")

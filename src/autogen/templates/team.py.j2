@@ -3,9 +3,8 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.teams import {{ team_type }}
 
 from autogen_agentchat.conditions import (
-
-    MaxMessageTermination
-
+    MaxMessageTermination,
+    TextMentionTermination,
 )
 
 from autogen_core.tools import FunctionTool
@@ -78,25 +77,81 @@ Background:
 
 {% endfor %}
 
+termination_condition = MaxMessageTermination(
+    max_messages={{ termination.max_messages if termination else 20 }}
+)
+
+{% if termination and termination.text_mention %}
+termination_condition |= TextMentionTermination(
+    "{{ termination.text_mention }}"
+)
+{% endif %}
+
+{% if workflow_tree %}
+
+{# Macro to build a team for a workflow pattern node #}
+{% macro build_team(node) %}
+{% set pattern = node.pattern %}
+{% set team_name = pattern.label|default(pattern.name)|replace(' ', '_')|replace('-', '_')|lower %}
+{{ team_name }}_termination = MaxMessageTermination(
+    max_messages={{ (node.tasks|length * 2) + 2 if node.tasks else 4 }}
+)
+{{ team_name }}_team = {{ team_type }}(
+    participants=[
+{% for agent in project.agents %}
+{% if agent.var_name in node.agents %}
+        {{ agent.var_name }},
+{% endif %}
+{% endfor %}
+    ],
+    termination_condition={{ team_name }}_termination,
+)
+{% for child in node.children %}
+{{ build_team(child) }}
+{% endfor %}
+{% endmacro %}
+
+{# Build all teams for each workflow root and its descendants #}
+{% for root in workflow_tree %}
+{{ build_team(root) }}
+{% endfor %}
+
+workflow_tree = {
+{% for iri, meta in pattern_metadata.items() %}
+    "{{ iri }}": {
+        "team": {{ pattern_map[iri].label|default(pattern_map[iri].name)|replace(' ', '_')|replace('-', '_')|lower }}_team,
+        "prompt": """{{ meta.prompt|replace('"""','\\"\\"\\"') }}""",
+        "agents": [
+{% for agent in meta.agents %}
+            "{{ agent }}",
+{% endfor %}
+        ],
+    },
+{% endfor %}
+}
+
+team = {{ workflow_tree[0].pattern.label|default(workflow_tree[0].pattern.name)|replace(' ', '_')|replace('-', '_')|lower }}_team
+
+{% else %}
+
 team = {{ team_type }}(
     participants=[
 {% for agent in project.agents %}
         {{ agent.var_name }},
 {% endfor %}
     ],
-    termination_condition=MaxMessageTermination(
-        max_messages=10
-    )
+    termination_condition=termination_condition,
 )
 
-TASK_PROMPT = """
-{% for task in ordered_tasks %}
+{% endif %}
 
-Task:
-{{ task.description }}
+{% if not workflow_tree %}
+{% if ordered_tasks %}
+TASK_PROMPT = """{{ ordered_tasks[0].description }}
 
-Expected Output:
-{{ task.expected_output }}
-
-{% endfor %}
+Expected output: {{ ordered_tasks[0].expected_output }}
 """
+{% else %}
+TASK_PROMPT = """Begin."""
+{% endif %}
+{% endif %}
