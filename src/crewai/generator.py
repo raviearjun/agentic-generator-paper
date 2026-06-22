@@ -23,7 +23,19 @@ from typing import Any, Dict, List
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
-from ..core.models import AgentModel, CrewProject, TaskModel, ToolModel
+from ..core.models import (
+    AgentModel,
+    CapabilityModel,
+    ConstraintModel,
+    EnvironmentModel,
+    GoalModel,
+    HumanAgentModel,
+    ObjectiveModel,
+    ResourceModel,
+    TaskModel,
+    ToolModel,
+)
+from .models import CrewProject
 
 
 # ─────────────────────── YAML helpers ───────────────────────
@@ -301,6 +313,13 @@ def _build_crew_context(project: CrewProject) -> Dict[str, Any]:
         "import_groups": import_groups,
         "has_custom_llm": has_custom_llm,
         "has_tools": len(project.tools) > 0,
+        "goals": project.goals,
+        "objectives": project.objectives,
+        "human_agents": project.human_agents,
+        "environments": project.environments,
+        "capabilities": project.capabilities,
+        "resources": project.resources,
+        "constraints": project.constraints,
     }
 
 

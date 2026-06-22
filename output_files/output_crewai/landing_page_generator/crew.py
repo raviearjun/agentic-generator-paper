@@ -3,6 +3,31 @@ Auto-generated CrewAI Crew: ExpandIdeaCrewteam
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+Goals:
+  - : Understand and expand the idea into a comprehensive idea report, detailing value proposition and features.
+  - : Provide WHY, HOW, WHAT messaging and core message for the idea.
+  - : Select a Tailwind template that fits the idea and copy it into the working folder; then update components.
+  - : Produce content for components, update components, and QA them according to rules.
+Capabilities:
+  - web search: Capability to search internet and return snippets.
+  - web scraping and summarization: Capability to scrape a website and summarize content.
+  - file write: Capability to write content safely to files in workdir.
+  - learn templates listing: Capability to read templates configuration and list template options.
+  - copy template folder: Capability to copy template folders into project workspace.
+  - read file: Capability to read file content from the workspace.
+  - list directory: Capability to list directories in the workspace.
+Resources:
+  - templates/ (folder of Tailwind templates): Local templates base folder. The code expects user to place individual template folders here. Referenced by TemplateTools.copy_landing_page_template_to_project_folder.
+  - workdir.zip (final packaged project archive): At the end of execution the system compresses ./workdir into a zip and returns it to the user.
+  - Expanded idea report (text): Output of expand_idea_task. The code uses this expanded idea as input to the next crews.
+  - Refined idea report (text): Output of refine_idea_task. Used by other tasks to craft landing page content.
+  - Copied template folder in workdir: Result of copying a template folder into ./workdir. The copy is executed by TemplateTools.copy_landing_page_template_to_project_folder.
+  - List of component paths used in main page.jsx: Produced by update_page_task: the set of component file paths that will be used on the final single page.
+  - Component text suggestions (structured text): Produced by component_content_task and used by update_component_task.
+  - Updated React component files (on disk): Files written to ./workdir by update_component_task using WriteFileTool. Filenames correspond to the components list.
+  - QA confirmation / corrections applied: Confirmation that updated components pass QA rules. If not, corrected files are written to disk.
+  - Copied template folder (workdir/<template>): A template folder copied from ./templates into ./workdir. Expected structure includes src/components and src/app/page.jsx.
+  - Components full path list (JSON array): The JSON array that choose_template_task must return listing the most important 4 components' full paths to update; later used by CreateContentCrew.
 """
 
 from crewai import Agent, Crew, Process, Task

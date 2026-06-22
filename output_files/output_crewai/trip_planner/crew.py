@@ -3,6 +3,24 @@ Auto-generated CrewAI Crew: MyCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+Goals:
+  - : Select the best city based on weather patterns, seasonal events, and travel costs
+  - : Provide in-depth local guide content, hidden gems, and practical tips.
+  - : Create a 7-day travel itinerary with detailed daily plans, budgets, packing suggestions, and logistics.
+Capabilities:
+  - : Analyze and compare cities by weather conditions, events, and travel costs; deliver a detailed city selection report.
+  - : Collect and synthesize local cultural, tourism and attraction information into a comprehensive guide.
+  - : Generate optimized daily travel itineraries with logistics, budget calculations, and packing recommendations.
+  - : Search the internet for relevant results and return structured snippets with title, link, and snippet text.
+  - : Scrape raw HTML of a website, partition and summarize content with an internal summarization agent; returns concise summaries for each chunk.
+  - : Perform safe arithmetic evaluation of mathematical expressions (supports + - * / % ** and parentheses). Returns numeric result or error message.
+Resources:
+  - : Used by SearchTools.search_internet to obtain organic search results.
+  - : Used by BrowserTools.scrape_and_summarize_website to fetch HTML content.
+  - : API key used by the language model client OpenAI (langchain_openai.OpenAI).
+  - : The final produced travel plan (7-day itinerary), including hotels, restaurants, per-day schedule, weather forecast, packing suggestions, and budget breakdown.
+  - : Comprehensive city guide including hidden gems, cultural hotspots and practical tips.
+  - : Detailed report on chosen city including flight costs, weather forecast, and attractions.
 """
 
 from crewai import Agent, Crew, Process, Task

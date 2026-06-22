@@ -8,6 +8,48 @@ Auto-generated CrewAI Crew: {{ crew_name }}
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+{% if goals %}
+Goals:
+{% for g in goals %}
+  - {{ g.label }}: {{ g.description }}
+{% endfor %}
+{% endif %}
+{% if objectives %}
+Objectives:
+{% for o in objectives %}
+  - {{ o.label }}: {{ o.description }}
+{% endfor %}
+{% endif %}
+{% if human_agents %}
+Human Agents:
+{% for h in human_agents %}
+  - {{ h.var_name }} ({{ h.role }})
+{% endfor %}
+{% endif %}
+{% if environments %}
+Environments:
+{% for e in environments %}
+  - {{ e.label }} ({{ e.env_type }}): {{ e.description }}
+{% endfor %}
+{% endif %}
+{% if capabilities %}
+Capabilities:
+{% for c in capabilities %}
+  - {{ c.label }}: {{ c.description }}
+{% endfor %}
+{% endif %}
+{% if resources %}
+Resources:
+{% for r in resources %}
+  - {{ r.label }}: {{ r.description }}
+{% endfor %}
+{% endif %}
+{% if constraints %}
+Constraints:
+{% for c in constraints %}
+  - {{ c.label }}: {{ c.description }}
+{% endfor %}
+{% endif %}
 """
 
 from crewai import Agent, Crew, Process, Task
@@ -91,6 +133,9 @@ class {{ crew_name }}:
 {% endif %}
 {% if task_item.context_task_var_names %}
             context=[{% for ctx_name in task_item.context_task_var_names %}self.{{ ctx_name }}(){{ ", " if not loop.last }}{% endfor %}],
+{% endif %}
+{% if task_item.human_input %}
+            human_input=True,
 {% endif %}
 {% if task_item.output_json_model %}
             output_json={{ task_item.output_json_model }},

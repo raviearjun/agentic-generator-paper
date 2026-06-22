@@ -6,8 +6,4 @@
 #
 # Variables marked 'required' have no default — you must provide a value.
 
-weaviate_feature:
-  - MUVERA
-  - "Multi-tenancy"
-  - Compliance
-  - Hybrid Search
+weaviate_feature: ""  # required — provide a value before running

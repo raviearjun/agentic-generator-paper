@@ -3,6 +3,15 @@ Auto-generated CrewAI Crew: GameBuilderCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+Goals:
+  - Create Game (Team Goal): Produce a working python game implementation given a textual game description input. The system assembles agents and tasks to generate, review, and evaluate final python code for a game (examples include Pac-Man and Snake).
+  - Create software as needed: Create software as needed
+  - Create Perfect code: Create Perfect code, by analyzing the code that is given for errors
+  - Ensure the code does the job that it is supposed to do: Ensure that the code fulfills the functional requirements of the game description and is complete.
+Resources:
+  - initial_game_code: Python code produced by senior_engineer_agent in response to the game description input.
+  - reviewed_game_code: Code after QA review by qa_engineer_agent; errors fixed and issues annotated in code response (final output is the corrected python code).
+  - final_game_code: Final python code for the requested game after generation, review, and evaluation steps. Example inputs available in src/game_builder_crew/config/gamedesign.yaml (example1_pacman, example2_pacman, example3_snake).
 """
 
 from crewai import Agent, Crew, Process, Task

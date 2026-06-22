@@ -1,5 +1,5 @@
 """
-CLI Runner: batch-process generated_kg/CrewAI/*.ttl → CrewAI project directories.
+CLI Runner: batch-process kgs_original/CrewAI/*.ttl → CrewAI project directories.
 
 Pipeline: KG (.ttl) → SPARQL (Layer 1) → Pydantic IR (Layer 2) → YAML + Python (Layer 3)
 
@@ -20,13 +20,15 @@ import shutil
 
 # Support both `python -m` and direct script execution
 try:
-    from ..core.extractor import extract_crew_project
+    from ..core.extractor import extract_project
+    from .adapter import adapt
     from .generator import generate_project
 except ImportError:
     sys.path.insert(
         0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     )
-    from core.extractor import extract_crew_project
+    from core.extractor import extract_project
+    from src.crewai.adapter import adapt
     from src.crewai.generator import generate_project
 
 
@@ -42,7 +44,7 @@ def process_single(kg_path: str, output_dir: str) -> str:
         The output directory path
     """
     # Layer 1: SPARQL extraction → Layer 2: Pydantic IR
-    project = extract_crew_project(kg_path)
+    project = adapt(extract_project(kg_path))
 
     # Layer 3: File generation (YAML + Jinja2)
     return generate_project(project, output_dir)
@@ -68,7 +70,7 @@ def main():
         return
 
     # ── Batch mode: process all TTL files ──
-    kg_dir = os.path.join(project_root, "generated_kg", "CrewAI")
+    kg_dir = os.path.join(project_root, "kgs_original", "CrewAI")
 
     if not os.path.isdir(kg_dir):
         print(f"[ERROR] KG directory not found: {kg_dir}")

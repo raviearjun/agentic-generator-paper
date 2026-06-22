@@ -36,7 +36,7 @@ PROV = Namespace("http://www.w3.org/ns/prov#")
 PP = Namespace("http://purl.org/net/p-plan#")
 AGENTO_EXT = Namespace("http://www.w3id.org/agentic-ai/ext#")
 
-KG_DIR = Path(__file__).resolve().parent.parent / "generated_kg" / "CrewAI"
+KG_DIR = Path(__file__).resolve().parent.parent / "kgs_original" / "CrewAI"
 
 
 def _s(val) -> str:

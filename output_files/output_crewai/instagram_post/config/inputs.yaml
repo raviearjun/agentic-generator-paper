@@ -8,3 +8,4 @@
 
 product_website: ""  # required — provide a value before running
 product_details: ""  # required — provide a value before running
+copy: ""  # required — provide a value before running

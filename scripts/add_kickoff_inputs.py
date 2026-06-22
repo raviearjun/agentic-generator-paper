@@ -10,7 +10,7 @@ Run once from project root:
 
 import os
 
-TTL_DIR = os.path.join(os.path.dirname(__file__), "..", "generated_kg", "CrewAI")
+TTL_DIR = os.path.join(os.path.dirname(__file__), "..", "kgs_original", "CrewAI")
 
 # Namespace prefix block to inject (only if not already present)
 EXT_PREFIX = '@prefix agento-ext: <http://www.w3id.org/agentic-ai/ext#> .'

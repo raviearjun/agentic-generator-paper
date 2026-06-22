@@ -1,4 +1,55 @@
+{% if goals or objectives or human_agents %}
+"""
+Auto-generated AutoGen Team: {{ project.name }}
+{% if goals %}
+Goals:
+{% for g in goals %}
+  - {{ g.label }}: {{ g.description }}
+{% endfor %}
+{% endif %}
+{% if objectives %}
+Objectives:
+{% for o in objectives %}
+  - {{ o.label }}: {{ o.description }}
+{% endfor %}
+{% endif %}
+{% if human_agents %}
+Human Agents:
+{% for h in human_agents %}
+  - {{ h.var_name }} ({{ h.role }})
+{% endfor %}
+{% endif %}
+{% if environments %}
+Environments:
+{% for e in environments %}
+  - {{ e.label }} ({{ e.env_type }}): {{ e.description }}
+{% endfor %}
+{% endif %}
+{% if capabilities %}
+Capabilities:
+{% for c in capabilities %}
+  - {{ c.label }}: {{ c.description }}
+{% endfor %}
+{% endif %}
+{% if resources %}
+Resources:
+{% for r in resources %}
+  - {{ r.label }}: {{ r.description }}
+{% endfor %}
+{% endif %}
+{% if constraints %}
+Constraints:
+{% for c in constraints %}
+  - {{ c.label }}: {{ c.description }}
+{% endfor %}
+{% endif %}
+"""
+{% endif %}
+
 from autogen_agentchat.agents import AssistantAgent
+{% if human_agents %}
+from autogen_agentchat.agents import UserProxyAgent
+{% endif %}
 
 from autogen_agentchat.teams import {{ team_type }}
 
@@ -16,6 +67,19 @@ from autogen_ext.models.openai import (
 model_client = OpenAIChatCompletionClient(
     model="{{ model_name }}"
 )
+
+{% if environments %}
+# ==================================================
+# Environment Configuration
+# ==================================================
+{% for env in environments %}
+# Environment: {{ env.label }} ({{ env.env_type }})
+# {{ env.description }}
+{% if env.configs %}
+# Configs: {{ env.configs }}
+{% endif %}
+{% endfor %}
+{% endif %}
 
 # ==================================================
 # Generated Tool Stubs
@@ -77,6 +141,7 @@ Background:
 
 {% endfor %}
 
+<<<<<<< HEAD
 termination_condition = MaxMessageTermination(
     max_messages={{ termination.max_messages if termination else 20 }}
 )
@@ -134,10 +199,28 @@ team = {{ workflow_tree[0].pattern.label|default(workflow_tree[0].pattern.name)|
 
 {% else %}
 
+=======
+{% if human_agents %}
+# ==================================================
+# Human Agents (UserProxy)
+# ==================================================
+
+{% for h in human_agents %}
+{{ h.var_name }} = UserProxyAgent(
+    name="{{ h.var_name }}",
+    description="{{ h.role }}",
+)
+{% endfor %}
+{% endif %}
+
+>>>>>>> origin/main
 team = {{ team_type }}(
     participants=[
 {% for agent in project.agents %}
         {{ agent.var_name }},
+{% endfor %}
+{% for h in human_agents %}
+        {{ h.var_name }},
 {% endfor %}
     ],
     termination_condition=termination_condition,

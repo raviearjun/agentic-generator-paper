@@ -3,6 +3,17 @@ Auto-generated CrewAI Crew: MeetingPreparationCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+Goals:
+  - Prepare meeting briefing and strategy: Prepare comprehensive research, industry analysis, strategic talking points, and a concise briefing document to support an upcoming meeting. This goal represents the overall purpose of the Meeting Preparation Crew created in main.py.
+  - : Conduct thorough research on people and companies involved in the meeting
+  - : Analyze the current industry trends, challenges, and opportunities relevant to the meeting context
+  - : Develop talking points, questions, and strategic angles for the meeting
+  - : Compile research, analysis, and strategy into a concise briefing document
+Capabilities:
+  - Exa.search: Search for webpages using a query and return top results (num_results=3).
+  - Exa.find_similar: Find webpages similar to a given URL (num_results=3).
+  - Exa.get_contents: Retrieve page contents for a list of ids. Handles JSON or Python literal lists input;
+validates input is a list of string ids; returns extracted contents (first ~1000 chars per segment).
 """
 
 from crewai import Agent, Crew, Process, Task
@@ -13,8 +24,8 @@ from crewai.project import CrewBase, agent, crew, task
 # Tool Instances
 # ===========================================================
 # TODO: exa_search_tool — unknown tool class "ExaSearchTool"
-#   Description: Tool wrapping Exa (exa_py) search capabilities used by agents.
-Provides three m
+#   Description: Tool wrapping Exa (exa_py) search capabilities used by agents.
+Provides three ma
 #   Implement as a custom BaseTool or replace with a crewai_tools equivalent.
 # exa_search_tool = SomeCustomTool(EXA_API_KEY="Your Key (from .env.example)")
 

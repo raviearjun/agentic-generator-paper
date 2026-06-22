@@ -3,6 +3,29 @@ Auto-generated CrewAI Crew: CopyCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
+Goals:
+  - Marketing Campaign Objective: Overarching objective: produce Instagram post copy and photograph concepts that highlight the product, its unique selling points, and create a high-impact campaign.
+Objectives:
+  - Copy Crew Objective: Generate analysis-informed ad copy and campaign strategy to drive engagement.
+  - Image Crew Objective: Create photograph concepts aligned with ad copy and campaign to produce visuals for Instagram.
+Capabilities:
+  - web scraping: Capability to scrape and summarize website content.
+  - internet search: Capability to search the internet and summarize results.
+  - instagram search: Capability to search Instagram posts (site:instagram.com queries).
+  - strategy planning: Capability to synthesize analysis into marketing strategies.
+  - copywriting: Capability to craft punchy Instagram ad copy.
+  - photography review: Capability to evaluate and revise photograph concepts.
+  - review & approval: Capability to review outputs, approve, and delegate follow-ups.
+Resources:
+  - Product Analysis Report: Textual report produced by product_analysis task: detailed product features, market appeal, recommendations.
+  - Competitor Analysis Report: Textual competitor analysis with top-3 competitor comparisons produced by competitor_analysis task.
+  - Campaign Strategy & Ideas: Marketing strategy and creative content ideas produced by campaign_development task. Used by creative and photography agents.
+  - Ad Copy Options (3 variations): Three Instagram ad copy options produced by instagram_ad_copy task.
+  - Photograph Descriptions (3 options): Three photograph concept descriptions produced by take_photograph_task.
+  - Approved Photograph Descriptions: Reviewed and approved (or delegated) photograph descriptions produced by review_photo task.
+  - tasks.py (semantic summary): Contains prompt texts (task descriptions) for product_analysis, competitor_analysis, campaign_development, instagram_ad_copy, take_photograph_task, review_photo. Task prompts preserved as Prompt individuals and Task dct:description values.
+  - agents.py (semantic summary): Defines agents (roles, goals, backstories), their tool sets, and association to the Ollama language model. Represented as LLMAgent individuals with agent prompts and useLanguageModel links.
+  - main.py (semantic summary): Orchestrates two Crews (Copy Crew and Image Crew). Copy Crew runs tasks: product_analysis, competitor_analysis, campaign_development, instagram_ad_copy. Image Crew runs tasks: take_photograph_task, review_photo. Crew orchestration and kickoff semantics not directly modeled; outputs represented as produced Resources.
 """
 
 from crewai import Agent, Crew, Process, Task
@@ -50,7 +73,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['product_competitor_agent'],
             llm=product_competitor_agent_llm,
-            verbose=True,
         )
 
     @agent
@@ -58,7 +80,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['strategy_planner_agent'],
             llm=strategy_planner_agent_llm,
-            verbose=True,
         )
 
     @agent
@@ -66,7 +87,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['creative_content_creator_agent'],
             llm=creative_content_creator_agent_llm,
-            verbose=True,
         )
 
     @agent
@@ -74,7 +94,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['senior_photographer_agent'],
             llm=senior_photographer_agent_llm,
-            verbose=True,
         )
 
     @agent
@@ -82,7 +101,6 @@ class CopyCrew:
         return Agent(
             config=self.agents_config['chief_creative_director_agent'],
             llm=chief_creative_director_agent_llm,
-            verbose=True,
         )
 
     # ── Tasks ───────────────────────────────────────────

@@ -7,3 +7,6 @@
 # Variables marked 'required' have no default — you must provide a value.
 
 idea: ""  # required — provide a value before running
+component: ""  # required — provide a value before running
+expanded_idea: ""  # required — provide a value before running
+file_content: ""  # required — provide a value before running
