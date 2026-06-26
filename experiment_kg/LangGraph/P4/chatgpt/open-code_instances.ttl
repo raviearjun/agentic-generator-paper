@@ -1,0 +1,236 @@
+# Execution time: 64.27 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+
+# Issues / Assumptions:
+# - No issues detected
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+#################################################################
+# Instances for the "Proposed Change" agentic UI solution
+#################################################################
+
+### Agents
+:agent_change_manager rdf:type :LLMAgent ;
+    :agentID "agent-change-manager" ;
+    :agentRole "change_manager" ;
+    rdfs:label "ProposedChange Manager Agent" ;
+    :useLanguageModel :lm_langchain ;
+    :agentToolUsage :tool_update_file , :tool_artifact ;
+    :agentPrompt :prompt_accept_const , :prompt_reject_const ;
+    :hasAgentConfig :config_agent_permissions ;
+    dct:description "An LLM-backed agent that prepares and submits tool calls (update_file) and human messages to manage proposed code changes in the UI. Implements logic to accept/reject proposed changes and optionally grant full write access." .
+
+:human_end_user rdf:type :HumanAgent ;
+    rdfs:label "End User (UI Clicker)" ;
+    dct:description "A human interacting with the ProposedChange UI: can click Accept, Reject, or Accept (don't ask again). UI clicks are represented as human participation in tasks." .
+
+### Language Model
+:lm_langchain rdf:type :LanguageModel ;
+    rdfs:label "LangGraph / LangChain Language Model (frontend integration)" ;
+    dct:description "Language model referenced by the LLMAgent via useLanguageModel. Used to coordinate message generation and tool interactions." .
+
+### Tools
+:tool_update_file rdf:type :Tool ;
+    rdfs:label "update_file" ;
+    :hasToolConfig :config_tool_update_file ;
+    :hasCapability :capability_write_file ;
+    dct:description "Tool invoked to apply a proposed change to files. Receives tool-call messages with content constants defined by the agent (ACCEPTED/REJECTED). In code: name 'update_file' and tool_call_id provided by props." .
+
+:tool_artifact rdf:type :Tool ;
+    rdfs:label "artifact_component" ;
+    :hasToolConfig :config_tool_artifact ;
+    :hasCapability :capability_render_artifact ;
+    dct:description "UI artifact helper component (useArtifact). Treated as a tool here: used to open/close and display full proposed change content." .
+
+### Capabilities
+:capability_write_file rdf:type :Capability ;
+    rdfs:label "write_file" ;
+    dct:description "Capability to apply or persist file changes (used by update_file tool)." .
+
+:capability_render_artifact rdf:type :Capability ;
+    rdfs:label "render_artifact" ;
+    dct:description "Capability to display detailed artifact content (used by artifact component)." .
+
+### Configurations
+:config_agent_permissions rdf:type :Config ;
+    :configKey "full_write_access" ;
+    :configValue "false (default). Can be set to true when user chooses 'Accept, don't ask again' in the UI. Used by the thread.submit configurable.permissions.full_write_access flag." ;
+    dct:description "Agent-level configuration describing permission that can be granted via UI interaction." .
+
+:config_tool_update_file rdf:type :Config ;
+    :configKey "name" ;
+    :configValue "update_file" ;
+    dct:description "Tool-level config identifying the update_file tool. Additional runtime parameters (tool_call_id, id) are supplied when invoking." .
+
+:config_tool_artifact rdf:type :Config ;
+    :configKey "component" ;
+    :configValue "Artifact (useArtifact hook)" ;
+    dct:description "Tool-level config describing artifact UI helper and its behavior (open/setOpen)." .
+
+:config_team_system rdf:type :Config ;
+    :configKey "system" ;
+    :configValue "proposed-change-ui" ;
+    dct:description "System-level config for the Team representing the UI system." .
+
+### Team and Goal
+:team_code_review rdf:type :Team ;
+    rdfs:label "ProposedChange UI Team" ;
+    :hasAgentMember :agent_change_manager , :human_end_user ;
+    :hasWorkflowPattern :wp_proposed_change ;
+    :hasTeamGoal :goal_manage_proposed_changes ;
+    :hasSystemConfig :config_team_system ;
+    dct:description "A team representing the UI and backend interplay that manages proposed changes, exhibiting both human and agent participants." .
+
+:goal_manage_proposed_changes rdf:type :Goal ;
+    rdfs:label "Manage Proposed Changes" ;
+    dct:description "Goal: Present proposed changes, enable user decision (accept/reject), submit tool calls to update files, and optionally grant persistent full write access." .
+
+#################################################################
+# Prompts and constant messages preserved from source code
+#################################################################
+
+:prompt_accept_const rdf:type :Prompt ;
+    rdfs:label "ACCEPTED_CHANGE_CONTENT constant" ;
+    :promptInstruction "User accepted the proposed change. Please continue." ;
+    :promptContext "Constant tool message used when the agent submits an accepted change via the update_file tool." ;
+    :promptOutputIndicator "ACCEPTED_CHANGE_CONTENT" .
+
+:prompt_reject_const rdf:type :Prompt ;
+    rdfs:label "REJECTED_CHANGE_CONTENT constant" ;
+    :promptInstruction "User rejected the proposed change. Please continue." ;
+    :promptContext "Constant tool message used when the agent submits a rejected change via the update_file tool." ;
+    :promptOutputIndicator "REJECTED_CHANGE_CONTENT" .
+
+:prompt_human_ack_accept rdf:type :Prompt ;
+    rdfs:label "Human message after accept" ;
+    :promptInstruction "Accepted change. ${shouldGrantFullWriteAccess ? 'Granted full write access.' : ''}" ;
+    :promptContext "Human-facing message composed by the agent and submitted after a tool call to indicate user's acceptance and whether full write access was granted." .
+
+:prompt_render_proposed_change rdf:type :Prompt ;
+    rdfs:label "Render Proposed Change Prompt" ;
+    :promptInstruction "Display props.planItem (title/identifier) and render props.change (markdown) using ReactMarkdown and SyntaxHighlighter; include code fences detection and language-based highlighting." ;
+    :promptContext "Prompt-like description of the UI rendering logic for the ProposedChange component; used to capture the displayed content and rendering behavior." .
+
+#################################################################
+# Tasks (each Task linked to agent via :performedByAgent)
+#################################################################
+
+:task_renderProposedChange rdf:type :Task ;
+    rdfs:label "renderProposedChange" ;
+    :performedByAgent :agent_change_manager ;
+    :taskPrompt :prompt_render_proposed_change ;
+    dct:description """Responsible for rendering the ProposedChange component:
+- shows planItem (short identifier) and change content
+- uses ReactMarkdown for markdown rendering
+- calls SyntaxHighlighter for code blocks with language-(\\w+)
+- provides buttons to Accept / Reject / Accept (don't ask again) based on fullWriteAccess flag
+- toggles Artifact open state when clicked
+""" .
+
+:task_userClickDecision rdf:type :Task ;
+    rdfs:label "userClickDecision" ;
+    :performedByAgent :agent_change_manager ;
+    dct:description "Represents the user's UI click action (Accept/Reject/Accept don't ask). In the implementation the click triggers handleAccept/handleReject which submit tool/human messages. Human also participates via humanParticipatedIn." ;
+    :taskPrompt :prompt_human_ack_accept .
+
+:task_handleAccept rdf:type :Task ;
+    rdfs:label "handleAccept" ;
+    :performedByAgent :agent_change_manager ;
+    :taskPrompt :prompt_accept_const ;
+    dct:description """Logic executed when user accepts:
+- constructs a tool message with tool_call_id (props.toolCallId), name 'update_file', id prefixed with DO_NOT_RENDER_ID_PREFIX + uuidv4()
+- first submits a tool message with content ACCEPTED_CHANGE_CONTENT
+- then submits a human message with content 'Accepted change. [Granted full write access.]' depending on shouldGrantFullWriteAccess
+- if shouldGrantFullWriteAccess true, submits thread.submit with config.configurable.permissions.full_write_access = true
+- sets component state isAccepted = true
+""" ;
+    :producedResource :resource_updated_file .
+
+:task_handleReject rdf:type :Task ;
+    rdfs:label "handleReject" ;
+    :performedByAgent :agent_change_manager ;
+    :taskPrompt :prompt_reject_const ;
+    dct:description """Logic executed when user rejects:
+- constructs a tool message with tool_call_id (props.toolCallId), name 'update_file', id prefixed with DO_NOT_RENDER_ID_PREFIX + uuidv4()
+- submits a tool message with content REJECTED_CHANGE_CONTENT
+- then submits a human message with content 'Rejected change.'
+- sets component state isRejected = true
+""" .
+
+:task_finalize rdf:type :Task ;
+    rdfs:label "finalize" ;
+    :performedByAgent :agent_change_manager ;
+    dct:description "Final cleanup step after apply/reject: close artifact UI or show accepted/rejected status and attach Artifact content for full view." .
+
+### Human participation link: human clicked decisions
+:human_end_user :humanParticipatedIn :task_userClickDecision .
+
+#################################################################
+# Produced Resource(s)
+#################################################################
+
+:resource_updated_file rdf:type beam:Resource ;
+    rdfs:label "updated_file_resource" ;
+    dct:title "Updated file after accepted proposed change" ;
+    dct:description "A resource representing the file or artifact produced by applying the accepted change. Produced by task_handleAccept (when accepted)." .
+
+#################################################################
+# Workflow Pattern and Steps
+#################################################################
+
+:wp_proposed_change rdf:type :WorkflowPattern ;
+    rdfs:label "ProposedChange Workflow Pattern" ;
+    :hasWorkflowStep :ws_start , :ws_userDecision , :ws_applyChange , :ws_end ;
+    dct:description "Workflow capturing the UI flow: render -> user decision -> apply tool call -> finalize." .
+
+:ws_start rdf:type :StartStep ;
+    rdfs:label "Start: Render Proposed Change" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_renderProposedChange ;
+    :nextStep :ws_userDecision ;
+    dct:description "Initial step: component renders proposed change and buttons. Clicking opens artifact and/or triggers decision." .
+
+:ws_userDecision rdf:type :WorkflowStep ;
+    rdfs:label "User Decision Step" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_userClickDecision ;
+    :nextStep :ws_applyChange ;
+    dct:description "User chooses Accept, Reject, or Accept (don't ask again). Buttons are shown unless fullWriteAccess granted." .
+
+:ws_applyChange rdf:type :WorkflowStep ;
+    rdfs:label "Apply Change Step" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :task_handleAccept , :task_handleReject ;
+    :nextStep :ws_end ;
+    dct:description "Agent composes and submits tool and human messages; tool update_file applies the change; permissions may be updated." .
+
+:ws_end rdf:type :EndStep ;
+    rdfs:label "End: Finalize" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :task_finalize ;
+    dct:description "Terminal step: show Accept/Rejected status and provide Artifact to view full content." .
+
+#################################################################
+# Links ensuring no orphaned individuals and schema compliance
+#################################################################
+
+# Team links already include agent members and workflow pattern.
+# Tools have :hasToolConfig; agent has :hasAgentConfig; team has :hasSystemConfig.
+# Prompts are connected to agent and tasks via :agentPrompt and :taskPrompt.
+# Tasks are linked to agent via :performedByAgent and to workflow steps via :hasAssociatedTask.
+# Produced resource is linked to task_handleAccept via :producedResource.
+
+# End of instance data.

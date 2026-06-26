@@ -1,0 +1,272 @@
+# Execution time: 82.01 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instance data for Surprise Travel Crew
+#################################################################
+
+### Team / Crew
+:SurpriseTravelCrew_Team rdf:type :Team ;
+    rdfs:label "SurpriseTravelCrew" ;
+    :hasAgentMember :Agent_PersonalizedActivityPlanner,
+                    :Agent_RestaurantScout,
+                    :Agent_ItineraryCompiler ;
+    :hasWorkflowPattern :WorkflowPattern_SurpriseTravel .
+
+#################################################################
+# Agents
+#################################################################
+
+:Agent_PersonalizedActivityPlanner rdf:type :LLMAgent ;
+    rdfs:label "personalized_activity_planner" ;
+    :agentID "personalized_activity_planner" ;
+    :agentRole "Activity Planner" ;
+    :agentPrompt :Prompt_Agent_PersonalizedActivityPlanner ;
+    :hasAgentConfig :Config_Agent_PersonalizedActivityPlanner ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_ScrapeWebsiteTool ;
+    :useLanguageModel :LM_GPT4 .
+
+:Agent_RestaurantScout rdf:type :LLMAgent ;
+    rdfs:label "restaurant_scout" ;
+    :agentID "restaurant_scout" ;
+    :agentRole "Restaurant Scout" ;
+    :agentPrompt :Prompt_Agent_RestaurantScout ;
+    :hasAgentConfig :Config_Agent_RestaurantScout ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_ScrapeWebsiteTool ;
+    :useLanguageModel :LM_GPT4 .
+
+:Agent_ItineraryCompiler rdf:type :LLMAgent ;
+    rdfs:label "itinerary_compiler" ;
+    :agentID "itinerary_compiler" ;
+    :agentRole "Itinerary Compiler" ;
+    :agentPrompt :Prompt_Agent_ItineraryCompiler ;
+    :hasAgentConfig :Config_Agent_ItineraryCompiler ;
+    :agentToolUsage :Tool_SerperDevTool ;
+    :useLanguageModel :LM_GPT4 .
+
+#################################################################
+# Language Model
+#################################################################
+
+:LM_GPT4 rdf:type :LanguageModel ;
+    rdfs:label "GPT-4" .
+
+#################################################################
+# Tools
+#################################################################
+
+:Tool_SerperDevTool rdf:type :Tool ;
+    rdfs:label "SerperDevTool" ;
+    :hasToolConfig :Config_Tool_SerperDevTool .
+
+:Tool_ScrapeWebsiteTool rdf:type :Tool ;
+    rdfs:label "ScrapeWebsiteTool" ;
+    :hasToolConfig :Config_Tool_ScrapeWebsiteTool .
+
+#################################################################
+# Prompts (Agents)
+#################################################################
+
+:Prompt_Agent_PersonalizedActivityPlanner rdf:type :Prompt ;
+    rdfs:label "Agent prompt for Activity Planner" ;
+    :promptInstruction """role: Activity Planner
+goal: Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group
+backstory: You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers.""" .
+
+:Prompt_Agent_RestaurantScout rdf:type :Prompt ;
+    rdfs:label "Agent prompt for Restaurant Scout" ;
+    :promptInstruction """role: Restaurant Scout
+goal: Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities
+backstory: As a food lover, you know the best spots in town for a delightful culinary experience. You also have a knack for finding picturesque and entertaining locations.""" .
+
+:Prompt_Agent_ItineraryCompiler rdf:type :Prompt ;
+    rdfs:label "Agent prompt for Itinerary Compiler" ;
+    :promptInstruction """role: Itinerary Compiler
+goal: Compile all researched information into a comprehensive day-by-day itinerary, ensuring the integration of flights and hotel information
+backstory: With an eye for detail, you organize all the information into a coherent and enjoyable travel plan.""" .
+
+#################################################################
+# Tasks and Task Prompts
+#################################################################
+
+:Task_PersonalizedActivityPlanning rdf:type :Task ;
+    rdfs:label "personalized_activity_planning_task" ;
+    :performedByAgent :Agent_PersonalizedActivityPlanner ;
+    :taskPrompt :Prompt_Task_PersonalizedActivityPlanning ;
+    :hasConfig :Config_Task_PersonalizedActivityPlanning .
+
+:Prompt_Task_PersonalizedActivityPlanning rdf:type :Prompt ;
+    rdfs:label "Task prompt: personalized activity planning" ;
+    :promptInstruction """Research and find cool things to do at {destination}.
+Focus on activities and events that match the traveler's interests and age group.
+Utilize internet search tools and recommendation engines to gather the information.
+
+Traveler's information:
+
+- origin: {origin}
+- destination: {destination}
+- age of the traveler: {age}
+- hotel localtion: {hotel_location}
+- flight infromation: {flight_information}
+- how long is the trip: {trip_duration}
+
+Expected output:
+A list of recommended activities and events for each day of the trip.
+Each entry should include the activity name, location, a brief description, and why it's suitable for the traveler.
+And potential reviews and ratings of the activities.""" .
+
+:Task_RestaurantScenicLocationScout rdf:type :Task ;
+    rdfs:label "restaurant_scenic_location_scout_task" ;
+    :performedByAgent :Agent_RestaurantScout ;
+    :taskPrompt :Prompt_Task_RestaurantScenicLocationScout ;
+    :hasConfig :Config_Task_RestaurantScenicLocationScout .
+
+:Prompt_Task_RestaurantScenicLocationScout rdf:type :Prompt ;
+    rdfs:label "Task prompt: restaurant and scenic location scout" ;
+    :promptInstruction """Find highly-rated restaurants and dining experiences at {destination}.
+Recommend scenic locations and fun activities that align with the traveler's preferences.
+Use internet search tools, restaurant review sites, and travel guides.
+Make sure to find a variety of options to suit different tastes and budgets, and ratings for them.
+
+Traveler's information:
+
+- origin: {origin}
+- destination: {destination}
+- age of the traveler: {age}
+- hotel localtion: {hotel_location}
+- flight infromation: {flight_information}
+- how long is the trip: {trip_duration}
+
+Expected output:
+A list of recommended restaurants, scenic locations, and fun activities for each day of the trip.
+Each entry should include the name, location (address), type of cuisine or activity, and a brief description and ratings.""" .
+
+:Task_ItineraryCompilation rdf:type :Task ;
+    rdfs:label "itinerary_compilation_task" ;
+    :performedByAgent :Agent_ItineraryCompiler ;
+    :taskPrompt :Prompt_Task_ItineraryCompilation ;
+    :hasConfig :Config_Task_ItineraryCompilation ;
+    :producedResource :Instance_ItineraryOutput .
+
+:Prompt_Task_ItineraryCompilation rdf:type :Prompt ;
+    rdfs:label "Task prompt: itinerary compilation" ;
+    :promptInstruction """Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}.
+Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences.
+Use text formatting and document creation tools to organize the information.
+
+Expected output:
+A detailed itinerary document, the itinerary should include a day-by-day
+plan with flights, hotel details, activities, restaurants, and scenic locations.""" .
+
+#################################################################
+# Workflow Pattern and Steps
+#################################################################
+
+:WorkflowPattern_SurpriseTravel rdf:type :WorkflowPattern ;
+    rdfs:label "Surprise Travel Sequential Workflow" ;
+    :hasWorkflowStep :Step_1_Start , :Step_2_Research , :Step_3_End .
+
+:Step_1_Start rdf:type :StartStep ;
+    rdfs:label "Start Step: Activity Planning" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_PersonalizedActivityPlanning ;
+    :nextStep :Step_2_Research .
+
+:Step_2_Research rdf:type :WorkflowStep ;
+    rdfs:label "Step 2: Restaurant Scouting" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_RestaurantScenicLocationScout ;
+    :nextStep :Step_3_End .
+
+:Step_3_End rdf:type :EndStep ;
+    rdfs:label "End Step: Itinerary Compilation" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_ItineraryCompilation .
+
+#################################################################
+# Configurations (each Config has both :configKey and :configValue)
+#################################################################
+
+:Config_Agent_PersonalizedActivityPlanner rdf:type :Config ;
+    :configKey "agent_config" ;
+    :configValue """role: Activity Planner
+goal: Research and find cool things to do at the destination, including activities and events that match the traveler's interests and age group
+backstory: You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers.
+verbose: true
+allow_delegation: false
+tools: [SerperDevTool, ScrapeWebsiteTool]""" .
+
+:Config_Agent_RestaurantScout rdf:type :Config ;
+    :configKey "agent_config" ;
+    :configValue """role: Restaurant Scout
+goal: Find highly-rated restaurants and dining experiences at the destination, and recommend scenic locations and fun activities
+backstory: As a food lover, you know the best spots in town for a delightful culinary experience.
+verbose: true
+allow_delegation: false
+tools: [SerperDevTool, ScrapeWebsiteTool]""" .
+
+:Config_Agent_ItineraryCompiler rdf:type :Config ;
+    :configKey "agent_config" ;
+    :configValue """role: Itinerary Compiler
+goal: Compile all researched information into a comprehensive day-by-day itinerary, ensuring the integration of flights and hotel information
+backstory: With an eye for detail, you organize all the information into a coherent and enjoyable travel plan.
+verbose: true
+allow_delegation: false
+tools: [SerperDevTool]""" .
+
+:Config_Task_PersonalizedActivityPlanning rdf:type :Config ;
+    :configKey "task_config" ;
+    :configValue """description: Research and find cool things to do at {destination}. Focus on activities and events that match the traveler's interests and age group.
+expected_output: A list of recommended activities and events for each day of the trip.""" .
+
+:Config_Task_RestaurantScenicLocationScout rdf:type :Config ;
+    :configKey "task_config" ;
+    :configValue """description: Find highly-rated restaurants and dining experiences at {destination}. Recommend scenic locations and fun activities that align with the traveler's preferences.
+expected_output: A list of recommended restaurants, scenic locations, and fun activities for each day of the trip.""" .
+
+:Config_Task_ItineraryCompilation rdf:type :Config ;
+    :configKey "task_config" ;
+    :configValue """description: Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}.
+expected_output: A detailed itinerary document including flights, hotel details, activities, restaurants, and scenic locations.""" .
+
+:Config_Tool_SerperDevTool rdf:type :Config ;
+    :configKey "tool_config" ;
+    :configValue "tool_name: SerperDevTool; description: Web search / knowledge tool used by agents" .
+
+:Config_Tool_ScrapeWebsiteTool rdf:type :Config ;
+    :configKey "tool_config" ;
+    :configValue "tool_name: ScrapeWebsiteTool; description: Web scraping tool used to extract content from websites" .
+
+#################################################################
+# Artifacts / Outputs
+#################################################################
+
+:Instance_ItineraryOutput rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Itinerary JSON output instance" .
+
+#################################################################
+# Linking any remaining individuals to ensure no orphans
+#################################################################
+
+# All prompts referenced by agents/tasks (no orphan prompts)
+# All configs referenced by agents/tasks/tools
+# All tasks referenced by workflow steps and performedByAgent
+# All tools referenced by agents via :agentToolUsage

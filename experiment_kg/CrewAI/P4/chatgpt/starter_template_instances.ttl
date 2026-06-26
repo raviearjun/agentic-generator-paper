@@ -1,0 +1,196 @@
+# Execution time: 52.19 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - Assumed the DuckDuckGoSearchRun tool instantiated in main.py is intended as an available tool; created a :Tool individual and linked it to agents via :agentToolUsage to satisfy completeness requirement.
+# - Mapped agent backstory and goal strings to :Prompt individuals (linked with :agentPrompt) because the code defines backstory/goal text but no explicit Prompt objects.
+# - Task descriptions and expected_output were modeled as :Prompt individuals linked to tasks via :taskPrompt to preserve full textual fidelity.
+# - Created minimal :Config individuals for agent LLM settings (model_name and temperature) and for the team system flags (verbose/debug) to capture configuration parameters shown in source.
+# - No new classes or properties were introduced.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances for Crew AI Template (extracted from source)
+#################################################################
+
+### Team / Crew
+:Team_CustomCrew rdf:type :Team ;
+                 rdfs:label "CustomCrew" ;
+                 :hasAgentMember :LLMAgent_Agent1 , :LLMAgent_Agent2 ;
+                 :hasWorkflowPattern :WorkflowPattern_CustomCrew ;
+                 :hasSystemConfig :Config_Team .
+
+### Agents
+:LLMAgent_Agent1 rdf:type :LLMAgent ;
+                 :agentID "agent_1_name" ;
+                 :agentRole "Define agent 1 role here" ;
+                 :hasAgentGoal :Goal_Agent1 ;
+                 :agentPrompt :Prompt_Agent1 ;
+                 :hasAgentConfig :Config_Agent1 ;
+                 :useLanguageModel :LanguageModel_gpt35 ;
+                 :agentToolUsage :Tool_DuckDuckGo ;
+                 rdfs:label "Agent 1 (agent_1_name)" .
+
+:LLMAgent_Agent2 rdf:type :LLMAgent ;
+                 :agentID "agent_2_name" ;
+                 :agentRole "Define agent 2 role here" ;
+                 :hasAgentGoal :Goal_Agent2 ;
+                 :agentPrompt :Prompt_Agent2 ;
+                 :hasAgentConfig :Config_Agent2 ;
+                 :useLanguageModel :LanguageModel_gpt35 ;
+                 :agentToolUsage :Tool_DuckDuckGo ;
+                 rdfs:label "Agent 2 (agent_2_name)" .
+
+### Goals (from agent definitions)
+:Goal_Agent1 rdf:type :Goal ;
+             rdfs:label "Define agent 1 goal here" ;
+             <http://purl.org/dc/terms/description> "Define agent 1 goal here" .
+
+:Goal_Agent2 rdf:type :Goal ;
+             rdfs:label "Define agent 2 goal here" ;
+             <http://purl.org/dc/terms/description> "Define agent 2 goal here" .
+
+### Language Models (LLM backends instantiated in agents.py)
+:LanguageModel_gpt35 rdf:type :LanguageModel ;
+                     rdfs:label "gpt-3.5-turbo" ;
+                     <http://purl.org/dc/terms/description> "ChatOpenAI model_name=gpt-3.5-turbo, temperature=0.7" .
+
+:LanguageModel_gpt4 rdf:type :LanguageModel ;
+                    rdfs:label "gpt-4" ;
+                    <http://purl.org/dc/terms/description> "ChatOpenAI model_name=gpt-4, temperature=0.7" .
+
+:LanguageModel_openhermes rdf:type :LanguageModel ;
+                         rdfs:label "openhermes" ;
+                         <http://purl.org/dc/terms/description> "Ollama model=openhermes" .
+
+### Tools (from main.py)
+:Tool_DuckDuckGo rdf:type :Tool ;
+                 rdfs:label "DuckDuckGoSearchRun" ;
+                 <http://purl.org/dc/terms/description> "DuckDuckGoSearchRun tool used for web search (instantiated in main.py)" .
+
+### Tasks (from tasks.py)
+:Task_Task1 rdf:type :Task ;
+            rdfs:label "task_1_name" ;
+            :taskPrompt :Prompt_Task1 ;
+            :performedByAgent :LLMAgent_Agent1 ;
+            <http://purl.org/dc/terms/title> "task_1_name" .
+
+:Task_Task2 rdf:type :Task ;
+            rdfs:label "task_2_name" ;
+            :taskPrompt :Prompt_Task2 ;
+            :performedByAgent :LLMAgent_Agent2 ;
+            <http://purl.org/dc/terms/title> "task_2_name" .
+
+### Prompts for Agents (mapped from backstory/goal)
+:Prompt_Agent1 rdf:type :Prompt ;
+               :promptInstruction """Role: Define agent 1 role here
+
+Backstory:
+Define agent 1 backstory here
+
+Goal:
+Define agent 1 goal here
+""" ;
+               :promptContext "Agent constructor fields (role, backstory, goal) from agents.py" .
+
+:Prompt_Agent2 rdf:type :Prompt ;
+               :promptInstruction """Role: Define agent 2 role here
+
+Backstory:
+Define agent 2 backstory here
+
+Goal:
+Define agent 2 goal here
+""" ;
+               :promptContext "Agent constructor fields (role, backstory, goal) from agents.py" .
+
+### Prompts for Tasks (preserve full description and expected_output)
+:Prompt_Task1 rdf:type :Prompt ;
+              :promptInstruction """Do something as part of task 1
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to use the most recent data as possible.
+
+Use this variable: {var1}
+And also this variable: {var2}
+""" ;
+              :promptInputData "{var1}, {var2}" ;
+              :promptOutputIndicator "The expected output of the task" ;
+              :promptContext "Generated from CustomTasks.task_1_name description and expected_output." .
+
+:Prompt_Task2 rdf:type :Prompt ;
+              :promptInstruction """Take the input from task 1 and do something with it.
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to do something else.
+""" ;
+              :promptOutputIndicator "The expected output of the task" ;
+              :promptContext "Generated from CustomTasks.task_2_name description and expected_output. References output of task_1." .
+
+### Workflow Pattern and Steps (representing the Crew run)
+:WorkflowPattern_CustomCrew rdf:type :WorkflowPattern ;
+                            rdfs:label "CustomCrew Workflow Pattern" ;
+                            :hasWorkflowStep :Step_Start , :Step_End .
+
+:Step_Start rdf:type :StartStep , :WorkflowStep ;
+            rdfs:label "Start Step: prepare and run task_1" ;
+            :stepOrder "1"^^xsd:integer ;
+            :hasAssociatedTask :Task_Task1 ;
+            :nextStep :Step_End .
+
+:Step_End rdf:type :EndStep , :WorkflowStep ;
+          rdfs:label "End Step: process task_1 output and run task_2" ;
+          :stepOrder "2"^^xsd:integer ;
+          :hasAssociatedTask :Task_Task2 .
+
+### Configurations (capture LLM instantiation parameters and crew flags)
+:Config_Agent1 rdf:type :Config ;
+               :configKey "model_name" ;
+               :configValue "gpt-3.5-turbo" ;
+               rdfs:label "Agent1 LLM model config" .
+:Config_Agent1_Temp rdf:type :Config ;
+                    :configKey "temperature" ;
+                    :configValue "0.7" ;
+                    rdfs:label "Agent1 LLM temperature config" .
+# Link both configs to agent (repeat allowed since :hasAgentConfig range :Config)
+:LLMAgent_Agent1 :hasAgentConfig :Config_Agent1 , :Config_Agent1_Temp .
+
+:Config_Agent2 rdf:type :Config ;
+               :configKey "model_name" ;
+               :configValue "gpt-3.5-turbo" ;
+               rdfs:label "Agent2 LLM model config" .
+:Config_Agent2_Temp rdf:type :Config ;
+                    :configKey "temperature" ;
+                    :configValue "0.7" ;
+                    rdfs:label "Agent2 LLM temperature config" .
+:LLMAgent_Agent2 :hasAgentConfig :Config_Agent2 , :Config_Agent2_Temp .
+
+:Config_Team rdf:type :Config ;
+             :configKey "verbose" ;
+             :configValue "true" ;
+             rdfs:label "Crew verbose flag" .
+:Config_Team_Debug rdf:type :Config ;
+                   :configKey "debug" ;
+                   :configValue "false" ;
+                   rdfs:label "Crew debug flag" .
+:Team_CustomCrew :hasSystemConfig :Config_Team , :Config_Team_Debug .
+
+#################################################################
+# End of instances
+#################################################################

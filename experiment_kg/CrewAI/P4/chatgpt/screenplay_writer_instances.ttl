@@ -1,0 +1,350 @@
+# Execution time: 49.89 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No new classes or properties added. Where the source referenced multiple possible external endpoints, these were modeled as :Tool individuals (MistralAPI, TogetherAPI, AnyscaleAPI) and LanguageModel individuals to capture available endpoints/models. This is an assumption to represent external endpoints/tools mentioned in README.
+# - The Crew sequence (analyst -> scriptwriter -> formatter) plus pre-check spamfilter and final scorer step were modeled as a WorkflowPattern with StartStep for the spam check and EndStep for the final scoring to preserve execution order. This mirrors the code logic (task0 run first, crew sequential task1..task3, then task4).
+# - Each agent has Config individuals for role, goal, and backstory (configKey/configValue) to preserve fidelity of agent YAML entries.
+# - All prompts from tasks.yaml and agents.yaml were preserved as :Prompt individuals and linked using :agentPrompt and :taskPrompt. Task placeholders ({{discussion}}, {{script}}) were preserved in promptInputData.
+# - No duplicate IRIs created. All individuals are connected (no orphaned nodes).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Agents (LLMAgent individuals) and their configs & prompts
+#################################################################
+
+:spamfilterAgent rdf:type :LLMAgent ;
+    :agentID "spamfilter" ;
+    :agentRole "spamfilter" ;
+    :agentPrompt :spamfilterPrompt ;
+    :hasAgentConfig :spamfilter_config_role, :spamfilter_config_goal, :spamfilter_config_backstory ;
+    :agentToolUsage :MistralAPI , :TogetherAPI , :AnyscaleAPI ;
+    :useLanguageModel :mistral_medium ;
+    dct:title "spamfilter agent" .
+
+:spamfilter_config_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "spamfilter" .
+
+:spamfilter_config_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Decide whether a text is spam or not." .
+
+:spamfilter_config_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language." .
+
+:spamfilterPrompt rdf:type :Prompt ;
+    :promptInstruction """You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language.
+Task: Decide whether a text is spam or not. If this contains vulgar language reply with STOP . If this is spam reply with STOP. Input variable: {{discussion}}""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "Either \"STOP\" if the post contains vulgar language or is spam, or no response if it does not." .
+
+:analystAgent rdf:type :LLMAgent ;
+    :agentID "analyst" ;
+    :agentRole "analyse" ;
+    :agentPrompt :analystPrompt ;
+    :hasAgentConfig :analyst_config_role, :analyst_config_goal, :analyst_config_backstory ;
+    :agentToolUsage :MistralAPI , :TogetherAPI ;
+    :useLanguageModel :mistral_medium ;
+    dct:title "analyst agent" .
+
+:analyst_config_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "analyse" .
+
+:analyst_config_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "You will distill all arguments from all discussion members. Identify who said what. You can reword what they said as long as the main discussion points remain." .
+
+:analyst_config_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You are an expert discussion analyst." .
+
+:analystPrompt rdf:type :Prompt ;
+    :promptInstruction """Analyse in much detail the following discussion:
+### DISCUSSION:
+{{discussion}}
+You must identify who said what and reword while maintaining main points.""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
+
+:scriptwriterAgent rdf:type :LLMAgent ;
+    :agentID "scriptwriter" ;
+    :agentRole "scriptwriter" ;
+    :agentPrompt :scriptwriterPrompt ;
+    :hasAgentConfig :scriptwriter_config_role, :scriptwriter_config_goal, :scriptwriter_config_backstory ;
+    :agentToolUsage :MistralAPI , :TogetherAPI ;
+    :useLanguageModel :mistral_medium ;
+    dct:title "scriptwriter agent" .
+
+:scriptwriter_config_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "scriptwriter" .
+
+:scriptwriter_config_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Turn a conversation into a movie script. Only write the dialogue parts. Do not start the sentence with an action. Do not specify situational descriptions. Do not write parentheticals." .
+
+:scriptwriter_config_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You are an expert on writing natural sounding movie script dialogues. You only focus on the text part and you HATE directional notes." .
+
+:scriptwriterPrompt rdf:type :Prompt ;
+    :promptInstruction """Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.
+Input: {{discussion}}""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes." .
+
+:formatterAgent rdf:type :LLMAgent ;
+    :agentID "formatter" ;
+    :agentRole "formatter" ;
+    :agentPrompt :formatterPrompt ;
+    :hasAgentConfig :formatter_config_role, :formatter_config_goal, :formatter_config_backstory ;
+    :agentToolUsage :MistralAPI ;
+    :useLanguageModel :mistral_medium ;
+    dct:title "formatter agent" .
+
+:formatter_config_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "formatter" .
+
+:formatter_config_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Format the text as asked. Leave out actions from discussion members that happen between brackets, eg (smiling)." .
+
+:formatter_config_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You are an expert text formatter." .
+
+:formatterPrompt rdf:type :Prompt ;
+    :promptInstruction """Format the script exactly like this:
+  ## (person 1):
+  (first text line from person 1)
+
+  ## (person 2):
+  (first text line from person 2)
+
+  ## (person 1):
+  (second text line from person 1)
+
+  ## (person 2):
+  (second text line from person 2)
+Use input: {{script}}""" ;
+    :promptInputData "{{script}}" ;
+    :promptOutputIndicator "A formatted script with the specified structure." .
+
+:scorerAgent rdf:type :LLMAgent ;
+    :agentID "scorer" ;
+    :agentRole "scorer" ;
+    :agentPrompt :scorerPrompt ;
+    :hasAgentConfig :scorer_config_role, :scorer_config_goal, :scorer_config_backstory ;
+    :agentToolUsage :MistralAPI ;
+    :useLanguageModel :mistral_medium ;
+    dct:title "scorer agent" .
+
+:scorer_config_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "scorer" .
+
+:scorer_config_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue """You score a dialogue assessing various aspects of the exchange between the participants using a 1-10 scale, where 1 is the lowest performance and 10 is the highest. Consider clarity, relevance, conciseness, politeness, engagement, flow, coherence, responsiveness, language use, emotional intelligence.""" .
+
+:scorer_config_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You are an expert at scoring conversations on a scale of 1 to 10. You have a keen eye for detail." .
+
+:scorerPrompt rdf:type :Prompt ;
+    :promptInstruction """Score the following script:
+### SCRIPT:
+{{script}}
+Return a score from 1 to 10 and optional brief justification (first line should be the numeric score).""" ;
+    :promptInputData "{{script}}" ;
+    :promptOutputIndicator "A score from 1 to 10, indicating how well the script is." .
+
+#################################################################
+# Tasks (Task individuals) and their prompts, performedByAgent links
+#################################################################
+
+:task0 rdf:type :Task ;
+    dct:description """Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
+### NEWGROUP POST:
+{{discussion}}""" ;
+    dct:title "spam filter pre-check task" ;
+    :taskPrompt :task0Prompt ;
+    :performedByAgent :spamfilterAgent .
+
+:task0Prompt rdf:type :Prompt ;
+    :promptInstruction """Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP.
+### NEWGROUP POST:
+{{discussion}}""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "Either \"STOP\" if the post contains vulgar language or is spam, or no response if it does not." .
+
+:task1 rdf:type :Task ;
+    dct:description """Analyse in much detail the following discussion:
+### DISCUSSION:
+{{discussion}}""" ;
+    dct:title "analysis task" ;
+    :taskPrompt :task1Prompt ;
+    :performedByAgent :analystAgent .
+
+:task1Prompt rdf:type :Prompt ;
+    :promptInstruction """Analyse in much detail the following discussion:
+### DISCUSSION:
+{{discussion}}""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
+
+:task2 rdf:type :Task ;
+    dct:description """Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.""" ;
+    dct:title "scriptwriting task" ;
+    :taskPrompt :task2Prompt ;
+    :performedByAgent :scriptwriterAgent .
+
+:task2Prompt rdf:type :Prompt ;
+    :promptInstruction """Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.
+Input: {{discussion}}""" ;
+    :promptInputData "{{discussion}}" ;
+    :promptOutputIndicator "A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes." .
+
+:task3 rdf:type :Task ;
+    dct:description """Format the script exactly like the provided template (## (person): ...).""" ;
+    dct:title "formatting task" ;
+    :taskPrompt :task3Prompt ;
+    :performedByAgent :formatterAgent .
+
+:task3Prompt rdf:type :Prompt ;
+    :promptInstruction """Format the script exactly like this:
+  ## (person 1):
+  (first text line from person 1)
+  ...
+Use input: {{script}}""" ;
+    :promptInputData "{{script}}" ;
+    :promptOutputIndicator "A formatted script with the specified structure." .
+
+:task4 rdf:type :Task ;
+    dct:description """Score the following script:
+### SCRIPT:
+{{script}}""" ;
+    dct:title "scoring task" ;
+    :taskPrompt :task4Prompt ;
+    :performedByAgent :scorerAgent .
+
+:task4Prompt rdf:type :Prompt ;
+    :promptInstruction """Score the following script:
+### SCRIPT:
+{{script}}""" ;
+    :promptInputData "{{script}}" ;
+    :promptOutputIndicator "A score from 1 to 10, indicating how well the script is." .
+
+#################################################################
+# Team, WorkflowPattern, WorkflowSteps and chain
+#################################################################
+
+:aiCrewTeam rdf:type :Team ;
+    dct:title "AI Crew for screenwriting" ;
+    :hasAgentMember :spamfilterAgent, :analystAgent, :scriptwriterAgent, :formatterAgent, :scorerAgent ;
+    :hasWorkflowPattern :screenplayWorkflow .
+
+:screenplayWorkflow rdf:type :WorkflowPattern ;
+    dct:title "screenplay generation workflow" ;
+    :hasWorkflowStep :step0_spamcheck, :step1_analysis, :step2_scriptwriting, :step3_formatting, :step4_scoring .
+
+:step0_spamcheck rdf:type :StartStep ;
+    :stepOrder 0 ;
+    :hasAssociatedTask :task0 ;
+    :nextStep :step1_analysis ;
+    dct:title "Spam check start step" .
+
+:step1_analysis rdf:type :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task1 ;
+    :nextStep :step2_scriptwriting ;
+    dct:title "Analysis step" .
+
+:step2_scriptwriting rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task2 ;
+    :nextStep :step3_formatting ;
+    dct:title "Scriptwriting step" .
+
+:step3_formatting rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task3 ;
+    :nextStep :step4_scoring ;
+    dct:title "Formatting step" .
+
+:step4_scoring rdf:type :EndStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task4 ;
+    dct:title "Scoring (end) step" .
+
+#################################################################
+# Tools and Language Models (external endpoints & models)
+#################################################################
+
+:MistralAPI rdf:type :Tool ;
+    dct:title "Mistral API endpoint" ;
+    :hasToolConfig :mistral_config_endpoint .
+
+:mistral_config_endpoint rdf:type :Config ;
+    :configKey "endpoint" ;
+    :configValue "Official Mistral endpoint (example: mistral-medium)" .
+
+:TogetherAPI rdf:type :Tool ;
+    dct:title "Together.ai API endpoint" ;
+    :hasToolConfig :together_config_endpoint .
+
+:together_config_endpoint rdf:type :Config ;
+    :configKey "endpoint" ;
+    :configValue "Together.ai endpoint (various models available)" .
+
+:AnyscaleAPI rdf:type :Tool ;
+    dct:title "Anyscale API endpoint" ;
+    :hasToolConfig :anyscale_config_endpoint .
+
+:anyscale_config_endpoint rdf:type :Config ;
+    :configKey "endpoint" ;
+    :configValue "Anyscale endpoint (cost-effective option)" .
+
+:mistral_medium rdf:type :LanguageModel ;
+    dct:title "mistral-medium" ;
+    dct:description "Example default language model referenced in README (mistral-medium)" .
+
+:together_model rdf:type :LanguageModel ;
+    dct:title "together-model" ;
+    dct:description "Representative Together.ai model" .
+
+:anyscale_model rdf:type :LanguageModel ;
+    dct:title "anyscale-model" ;
+    dct:description "Representative Anyscale model" .
+
+#################################################################
+# Misc / resources
+#################################################################
+
+:exampleDiscussion rdf:type :KnowledgeBase ;
+    dct:title "example newsgroup post used in README" ;
+    dct:description """From: keith@cco.caltech.edu (Keith Allan Schneider)
+Subject: Re: <Political Atheists?
+...
+keith""" .
+
+# End of instance data.

@@ -1,0 +1,297 @@
+# Execution time: 62.30 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. All agents, tasks, tools, prompts, configs, workflow steps and relationships from the source code were represented using only existing classes and properties in the ontology. Placeholders (e.g., participant emails, meeting context, meeting objective, and the actual EXA API key) are represented as literals exactly as the source templates or as environment-key references where appropriate.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances derived from the Meeting Preparation agent system
+#################################################################
+
+### Language Model used by agents (unspecified in code; referenced by agents via useLanguageModel)
+:LM_Default rdf:type :LanguageModel ;
+            dcterms:description "Language model used by the Crew agents. (Not specified in source; crewai handles the concrete LLM.)" .
+
+### Tool: ExaSearchTool and its capabilities (derived from tools/ExaSearchTool.py)
+:Tool_ExaSearchTool rdf:type :Tool ;
+                    rdfs:label "ExaSearchTool" ;
+                    :hasCapability :Capability_exa_search ,
+                                    :Capability_exa_find_similar ,
+                                    :Capability_exa_get_contents ;
+                    :hasToolConfig :Config_Exa_API .
+
+:Capability_exa_search rdf:type :Capability ;
+                       rdfs:label "exa.search" ;
+                       dcterms:description "ExaSearchTool.search(query: str) - search webpages for a query; returns top 3 results with use_autoprompt=True." .
+
+:Capability_exa_find_similar rdf:type :Capability ;
+                            rdfs:label "exa.find_similar" ;
+                            dcterms:description "ExaSearchTool.find_similar(url: str) - find webpages similar to a given URL; returns top 3 results." .
+
+:Capability_exa_get_contents rdf:type :Capability ;
+                            rdfs:label "exa.get_contents" ;
+                            dcterms:description "ExaSearchTool.get_contents(ids: str) - retrieve contents of webpages by id list; handles JSON/AST parsing fallback and returns trimmed contents." .
+
+:Config_Exa_API rdf:type :Config ;
+                :configKey "EXA_API_KEY" ;
+                :configValue "ENV(EXA_API_KEY)" ;
+                rdfs:label "Exa API Key config" .
+
+### Agents (from agents.py)
+:Agent_ResearchSpecialist rdf:type :LLMAgent ;
+                         :agentRole "Research Specialist" ;
+                         :agentID "agent_research_specialist_1" ;
+                         :hasAgentGoal :Goal_Research ;
+                         :agentPrompt :Prompt_Agent_ResearchSpecialist ;
+                         :agentToolUsage :Tool_ExaSearchTool ;
+                         :useLanguageModel :LM_Default ;
+                         rdfs:label "Research Specialist Agent" .
+
+:Agent_IndustryAnalyst rdf:type :LLMAgent ;
+                      :agentRole "Industry Analyst" ;
+                      :agentID "agent_industry_analyst_1" ;
+                      :hasAgentGoal :Goal_IndustryAnalysis ;
+                      :agentPrompt :Prompt_Agent_IndustryAnalyst ;
+                      :agentToolUsage :Tool_ExaSearchTool ;
+                      :useLanguageModel :LM_Default ;
+                      rdfs:label "Industry Analyst Agent" .
+
+:Agent_MeetingStrategyAdvisor rdf:type :LLMAgent ;
+                              :agentRole "Meeting Strategy Advisor" ;
+                              :agentID "agent_meeting_strategy_advisor_1" ;
+                              :hasAgentGoal :Goal_MeetingStrategy ;
+                              :agentPrompt :Prompt_Agent_MeetingStrategyAdvisor ;
+                              :agentToolUsage :Tool_ExaSearchTool ;
+                              :useLanguageModel :LM_Default ;
+                              rdfs:label "Meeting Strategy Advisor Agent" .
+
+:Agent_BriefingCoordinator rdf:type :LLMAgent ;
+                           :agentRole "Briefing Coordinator" ;
+                           :agentID "agent_briefing_coordinator_1" ;
+                           :hasAgentGoal :Goal_SummaryAndBriefing ;
+                           :agentPrompt :Prompt_Agent_BriefingCoordinator ;
+                           :agentToolUsage :Tool_ExaSearchTool ;
+                           :useLanguageModel :LM_Default ;
+                           rdfs:label "Briefing Coordinator Agent" .
+
+### Goals (agent goals extracted from agents.py)
+:Goal_Research rdf:type :Goal ;
+               dcterms:description "Conduct thorough research on people and companies involved in the meeting" ;
+               rdfs:label "Research Goal" .
+
+:Goal_IndustryAnalysis rdf:type :Goal ;
+                       dcterms:description "Analyze the current industry trends, challenges, and opportunities" ;
+                       rdfs:label "Industry Analysis Goal" .
+
+:Goal_MeetingStrategy rdf:type :Goal ;
+                      dcterms:description "Develop talking points, questions, and strategic angles for the meeting" ;
+                      rdfs:label "Meeting Strategy Goal" .
+
+:Goal_SummaryAndBriefing rdf:type :Goal ;
+                        dcterms:description "Compile all gathered information into a concise, informative briefing document" ;
+                        rdfs:label "Summary and Briefing Goal" .
+
+### Prompts for agents (backstories and role instructions from agents.py)
+:Prompt_Agent_ResearchSpecialist rdf:type :Prompt ;
+                                :promptInstruction """As a Research Specialist, your mission is to uncover detailed information
+about the individuals and entities participating in the meeting. Your insights
+will lay the groundwork for strategic meeting preparation.""" ;
+                                :promptContext "Role: Research Specialist" ;
+                                rdfs:label "Prompt - Research Specialist" .
+
+:Prompt_Agent_IndustryAnalyst rdf:type :Prompt ;
+                             :promptInstruction """As an Industry Analyst, your analysis will identify key trends,
+challenges facing the industry, and potential opportunities that
+could be leveraged during the meeting for strategic advantage.""" ;
+                             :promptContext "Role: Industry Analyst" ;
+                             rdfs:label "Prompt - Industry Analyst" .
+
+:Prompt_Agent_MeetingStrategyAdvisor rdf:type :Prompt ;
+                                     :promptInstruction """As a Strategy Advisor, your expertise will guide the development of
+talking points, insightful questions, and strategic angles
+to ensure the meeting's objectives are achieved.""" ;
+                                     :promptContext "Role: Meeting Strategy Advisor" ;
+                                     rdfs:label "Prompt - Meeting Strategy Advisor" .
+
+:Prompt_Agent_BriefingCoordinator rdf:type :Prompt ;
+                                  :promptInstruction """As the Briefing Coordinator, your role is to consolidate the research,
+analysis, and strategic insights.""" ;
+                                  :promptContext "Role: Briefing Coordinator" ;
+                                  rdfs:label "Prompt - Briefing Coordinator" .
+
+### Tasks (from tasks.py). Descriptions preserved as in source (templates with placeholders for participants/context/objective)
+:Task_Research rdf:type :Task ;
+               dcterms:description """Conduct comprehensive research on each of the individuals and companies
+involved in the upcoming meeting. Gather information on recent
+news, achievements, professional background, and any relevant
+business activities.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+               :taskPrompt :Prompt_Task_Research ;
+               :performedByAgent :Agent_ResearchSpecialist ;
+               rdfs:label "Research Task" .
+
+:Prompt_Task_Research rdf:type :Prompt ;
+                      :promptInstruction """Conduct comprehensive research on each of the individuals and companies
+involved in the upcoming meeting. Gather information on recent
+news, achievements, professional background, and any relevant
+business activities.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+                      :promptOutputIndicator """A detailed report summarizing key findings about each participant
+and company, highlighting information that could be relevant for the meeting.""" ;
+                      rdfs:label "Prompt - Research Task" .
+
+:Task_IndustryAnalysis rdf:type :Task ;
+                       dcterms:description """Analyze the current industry trends, challenges, and opportunities
+relevant to the meeting's context. Consider market reports, recent
+developments, and expert opinions to provide a comprehensive
+overview of the industry landscape.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+                       :taskPrompt :Prompt_Task_IndustryAnalysis ;
+                       :performedByAgent :Agent_IndustryAnalyst ;
+                       rdfs:label "Industry Analysis Task" .
+
+:Prompt_Task_IndustryAnalysis rdf:type :Prompt ;
+                              :promptInstruction """Analyze the current industry trends, challenges, and opportunities
+relevant to the meeting's context. Consider market reports, recent
+developments, and expert opinions to provide a comprehensive
+overview of the industry landscape.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+                              :promptOutputIndicator """An insightful analysis that identifies major trends, potential
+challenges, and strategic opportunities.""" ;
+                              rdfs:label "Prompt - Industry Analysis Task" .
+
+:Task_MeetingStrategy rdf:type :Task ;
+                      dcterms:description """Develop strategic talking points, questions, and discussion angles
+for the meeting based on the research and industry analysis conducted
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+                      :taskPrompt :Prompt_Task_MeetingStrategy ;
+                      :performedByAgent :Agent_MeetingStrategyAdvisor ;
+                      rdfs:label "Meeting Strategy Task" .
+
+:Prompt_Task_MeetingStrategy rdf:type :Prompt ;
+                             :promptInstruction """Develop strategic talking points, questions, and discussion angles
+for the meeting based on the research and industry analysis conducted
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+                             :promptOutputIndicator """Complete report with a list of key talking points, strategic questions
+to ask to help achieve the meetings objective during the meeting.""" ;
+                             rdfs:label "Prompt - Meeting Strategy Task" .
+
+:Task_SummaryAndBriefing rdf:type :Task ;
+                        dcterms:description """Compile all the research findings, industry analysis, and strategic
+talking points into a concise, comprehensive briefing document for
+the meeting.
+Ensure the briefing is easy to digest and equips the meeting
+participants with all necessary information and strategies.
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+                        :taskPrompt :Prompt_Task_SummaryAndBriefing ;
+                        :performedByAgent :Agent_BriefingCoordinator ;
+                        rdfs:label "Summary and Briefing Task" .
+
+:Prompt_Task_SummaryAndBriefing rdf:type :Prompt ;
+                                :promptInstruction """Compile all the research findings, industry analysis, and strategic
+talking points into a concise, comprehensive briefing document for
+the meeting.
+Ensure the briefing is easy to digest and equips the meeting
+participants with all necessary information and strategies.
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+                                :promptOutputIndicator """A well-structured briefing document that includes sections for
+participant bios, industry overview, talking points, and
+strategic recommendations.""" ;
+                                rdfs:label "Prompt - Summary and Briefing Task" .
+
+### Team (Crew created in main.py) and Workflow Pattern
+:Team_MeetingPrepCrew rdf:type :Team ;
+                      rdfs:label "Meeting Preparation Crew" ;
+                      :hasAgentMember :Agent_ResearchSpecialist ,
+                                      :Agent_IndustryAnalyst ,
+                                      :Agent_MeetingStrategyAdvisor ,
+                                      :Agent_BriefingCoordinator ;
+                      :hasWorkflowPattern :WorkflowPattern_MeetingPrep .
+
+:WorkflowPattern_MeetingPrep rdf:type :WorkflowPattern ;
+                             rdfs:label "Meeting Preparation Workflow Pattern" ;
+                             :hasWorkflowStep :Step_1_StartResearch ,
+                                              :Step_2_IndustryAnalysis ,
+                                              :Step_3_MeetingStrategy ,
+                                              :Step_4_SummaryAndBriefing .
+
+### Workflow Steps (StartStep -> WorkflowStep -> WorkflowStep -> EndStep)
+:Step_1_StartResearch rdf:type :StartStep ;
+                      rdfs:label "Start - Research" ;
+                      :stepOrder "1"^^xsd:integer ;
+                      :hasAssociatedTask :Task_Research ;
+                      :nextStep :Step_2_IndustryAnalysis .
+
+:Step_2_IndustryAnalysis rdf:type :WorkflowStep ;
+                         rdfs:label "Industry Analysis" ;
+                         :stepOrder "2"^^xsd:integer ;
+                         :hasAssociatedTask :Task_IndustryAnalysis ;
+                         :nextStep :Step_3_MeetingStrategy .
+
+:Step_3_MeetingStrategy rdf:type :WorkflowStep ;
+                        rdfs:label "Meeting Strategy" ;
+                        :stepOrder "3"^^xsd:integer ;
+                        :hasAssociatedTask :Task_MeetingStrategy ;
+                        :nextStep :Step_4_SummaryAndBriefing ;
+                        rdfs:comment "This step depends on research and industry analysis (in main.py this was encoded via task context links)." .
+
+:Step_4_SummaryAndBriefing rdf:type :EndStep ;
+                           rdfs:label "Summary and Briefing (End)" ;
+                           :stepOrder "4"^^xsd:integer ;
+                           :hasAssociatedTask :Task_SummaryAndBriefing .
+
+#################################################################
+# Additional linking and metadata to ensure no orphaned nodes
+#################################################################
+
+# Link the tool usage from each agent explicitly (agents.py: tools=ExaSearchTool.tools())
+:Agent_ResearchSpecialist :agentToolUsage :Tool_ExaSearchTool .
+:Agent_IndustryAnalyst :agentToolUsage :Tool_ExaSearchTool .
+:Agent_MeetingStrategyAdvisor :agentToolUsage :Tool_ExaSearchTool .
+:Agent_BriefingCoordinator :agentToolUsage :Tool_ExaSearchTool .
+
+# Ensure Tool_ExaSearchTool config is connected (tools/ExaSearchTool._exa uses EXA_API_KEY env var)
+:Tool_ExaSearchTool :hasToolConfig :Config_Exa_API .
+
+# Ensure capabilities are connected to the tool
+:Tool_ExaSearchTool :hasCapability :Capability_exa_search ,
+                                 :Capability_exa_find_similar ,
+                                 :Capability_exa_get_contents .
+
+# Ensure each Prompt is referenced (already linked via :agentPrompt and :taskPrompt)
+# Ensure Goals are linked to agents (hasAgentGoal above)
+# Ensure Language Model is referenced by agents (useLanguageModel above)
+
+# End of instance data

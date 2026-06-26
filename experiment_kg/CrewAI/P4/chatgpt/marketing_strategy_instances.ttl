@@ -1,0 +1,310 @@
+# Execution time: 55.06 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# - All agents appearing in the repository (agents.yaml and crew.py) have corresponding :LLMAgent individuals.
+# - All tasks declared in tasks.yaml and instantiated in crew.py have :Task individuals and are linked to agents via :performedByAgent.
+# - Both tools referenced in crew.py (SerperDevTool, ScrapeWebsiteTool) have :Tool individuals and are linked to agents via :agentToolUsage.
+# - Each agent has a :Prompt individual linked via :agentPrompt.
+# - The crew is represented as a :Team with :hasAgentMember linking to every agent.
+# Check 2 (Workflow Integrity): PASS
+# - A :WorkflowPattern was created for the crew with a StartStep, sequential WorkflowSteps, and an EndStep.
+# - Every :WorkflowStep has a :stepOrder.
+# - Steps are connected via :nextStep to form a chain.
+# - Each step is linked to at least one task via :hasAssociatedTask.
+# Check 3 (Structural Consistency): PASS
+# - No duplicate IRIs were created; each entity has a unique IRI.
+# - No orphaned individuals: every individual is linked to at least one other individual.
+# - All object property values reference defined individuals (no dangling references).
+# - Every :Config individual includes both :configKey and :configValue.
+# - Every :Prompt individual includes at least :promptInstruction.
+# Check 4 (Schema Compliance): PASS
+# - No classes or properties outside the provided ontology were introduced.
+# - :LLMAgent and :Tool usages align with their schema roles.
+# - :WorkflowPattern and :WorkflowStep classes are used distinctly.
+
+# Issues / Assumptions:
+# - chief_creative_director appears in agents.yaml but was not instantiated by a @agent decorator in crew.py. I created a :LLMAgent individual for it and added it to the :Team, but it has no tasks assigned (consistent with crew.py behavior).
+# - Task configuration entries (description and expected_output) were modeled as separate :Config individuals per key/value pair and linked with :hasConfig to the respective :Task to satisfy the requirement that every :Config has both :configKey and :configValue.
+# - Prompts for agents were constructed by concatenating role, goal, and backstory from agents.yaml into the :promptInstruction for each agent prompt.
+# - Task prompts preserved templates and placeholders (e.g., {customer_domain}, {project_description}) as in tasks.yaml.
+# - The workflow was modeled as sequential order matching the Task definitions and the Crew Process.sequential configuration.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+#################################################################
+# Agents (LLMAgent individuals)
+#################################################################
+
+:lead_market_analyst rdf:type :LLMAgent ;
+    :agentID "lead_market_analyst" ;
+    :agentRole "Lead Market Analyst" ;
+    :agentPrompt :prompt_agent_lead_market_analyst ;
+    :agentToolUsage :tool_SerperDevTool ,
+                    :tool_ScrapeWebsiteTool ;
+    rdfs:label "lead_market_analyst" .
+
+:chief_marketing_strategist rdf:type :LLMAgent ;
+    :agentID "chief_marketing_strategist" ;
+    :agentRole "Chief Marketing Strategist" ;
+    :agentPrompt :prompt_agent_chief_marketing_strategist ;
+    :agentToolUsage :tool_SerperDevTool ,
+                    :tool_ScrapeWebsiteTool ;
+    rdfs:label "chief_marketing_strategist" .
+
+:creative_content_creator rdf:type :LLMAgent ;
+    :agentID "creative_content_creator" ;
+    :agentRole "Creative Content Creator" ;
+    :agentPrompt :prompt_agent_creative_content_creator ;
+    :agentToolUsage :tool_builtin_none ;
+    rdfs:label "creative_content_creator" .
+
+:chief_creative_director rdf:type :LLMAgent ;
+    :agentID "chief_creative_director" ;
+    :agentRole "Chief Creative Director" ;
+    :agentPrompt :prompt_agent_chief_creative_director ;
+    rdfs:label "chief_creative_director" .
+
+#################################################################
+# Agent Prompts (Prompt individuals)
+#################################################################
+
+:prompt_agent_lead_market_analyst rdf:type :Prompt ;
+    :promptInstruction """Role: Lead Market Analyst
+Goal: Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.
+Backstory: As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.""" ;
+    rdfs:label "Prompt for Lead Market Analyst" .
+
+:prompt_agent_chief_marketing_strategist rdf:type :Prompt ;
+    :promptInstruction """Role: Chief Marketing Strategist
+Goal: Synthesize amazing insights from product analysis to formulate incredible marketing strategies.
+Backstory: You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success.""" ;
+    rdfs:label "Prompt for Chief Marketing Strategist" .
+
+:prompt_agent_creative_content_creator rdf:type :Prompt ;
+    :promptInstruction """Role: Creative Content Creator
+Goal: Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies.
+Backstory: As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences. Your expertise lies in turning marketing strategies into engaging stories and visual content that capture attention and inspire action.""" ;
+    rdfs:label "Prompt for Creative Content Creator" .
+
+:prompt_agent_chief_creative_director rdf:type :Prompt ;
+    :promptInstruction """Role: Chief Creative Director
+Goal: Oversee the work done by your team to make sure it is the best possible and aligned with the product goals; review, approve, ask clarifying questions or delegate follow-up work if necessary.
+Backstory: You are the Chief Content Officer at a leading digital marketing agency specializing in product branding. You ensure your team crafts the best possible content for the customer.""" ;
+    rdfs:label "Prompt for Chief Creative Director" .
+
+#################################################################
+# Tools
+#################################################################
+
+:tool_SerperDevTool rdf:type :Tool ;
+    rdfs:label "SerperDevTool" .
+
+:tool_ScrapeWebsiteTool rdf:type :Tool ;
+    rdfs:label "ScrapeWebsiteTool" .
+
+:tool_builtin_none rdf:type :Tool ;
+    rdfs:label "No external tools (creative_content_creator)" .
+
+#################################################################
+# Tasks (Task individuals) with Prompts and Configs
+#################################################################
+
+:task_research_task rdf:type :Task ;
+    :performedByAgent :lead_market_analyst ;
+    :taskPrompt :prompt_task_research_task ;
+    :hasConfig :config_research_description ,
+               :config_research_expected_output ;
+    rdfs:label "research_task" .
+
+:prompt_task_research_task rdf:type :Prompt ;
+    :promptInstruction """Conduct a thorough research about the customer and competitors in the context of {customer_domain}.
+Make sure you find any interesting and relevant information given the current year is 2024.
+We are working with them on the following project: {project_description}.""" ;
+    :promptOutputIndicator """A complete report on the customer and their customers and competitors, including their demographics, preferences, market positioning and audience engagement.""" ;
+    rdfs:label "Prompt for research_task" .
+
+:config_research_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Conduct a thorough research about the customer and competitors in the context of {customer_domain}. Make sure you find any interesting and relevant information given the current year is 2024. We are working with them on the following project: {project_description}." ;
+    rdfs:label "research_task description config" .
+
+:config_research_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "A complete report on the customer and their customers and competitors, including their demographics, preferences, market positioning and audience engagement." ;
+    rdfs:label "research_task expected_output config" .
+
+:task_project_understanding_task rdf:type :Task ;
+    :performedByAgent :chief_marketing_strategist ;
+    :taskPrompt :prompt_task_project_understanding_task ;
+    :hasConfig :config_project_understanding_description ,
+               :config_project_understanding_expected_output ;
+    rdfs:label "project_understanding_task" .
+
+:prompt_task_project_understanding_task rdf:type :Prompt ;
+    :promptInstruction """Understand the project details and the target audience for {project_description}.
+Review any provided materials and gather additional information as needed.""" ;
+    :promptOutputIndicator """A detailed summary of the project and a profile of the target audience.""" ;
+    rdfs:label "Prompt for project_understanding_task" .
+
+:config_project_understanding_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Understand the project details and the target audience for {project_description}. Review any provided materials and gather additional information as needed." ;
+    rdfs:label "project_understanding_task description config" .
+
+:config_project_understanding_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "A detailed summary of the project and a profile of the target audience." ;
+    rdfs:label "project_understanding_task expected_output config" .
+
+:task_marketing_strategy_task rdf:type :Task ;
+    :performedByAgent :chief_marketing_strategist ;
+    :taskPrompt :prompt_task_marketing_strategy_task ;
+    :hasConfig :config_marketing_strategy_description ,
+               :config_marketing_strategy_expected_output ;
+    rdfs:label "marketing_strategy_task" .
+
+:prompt_task_marketing_strategy_task rdf:type :Prompt ;
+    :promptInstruction """Formulate a comprehensive marketing strategy for the project {project_description} of the customer {customer_domain}.
+Use the insights from the research task and the project understanding task to create a high-quality strategy.""" ;
+    :promptOutputIndicator """A detailed marketing strategy document that outlines the goals, target audience, key messages, and proposed tactics, make sure to have name, tatics, channels and KPIs""" ;
+    rdfs:label "Prompt for marketing_strategy_task" .
+
+:config_marketing_strategy_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Formulate a comprehensive marketing strategy for the project {project_description} of the customer {customer_domain}. Use the insights from the research task and the project understanding task to create a high-quality strategy." ;
+    rdfs:label "marketing_strategy_task description config" .
+
+:config_marketing_strategy_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "A detailed marketing strategy document that outlines the goals, target audience, key messages, and proposed tactics, make sure to have name, tatics, channels and KPIs" ;
+    rdfs:label "marketing_strategy_task expected_output config" .
+
+:task_campaign_idea_task rdf:type :Task ;
+    :performedByAgent :creative_content_creator ;
+    :taskPrompt :prompt_task_campaign_idea_task ;
+    :hasConfig :config_campaign_idea_description ,
+               :config_campaign_idea_expected_output ;
+    rdfs:label "campaign_idea_task" .
+
+:prompt_task_campaign_idea_task rdf:type :Prompt ;
+    :promptInstruction """Develop creative marketing campaign ideas for {project_description}.
+Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy.""" ;
+    :promptOutputIndicator """A list of 5 campaign ideas, each with a brief description and expected impact.""" ;
+    rdfs:label "Prompt for campaign_idea_task" .
+
+:config_campaign_idea_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Develop creative marketing campaign ideas for {project_description}. Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy." ;
+    rdfs:label "campaign_idea_task description config" .
+
+:config_campaign_idea_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "A list of 5 campaign ideas, each with a brief description and expected impact." ;
+    rdfs:label "campaign_idea_task expected_output config" .
+
+:task_copy_creation_task rdf:type :Task ;
+    :performedByAgent :creative_content_creator ;
+    :taskPrompt :prompt_task_copy_creation_task ;
+    :hasConfig :config_copy_creation_description ,
+               :config_copy_creation_expected_output ;
+    rdfs:label "copy_creation_task" .
+
+:prompt_task_copy_creation_task rdf:type :Prompt ;
+    :promptInstruction """Create marketing copies based on the approved campaign ideas for {project_description}.
+Ensure the copies are compelling, clear, and tailored to the target audience.""" ;
+    :promptOutputIndicator """Marketing copies for each campaign idea.""" ;
+    rdfs:label "Prompt for copy_creation_task" .
+
+:config_copy_creation_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Create marketing copies based on the approved campaign ideas for {project_description}. Ensure the copies are compelling, clear, and tailored to the target audience." ;
+    rdfs:label "copy_creation_task description config" .
+
+:config_copy_creation_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "Marketing copies for each campaign idea." ;
+    rdfs:label "copy_creation_task expected_output config" .
+
+#################################################################
+# Workflow Pattern and Steps
+#################################################################
+
+:workflow_marketing_posts rdf:type :WorkflowPattern ;
+    :hasWorkflowStep :step_1_research ,
+                     :step_2_project_understanding ,
+                     :step_3_marketing_strategy ,
+                     :step_4_campaign_ideas ,
+                     :step_5_copy_creation ,
+                     :step_6_end ;
+    rdfs:label "Marketing Posts Workflow Pattern" .
+
+:step_1_research rdf:type :StartStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_research_task ;
+    :nextStep :step_2_project_understanding ;
+    rdfs:label "Start: research" .
+
+:step_2_project_understanding rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_project_understanding_task ;
+    :nextStep :step_3_marketing_strategy ;
+    rdfs:label "Step 2: project understanding" .
+
+:step_3_marketing_strategy rdf:type :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :task_marketing_strategy_task ;
+    :nextStep :step_4_campaign_ideas ;
+    rdfs:label "Step 3: marketing strategy" .
+
+:step_4_campaign_ideas rdf:type :WorkflowStep ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :task_campaign_idea_task ;
+    :nextStep :step_5_copy_creation ;
+    rdfs:label "Step 4: campaign ideas" .
+
+:step_5_copy_creation rdf:type :WorkflowStep ;
+    :stepOrder "5"^^xsd:integer ;
+    :hasAssociatedTask :task_copy_creation_task ;
+    :nextStep :step_6_end ;
+    rdfs:label "Step 5: copy creation" .
+
+:step_6_end rdf:type :EndStep ;
+    :stepOrder "6"^^xsd:integer ;
+    :hasAssociatedTask :task_copy_creation_task ;
+    rdfs:label "End Step" .
+
+#################################################################
+# Team (Crew) and links to agents and workflow pattern
+#################################################################
+
+:team_marketing_posts rdf:type :Team ;
+    :hasAgentMember :lead_market_analyst ,
+                    :chief_marketing_strategist ,
+                    :creative_content_creator ,
+                    :chief_creative_director ;
+    :hasWorkflowPattern :workflow_marketing_posts ;
+    rdfs:label "MarketingPosts Crew" .
+
+#################################################################
+# Task produced resources (outputs) - modeled as beam resources
+#################################################################
+
+:resource_marketing_strategy rdf:type beam:Resource ;
+    rdfs:label "MarketStrategy (output of marketing_strategy_task)" .
+
+:resource_campaign_idea rdf:type beam:Resource ;
+    rdfs:label "CampaignIdea (output of campaign_idea_task)" .
+
+:resource_copy rdf:type beam:Resource ;
+    rdfs:label "Copy (output of copy_creation_task)" .
+
+:task_marketing_strategy_task :producedResource :resource_marketing_strategy .
+:task_campaign_idea_task :producedResource :resource_campaign_idea .
+:task_copy_creation_task :producedResource :resource_copy .

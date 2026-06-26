@@ -1,0 +1,230 @@
+# Execution time: 51.41 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+
+# Issues / Assumptions:
+# - No issues detected. Assumptions: (1) The project uses GPT-4 by default, modeled as :GPT4Model. (2) Task prompt templates include placeholders {origin}, {cities}, {range}, {interests} as in source code (these are runtime substitutions). (3) No Config individuals were present in the source; none were created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances derived from the Trip Planner Crew project
+#################################################################
+
+### Language Model used by agents (project default: GPT-4)
+:GPT4Model rdf:type :LanguageModel ;
+    rdfs:label "GPT-4 (default LLM)" ;
+    <http://purl.org/dc/terms/description> "Default language model referenced by the Crew; project README indicates GPT-4 is used by default." .
+
+### Tools extracted from tools/ package
+:SearchInternetTool rdf:type :Tool ;
+    rdfs:label "Search the internet" ;
+    <http://purl.org/dc/terms/description> "Implements SearchTools.search_internet - queries Serper API and returns top organic search results." .
+
+:ScrapeWebsiteTool rdf:type :Tool ;
+    rdfs:label "Scrape website content" ;
+    <http://purl.org/dc/terms/description> "Implements BrowserTools.scrape_and_summarize_website - uses browserless to fetch site content and partitions via unstructured, then runs summarization tasks." .
+
+:CalculatorTool rdf:type :Tool ;
+    rdfs:label "Make a calculation" ;
+    <http://purl.org/dc/terms/description> "Implements CalculatorTools.calculate - safe AST-based math expression evaluator." .
+
+### Agents (LLM Agents defined in trip_agents.py)
+:CitySelectionAgent rdf:type :LLMAgent ;
+    rdfs:label "City Selection Expert" ;
+    :agentPrompt :CitySelectionAgent_Prompt ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool ;
+    :useLanguageModel :GPT4Model ;
+    <http://purl.org/dc/terms/description> "Defined in TripAgents.city_selection_agent(); role 'City Selection Expert', goal 'Select the best city based on weather, season, and prices'." .
+
+:LocalExpertAgent rdf:type :LLMAgent ;
+    rdfs:label "Local Expert at this city" ;
+    :agentPrompt :LocalExpertAgent_Prompt ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool ;
+    :useLanguageModel :GPT4Model ;
+    <http://purl.org/dc/terms/description> "Defined in TripAgents.local_expert(); role 'Local Expert at this city', goal 'Provide the BEST insights about the selected city'." .
+
+:TravelConciergeAgent rdf:type :LLMAgent ;
+    rdfs:label "Amazing Travel Concierge" ;
+    :agentPrompt :TravelConciergeAgent_Prompt ;
+    :agentToolUsage :SearchInternetTool , :ScrapeWebsiteTool , :CalculatorTool ;
+    :useLanguageModel :GPT4Model ;
+    <http://purl.org/dc/terms/description> "Defined in TripAgents.travel_concierge(); role 'Amazing Travel Concierge', goal 'Create the most amazing travel itineraries with budget and packing suggestions for the city'." .
+
+### Agent prompt individuals (capture role, goal, backstory as promptInstruction)
+:CitySelectionAgent_Prompt rdf:type :Prompt ;
+    :promptInstruction """Role: City Selection Expert
+Goal: Select the best city based on weather, season, and prices
+Backstory: An expert in analyzing travel data to pick ideal destinations
+Tools available: Search the internet; Scrape website content
+Notes: Created from TripAgents.city_selection_agent() in trip_agents.py.
+""" ;
+    rdfs:label "Prompt for City Selection Expert" ;
+    :promptOutputIndicator "A detailed report on the chosen city including flight costs, weather forecast, and attractions" .
+
+:LocalExpertAgent_Prompt rdf:type :Prompt ;
+    :promptInstruction """Role: Local Expert at this city
+Goal: Provide the BEST insights about the selected city
+Backstory: A knowledgeable local guide with extensive information about the city, it's attractions and customs
+Tools available: Search the internet; Scrape website content
+Notes: Created from TripAgents.local_expert() in trip_agents.py.
+""" ;
+    rdfs:label "Prompt for Local Expert" ;
+    :promptOutputIndicator "Comprehensive city guide including hidden gems, cultural hotspots, and practical travel tips" .
+
+:TravelConciergeAgent_Prompt rdf:type :Prompt ;
+    :promptInstruction """Role: Amazing Travel Concierge
+Goal: Create the most amazing travel itineraries with budget and packing suggestions for the city
+Backstory: Specialist in travel planning and logistics with decades of experience
+Tools available: Search the internet; Scrape website content; Make a calculation
+Notes: Created from TripAgents.travel_concierge() in trip_agents.py.
+""" ;
+    rdfs:label "Prompt for Travel Concierge" ;
+    :promptOutputIndicator "Complete expanded travel plan with daily schedule, weather conditions, packing suggestions, and budget breakdown" .
+
+### Tasks (templates defined in trip_tasks.py)
+:IdentifyTask rdf:type :Task ;
+    rdfs:label "Identify Best City Task" ;
+    :performedByAgent :CitySelectionAgent ;
+    :taskPrompt :IdentifyTask_Prompt ;
+    <http://purl.org/dc/terms/description> "Constructed from TripTasks.identify_task(...). This is a task template; placeholders {origin}, {cities}, {range}, {interests} are substituted at runtime." .
+
+:GatherTask rdf:type :Task ;
+    rdfs:label "Gather City Guide Task" ;
+    :performedByAgent :LocalExpertAgent ;
+    :taskPrompt :GatherTask_Prompt ;
+    <http://purl.org/dc/terms/description> "Constructed from TripTasks.gather_task(...). This is a task template; placeholders {origin}, {range}, {interests} are substituted at runtime." .
+
+:PlanTask rdf:type :Task ;
+    rdfs:label "Plan 7-day Itinerary Task" ;
+    :performedByAgent :TravelConciergeAgent ;
+    :taskPrompt :PlanTask_Prompt ;
+    <http://purl.org/dc/terms/description> "Constructed from TripTasks.plan_task(...). This is a task template; placeholders {origin}, {range}, {interests} are substituted at runtime." .
+
+### Task prompt individuals (capture the full prompt templates including tip)
+:IdentifyTask_Prompt rdf:type :Prompt ;
+    rdfs:label "Prompt for Identify Task" ;
+    :promptInstruction """Analyze and select the best city for the trip based
+based on specific criteria such as weather patterns, seasonal
+events, and travel costs. This task involves comparing
+multiple cities, considering factors like current weather
+conditions, upcoming cultural or seasonal events, and
+overall travel expenses.
+
+Your final answer must be a detailed
+report on the chosen city, and everything you found out
+about it, including the actual flight costs, weather
+forecast and attractions.
+If you do your BEST WORK, I'll tip you $100!
+
+Traveling from: {origin}
+City Options: {cities}
+Trip Date: {range}
+Traveler Interests: {interests}
+""" ;
+    :promptOutputIndicator "Detailed report on the chosen city including flight costs, weather forecast, and attractions" .
+
+:GatherTask_Prompt rdf:type :Prompt ;
+    rdfs:label "Prompt for Gather Task" ;
+    :promptInstruction """As a local expert on this city you must compile an
+in-depth guide for someone traveling there and wanting
+to have THE BEST trip ever!
+Gather information about key attractions, local customs,
+special events, and daily activity recommendations.
+Find the best spots to go to, the kind of place only a
+local would know.
+This guide should provide a thorough overview of what
+the city has to offer, including hidden gems, cultural
+hotspots, must-visit landmarks, weather forecasts, and
+high level costs.
+
+The final answer must be a comprehensive city guide,
+rich in cultural insights and practical tips,
+tailored to enhance the travel experience.
+If you do your BEST WORK, I'll tip you $100!
+
+Trip Date: {range}
+Traveling from: {origin}
+Traveler Interests: {interests}
+""" ;
+    :promptOutputIndicator "Comprehensive city guide including hidden gems, cultural hotspots, and practical travel tips" .
+
+:PlanTask_Prompt rdf:type :Prompt ;
+    rdfs:label "Prompt for Plan Task" ;
+    :promptInstruction """Expand this guide into a full 7-day travel
+itinerary with detailed per-day plans, including
+weather forecasts, places to eat, packing suggestions,
+and a budget breakdown.
+
+You MUST suggest actual places to visit, actual hotels
+to stay and actual restaurants to go to.
+
+This itinerary should cover all aspects of the trip,
+from arrival to departure, integrating the city guide
+information with practical travel logistics.
+
+Your final answer MUST be a complete expanded travel plan,
+formatted as markdown, encompassing a daily schedule,
+anticipated weather conditions, recommended clothing and
+items to pack, and a detailed budget, ensuring THE BEST
+TRIP EVER. Be specific and give it a reason why you picked
+each place, what makes them special! If you do your BEST WORK, I'll tip you $100!
+
+Trip Date: {range}
+Traveling from: {origin}
+Traveler Interests: {interests}
+""" ;
+    :promptOutputIndicator "Complete expanded travel plan with daily schedule, weather conditions, packing suggestions, and budget breakdown" .
+
+### Team / Crew representation and workflow pattern
+:TripCrewTeam rdf:type :Team ;
+    rdfs:label "Trip Planner Crew" ;
+    :hasAgentMember :CitySelectionAgent , :LocalExpertAgent , :TravelConciergeAgent ;
+    :hasWorkflowPattern :TripPlanningWorkflow ;
+    <http://purl.org/dc/terms/description> "Represents the crew assembled in main.py (agents: city selection, local expert, travel concierge). The Crew is created with agents and tasks and kickoff() is invoked." .
+
+:TripPlanningWorkflow rdf:type :WorkflowPattern ;
+    rdfs:label "Trip Planning Workflow Pattern" ;
+    :hasWorkflowStep :TripStep1 , :TripStep2 , :TripStep3 ;
+    <http://purl.org/dc/terms/description> "Workflow pattern assembling the tasks Identify -> Gather -> Plan as steps executed by the Crew." .
+
+### Workflow steps (chain with stepOrder and associated tasks)
+:TripStep1 rdf:type :StartStep ;
+    rdfs:label "Step 1: Identify Best City" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :IdentifyTask ;
+    :nextStep :TripStep2 .
+
+:TripStep2 rdf:type :WorkflowStep ;
+    rdfs:label "Step 2: Gather City Guide" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :GatherTask ;
+    :nextStep :TripStep3 .
+
+:TripStep3 rdf:type :EndStep ;
+    rdfs:label "Step 3: Produce 7-day Itinerary" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :PlanTask .
+
+#################################################################
+# Link summary / provenance
+#################################################################
+# - Agents reference the tools they use via :agentToolUsage
+# - Each Task is linked to its performing agent via :performedByAgent
+# - Each Task has a :taskPrompt capturing the task text template and expected output via :promptOutputIndicator
+# - A Team (:TripCrewTeam) groups the agents and links to a WorkflowPattern (:TripPlanningWorkflow)
+# - WorkflowSteps are ordered via :stepOrder and chained via :nextStep and linked to their Task via :hasAssociatedTask
+
+### End of instance data.

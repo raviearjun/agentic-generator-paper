@@ -1,0 +1,143 @@
+# Execution time: 36.47 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No explicit "Tool" instances were present in the source; the project uses a PDF knowledge source (modeled as a :KnowledgeBase) rather than a Tool. No :Tool individuals were created because none were referenced in the source.
+# - The code specifies Process.sequential but does not define an explicit workflow pattern; I created a simple sequential :WorkflowPattern with Start/Process/End steps to reflect Process.sequential and to satisfy workflow integrity checks.
+# - The exact language model name used at runtime is not hard-coded in the repository. I created a generic :LanguageModel instance (:LM_OpenAI_Generic) and linked the agent to it via :useLanguageModel to capture that an LLM is used. If a specific model string is required, it can be added as a :Config or literal on the language model.
+# - All agent/task configuration values from YAML files (role, goal, backstory, description, expected_output) are preserved as :Config individuals with :configKey / :configValue and included in prompts where appropriate.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# Instances for "PDF Knowledge Example" (meta-quest-knowledge)
+#################################################################
+
+:MetaQuestCrew rdf:type :Team ;
+    rdfs:label "MetaQuestKnowledge Crew" ;
+    :hasAgentMember :Agent_MetaQuestExpert ;
+    :hasWorkflowPattern :WorkflowPattern_MetaQuest ;
+    :hasSystemConfig :Config_Crew_verbose_true .
+
+# Agent
+:Agent_MetaQuestExpert rdf:type :LLMAgent ;
+    rdfs:label "Meta Quest Expert" ;
+    :agentID "meta_quest_expert" ;
+    :agentPrompt :Prompt_Agent_MetaQuestExpert ;
+    :hasAgentConfig :Config_Agent_meta_quest_expert_role ,
+                    :Config_Agent_meta_quest_expert_goal ,
+                    :Config_Agent_meta_quest_expert_backstory ;
+    :hasKnowledge :KB_MetaQuestPDF ;
+    :useLanguageModel :LM_OpenAI_Generic ;
+    :hasAgentGoal :Goal_MetaQuestExpert .
+
+:Config_Agent_meta_quest_expert_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Meta Quest Expert" .
+
+:Config_Agent_meta_quest_expert_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Provide the best possible answers to questions about Meta Quest" .
+
+:Config_Agent_meta_quest_expert_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "You're a seasoned expert in the world of Meta Quest. You're known for your ability to provide the best possible answers to questions about this cutting-edge technology, ensuring that your audience is well-informed and satisfied with the latest advancements in the field." .
+
+:Goal_MetaQuestExpert rdf:type :Goal ;
+    rdfs:label "Provide best answers about Meta Quest" ;
+    dcterms:description "Provide the best possible answers to questions about Meta Quest" .
+
+# Language Model (generic placeholder because repo does not hard-code a model name)
+:LM_OpenAI_Generic rdf:type :LanguageModel ;
+    rdfs:label "OpenAI (generic / user-specified at runtime)" ;
+    dcterms:description "A placeholder LanguageModel instance representing the OpenAI model used via OPENAI_API_KEY or runtime parameter." .
+
+# Knowledge Base (PDF)
+:KB_MetaQuestPDF rdf:type :KnowledgeBase ;
+    rdfs:label "Meta Quest Manual (PDF Knowledge Source)" ;
+    dcterms:description "PDF knowledge source initialized from file meta_quest_manual.pdf; used to answer questions from context." .
+
+# Agent prompt (agent-level)
+:Prompt_Agent_MetaQuestExpert rdf:type :Prompt ;
+    rdfs:label "Agent prompt for Meta Quest Expert" ;
+    :promptInstruction "You are the Meta Quest Expert. Provide the best possible answers to questions about Meta Quest based on available knowledge sources. Use the PDF knowledge source and any provided context. Be precise and reference the source when relevant." ;
+    :promptContext "Role: Meta Quest Expert. Backstory: Seasoned expert familiar with Meta Quest technology." .
+
+# Task
+:Task_AnswerQuestion rdf:type :Task ;
+    rdfs:label "Answer Question Task" ;
+    :performedByAgent :Agent_MetaQuestExpert ;
+    :taskPrompt :Prompt_Task_AnswerQuestion ;
+    :hasConfig :Config_Task_answer_question_description ,
+               :Config_Task_answer_question_expected_output ,
+               :Config_Task_answer_question_agent_binding .
+
+:Config_Task_answer_question_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Answer the user question with the most relevant information from the context and available knowledge sources. Question: {question} Do not answer questions that are not related to the context or knowledge sources." .
+
+:Config_Task_answer_question_expected_output rdf:type :Config ;
+    :configKey "expected_output" ;
+    :configValue "Best answer to the user question" .
+
+:Config_Task_answer_question_agent_binding rdf:type :Config ;
+    :configKey "agent" ;
+    :configValue "meta_quest_expert" .
+
+# Task prompt (task-level)
+:Prompt_Task_AnswerQuestion rdf:type :Prompt ;
+    rdfs:label "Task prompt: answer_question_task" ;
+    :promptInstruction "Answer the user question with the most relevant information from the context and available knowledge sources. Do not answer questions that are not related to the context or knowledge sources." ;
+    :promptInputData "Question: {question}" ;
+    :promptOutputIndicator "Best answer to the user question" .
+
+# Crew runtime / system config (captures verbose=True from crew and agent settings)
+:Config_Crew_verbose_true rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+#################################################################
+# Workflow pattern (reflecting Process.sequential from crew configuration)
+#################################################################
+:WorkflowPattern_MetaQuest rdf:type :WorkflowPattern ;
+    rdfs:label "MetaQuest Sequential Workflow" ;
+    :hasWorkflowStep :Step_1_Start , :Step_2_ExecuteTask , :Step_3_End .
+
+:Step_1_Start rdf:type :StartStep ;
+    rdfs:label "Start: Initialize crew and knowledge sources" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_AnswerQuestion ;
+    :nextStep :Step_2_ExecuteTask .
+
+:Step_2_ExecuteTask rdf:type :WorkflowStep ;
+    rdfs:label "Execute: Run answer_question_task using PDF knowledge" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_AnswerQuestion ;
+    :nextStep :Step_3_End .
+
+:Step_3_End rdf:type :EndStep ;
+    rdfs:label "End: Finalize run" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_AnswerQuestion .
+
+#################################################################
+# Notes linking back to repository structure (connected individuals)
+#################################################################
+# All individuals above are connected:
+# - Team :MetaQuestCrew links to agent and workflow pattern
+# - Agent :Agent_MetaQuestExpert links to prompts, configs, knowledge base and language model
+# - Task :Task_AnswerQuestion links to agent, task prompt, and configs
+# - Workflow steps link to the task and form a nextStep chain
+# - No Tool instances were created because repository does not declare any tools
+# End of instance data.

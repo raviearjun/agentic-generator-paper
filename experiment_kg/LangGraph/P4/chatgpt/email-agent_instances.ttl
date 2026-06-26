@@ -1,0 +1,313 @@
+# Execution time: 72.74 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+# Issues / Assumptions:
+# - No issues detected. All agents, tasks, tools, prompts, configs, workflow steps, and connections were added as individuals using existing ontology classes and properties. Branching and looping behavior in the state graph is represented via multiple :nextStep links; all individuals are interconnected and every :Prompt has :promptInstruction and every :Config has both :configKey and :configValue.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Instances for "Email Assistant Agent" solution
+#################################################################
+
+### Team
+:teamEmailAssistant rdf:type :Team ;
+    rdfs:label "Email Assistant Team" ;
+    :hasAgentMember :emailAgent ;
+    :hasWorkflowPattern :emailWorkflowPattern ;
+    :hasSystemConfig :teamConfig1 .
+
+:teamConfig1 rdf:type :Config ;
+    :configKey "team.name" ;
+    :configValue "Email Assistant Team (StateGraph based)" .
+
+### Agent
+:emailAgent rdf:type :LLMAgent ;
+    rdfs:label "Email Assistant Agent" ;
+    :agentID "email-assistant-1" ;
+    :agentRole "email-assistant" ;
+    :agentPrompt :promptAgentSummary ;
+    :hasAgentConfig :agentConfigModel, :agentConfigTemperature ;
+    :hasAgentGoal :goalProcessEmails ;
+    :hasKnowledge :agentMemory ;
+    :agentResourceUsage :chatOpenAIModel ;
+    :agentToolUsage :chatOpenAITool, :writeEmailTool, :emailSenderTool ;
+    :useLanguageModel :chatOpenAIModel ;
+    :hasAgentCapability :capWriteEmail, :capRewriteEmail, :capSendEmail .
+
+:agentConfigModel rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-4o" .
+
+:agentConfigTemperature rdf:type :Config ;
+    :configKey "temperature" ;
+    :configValue "0" .
+
+:agentMemory rdf:type :Memory ;
+    rdfs:label "Email Agent Memory" ;
+    rdfs:comment "Memory instance to store conversation history and state." .
+
+:goalProcessEmails rdf:type :Goal ;
+    rdfs:label "Process email drafting workflow" ;
+    rdfs:comment "Team/Agent goal to draft, allow human interruption/edits, optionally rewrite, and send emails." .
+
+:promptAgentSummary rdf:type :Prompt ;
+    rdfs:label "Agent summary prompt" ;
+    :promptInstruction "Email Assistant Agent orchestrates the email drafting workflow implemented as a StateGraph. It coordinates writing an email based on conversation history, interrupting for human feedback, rewriting if requested, and sending the email. Agent name: 'Email Assistant Agent'." .
+
+#################################################################
+# Language Model and Tools
+#################################################################
+
+:chatOpenAIModel rdf:type :LanguageModel ;
+    rdfs:label "ChatOpenAI (gpt-4o)" ;
+    rdfs:comment "Statistical language model used by the agent. Model name: gpt-4o" .
+
+:chatOpenAITool rdf:type :Tool , :LanguageModel ;
+    rdfs:label "ChatOpenAI Tool (bound tool interface)" ;
+    :hasToolConfig :toolConfig_write_email_schema, :toolConfig_description ;
+    rdfs:comment "Tool interface representing the ChatOpenAI binding and available tool 'write_email'." .
+
+:writeEmailTool rdf:type :Tool ;
+    rdfs:label "write_email tool" ;
+    :hasToolConfig :toolConfig_write_email_schema ;
+    rdfs:comment "Tool named 'write_email' exposed to the model for producing {subject, body, to} objects." .
+
+:emailSenderTool rdf:type :Tool ;
+    rdfs:label "email_sender_tool" ;
+    :hasToolConfig :toolConfig_email_sender ;
+    rdfs:comment "Tool representing the action of sending an email and producing a sent message artifact." .
+
+:toolConfig_write_email_schema rdf:type :Config ;
+    :configKey "schema" ;
+    :configValue "{\"subject\":\"string\",\"body\":\"string\",\"to\":\"string\"}" .
+
+:toolConfig_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Write an email based on the conversation history" .
+
+:toolConfig_email_sender rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "Sends the email and returns a confirmation message." .
+
+#################################################################
+# Capabilities
+#################################################################
+
+:capWriteEmail rdf:type :Capability ;
+    rdfs:label "write_email capability" ;
+    rdfs:comment "Capability to assemble an email (subject, body, to) from conversation history." .
+
+:capRewriteEmail rdf:type :Capability ;
+    rdfs:label "rewrite_email capability" ;
+    rdfs:comment "Capability to rewrite an existing email given user feedback." .
+
+:capSendEmail rdf:type :Capability ;
+    rdfs:label "send_email capability" ;
+    rdfs:comment "Capability to send the composed email and produce a sent confirmation." .
+
+:chatOpenAITool :hasCapability :capWriteEmail, :capRewriteEmail .
+:writeEmailTool :hasCapability :capWriteEmail .
+:emailSenderTool :hasCapability :capSendEmail .
+
+#################################################################
+# Human participant
+#################################################################
+
+:humanUser rdf:type :HumanAgent ;
+    rdfs:label "End user (human)" ;
+    prov:actedOnBehalfOf :teamEmailAssistant ;
+    :humanParticipatedIn :taskInterruptEmail .
+
+#################################################################
+# Tasks (nodes)
+#################################################################
+
+:taskWriteEmail rdf:type :Task ;
+    rdfs:label "writeEmail (task)" ;
+    :taskPrompt :promptWriteEmail ;
+    :performedByAgent :emailAgent ;
+    :performedBy :chatOpenAITool ;
+    rdfs:comment "Task that composes an email based on conversation history. Binds a tool 'write_email' with schema to the model." .
+
+:taskInterruptEmail rdf:type :Task ;
+    rdfs:label "interrupt (task)" ;
+    :taskPrompt :promptInterruptDescription ;
+    :performedByAgent :emailAgent ;
+    rdfs:comment "Task that interrupts the flow to gather human feedback via a HumanInterrupt/Generative UI. Human participates in this task." .
+
+:taskRewriteEmail rdf:type :Task ;
+    rdfs:label "rewriteEmail (task)" ;
+    :taskPrompt :promptRewriteEmail ;
+    :performedByAgent :emailAgent ;
+    :performedBy :chatOpenAITool ;
+    rdfs:comment "Task that rewrites the email using the model and a bound 'write_email' tool. Uses humanResponse.args as input for rewriting." .
+
+:taskSendEmail rdf:type :Task ;
+    rdfs:label "sendEmail (task)" ;
+    :taskPrompt :promptSendEmail ;
+    :performedByAgent :emailAgent ;
+    :performedBy :emailSenderTool ;
+    :producedResource :sentEmailResource ;
+    rdfs:comment "Task that performs sending of the email and produces a sent email resource and a confirmation message." .
+
+:sentEmailResource rdf:type beam:Resource ;
+    rdfs:label "Sent Email Message" ;
+    rdfs:comment "A resource representing the successfully sent email confirmation (AIMessage emitted)." .
+
+#################################################################
+# Prompts (preserve literal prompts from source code)
+#################################################################
+
+:promptWriteEmail rdf:type :Prompt ;
+    rdfs:label "SEND_EMAIL_PROMPT" ;
+    :promptInstruction """You're an AI email assistant, tasked with writing an email for the user.
+Use the entire conversation history between you, and the user to craft the email for them.
+
+<conversation>
+{CONVERSATION}
+</conversation>
+
+If there is NOT enough information to send an email, respond to the user requesting the missing information.
+Required fields:
+- subject - The subject of the email
+- body - The body of the email
+- to - The recipient of the email""" .
+
+:promptRewriteEmail rdf:type :Prompt ;
+    rdfs:label "REWRITE_EMAIL_PROMPT" ;
+    :promptInstruction """You're an AI email assistant, tasked with rewriting an email for the user.
+Here is the current state of the email for the user:
+<email>
+  <subject>
+    {SUBJECT}
+  </subject>
+  <body>
+    {BODY}
+  </body>
+  <to>
+    {TO}
+  </to>
+</email>
+
+Here is the user's response, which should contain some request for changes to the email:
+<user-response>
+{USER_RESPONSE}
+</user-response>
+
+Given that, please rewrite the email. Do NOT modify anything the user does not request to be changed.""" .
+
+:promptInterruptDescription rdf:type :Prompt ;
+    rdfs:label "INTERRUPT_DESCRIPTION" ;
+    :promptInstruction """# New Email
+
+## Subject
+{SUBJECT}
+
+## To
+{TO}
+
+## Body
+{BODY}
+
+## Response Instructions
+
+- **Response**: Any response submitted will be passed to an LLM to rewrite the email. It can rewrite the email body, subject, or recipient.
+
+- **Edit or Accept**: Editing/Accepting the email will send the email.
+
+- **Ignore**: Ignoring the email will end the conversation, and the email will not be sent.""" .
+
+:promptSendEmail rdf:type :Prompt ;
+    rdfs:label "SEND_EMAIL_CONFIRMATION_PROMPT" ;
+    :promptInstruction "Produce a user-visible confirmation that the email was sent. Example content: 'Successfully sent email.'." .
+
+#################################################################
+# Workflow Pattern and Steps
+#################################################################
+
+:emailWorkflowPattern rdf:type :WorkflowPattern ;
+    rdfs:label "Email Assistant Workflow Pattern" ;
+    :hasWorkflowStep :stepStart, :stepWrite, :stepInterrupt, :stepRewrite, :stepSend, :stepEnd .
+
+:stepStart rdf:type :StartStep ;
+    rdfs:label "Start Step" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :taskWriteEmail ;
+    :nextStep :stepWrite .
+
+:stepWrite rdf:type :WorkflowStep ;
+    rdfs:label "Write Email Step" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :taskWriteEmail ;
+    :taskPrompt :promptWriteEmail ;
+    :nextStep :stepInterrupt .
+
+:stepInterrupt rdf:type :WorkflowStep ;
+    rdfs:label "Interrupt Step (Human feedback)" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :taskInterruptEmail ;
+    :taskPrompt :promptInterruptDescription ;
+    :nextStep :stepSend , :stepRewrite .
+
+:stepRewrite rdf:type :WorkflowStep ;
+    rdfs:label "Rewrite Email Step" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :taskRewriteEmail ;
+    :taskPrompt :promptRewriteEmail ;
+    :nextStep :stepInterrupt .
+
+:stepSend rdf:type :WorkflowStep ;
+    rdfs:label "Send Email Step" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :taskSendEmail ;
+    :taskPrompt :promptSendEmail ;
+    :nextStep :stepEnd .
+
+:stepEnd rdf:type :EndStep ;
+    rdfs:label "End Step" ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :taskSendEmail .
+
+#################################################################
+# Additional links to ensure connectivity / no orphans
+#################################################################
+
+# Link tasks back into the workflow pattern (already connected via steps)
+:emailWorkflowPattern :hasWorkflowStep :stepStart, :stepWrite, :stepInterrupt, :stepRewrite, :stepSend, :stepEnd .
+
+# Ensure human participation recorded
+:humanUser :humanParticipatedIn :taskInterruptEmail .
+
+# Ensure agent uses tools
+:emailAgent :agentToolUsage :chatOpenAITool, :writeEmailTool, :emailSenderTool .
+
+# Ensure produced resource connected
+:taskSendEmail :producedResource :sentEmailResource .
+
+# Ensure performedBy relationships for tasks exist (agent & tool)
+:taskWriteEmail :performedByAgent :emailAgent ;
+    :performedBy :chatOpenAITool .
+
+:taskRewriteEmail :performedByAgent :emailAgent ;
+    :performedBy :chatOpenAITool .
+
+:taskInterruptEmail :performedByAgent :emailAgent .
+
+:taskSendEmail :performedByAgent :emailAgent ;
+    :performedBy :emailSenderTool .
+
+#################################################################
+# End of instances
+#################################################################

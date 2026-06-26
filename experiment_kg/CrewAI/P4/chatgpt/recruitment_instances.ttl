@@ -1,0 +1,283 @@
+# Execution time: 92.61 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - Assumed all configured agents in agents.yaml are LLM-based agents (:LLMAgent) per README references to GPT-4o and CrewAI default; no HumanAgent individuals were present in source.
+# - Assumed GPT-4o is the default language model referenced; created a :LanguageModel individual :gpt4o to capture this.
+# - The report task context (dependencies on earlier tasks) is preserved in the task config as a config entry because there is no dedicated "context" object property in the ontology for tasks.
+# - No new classes or properties were introduced; all individuals use existing classes/properties.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances describing the "AI Crew for Recruitment" solution
+#################################################################
+
+### Language Model
+:gpt4o rdf:type :LanguageModel ;
+       <http://purl.org/dc/terms/title> "GPT-4o" ;
+       <http://purl.org/dc/terms/description> "Default language model referenced in README and main.py" .
+
+### Tools
+:toolSerperDev rdf:type :Tool ;
+               <http://purl.org/dc/terms/title> "SerperDevTool" ;
+               <http://purl.org/dc/terms/description> "Search / web query tool referenced in crew agent tool lists (SerperDevTool)." .
+
+:toolScrapeWebsite rdf:type :Tool ;
+                   <http://purl.org/dc/terms/title> "ScrapeWebsiteTool" ;
+                   <http://purl.org/dc/terms/description> "Web scraping utility referenced in crew agent tool lists (ScrapeWebsiteTool)." .
+
+:toolLinkedIn rdf:type :Tool ;
+              <http://purl.org/dc/terms/title> "LinkedInTool" ;
+              <http://purl.org/dc/terms/description> "Custom LinkedIn retrieval tool implemented at src/recruitment/tools/linkedin.py; uses Selenium client to fetch profiles (example code includes usage of a LinkedIn cookie)." .
+
+### Agents (LLM Agents)
+:agentResearcher rdf:type :LLMAgent ;
+                 :agentID "researcher" ;
+                 :agentRole "Job Candidate Researcher" ;
+                 :agentPrompt :promptResearcher ;
+                 :hasAgentConfig :configResearcher ;
+                 :agentToolUsage :toolSerperDev , :toolScrapeWebsite , :toolLinkedIn ;
+                 :useLanguageModel :gpt4o .
+
+:agentMatcher rdf:type :LLMAgent ;
+              :agentID "matcher" ;
+              :agentRole "Candidate Matcher and Scorer" ;
+              :agentPrompt :promptMatcher ;
+              :hasAgentConfig :configMatcher ;
+              :agentToolUsage :toolSerperDev , :toolScrapeWebsite ;
+              :useLanguageModel :gpt4o .
+
+:agentCommunicator rdf:type :LLMAgent ;
+                   :agentID "communicator" ;
+                   :agentRole "Candidate Outreach Strategist" ;
+                   :agentPrompt :promptCommunicator ;
+                   :hasAgentConfig :configCommunicator ;
+                   :agentToolUsage :toolSerperDev , :toolScrapeWebsite ;
+                   :useLanguageModel :gpt4o .
+
+:agentReporter rdf:type :LLMAgent ;
+               :agentID "reporter" ;
+               :agentRole "Candidate Reporting Specialist" ;
+               :agentPrompt :promptReporter ;
+               :hasAgentConfig :configReporter ;
+               :useLanguageModel :gpt4o .
+
+### Agent Prompt Individuals (preserve role, goal, backstory/literals)
+:promptResearcher rdf:type :Prompt ;
+                  :promptInstruction """Role: Job Candidate Researcher
+Goal: Find potential candidates for the job
+Backstory: You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions.""" .
+
+:promptMatcher rdf:type :Prompt ;
+               :promptInstruction """Role: Candidate Matcher and Scorer
+Goal: Match the candidates to the best jobs and score them
+Backstory: You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach.""" .
+
+:promptCommunicator rdf:type :Prompt ;
+                    :promptInstruction """Role: Candidate Outreach Strategist
+Goal: Develop outreach strategies for the selected candidates
+Backstory: You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates.""" .
+
+:promptReporter rdf:type :Prompt ;
+                :promptInstruction """Role: Candidate Reporting Specialist
+Goal: Report the best candidates to the recruiters
+Backstory: You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue.""" .
+
+### Agent Configurations (each :Config has configKey and configValue entries)
+:configResearcher rdf:type :Config ;
+                  :configKey "role" ; :configValue "Job Candidate Researcher" ;
+                  :configKey "goal" ; :configValue "Find potential candidates for the job" ;
+                  :configKey "backstory" ; :configValue "You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions." .
+
+:configMatcher rdf:type :Config ;
+               :configKey "role" ; :configValue "Candidate Matcher and Scorer" ;
+               :configKey "goal" ; :configValue "Match the candidates to the best jobs and score them" ;
+               :configKey "backstory" ; :configValue "You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach." .
+
+:configCommunicator rdf:type :Config ;
+                    :configKey "role" ; :configValue "Candidate Outreach Strategist" ;
+                    :configKey "goal" ; :configValue "Develop outreach strategies for the selected candidates" ;
+                    :configKey "backstory" ; :configValue "You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates." .
+
+:configReporter rdf:type :Config ;
+                :configKey "role" ; :configValue "Candidate Reporting Specialist" ;
+                :configKey "goal" ; :configValue "Report the best candidates to the recruiters" ;
+                :configKey "backstory" ; :configValue "You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue." .
+
+### Tasks
+:taskResearchCandidates rdf:type :Task ;
+                        :performedByAgent :agentResearcher ;
+                        :taskPrompt :promptTaskResearchCandidates ;
+                        :hasConfig :configTaskResearchCandidates .
+
+:taskMatchAndScore rdf:type :Task ;
+                   :performedByAgent :agentMatcher ;
+                   :taskPrompt :promptTaskMatchAndScore ;
+                   :hasConfig :configTaskMatchAndScore .
+
+:taskOutreachStrategy rdf:type :Task ;
+                      :performedByAgent :agentCommunicator ;
+                      :taskPrompt :promptTaskOutreachStrategy ;
+                      :hasConfig :configTaskOutreachStrategy .
+
+:taskReportCandidates rdf:type :Task ;
+                      :performedByAgent :agentReporter ;
+                      :taskPrompt :promptTaskReportCandidates ;
+                      :hasConfig :configTaskReportCandidates .
+
+### Task Prompts (preserve description and expected_output from tasks.yaml)
+:promptTaskResearchCandidates rdf:type :Prompt ;
+                             :promptInstruction """Conduct thorough research to find potential candidates for the specified job.
+Utilize various online resources and databases to gather a comprehensive list of potential candidates.
+Ensure that the candidates meet the job requirements provided.
+
+Job Requirements:
+{job_requirements}
+
+Expected output:
+A list of 10 potential candidates with their contact information and brief profiles highlighting their suitability.""" .
+
+:promptTaskMatchAndScore rdf:type :Prompt ;
+                         :promptInstruction """Evaluate and match the candidates to the best job positions based on their qualifications and suitability.
+Score each candidate to reflect their alignment with the job requirements, ensuring a fair and transparent assessment process.
+Don't try to scrape people's linkedin, since you don't have access to it.
+
+Job Requirements:
+{job_requirements}
+
+Expected output:
+A ranked list of candidates with detailed scores and justifications for each job position.""" .
+
+:promptTaskOutreachStrategy rdf:type :Prompt ;
+                           :promptInstruction """Develop a comprehensive strategy to reach out to the selected candidates.
+Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.
+
+Job Requirements:
+{job_requirements}
+
+Expected output:
+A detailed list of outreach methods and templates ready for implementation, including communication strategies and engagement tactics.""" .
+
+:promptTaskReportCandidates rdf:type :Prompt ;
+                           :promptInstruction """Compile a comprehensive report for recruiters on the best candidates to put forward.
+Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.
+
+Expected output:
+A detailed report with the best candidates to pursue, no need to include the job requirements formatted as markdown without '', including profiles, scores, and outreach strategies.""" .
+
+### Task Configurations (store description and expected_output as config entries)
+:configTaskResearchCandidates rdf:type :Config ;
+                             :configKey "description" ;
+                             :configValue """Conduct thorough research to find potential candidates for the specified job.
+Utilize various online resources and databases to gather a comprehensive list of potential candidates.
+Ensure that the candidates meet the job requirements provided.
+
+Job Requirements:
+{job_requirements}""" ;
+                             :configKey "expected_output" ;
+                             :configValue "A list of 10 potential candidates with their contact information and brief profiles highlighting their suitability." .
+
+:configTaskMatchAndScore rdf:type :Config ;
+                         :configKey "description" ;
+                         :configValue """Evaluate and match the candidates to the best job positions based on their qualifications and suitability.
+Score each candidate to reflect their alignment with the job requirements, ensuring a fair and transparent assessment process.
+Don't try to scrape people's linkedin, since you don't have access to it.
+
+Job Requirements:
+{job_requirements}""" ;
+                         :configKey "expected_output" ;
+                         :configValue "A ranked list of candidates with detailed scores and justifications for each job position." .
+
+:configTaskOutreachStrategy rdf:type :Config ;
+                            :configKey "description" ;
+                            :configValue """Develop a comprehensive strategy to reach out to the selected candidates.
+Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.
+
+Job Requirements:
+{job_requirements}""" ;
+                            :configKey "expected_output" ;
+                            :configValue "A detailed list of outreach methods and templates ready for implementation, including communication strategies and engagement tactics." .
+
+:configTaskReportCandidates rdf:type :Config ;
+                           :configKey "description" ;
+                           :configValue """Compile a comprehensive report for recruiters on the best candidates to put forward.
+Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.""" ;
+                           :configKey "expected_output" ;
+                           :configValue "A detailed report with the best candidates to pursue, no need to include the job requirements formatted as markdown without '', including profiles, scores, and outreach strategies." ;
+                           :configKey "context" ;
+                           :configValue "Depends on: taskResearchCandidates, taskMatchAndScore, taskOutreachStrategy (corresponds to report task context in crew.py)" .
+
+### Goals (agent-level and team-level)
+:goalResearcher rdf:type :Goal ;
+                <http://purl.org/dc/terms/description> "Find potential candidates for the job." .
+
+:goalMatcher rdf:type :Goal ;
+             <http://purl.org/dc/terms/description> "Match the candidates to the best jobs and score them." .
+
+:goalCommunicator rdf:type :Goal ;
+                  <http://purl.org/dc/terms/description> "Develop outreach strategies for the selected candidates." .
+
+:goalReporter rdf:type :Goal ;
+              <http://purl.org/dc/terms/description> "Report the best candidates to the recruiters." .
+
+:goalRecruitment rdf:type :Goal ;
+                 <http://purl.org/dc/terms/description> "Coordinate agents to automate recruitment steps: research, match/score, outreach, and reporting." .
+
+### Link agents to their goals
+:agentResearcher :hasAgentGoal :goalResearcher .
+:agentMatcher :hasAgentGoal :goalMatcher .
+:agentCommunicator :hasAgentGoal :goalCommunicator .
+:agentReporter :hasAgentGoal :goalReporter .
+
+### Team representation
+:RecruitmentTeam rdf:type :Team ;
+                 :hasAgentMember :agentResearcher , :agentMatcher , :agentCommunicator , :agentReporter ;
+                 :hasWorkflowPattern :RecruitmentWorkflowPattern ;
+                 :hasTeamGoal :goalRecruitment ;
+                 :hasSystemConfig :configRecruitmentSystem .
+
+:configRecruitmentSystem rdf:type :Config ;
+                         :configKey "project" ; :configValue "AI Crew for Recruitment (CrewAI example project)" ;
+                         :configKey "entrypoint" ; :configValue "recruitment.main:run (script defined in pyproject.toml)" ;
+                         :configKey "license" ; :configValue "MIT" .
+
+### Workflow Pattern and Steps (sequential process as per Crew Process.sequential)
+:RecruitmentWorkflowPattern rdf:type :WorkflowPattern ;
+                            :hasWorkflowStep :step1Start , :step2Match , :step3Outreach , :step4Report .
+
+:step1Start rdf:type :StartStep ;
+            :stepOrder 1 ;
+            :hasAssociatedTask :taskResearchCandidates ;
+            :nextStep :step2Match .
+
+:step2Match rdf:type :WorkflowStep ;
+            :stepOrder 2 ;
+            :hasAssociatedTask :taskMatchAndScore ;
+            :nextStep :step3Outreach .
+
+:step3Outreach rdf:type :WorkflowStep ;
+               :stepOrder 3 ;
+               :hasAssociatedTask :taskOutreachStrategy ;
+               :nextStep :step4Report .
+
+:step4Report rdf:type :EndStep ;
+             :stepOrder 4 ;
+             :hasAssociatedTask :taskReportCandidates .
+
+#################################################################
+# End of instance data
+#################################################################

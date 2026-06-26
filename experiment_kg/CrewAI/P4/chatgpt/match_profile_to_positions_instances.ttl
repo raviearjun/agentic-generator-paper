@@ -1,0 +1,257 @@
+# Execution time: 45.05 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - Assumption: The custom tool class MyCustomTool defined in src/match_to_proposal/tools/job_db_connect.py is modeled as an available tool (:Tool_MyCustom). It is not referenced in crew.py; to satisfy the requirement that every tool mentioned in the source repository is represented and linked via :agentToolUsage, I linked :Tool_MyCustom to the matcher agent as an available tool. If this is undesirable, remove that link.
+# - No other new classes or properties were introduced. All individuals reference only classes/properties from the provided ontology.
+# - File paths from the code (config/agents.yaml, config/tasks.yaml, ./src/... data files) are preserved as literal values in Config and Resource individuals.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+################################################################################
+# Team
+################################################################################
+
+:Team_MatchToProposal rdf:type :Team ;
+    rdfs:label "MatchToProposal Team" ;
+    :hasAgentMember :Agent_cv_reader , :Agent_matcher ;
+    :hasWorkflowPattern :WorkflowPattern_MatchToProposal ;
+    :hasTeamGoal :Goal_team_match_to_proposal ;
+    :hasSystemConfig :Config_team_system .
+
+:Goal_team_match_to_proposal rdf:type :Goal ;
+    rdfs:label "Match CVs to Job Proposals" ;
+    dct:description "Coordinate automated agents to extract CV information and match candidates to job opportunities." .
+
+:Config_team_system rdf:type :Config ;
+    :configKey "system.process" ;
+    :configValue "sequential" .
+
+################################################################################
+# Language Model
+################################################################################
+
+:LM_gpt4o rdf:type :LanguageModel ;
+    rdfs:label "gpt-4o" ;
+    dct:description "Default language model used by LLM agents (as indicated by README and code)." .
+
+################################################################################
+# Agents
+################################################################################
+
+:Agent_cv_reader rdf:type :LLMAgent ;
+    rdfs:label "cv_reader" ;
+    :agentID "cv_reader" ;
+    :agentRole "CV Reader" ;
+    :agentPrompt :Prompt_cv_reader ;
+    :agentToolUsage :Tool_FileRead ;
+    :useLanguageModel :LM_gpt4o ;
+    :hasAgentConfig :Config_cv_reader ;
+    :hasAgentGoal :Goal_cv_reader .
+
+:Agent_matcher rdf:type :LLMAgent ;
+    rdfs:label "matcher" ;
+    :agentID "matcher" ;
+    :agentRole "Matcher" ;
+    :agentPrompt :Prompt_matcher ;
+    :agentToolUsage :Tool_FileRead , :Tool_CSVSearch , :Tool_MyCustom ;
+    :useLanguageModel :LM_gpt4o ;
+    :hasAgentConfig :Config_matcher ;
+    :hasAgentGoal :Goal_matcher .
+
+:Goal_cv_reader rdf:type :Goal ;
+    rdfs:label "Extract CV information" ;
+    dct:description "Extract relevant information from the CV, such as skills, experience, and education." .
+
+:Goal_matcher rdf:type :Goal ;
+    rdfs:label "Match CV to jobs" ;
+    dct:description "Match the CV to the job opportunities based on skills, experience, and key achievements." .
+
+:Config_cv_reader rdf:type :Config ;
+    :configKey "agents_config_path" ;
+    :configValue "config/agents.yaml" .
+
+:Config_matcher rdf:type :Config ;
+    :configKey "agents_config_path" ;
+    :configValue "config/agents.yaml" .
+
+################################################################################
+# Agent Prompts (preserve role/goal/backstory from config/agents.yaml)
+################################################################################
+
+:Prompt_cv_reader rdf:type :Prompt ;
+    rdfs:label "prompt: cv_reader" ;
+    :promptInstruction """Role: CV Reader
+Goal: Extract relevant information from the CV, such as skills, experience, and education.
+Backstory: With years of experience in HR, you excel at quickly identifying key qualifications in resumes.
+---
+Use this prompt to perform the read_cv_task assigned to you. Provide a structured summary including Professional Summary, Technical Skills, Work History, Education, and Key Achievements.""" .
+
+:Prompt_matcher rdf:type :Prompt ;
+    rdfs:label "prompt: matcher" ;
+    :promptInstruction """Role: Matcher
+Goal: Match the CV to the job opportunities based on skills and experience.
+Backstory: A seasoned recruiter, you specialize in finding the perfect fit between candidates and job roles.
+---
+Use this prompt to perform the match_cv_task assigned to you. Produce a ranked list of job opportunities with match scores and key matching points.""" .
+
+################################################################################
+# Tools
+################################################################################
+
+:Tool_FileRead rdf:type :Tool ;
+    rdfs:label "FileReadTool" ;
+    dct:description "Tool used by agents to read local files (used for CV reading and other file access)." ;
+    :hasToolConfig :Config_tool_fileread .
+
+:Tool_CSVSearch rdf:type :Tool ;
+    rdfs:label "CSVSearchTool" ;
+    dct:description "Tool used to search and parse CSV files for job opportunities." ;
+    :hasToolConfig :Config_tool_csvsearch .
+
+:Tool_MyCustom rdf:type :Tool ;
+    rdfs:label "MyCustomTool" ;
+    dct:description "Custom tool class defined in src/match_to_proposal/tools/job_db_connect.py (example BaseTool subclass)." ;
+    :hasToolConfig :Config_tool_mycustom .
+
+:Config_tool_fileread rdf:type :Config ;
+    :configKey "tool.implementation" ;
+    :configValue "crewai_tools.FileReadTool" .
+
+:Config_tool_csvsearch rdf:type :Config ;
+    :configKey "tool.implementation" ;
+    :configValue "crewai_tools.CSVSearchTool" .
+
+:Config_tool_mycustom rdf:type :Config ;
+    :configKey "tool.implementation" ;
+    :configValue "match_to_proposal.tools.job_db_connect.MyCustomTool" .
+
+################################################################################
+# Tasks
+################################################################################
+
+:Task_read_cv rdf:type :Task ;
+    rdfs:label "read_cv_task" ;
+    dct:description """Extract relevant information from the given CV. Focus on skills, experience,
+education, and key achievements.
+Ensure to capture the candidate's professional summary, technical skills,
+work history, and educational background.
+
+CV file: {path_to_cv}""" ;
+    :performedByAgent :Agent_cv_reader ;
+    :taskPrompt :Prompt_task_read_cv ;
+    :producedResource :Resource_cv_summary ;
+    :requiresResource :Resource_cv_file .
+
+:Task_match_cv rdf:type :Task ;
+    rdfs:label "match_cv_task" ;
+    dct:description """Match the CV to the job opportunities based on skills, experience, and key
+achievements.
+Evaluate how well the candidate's profile fits each job description,
+focusing on the alignment of skills, work history, and key achievements
+with the job requirements.
+
+Jobs CSV file: {path_to_jobs_csv}
+
+CV file: {path_to_cv}""" ;
+    :performedByAgent :Agent_matcher ;
+    :taskPrompt :Prompt_task_match_cv ;
+    :requiresResource :Resource_jobs_csv , :Resource_cv_file ;
+    :producedResource :Resource_match_report .
+
+################################################################################
+# Task Prompts (preserve description and expected_output)
+################################################################################
+
+:Prompt_task_read_cv rdf:type :Prompt ;
+    rdfs:label "task prompt: read_cv_task" ;
+    :promptInstruction """Extract relevant information from the given CV. Focus on skills, experience,
+education, and key achievements.
+Ensure to capture the candidate's professional summary, technical skills,
+work history, and educational background.
+
+CV file: {path_to_cv}""" ;
+    :promptOutputIndicator """A structured summary of the CV, including:
+- Professional Summary
+- Technical Skills
+- Work History
+- Education
+- Key Achievements""" .
+
+:Prompt_task_match_cv rdf:type :Prompt ;
+    rdfs:label "task prompt: match_cv_task" ;
+    :promptInstruction """Match the CV to the job opportunities based on skills, experience, and key
+achievements.
+Evaluate how well the candidate's profile fits each job description,
+focusing on the alignment of skills, work history, and key achievements
+with the job requirements.
+
+Jobs CSV file: {path_to_jobs_csv}
+
+CV file: {path_to_cv}""" ;
+    :promptOutputIndicator """A ranked list of job opportunities that best match the CV, including:
+- Job Title
+- Match Score (based on skills and experience)
+- Key Matching Points""" .
+
+################################################################################
+# Resources / Data Artifacts
+################################################################################
+
+:Resource_cv_file rdf:type beam:Resource ;
+    rdfs:label "cv.md file" ;
+    dct:title "./src/match_to_proposal/data/cv.md" ;
+    dct:description "Input CV file used by the read_cv_task and match_cv_task." .
+
+:Resource_jobs_csv rdf:type beam:Resource ;
+    rdfs:label "jobs.csv file" ;
+    dct:title "./src/match_to_proposal/data/jobs.csv" ;
+    dct:description "Jobs CSV file referenced by match_cv_task." .
+
+:Resource_cv_summary rdf:type beam:Resource ;
+    rdfs:label "cv_summary" ;
+    dct:description "Structured summary produced by read_cv_task (Professional Summary, Technical Skills, Work History, Education, Key Achievements)." .
+
+:Resource_match_report rdf:type beam:Resource ;
+    rdfs:label "match_report" ;
+    dct:description "Ranked list of job opportunities produced by match_cv_task including match scores and key matching points." .
+
+################################################################################
+# Workflow Pattern and Steps (sequential process per crew.py)
+################################################################################
+
+:WorkflowPattern_MatchToProposal rdf:type :WorkflowPattern ;
+    rdfs:label "MatchToProposal Sequential Workflow" ;
+    dct:description "Sequential workflow where the CV is read first, then matching is performed." ;
+    :hasWorkflowStep :Step_ReadCV , :Step_MatchCV .
+
+:Step_ReadCV rdf:type :StartStep ;
+    rdfs:label "Start: Read CV" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_read_cv ;
+    :nextStep :Step_MatchCV .
+
+:Step_MatchCV rdf:type :EndStep ;
+    rdfs:label "End: Match CV" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_match_cv .
+
+################################################################################
+# Misc / provenance (link code entry point)
+################################################################################
+
+:Process_entry_point rdf:type :Context ;
+    rdfs:label "main.py run()" ;
+    dct:description "Entry point invoked by 'poetry run match_to_proposal' which constructs MatchToProposalCrew and calls kickoff with inputs: { path_to_jobs_csv, path_to_cv }." ;
+    :containsResource :Resource_jobs_csv , :Resource_cv_file .

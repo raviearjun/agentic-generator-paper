@@ -1,0 +1,278 @@
+# Execution time: 59.45 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions: The UI/client-side code implies a central LLM-driven trading agent and a human end user; these were modeled as :LLMAgent and :HumanAgent respectively. The "buy-stock" tool is modeled as a :Tool. UI rendering tasks were mapped to :Task individuals to preserve strings and behavior. All configuration values present in source (e.g., min quantity for the buy input) were captured as :Config individuals.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+#    Instance data for the agentic solution (frontend trading UI)
+#################################################################
+
+### Team / System
+:TradingTeam rdf:type :Team ;
+             rdfs:label "Trading UI System" ;
+             <http://purl.org/dc/terms/description> "Frontend trading application that displays portfolio, stock prices, and executes buy orders via a buy-stock tool." ;
+             :hasAgentMember :TradingAgent ,
+                              :EndUser ;
+             :hasWorkflowPattern :BuyStockWorkflow ;
+             :hasSystemConfig :SystemConfig_TradingUI .
+
+:SystemConfig_TradingUI rdf:type :Config ;
+                        :configKey "ui.framework" ;
+                        :configValue "React + TypeScript (frontend)" .
+
+#################################################################
+#    Agents
+#################################################################
+
+:TradingAgent rdf:type :LLMAgent ;
+              rdfs:label "Trading Agent (LLM-driven orchestration)" ;
+              :agentID "trading-agent-001" ;
+              <http://purl.org/dc/terms/description> "Agent that observes UI events, prepares tool calls (e.g., buy-stock), and records messages to the conversation thread." ;
+              :useLanguageModel :GPT_Model_Chat ;
+              :hasAgentConfig :TradingAgent_Config ;
+              :agentPrompt :TradingAgentPrompt ;
+              :agentToolUsage :BuyStockTool ;
+              :hasGoal :Goal_ManagePortfolio .
+
+:TradingAgent_Config rdf:type :Config ;
+                     :configKey "tool_call_mode" ;
+                     :configValue "submit tool call with orderDetails JSON" .
+
+:GPT_Model_Chat rdf:type :LanguageModel ;
+                rdfs:label "GPT-like conversational model (frontend integration)" ;
+                <http://purl.org/dc/terms/description> "Statistical language model used by the TradingAgent to construct tool calls and messages." .
+
+:EndUser rdf:type :HumanAgent ;
+         rdfs:label "End User (trader)" ;
+         <http://purl.org/dc/terms/description> "Human interacting with the frontend: views portfolio, views stock prices, selects quantity and triggers Buy action." .
+
+#################################################################
+#    Tools and Capabilities
+#################################################################
+
+:BuyStockTool rdf:type :Tool ;
+              rdfs:label "buy-stock" ;
+              <http://purl.org/dc/terms/description> "Tool invoked to execute a stock purchase. Expects a tool call with JSON content including message and purchaseDetails (ticker, quantity, price)." ;
+              :hasToolConfig :BuyStockTool_Config ;
+              :hasCapability :Capability_ExecuteOrder .
+
+:BuyStockTool_Config rdf:type :Config ;
+                     :configKey "minQuantity" ;
+                     :configValue "1" ;
+                     rdfs:label "Buy stock tool configuration" .
+
+:Capability_ExecuteOrder rdf:type :Capability ;
+                         rdfs:label "Execute Order" ;
+                         <http://purl.org/dc/terms/description> "Capability to accept an orderDetails JSON and produce a purchase receipt." .
+
+#################################################################
+#    Tasks (mapped from UI interactions and background logic)
+#################################################################
+
+:Task_RenderPortfolioView rdf:type :Task ;
+                          rdfs:label "Render Portfolio Summary" ;
+                          <http://purl.org/dc/terms/description> "Render the portfolio summary UI component with total value, cash balance, and holdings data. Contains strings and labels used in UI (Portfolio Summary, Total Value, Cash Balance)." ;
+                          :performedByAgent :TradingAgent ;
+                          :taskPrompt :Prompt_RenderPortfolioView .
+
+:Prompt_RenderPortfolioView rdf:type :Prompt ;
+                            rdfs:label "Portfolio render prompt" ;
+                            :promptInstruction "Display portfolio summary using provided portfolio data structure: totalValue, cashBalance, performance (daily, weekly, monthly, yearly), holdings array with symbol, name, shares, price, value, change, allocation, avgCost." ;
+                            :promptInputData "{\"portfolio\": {\"totalValue\":156842.75,\"cashBalance\":12467.32,\"holdings\":[{\"symbol\":\"AAPL\",\"shares\":45,\"price\":187.32}, ...]}}" .
+
+:Task_RenderStockPrice rdf:type :Task ;
+                      rdfs:label "Render Stock Price Chart" ;
+                      <http://purl.org/dc/terms/description> "Prepare chart data and render stock price component. Calculates currentPrice, openPrice, dollarChange, percentChange and chartData for display ranges (1d,5d,1m)." ;
+                      :performedByAgent :TradingAgent ;
+                      :taskPrompt :Prompt_StockPrice .
+
+:Prompt_StockPrice rdf:type :Prompt ;
+                   rdfs:label "Stock price prompt" ;
+                   :promptInstruction "Given price arrays (oneDayPrices, thirtyDayPrices) compute currentPrice, openPrice, dollarChange, percentChange, highPrice, lowPrice and chart points for visualization. Format dates per display range." ;
+                   :promptInputData "{\"displayRanges\":[\"1d\",\"5d\",\"1m\"]}" .
+
+:Task_HandleBuyAction rdf:type :Task ;
+                      rdfs:label "Handle Buy Button Click" ;
+                      <http://purl.org/dc/terms/description> "Triggered when user clicks Buy: collects quantity from input (min 1), constructs orderDetails JSON and requests the thread to submit a tool call and human message." ;
+                      :performedByAgent :TradingAgent ;
+                      :taskPrompt :Prompt_HandleBuyAction ;
+                      :requiresResource :PortfolioSnapshotResource ;
+                      :producedResource :OrderDetailsResource .
+
+:Prompt_HandleBuyAction rdf:type :Prompt ;
+                       rdfs:label "Handle buy action prompt" ;
+                       :promptInstruction "Construct a tool call payload with the structure { message: 'Successfully purchased stock', purchaseDetails: { ticker, quantity, price } } and include a human-readable message 'Purchased <quantity> shares of <ticker> at <price> per share'." ;
+                       :promptInputData "{\"uiInput\": {\"min\":1}}" ;
+                       :promptOutputIndicator "JSON stringified orderDetails used as tool content" .
+
+:Task_ExecutePurchase rdf:type :Task ;
+                      rdfs:label "Execute Purchase (tool execution)" ;
+                      <http://purl.org/dc/terms/description> "Tool-side execution of buy-stock tool that performs purchase and returns a tool response content containing purchaseDetails. Produces a Purchase Receipt resource." ;
+                      :performedBy :BuyStockTool ;
+                      :performedByAgent :TradingAgent ;
+                      :producedResource :PurchaseReceiptResource ;
+                      :requiresResource :OrderDetailsResource .
+
+#################################################################
+#    Resources / Data artifacts
+#################################################################
+
+:PortfolioSnapshotResource rdf:type :Instance ;
+                          rdfs:label "Portfolio Snapshot" ;
+                          <http://purl.org/dc/terms/description> "Snapshot used by UI components, containing ticker, price, holdings, and other display values. Example contains ticker and price used by Buy UI." ;
+                          :containsResource :StockPriceData .
+
+:StockPriceData rdf:type <http://w3id.org/beam/core#Instance> ;
+                rdfs:label "Stock price time series" ;
+                <http://purl.org/dc/terms/description> "Time-series arrays oneDayPrices and thirtyDayPrices with fields time/open/close/high/low used by StockPrice component." .
+
+:OrderDetailsResource rdf:type <http://w3id.org/beam/core#Instance> ;
+                      rdfs:label "Order Details JSON" ;
+                      <http://purl.org/dc/terms/description> "JSON payload with structure { message, purchaseDetails: { ticker, quantity, price } } submitted as tool call content." .
+
+:PurchaseReceiptResource rdf:type <http://w3id.org/beam/core#Instance> ;
+                         rdfs:label "Purchase Receipt" ;
+                         <http://purl.org/dc/terms/description> "Produced by the buy-stock tool. Contains purchaseDetails and confirmation message used to render Purchased component." .
+
+#################################################################
+#    Prompts and literal content preserved from source code
+#################################################################
+
+:TradingAgentPrompt rdf:type :Prompt ;
+                    rdfs:label "Trading agent main prompt" ;
+                    :promptInstruction "Observe UI state and messages, respond by constructing appropriate messages and tool calls. When executing purchases, emit a tool call with name 'buy-stock' and content equal to the JSON stringified orderDetails. Include human message summarizing the purchase." ;
+                    :promptContext "Used by the agent to perform independently of specific tasks. Integrates UI events with tool invocations." .
+
+#################################################################
+#    Workflow pattern and steps (Buy stock flow)
+#################################################################
+
+:BuyStockWorkflow rdf:type :WorkflowPattern ;
+                  rdfs:label "Buy Stock Workflow" ;
+                  rdfs:comment "Workflow representing the sequence: view portfolio -> select quantity -> confirm purchase -> end" ;
+                  :hasWorkflowStep :Step_StartViewPortfolio ,
+                                    :Step_InputQuantity ,
+                                    :Step_ConfirmPurchase ,
+                                    :Step_EndReceipt .
+
+:Step_StartViewPortfolio rdf:type :StartStep ;
+                        rdfs:label "Start - View Portfolio" ;
+                        :stepOrder 1 ;
+                        :hasAssociatedTask :Task_RenderPortfolioView ;
+                        :nextStep :Step_InputQuantity .
+
+:Step_InputQuantity rdf:type :WorkflowStep ;
+                    rdfs:label "Input Quantity" ;
+                    :stepOrder 2 ;
+                    :hasAssociatedTask :Task_HandleBuyAction ;
+                    :nextStep :Step_ConfirmPurchase .
+
+:Step_ConfirmPurchase rdf:type :WorkflowStep ;
+                      rdfs:label "Confirm Purchase / Submit Tool Call" ;
+                      :stepOrder 3 ;
+                      :hasAssociatedTask :Task_ExecutePurchase ;
+                      :nextStep :Step_EndReceipt .
+
+:Step_EndReceipt rdf:type :EndStep ;
+                 rdfs:label "End - Purchase Receipt Display" ;
+                 :stepOrder 4 ;
+                 :hasAssociatedTask :Task_RenderPortfolioView ;
+                 rdfs:comment "Final step displays the Purchase Executed card and updates UI state." .
+
+#################################################################
+#    Relationships connecting entities to ensure no orphan nodes
+#################################################################
+
+# Agent uses language model
+:TradingAgent :useLanguageModel :GPT_Model_Chat .
+
+# Agent tool usage (agent directly uses buy-stock tool)
+:TradingAgent :agentToolUsage :BuyStockTool .
+
+# Tasks performed by agent(s) already declared above, ensure human participation is recorded
+:EndUser :humanParticipatedIn :Task_HandleBuyAction .
+
+# Tool performedByAgent (subproperty) mappings: the buy-stock tool is the executor of the purchase task
+:Task_ExecutePurchase :performedBy :BuyStockTool ;
+                     :performedByAgent :TradingAgent .
+
+# Task produced resources
+:Task_HandleBuyAction :producedResource :OrderDetailsResource .
+:Task_ExecutePurchase :producedResource :PurchaseReceiptResource .
+
+# Workflow pattern is associated with the team
+:TradingTeam :hasWorkflowPattern :BuyStockWorkflow .
+
+# Link goal and objective
+:Goal_ManagePortfolio rdf:type :Goal ;
+                      rdfs:label "Manage Portfolio" ;
+                      <http://purl.org/dc/terms/description> "Team/agent goal to provide portfolio management UI and execute trades." .
+
+:TradingAgent :hasAgentGoal :Goal_ManagePortfolio .
+:TradingTeam :hasTeamGoal :Goal_ManagePortfolio .
+
+#################################################################
+#    Config completeness checks (explicit config key/value pairs)
+#################################################################
+
+:TradingAgent_Config rdf:type :Config ;
+                     :configKey "agentID" ;
+                     :configValue "trading-agent-001" .
+
+:BuyStockTool_Config rdf:type :Config ;
+                     :configKey "toolName" ;
+                     :configValue "buy-stock" .
+
+#################################################################
+#    Labels / Titles to preserve UI strings and messages from source
+#################################################################
+
+:UI_String_PurchaseExecuted rdf:type :Prompt ;
+                            rdfs:label "Purchase Executed Title" ;
+                            :promptInstruction "Purchase Executed - {ticker}" ;
+                            <http://purl.org/dc/terms/description> "Title used in Purchased UI component." .
+
+:UI_String_SuccessMessage rdf:type :Prompt ;
+                         rdfs:label "Order success message" ;
+                         :promptInstruction "Successfully purchased stock" ;
+                         :promptOutputIndicator "Used inside orderDetails JSON message field." .
+
+:UI_String_HumanSummary rdf:type :Prompt ;
+                       rdfs:label "Human summary message template" ;
+                       :promptInstruction "Purchased {quantity} shares of {ticker} at {price} per share" .
+
+#################################################################
+#    Minimal cross-links to avoid any orphaned individuals
+#################################################################
+
+# Connect prompts to agent/task contexts
+:TradingAgent :hasPrompt :TradingAgentPrompt .
+:Task_HandleBuyAction :hasPrompt :Prompt_HandleBuyAction .
+:Task_RenderPortfolioView :hasPrompt :Prompt_RenderPortfolioView .
+:Task_RenderStockPrice :hasPrompt :Prompt_StockPrice .
+
+# Ensure produced resources are connected to team context
+:TradingTeam :containsResource :PurchaseReceiptResource ,
+                               :OrderDetailsResource ,
+                               :PortfolioSnapshotResource .
+
+# Ensure StockPrice data is reachable from StockPrice task
+:Task_RenderStockPrice :requiresResource :StockPriceData .
+
+# End of instance data.

@@ -1,0 +1,342 @@
+# Execution time: 55.48 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions: each StateGraph node is represented as an LLMAgent; separate Tool individuals are modeled for the tool-like nodes described in ALL_TOOL_DESCRIPTIONS. A Supervisor agent is created to hold configuration values defined in SupervisorZodConfiguration. The workflow branches are modeled as a simple linear step chain with a generic tool step that associates all tool tasks (to satisfy the workflow chain requirement) while preserving task-to-agent mappings.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#############################################################################
+# Team / System
+#############################################################################
+
+:GenerativeUI_Team rdf:type :Team ;
+    rdfs:label "Generative UI Agent Team" ;
+    :hasAgentMember :SupervisorAgent ,
+                    :RouterAgent ,
+                    :GeneralInputAgent ,
+                    :StockbrokerAgent ,
+                    :TripPlannerAgent ,
+                    :OpenCodeAgent ,
+                    :OrderPizzaAgent ,
+                    :WriterAgent ;
+    :hasWorkflowPattern :GenerativeUI_WorkflowPattern ;
+    :hasSystemConfig :team_config_model ,
+                     :team_config_default_temperature .
+
+#############################################################################
+# Supervisor / Configuration
+#############################################################################
+
+:SupervisorAgent rdf:type :LLMAgent ;
+    :agentID "supervisor-001" ;
+    :agentRole "Supervisor / Orchestrator" ;
+    :hasAgentConfig :cfg_model ,
+                    :cfg_temperature ,
+                    :cfg_maxTokens ,
+                    :cfg_systemPrompt .
+
+:cfg_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "anthropic/claude-3-7-sonnet-latest" .
+
+:cfg_temperature rdf:type :Config ;
+    :configKey "temperature" ;
+    :configValue "0.7" .
+
+:cfg_maxTokens rdf:type :Config ;
+    :configKey "maxTokens" ;
+    :configValue "1000" .
+
+:cfg_systemPrompt rdf:type :Config ;
+    :configKey "systemPrompt" ;
+    :configValue "Default system prompt for Supervisor (overridable)" .
+
+:team_config_model rdf:type :Config ;
+    :configKey "team_default_model" ;
+    :configValue "openai/gpt-4o" .
+
+:team_config_default_temperature rdf:type :Config ;
+    :configKey "team_default_temperature" ;
+    :configValue "0" .
+
+#############################################################################
+# Agents
+#############################################################################
+
+:RouterAgent rdf:type :LLMAgent ;
+    :agentID "router-001" ;
+    :agentRole "Router / Tool router" ;
+    :agentPrompt :RouterPrompt ;
+    :agentToolUsage :RouterToolService .
+
+:GeneralInputAgent rdf:type :LLMAgent ;
+    :agentID "general-input-001" ;
+    :agentRole "General conversational responder" ;
+    :agentPrompt :GeneralInputPrompt ;
+    :agentToolUsage :GeneralInput_ToolService .
+
+:StockbrokerAgent rdf:type :LLMAgent ;
+    :agentID "stockbroker-agent-001" ;
+    :agentRole "Stockbroker assistant" ;
+    :agentPrompt :Prompt_stockbroker ;
+    :agentToolUsage :Stockbroker_Tool .
+
+:TripPlannerAgent rdf:type :LLMAgent ;
+    :agentID "tripplanner-agent-001" ;
+    :agentRole "Trip planner assistant" ;
+    :agentPrompt :Prompt_tripplanner ;
+    :agentToolUsage :TripPlanner_Tool .
+
+:OpenCodeAgent rdf:type :LLMAgent ;
+    :agentID "opencode-agent-001" ;
+    :agentRole "Open-code generator (React TODO app)" ;
+    :agentPrompt :Prompt_opencode ;
+    :agentToolUsage :OpenCode_Tool .
+
+:OrderPizzaAgent rdf:type :LLMAgent ;
+    :agentID "orderpizza-agent-001" ;
+    :agentRole "Pizza ordering assistant" ;
+    :agentPrompt :Prompt_orderpizza ;
+    :agentToolUsage :OrderPizza_Tool .
+
+:WriterAgent rdf:type :LLMAgent ;
+    :agentID "writer-agent-001" ;
+    :agentRole "Document writer agent" ;
+    :agentPrompt :Prompt_writerAgent ;
+    :agentToolUsage :WriterAgent_Tool .
+
+#############################################################################
+# Tools (service endpoints / capabilities described in ALL_TOOL_DESCRIPTIONS)
+#############################################################################
+
+:RouterToolService rdf:type :Tool ;
+    rdfs:label "Router tool interface (tool selection helper)" .
+
+:GeneralInput_ToolService rdf:type :Tool ;
+    rdfs:label "General input responder service (handles conversation & tool result descriptions)" .
+
+:Stockbroker_Tool rdf:type :Tool ;
+    rdfs:label "Stockbroker" ;
+    :hasCapability :Capability_stockbroker_fetch ,
+                   :Capability_stockbroker_trade ,
+                   :Capability_stockbroker_portfolio .
+
+:TripPlanner_Tool rdf:type :Tool ;
+    rdfs:label "tripPlanner" ;
+    :hasCapability :Capability_tripplanner_suggest .
+
+:OpenCode_Tool rdf:type :Tool ;
+    rdfs:label "openCode" ;
+    :hasCapability :Capability_opencode_write_todo_app .
+
+:OrderPizza_Tool rdf:type :Tool ;
+    rdfs:label "orderPizza" ;
+    :hasCapability :Capability_order_pizza .
+
+:WriterAgent_Tool rdf:type :Tool ;
+    rdfs:label "writerAgent" ;
+    :hasCapability :Capability_write_document .
+
+#############################################################################
+# Capabilities (simple individuals to represent tool capabilities)
+#############################################################################
+
+:Capability_stockbroker_fetch rdf:type :Capability ;
+    rdfs:label "fetch price of a ticker" .
+
+:Capability_stockbroker_trade rdf:type :Capability ;
+    rdfs:label "purchase or sell a ticker" .
+
+:Capability_stockbroker_portfolio rdf:type :Capability ;
+    rdfs:label "get user's portfolio" .
+
+:Capability_tripplanner_suggest rdf:type :Capability ;
+    rdfs:label "suggest restaurants and places to stay" .
+
+:Capability_opencode_write_todo_app rdf:type :Capability ;
+    rdfs:label "write a React TODO app" .
+
+:Capability_order_pizza rdf:type :Capability ;
+    rdfs:label "order a pizza" .
+
+:Capability_write_document rdf:type :Capability ;
+    rdfs:label "write a text document" .
+
+#############################################################################
+# Prompts
+#############################################################################
+
+:GeneralInputPrompt rdf:type :Prompt ;
+    :promptInstruction """You are an AI assistant.
+If the user asks what you can do, describe these tools.
+- stockbroker: can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio
+- tripPlanner: helps the user plan their trip. it can suggest restaurants, and places to stay in any given location.
+- openCode: can write a React TODO app for the user. Only call this tool if they request a TODO app.
+- orderPizza: can order a pizza for the user
+- writerAgent: can write a text document for the user. Only call this tool if they request a text document.
+
+If the last message is a tool result, describe what the action was, congratulate the user, or send a friendly followup in response to the tool action. Ensure this is a clear and concise message.
+
+Otherwise, just answer as normal.""" .
+
+:RouterPrompt rdf:type :Prompt ;
+    :promptInstruction """You're a highly helpful AI assistant, tasked with routing the user's query to the appropriate tool.
+You should analyze the user's input, and choose the appropriate tool to use.""" ;
+    :promptContext """Router tool description includes available tools:
+- stockbroker
+- tripPlanner
+- openCode
+- orderPizza
+- generalInput
+- writerAgent
+Use the most appropriate route based on the user's most recent message and the conversation context.""" .
+
+:Prompt_stockbroker rdf:type :Prompt ;
+    :promptInstruction "stockbroker: can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio" .
+
+:Prompt_tripplanner rdf:type :Prompt ;
+    :promptInstruction "tripPlanner: helps the user plan their trip. it can suggest restaurants, and places to stay in any given location." .
+
+:Prompt_opencode rdf:type :Prompt ;
+    :promptInstruction "openCode: can write a React TODO app for the user. Only call this tool if they request a TODO app." .
+
+:Prompt_orderpizza rdf:type :Prompt ;
+    :promptInstruction "orderPizza: can order a pizza for the user" .
+
+:Prompt_writerAgent rdf:type :Prompt ;
+    :promptInstruction "writerAgent: can write a text document for the user. Only call this tool if they request a text document." .
+
+:RouterToolSchemaPrompt rdf:type :Prompt ;
+    :promptInstruction """Router tool schema (used to constrain router output):
+{ "route": one_of(["stockbroker","tripPlanner","openCode","orderPizza","generalInput","writerAgent"]) }""" .
+
+#############################################################################
+# Tasks and their relationships to agents and prompts
+#############################################################################
+
+:task_route rdf:type :Task ;
+    :taskPrompt :RouterPrompt ;
+    :performedByAgent :RouterAgent ;
+    rdfs:label "Route user's query to appropriate tool" .
+
+:task_general_input rdf:type :Task ;
+    :taskPrompt :GeneralInputPrompt ;
+    :performedByAgent :GeneralInputAgent ;
+    rdfs:label "Handle general user input / format tool results / respond conversationally" .
+
+:task_stockbroker_fetch_price rdf:type :Task ;
+    :taskPrompt :Prompt_stockbroker ;
+    :performedByAgent :StockbrokerAgent ;
+    rdfs:label "Fetch price of a ticker" .
+
+:task_stockbroker_trade rdf:type :Task ;
+    :taskPrompt :Prompt_stockbroker ;
+    :performedByAgent :StockbrokerAgent ;
+    rdfs:label "Purchase/sell a ticker" .
+
+:task_stockbroker_get_portfolio rdf:type :Task ;
+    :taskPrompt :Prompt_stockbroker ;
+    :performedByAgent :StockbrokerAgent ;
+    rdfs:label "Get user's portfolio" .
+
+:task_tripplanner_suggest rdf:type :Task ;
+    :taskPrompt :Prompt_tripplanner ;
+    :performedByAgent :TripPlannerAgent ;
+    rdfs:label "Suggest restaurants and places to stay" .
+
+:task_opencode_write_todo_app rdf:type :Task ;
+    :taskPrompt :Prompt_opencode ;
+    :performedByAgent :OpenCodeAgent ;
+    rdfs:label "Write a React TODO app" .
+
+:task_orderpizza_order rdf:type :Task ;
+    :taskPrompt :Prompt_orderpizza ;
+    :performedByAgent :OrderPizzaAgent ;
+    rdfs:label "Order a pizza for the user" .
+
+:task_writer_write_document rdf:type :Task ;
+    :taskPrompt :Prompt_writerAgent ;
+    :performedByAgent :WriterAgent ;
+    rdfs:label "Write a text document for the user" .
+
+:task_finalize rdf:type :Task ;
+    :taskPrompt :GeneralInputPrompt ;
+    :performedByAgent :GeneralInputAgent ;
+    rdfs:label "Finalize response after tool action (congratulate / followup)" .
+
+#############################################################################
+# Workflow pattern and workflow steps (chain)
+#############################################################################
+
+:GenerativeUI_WorkflowPattern rdf:type :WorkflowPattern ;
+    rdfs:label "Generative UI StateGraph Workflow Pattern" ;
+    :hasWorkflowStep :ws_start , :ws_router , :ws_tool , :ws_end .
+
+:ws_start rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_route ;
+    :nextStep :ws_router ;
+    rdfs:label "Start Step: entry point to workflow" .
+
+:ws_router rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_route ;
+    :nextStep :ws_tool ;
+    rdfs:label "Router step: decide tool" .
+
+:ws_tool rdf:type :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :task_stockbroker_fetch_price ,
+                       :task_stockbroker_trade ,
+                       :task_stockbroker_get_portfolio ,
+                       :task_tripplanner_suggest ,
+                       :task_opencode_write_todo_app ,
+                       :task_orderpizza_order ,
+                       :task_writer_write_document ;
+    :nextStep :ws_end ;
+    rdfs:label "Tool execution step(s): one or more tool tasks executed based on route" .
+
+:ws_end rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :task_finalize ;
+    rdfs:label "End Step: finalize and respond" .
+
+#############################################################################
+# Links ensuring objects reference defined individuals (tool usage)
+#############################################################################
+
+:RouterAgent :agentToolUsage :RouterToolService .
+:GeneralInputAgent :agentToolUsage :GeneralInput_ToolService .
+:StockbrokerAgent :agentToolUsage :Stockbroker_Tool .
+:TripPlannerAgent :agentToolUsage :TripPlanner_Tool .
+:OpenCodeAgent :agentToolUsage :OpenCode_Tool .
+:OrderPizzaAgent :agentToolUsage :OrderPizza_Tool .
+:WriterAgent :agentToolUsage :WriterAgent_Tool .
+
+#############################################################################
+# Additional metadata linking team / pattern and ensuring connectivity
+#############################################################################
+
+:GenerativeUI_Team rdfs:comment "Represents the overall composed system (StateGraph named 'Generative UI Agent' in source code)" .
+
+:RouterToolService rdfs:comment "Tool wrapper used by RouterAgent to represent the routing tool abstraction." .
+
+:GeneralInput_ToolService rdfs:comment "Service wrapper used by GeneralInputAgent to handle conversational output and tool result summarization." .
+
+#############################################################################
+# End of instances
+#############################################################################

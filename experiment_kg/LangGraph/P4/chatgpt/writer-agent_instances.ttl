@@ -1,0 +1,154 @@
+# Execution time: 42.00 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions: the WriterAnnotation-backed StateGraph represents a single LLM agent ("Agent_Writer") using a LanguageModel ("LM_Claude3"); the three StateGraph nodes (prepare, writer, suggestions) are modeled as Tasks and mapped to workflow steps (StartStep, WorkflowStep, EndStep). The tool "draft_text_document" is modeled as a Tool with schema captured as Config entries. Optional dynamic runtime values (e.g., state.context.writer.selected) are captured in prompt context strings rather than as additional classes.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances describing the agent-based solution from index.ts
+#################################################################
+
+### Agent (LLM agent backing the WriterAnnotation / StateGraph)
+:Agent_Writer rdf:type :LLMAgent ;
+    :agentID "writer-annotation" ;
+    :agentRole "writer" ;
+    :agentPrompt :Prompt_AgentSystem ;
+    :hasAgentConfig :Config_AgentModel , :Config_AgentTags ;
+    :useLanguageModel :LM_Claude3 ;
+    :agentToolUsage :Tool_DraftTextDocument ;
+    rdfs:label "Writer Annotation Agent" .
+
+### Language model used by the agent
+:LM_Claude3 rdf:type :LanguageModel ;
+    rdfs:label "claude-3-5-sonnet-latest" .
+
+### Tool used by the agent (bound tool in prepare)
+:Tool_DraftTextDocument rdf:type :Tool ;
+    rdfs:label "draft_text_document" ;
+    :hasToolConfig :Config_Tool_DraftTextDocument , :Config_ToolSchema_Title , :Config_ToolSchema_Description .
+
+### Configurations
+:Config_AgentModel rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "claude-3-5-sonnet-latest" .
+
+:Config_AgentTags rdf:type :Config ;
+    :configKey "tags" ;
+    :configValue "[\"nostream\"]" .
+
+:Config_Tool_DraftTextDocument rdf:type :Config ;
+    :configKey "tool_name" ;
+    :configValue "draft_text_document" .
+
+:Config_ToolSchema_Title rdf:type :Config ;
+    :configKey "title" ;
+    :configValue "string" .
+
+:Config_ToolSchema_Description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "string" .
+
+:Config_System rdf:type :Config ;
+    :configKey "annotation" ;
+    :configValue "WriterAnnotation StateGraph with nodes: prepare, writer, suggestions" .
+
+### Prompts (agent-level and task-level)
+:Prompt_AgentSystem rdf:type :Prompt ;
+    :promptInstruction "Write a text document based on the user's request. Only output the content, do not ask any additional questions." ;
+    :promptContext "System role for writer() function. When available, include selected text as: 'Selected text in question: <selected>'." .
+
+:Prompt_PrepareTool rdf:type :Prompt ;
+    :promptInstruction "Prepare a text document for the user with a short title and short description for browsing purposes. Can be also used when creating a new version of the document." ;
+    :promptInputData "Schema for tool arguments: { title: string, description: string }" ;
+    :promptContext "This corresponds to the bound tool 'draft_text_document' in prepare(), model.bindTools(schema)." .
+
+:Prompt_WriteInstruction rdf:type :Prompt ;
+    :promptInstruction "Write a text document based on the user's request. Only output the content, do not ask any additional questions. If state.context.writer.selected is present, include 'Selected text in question: <selected>' in the system context." ;
+    :promptContext "Used in writer() function as system role plus state.messages (excluding the tool-call that triggered document creation)." .
+
+:Prompt_Suggestions rdf:type :Prompt ;
+    :promptInstruction "For each tool call present in the last AI message, send a tool message with content 'Finished' and the corresponding tool_call_id; then invoke the model with the augmented messages to produce follow-up suggestions." ;
+    :promptContext "Used in suggestions() to finalize tool calls and obtain a finishing message from the model." .
+
+### Tasks (nodes in the StateGraph mapped to Task individuals)
+:Task_Prepare rdf:type :Task ;
+    :performedByAgent :Agent_Writer ;
+    :taskPrompt :Prompt_PrepareTool ;
+    :producedResource :Resource_TextDocument ;
+    rdfs:label "prepare" ;
+    :contributesToObjective :Objective_CreateDocument .
+
+:Task_WriteDocument rdf:type :Task ;
+    :performedByAgent :Agent_Writer ;
+    :taskPrompt :Prompt_WriteInstruction ;
+    :producedResource :Resource_TextDocument ;
+    rdfs:label "writer" ;
+    :contributesToObjective :Objective_CreateDocument .
+
+:Task_Suggestions rdf:type :Task ;
+    :performedByAgent :Agent_Writer ;
+    :taskPrompt :Prompt_Suggestions ;
+    rdfs:label "suggestions" ;
+    :contributesToObjective :Objective_CreateDocument .
+
+### Resource produced by tasks
+:Resource_TextDocument rdf:type <http://w3id.org/beam/core#Instance> ;
+    <http://purl.org/dc/terms/title> "Text document (draft)" ;
+    <http://purl.org/dc/terms/description> "Document produced or updated by the 'draft_text_document' tool and finalized by the writer task." .
+
+### Objective (collective objective for the team/agent)
+:Objective_CreateDocument rdf:type :Objective ;
+    rdfs:label "Create or update a text document for the user" ;
+    :contributesToGoal :Goal_CreateDocument .
+
+:Goal_CreateDocument rdf:type :Goal ;
+    rdfs:label "Produce a usable text document (title + description and full content)" .
+
+### Team / System grouping the agent and workflow
+:Team_WriterSystem rdf:type :Team ;
+    rdfs:label "Writer UI System" ;
+    :hasAgentMember :Agent_Writer ;
+    :hasWorkflowPattern :WorkflowPattern_Writer ;
+    :hasSystemConfig :Config_System ;
+    :hasTeamGoal :Goal_CreateDocument .
+
+### Workflow pattern and steps (mapping StateGraph edges and nodes)
+:WorkflowPattern_Writer rdf:type :WorkflowPattern ;
+    rdfs:label "WriterAnnotation StateGraph Pattern" ;
+    :hasWorkflowStep :Step_01_Prepare , :Step_02_Write , :Step_03_Suggestions .
+
+:Step_01_Prepare rdf:type :StartStep ;
+    :stepOrder 1 ;
+    rdfs:label "prepare (start)" ;
+    :hasAssociatedTask :Task_Prepare ;
+    :nextStep :Step_02_Write .
+
+:Step_02_Write rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    rdfs:label "writer" ;
+    :hasAssociatedTask :Task_WriteDocument ;
+    :nextStep :Step_03_Suggestions .
+
+:Step_03_Suggestions rdf:type :EndStep ;
+    :stepOrder 3 ;
+    rdfs:label "suggestions (end)" ;
+    :hasAssociatedTask :Task_Suggestions .
+
+#################################################################
+# End of instance data
+#################################################################

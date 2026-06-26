@@ -1,0 +1,429 @@
+# Execution time: 62.88 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# - All five agents in source (product_competitor_agent, strategy_planner_agent, creative_content_creator_agent, senior_photographer_agent, chief_creative_diretor_agent) are modeled as :LLMAgent individuals.
+# - All six tasks from source (product_analysis, competitor_analysis, campaign_development, instagram_ad_copy, take_photograph_task, review_photo) are modeled as :Task individuals and linked to their performing agents via :performedByAgent.
+# - All three tools (BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram) are modeled as :Tool individuals and are referenced by agents via :agentToolUsage.
+# - Each agent has a :Prompt individual linked via :agentPrompt. Each task has a :Prompt linked via :taskPrompt.
+# - Two teams (copy crew and image crew) are modeled as :Team with :hasAgentMember for each agent in their crew.
+#
+# Check 2 (Workflow Integrity): PASS
+# - Each crew has a :WorkflowPattern with a chain of :WorkflowStep individuals.
+# - Each pattern includes a :StartStep and an :EndStep.
+# - All :WorkflowStep individuals have :stepOrder integers and are linked by :nextStep forming an ordered chain.
+# - Each step is linked to at least one :Task via :hasAssociatedTask.
+#
+# Check 3 (Structural Consistency): PASS
+# - No duplicate IRIs were created; all individuals use unique IRIs.
+# - No orphaned individuals: every individual is connected (agents -> prompts/tools/language model/team; tasks -> prompts/agent; tools -> referenced by agents; workflow steps -> tasks/pattern/team).
+# - All object properties reference defined individuals (no dangling IRIs).
+# - No :Config individuals were introduced (thus no missing configKey/configValue issues).
+# - Every :Prompt individual includes :promptInstruction.
+#
+# Check 4 (Schema Compliance): PASS
+# - No new classes or properties introduced beyond the provided ontology.
+# - :LLMAgent individuals are used for software agents; :Tool individuals are used for tools.
+# - :WorkflowPattern and :WorkflowStep are used distinctly and correctly.
+#
+# Issues / Assumptions:
+# - Assumed the MODEL environment variable refers to a local Ollama model (README mentions OpenHermes via Ollama). The exact model string is preserved in the LanguageModel individual title as "MODEL (env var) / OpenHermes via Ollama" to capture this configuration detail.
+# - Task descriptions contain placeholders {product_website}, {product_details}, and {ad_copy} to preserve the parameterization used at runtime.
+# - No Config individuals were modeled because source code did not provide explicit configuration key/value pairs; all configuration references (env vars) are preserved in prompt/context literals where relevant.
+# - All multi-line prompt and task texts are preserved as promptInstruction literals to retain full fidelity.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+########################################################################
+# Language Model
+########################################################################
+
+:lm_openhermes rdf:type :LanguageModel ;
+    <http://purl.org/dc/terms/title> "OpenHermes via Ollama (MODEL env var)" ;
+    rdfs:comment "Language model used by agents via Ollama; configured via MODEL environment variable." .
+
+########################################################################
+# Capabilities
+########################################################################
+
+:capability_market_analysis rdf:type :Capability ;
+    rdfs:label "Market analysis capability" .
+
+:capability_strategy_planning rdf:type :Capability ;
+    rdfs:label "Strategy planning capability" .
+
+:capability_creative_content rdf:type :Capability ;
+    rdfs:label "Creative content creation capability" .
+
+:capability_photography rdf:type :Capability ;
+    rdfs:label "Photography capability" .
+
+:capability_creative_direction rdf:type :Capability ;
+    rdfs:label "Creative direction capability" .
+
+:capability_web_scraping rdf:type :Capability ;
+    rdfs:label "Web scraping and summarization capability" .
+
+:capability_search rdf:type :Capability ;
+    rdfs:label "Internet search capability" .
+
+########################################################################
+# Tools
+########################################################################
+
+:tool_browser_scrape_and_summarize rdf:type :Tool ;
+    rdfs:label "BrowserTools.scrape_and_summarize_website" ;
+    :hasCapability :capability_web_scraping ;
+    rdfs:comment "Tool function that scrapes a website via Browserless and summarizes content via an internal Agent Task." .
+
+:tool_search_internet rdf:type :Tool ;
+    rdfs:label "SearchTools.search_internet" ;
+    :hasCapability :capability_search ;
+    rdfs:comment "Tool function that queries Serper Google API for general web search results." .
+
+:tool_search_instagram rdf:type :Tool ;
+    rdfs:label "SearchTools.search_instagram" ;
+    :hasCapability :capability_search ;
+    rdfs:comment "Tool function that queries site:instagram.com via Serper API to find Instagram posts." .
+
+########################################################################
+# Agents (LLM Agents)
+########################################################################
+
+:agent_ProductCompetitor rdf:type :LLMAgent ;
+    :agentID "agent_product_competitor" ;
+    :agentRole "Lead Market Analyst" ;
+    :agentPrompt :prompt_agent_product_competitor ;
+    :useLanguageModel :lm_openhermes ;
+    :hasAgentCapability :capability_market_analysis ,
+                        :capability_web_scraping ,
+                        :capability_search ;
+    :agentToolUsage :tool_browser_scrape_and_summarize , :tool_search_internet ;
+    rdfs:label "Lead Market Analyst (product competitor agent)" .
+
+:agent_StrategyPlanner rdf:type :LLMAgent ;
+    :agentID "agent_strategy_planner" ;
+    :agentRole "Chief Marketing Strategist" ;
+    :agentPrompt :prompt_agent_strategy_planner ;
+    :useLanguageModel :lm_openhermes ;
+    :hasAgentCapability :capability_strategy_planning ,
+                        :capability_web_scraping ,
+                        :capability_search ;
+    :agentToolUsage :tool_browser_scrape_and_summarize , :tool_search_internet , :tool_search_instagram ;
+    rdfs:label "Chief Marketing Strategist (strategy planner agent)" .
+
+:agent_CreativeContent rdf:type :LLMAgent ;
+    :agentID "agent_creative_content_creator" ;
+    :agentRole "Creative Content Creator" ;
+    :agentPrompt :prompt_agent_creative_content_creator ;
+    :useLanguageModel :lm_openhermes ;
+    :hasAgentCapability :capability_creative_content ,
+                        :capability_web_scraping ,
+                        :capability_search ;
+    :agentToolUsage :tool_browser_scrape_and_summarize , :tool_search_internet , :tool_search_instagram ;
+    rdfs:label "Creative Content Creator (creative agent)" .
+
+:agent_SeniorPhotographer rdf:type :LLMAgent ;
+    :agentID "agent_senior_photographer" ;
+    :agentRole "Senior Photographer" ;
+    :agentPrompt :prompt_agent_senior_photographer ;
+    :useLanguageModel :lm_openhermes ;
+    :hasAgentCapability :capability_photography ,
+                        :capability_web_scraping ,
+                        :capability_search ;
+    :agentToolUsage :tool_browser_scrape_and_summarize , :tool_search_internet , :tool_search_instagram ;
+    rdfs:label "Senior Photographer (senior_photographer_agent)" .
+
+:agent_ChiefCreativeDirector rdf:type :LLMAgent ;
+    :agentID "agent_chief_creative_director" ;
+    :agentRole "Chief Creative Director" ;
+    :agentPrompt :prompt_agent_chief_creative_director ;
+    :useLanguageModel :lm_openhermes ;
+    :hasAgentCapability :capability_creative_direction ,
+                        :capability_web_scraping ,
+                        :capability_search ;
+    :agentToolUsage :tool_browser_scrape_and_summarize , :tool_search_internet , :tool_search_instagram ;
+    rdfs:label "Chief Creative Director (chief_creative_diretor_agent)" .
+
+########################################################################
+# Agent Prompts (agentPrompt)
+########################################################################
+
+:prompt_agent_product_competitor rdf:type :Prompt ;
+    :promptInstruction """Goal:
+Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.
+
+Backstory:
+As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.
+
+Role:
+Lead Market Analyst
+
+Notes:
+Uses BrowserTools.scrape_and_summarize_website and SearchTools.search_internet. allow_delegation=False, verbose=True.
+""" ;
+    rdfs:label "Prompt for Lead Market Analyst" .
+
+:prompt_agent_strategy_planner rdf:type :Prompt ;
+    :promptInstruction """Goal:
+Synthesize amazing insights from product analysis to formulate incredible marketing strategies.
+
+Backstory:
+You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success.
+
+Role:
+Chief Marketing Strategist
+
+Notes:
+Uses BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram. verbose=True.
+""" ;
+    rdfs:label "Prompt for Chief Marketing Strategist" .
+
+:prompt_agent_creative_content_creator rdf:type :Prompt ;
+    :promptInstruction """Goal:
+Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact Instagram ad copies.
+
+Backstory:
+As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences on social media. Your expertise lies in turning marketing strategies into engaging stories and visual content that capture attention and inspire action.
+
+Role:
+Creative Content Creator
+
+Notes:
+Uses BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram. verbose=True.
+""" ;
+    rdfs:label "Prompt for Creative Content Creator" .
+
+:prompt_agent_senior_photographer rdf:type :Prompt ;
+    :promptInstruction """Goal:
+Take the most amazing photographs for instagram ads that capture emotions and convey a compelling message.
+
+Backstory:
+As a Senior Photographer at a leading digital marketing agency, you are an expert at taking amazing photographs that inspire and engage, you're now working on a new campaign for a super important customer and you need to take the most amazing photograph.
+
+Role:
+Senior Photographer
+
+Notes:
+Uses BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram. allow_delegation=False, verbose=True.
+""" ;
+    rdfs:label "Prompt for Senior Photographer" .
+
+:prompt_agent_chief_creative_director rdf:type :Prompt ;
+    :promptInstruction """Goal:
+Oversee the work done by your team to make sure it's the best possible and aligned with the product's goals, review, approve, ask clarifying question or delegate follow up work if necessary to make decisions.
+
+Backstory:
+You're the Chief Content Officer of leading digital marketing specialized in product branding. You're working on a new customer, trying to make sure your team is crafting the best possible content for the customer.
+
+Role:
+Chief Creative Director
+
+Notes:
+Uses BrowserTools.scrape_and_summarize_website, SearchTools.search_internet, SearchTools.search_instagram. verbose=True.
+""" ;
+    rdfs:label "Prompt for Chief Creative Director" .
+
+########################################################################
+# Tasks and Task Prompts
+########################################################################
+
+:task_website_analysis rdf:type :Task ;
+    :taskPrompt :prompt_task_website_analysis ;
+    :performedByAgent :agent_ProductCompetitor ;
+    rdfs:label "Product website analysis task" .
+
+:prompt_task_website_analysis rdf:type :Prompt ;
+    :promptInstruction """Analyze the given product website: {product_website}.
+Extra details provided by the customer: {product_details}.
+
+Focus on identifying unique features, benefits, and the overall narrative presented.
+
+Your final report should clearly articulate the product's key selling points, its market appeal, and suggestions for enhancement or positioning. Emphasize the aspects that make the product stand out.
+
+Keep in mind, attention to detail is crucial for a comprehensive analysis. It's currenlty 2024.
+""" ;
+    rdfs:label "Prompt for product_analysis task" .
+
+:task_competitor_analysis rdf:type :Task ;
+    :taskPrompt :prompt_task_competitor_analysis ;
+    :performedByAgent :agent_ProductCompetitor ;
+    rdfs:label "Competitor analysis task" .
+
+:prompt_task_competitor_analysis rdf:type :Prompt ;
+    :promptInstruction """Explore competitor of: {product_website}.
+Extra details provided by the customer: {product_details}.
+
+Identify the top 3 competitors and analyze their strategies, market positioning, and customer perception.
+
+Your final report MUST include BOTH all context about {product_website} and a detailed comparison to whatever competitor they have competitors.
+""" ;
+    rdfs:label "Prompt for competitor_analysis task" .
+
+:task_campaign_development rdf:type :Task ;
+    :taskPrompt :prompt_task_campaign_development ;
+    :performedByAgent :agent_StrategyPlanner ;
+    rdfs:label "Campaign development task" .
+
+:prompt_task_campaign_development rdf:type :Prompt ;
+    :promptInstruction """You're creating a targeted marketing campaign for: {product_website}.
+Extra details provided by the customer: {product_details}.
+
+To start this campaing we will need a strategy and creative content ideas. It should be meticulously designed to captivate and engage the product's target audience.
+
+Based on your ideas your co-workers will create the content for the campaign.
+
+Your final answer MUST be ideas that will resonate with the audience and also include ALL context you have about the product and the customer.
+""" ;
+    rdfs:label "Prompt for campaign_development task" .
+
+:task_instagram_ad_copy rdf:type :Task ;
+    :taskPrompt :prompt_task_instagram_ad_copy ;
+    :performedByAgent :agent_CreativeContent ;
+    rdfs:label "Instagram ad copy task" .
+
+:prompt_task_instagram_ad_copy rdf:type :Prompt ;
+    :promptInstruction """Craft an engaging Instagram post copy.
+The copy should be punchy, captivating, concise, and aligned with the product marketing strategy.
+
+Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.
+
+Your ad copy must be attention-grabbing and should encourage viewers to take action, whether it's visiting the website, making a purchase, or learning more about the product.
+
+Your final answer MUST be 3 options for an ad copy for instagram that not only informs but also excites and persuades the audience.
+""" ;
+    rdfs:label "Prompt for instagram_ad_copy task" .
+
+:task_take_photograph rdf:type :Task ;
+    :taskPrompt :prompt_task_take_photograph ;
+    :performedByAgent :agent_SeniorPhotographer ;
+    rdfs:label "Take photograph task" .
+
+:prompt_task_take_photograph rdf:type :Prompt ;
+    :promptInstruction """You are working on a new campaign for a super important customer, and you MUST take the most amazing photo ever for an instagram post regarding the product, you have the following copy:
+{ad_copy}
+
+This is the product you are working with: {product_website}.
+Extra details provided by the customer: {product_details}.
+
+Imagine what the photo you wanna take describe it in a paragraph.
+Here are some examples for you follow:
+- high tech airplaine in a beautiful blue sky in a beautiful sunset super cripsy beautiful 4k, professional wide shot
+- the last supper, with Jesus and his disciples, breaking bread, close shot, soft lighting, 4k, crisp
+- an bearded old man in the snows, using very warm clothing, with mountains full of snow behind him, soft lighting, 4k, crisp, close up to the camera
+
+Think creatively and focus on how the image can capture the audience's attention. Don't show the actual product on the photo.
+
+Your final answer must be 3 options of photographs, each with 1 paragraph describing the photograph exactly like the examples provided above.
+""" ;
+    rdfs:label "Prompt for take_photograph_task" .
+
+:task_review_photo rdf:type :Task ;
+    :taskPrompt :prompt_task_review_photo ;
+    :performedByAgent :agent_ChiefCreativeDirector ;
+    rdfs:label "Review photo task" .
+
+:prompt_task_review_photo rdf:type :Prompt ;
+    :promptInstruction """Review the photos you got from the senior photographer.
+Make sure it's the best possible and aligned with the product's goals, review, approve, ask clarifying question or delegate follow up work if necessary to make decisions. When delegating work send the full draft as part of the information.
+
+This is the product you are working with: {product_website}.
+Extra details provided by the customer: {product_details}.
+
+Here are some examples on how the final photographs should look like:
+- high tech airplaine in a beautiful blue sky in a beautiful sunset super cripsy beautiful 4k, professional wide shot
+- the last supper, with Jesus and his disciples, breaking bread, close shot, soft lighting, 4k, crisp
+- an bearded old man in the snows, using very warm clothing, with mountains full of snow behind him, soft lighting, 4k, crisp, close up to the camera
+
+Your final answer must be 3 reviewed options of photographs, each with 1 paragraph description following the examples provided above.
+""" ;
+    rdfs:label "Prompt for review_photo task" .
+
+########################################################################
+# Teams and Workflow Patterns
+########################################################################
+
+:team_copy_crew rdf:type :Team ;
+    rdfs:label "Copy Crew" ;
+    :hasAgentMember :agent_ProductCompetitor , :agent_StrategyPlanner , :agent_CreativeContent ;
+    :hasWorkflowPattern :workflowpattern_copy .
+
+:workflowpattern_copy rdf:type :WorkflowPattern ;
+    rdfs:label "Workflow Pattern for Copy Crew" ;
+    :hasWorkflowStep :step_copy_1 , :step_copy_2 , :step_copy_3 , :step_copy_4 , :step_copy_5 .
+
+:step_copy_1 rdf:type :StartStep ;
+    :stepOrder 1 ;
+    rdfs:label "Copy Step 1 - Website Analysis" ;
+    :hasAssociatedTask :task_website_analysis ;
+    :nextStep :step_copy_2 .
+
+:step_copy_2 rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    rdfs:label "Copy Step 2 - Competitor Analysis" ;
+    :hasAssociatedTask :task_competitor_analysis ;
+    :nextStep :step_copy_3 .
+
+:step_copy_3 rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    rdfs:label "Copy Step 3 - Campaign Development" ;
+    :hasAssociatedTask :task_campaign_development ;
+    :nextStep :step_copy_4 .
+
+:step_copy_4 rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    rdfs:label "Copy Step 4 - Write Instagram Ad Copy" ;
+    :hasAssociatedTask :task_instagram_ad_copy ;
+    :nextStep :step_copy_5 .
+
+:step_copy_5 rdf:type :EndStep ;
+    :stepOrder 5 ;
+    rdfs:label "Copy Step 5 - End" ;
+    :hasAssociatedTask :task_instagram_ad_copy .
+
+########################################################################
+# Image Crew and Workflow Pattern
+########################################################################
+
+:team_image_crew rdf:type :Team ;
+    rdfs:label "Image Crew" ;
+    :hasAgentMember :agent_SeniorPhotographer , :agent_ChiefCreativeDirector ;
+    :hasWorkflowPattern :workflowpattern_image .
+
+:workflowpattern_image rdf:type :WorkflowPattern ;
+    rdfs:label "Workflow Pattern for Image Crew" ;
+    :hasWorkflowStep :step_image_1 , :step_image_2 , :step_image_3 .
+
+:step_image_1 rdf:type :StartStep ;
+    :stepOrder 1 ;
+    rdfs:label "Image Step 1 - Take Photograph" ;
+    :hasAssociatedTask :task_take_photograph ;
+    :nextStep :step_image_2 .
+
+:step_image_2 rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    rdfs:label "Image Step 2 - Review Photo" ;
+    :hasAssociatedTask :task_review_photo ;
+    :nextStep :step_image_3 .
+
+:step_image_3 rdf:type :EndStep ;
+    :stepOrder 3 ;
+    rdfs:label "Image Step 3 - End" ;
+    :hasAssociatedTask :task_review_photo .
+
+########################################################################
+# Misc / Labels
+########################################################################
+
+# Ensure all individuals have at least one link and label (for readability)
+:tool_browser_scrape_and_summarize rdfs:label "BrowserTools.scrape_and_summarize_website" .
+:tool_search_internet rdfs:label "SearchTools.search_internet" .
+:tool_search_instagram rdfs:label "SearchTools.search_instagram" .

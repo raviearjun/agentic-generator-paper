@@ -1,0 +1,255 @@
+# Execution time: 78.75 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - Assumption: The autogen framework in the source uses an underlying LLM API; to represent "tool" usage in the ontology I added a Tool individual :OpenAI_API to represent the API/adaptor used by agents. No new classes/properties were introduced.
+# - Assumption: A single shared LLM config (model=gpt-3.5-turbo) is used by all agents; represented as one :Config individual referenced by each agent.
+# - Correction summary: Created individuals for all agents, tasks, prompts, configs, a LanguageModel, a Tool representing the API, a Team, a WorkflowPattern and a chain of WorkflowStep individuals (StartStep..EndStep) with proper stepOrder and nextStep links. Ensured every Task has :performedByAgent, every Prompt has :promptInstruction, every Config has :configKey and :configValue, and no dangling references exist.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+################################################################################
+# Language Model, Tool, Config
+################################################################################
+
+:GPT_3_5_turbo rdf:type :LanguageModel ;
+    rdfs:label "gpt-3.5-turbo" .
+
+:OpenAI_API rdf:type :Tool ;
+    rdfs:label "OpenAI API (represented for autogen usage)" ;
+    :resourceUsage :GPT_3_5_turbo .
+
+:Config_gpt35 rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" ;
+    rdfs:label "LLM config (shared)" .
+
+################################################################################
+# Agents (LLMAgents)
+################################################################################
+
+:Writer rdf:type :LLMAgent ;
+    rdfs:label "写手" ;
+    :agentID "Writer" ;
+    :agentRole "Writer" ;
+    :agentPrompt :Writer_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+:Critic rdf:type :LLMAgent ;
+    rdfs:label "评论家" ;
+    :agentID "Critic" ;
+    :agentRole "Critic" ;
+    :agentPrompt :Critic_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+:SEOReviewer rdf:type :LLMAgent ;
+    rdfs:label "搜索引擎优化审核员" ;
+    :agentID "SEO_Reviewer" ;
+    :agentRole "SEO Reviewer" ;
+    :agentPrompt :SEO_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+:LegalReviewer rdf:type :LLMAgent ;
+    rdfs:label "法律审核员" ;
+    :agentID "Legal_Reviewer" ;
+    :agentRole "Legal Reviewer" ;
+    :agentPrompt :Legal_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+:EthicsReviewer rdf:type :LLMAgent ;
+    rdfs:label "道德审查员" ;
+    :agentID "Ethics_Reviewer" ;
+    :agentRole "Ethics Reviewer" ;
+    :agentPrompt :Ethics_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+:MetaReviewer rdf:type :LLMAgent ;
+    rdfs:label "审核员主管" ;
+    :agentID "Meta_Reviewer" ;
+    :agentRole "Meta Reviewer" ;
+    :agentPrompt :Meta_SystemPrompt ;
+    :hasAgentConfig :Config_gpt35 ;
+    :useLanguageModel :GPT_3_5_turbo ;
+    :agentToolUsage :OpenAI_API .
+
+################################################################################
+# Prompts
+################################################################################
+
+:TaskPrompt_BlogChinese rdf:type :Prompt ;
+    rdfs:label "撰写博客任务输入" ;
+    :promptInstruction """撰写一篇简洁但引人入胜的博客，内容涉及
+       DeepLearning.AI. 确保博客100 字以内。""" ;
+    :promptContext "User-provided task text (noted in notebook)" .
+
+:Writer_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "写手 system message" ;
+    :promptInstruction """你是一位作家。你写的文章（带标题）引人入胜，言简意赅。你必须根据收到的反馈意见润色你的文章，并给出一个优化后的完善的版本。 只 return 你的最终作品,不要添加其他的自主内容。""" .
+
+:Critic_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "评论家 system message" ;
+    :promptInstruction """你是一名著名的评论家。你将会对写手的作品进行点评，并提供建设性意见来帮助他提高文章的质量""" .
+
+:SEO_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "SEO 审核员 system message & summary prompt" ;
+    :promptInstruction """您是一名搜索引擎优化审核员.
+        你以善于为搜索引擎优化内容、确保内容排名靠前、吸引有机流量而闻名。
+        请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+        评论开始时，请说明你的角色。
+
+仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. 这里的 审查员 应该是你自己的角色""" .
+
+:Legal_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "法律审核员 system message & summary prompt" ;
+    :promptInstruction """您是一名法律审核员。
+      你以有能力确保内容符合法律规定、不存在任何潜在法律问题而闻名。
+      请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+      审查开始时，请说明你的角色。
+
+仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. """ .
+
+:Ethics_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "道德审查员 system message & summary prompt" ;
+    :promptInstruction """您是一名道德审查员。
+        你以有能力确保内容符合道德规范且不存在任何潜在道德问题而闻名。
+        请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+        审查开始时，请说明你的职责。
+
+仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}""" .
+
+:Meta_SystemPrompt rdf:type :Prompt ;
+    rdfs:label "审核员主管 system message" ;
+    :promptInstruction "您是审核员主管，你对其他审核员的作品进行升级和审阅，并对内容提出最终建议。" .
+
+################################################################################
+# Tasks
+################################################################################
+
+:Task_WriteBlog rdf:type :Task ;
+    rdfs:label "写博客任务" ;
+    :taskPrompt :TaskPrompt_BlogChinese ;
+    :performedByAgent :Writer .
+
+:Task_CriticInitial rdf:type :Task ;
+    rdfs:label "评论家初评任务" ;
+    :taskPrompt :Critic_SystemPrompt ;
+    :performedByAgent :Critic .
+
+:Task_SEO rdf:type :Task ;
+    rdfs:label "SEO 审查任务" ;
+    :taskPrompt :SEO_SystemPrompt ;
+    :performedByAgent :SEOReviewer .
+
+:Task_Legal rdf:type :Task ;
+    rdfs:label "法律审查任务" ;
+    :taskPrompt :Legal_SystemPrompt ;
+    :performedByAgent :LegalReviewer .
+
+:Task_Ethics rdf:type :Task ;
+    rdfs:label "道德审查任务" ;
+    :taskPrompt :Ethics_SystemPrompt ;
+    :performedByAgent :EthicsReviewer .
+
+:Task_MetaReview rdf:type :Task ;
+    rdfs:label "审核员主管汇总任务" ;
+    :taskPrompt :Meta_SystemPrompt ;
+    :performedByAgent :MetaReviewer .
+
+:Task_Finalize rdf:type :Task ;
+    rdfs:label "最终建议与定稿任务" ;
+    :taskPrompt :Meta_SystemPrompt ;
+    :performedByAgent :MetaReviewer .
+
+################################################################################
+# Team and Workflow Pattern
+################################################################################
+
+:WritingTeam rdf:type :Team ;
+    rdfs:label "写作团队" ;
+    :hasAgentMember :Writer , :Critic , :SEOReviewer , :LegalReviewer , :EthicsReviewer , :MetaReviewer ;
+    :hasWorkflowPattern :WritingReviewPattern ;
+    :hasTeamGoal :Goal_WriteAndPublish .
+
+:Goal_WriteAndPublish rdf:type :Goal ;
+    rdfs:label "撰写并审查博客以发布" ;
+    rdfs:comment "Team goal: produce a concise, engaging blogpost about DeepLearning.AI within 100 words and ensure it passes reviews." .
+
+:WritingReviewPattern rdf:type :WorkflowPattern ;
+    rdfs:label "写作与审查流程" ;
+    :hasWorkflowStep :Step1 , :Step2 , :Step3 , :Step4 , :Step5 , :Step6 , :Step7 .
+
+################################################################################
+# Workflow Steps (ordered chain)
+################################################################################
+
+:Step1 rdf:type :StartStep ;
+    rdfs:label "步骤 1 - 写作" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_WriteBlog ;
+    :nextStep :Step2 .
+
+:Step2 rdf:type :WorkflowStep ;
+    rdfs:label "步骤 2 - 评论家初评" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_CriticInitial ;
+    :nextStep :Step3 .
+
+:Step3 rdf:type :WorkflowStep ;
+    rdfs:label "步骤 3 - SEO 审查" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_SEO ;
+    :nextStep :Step4 .
+
+:Step4 rdf:type :WorkflowStep ;
+    rdfs:label "步骤 4 - 法律审查" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :Task_Legal ;
+    :nextStep :Step5 .
+
+:Step5 rdf:type :WorkflowStep ;
+    rdfs:label "步骤 5 - 道德审查" ;
+    :stepOrder "5"^^xsd:integer ;
+    :hasAssociatedTask :Task_Ethics ;
+    :nextStep :Step6 .
+
+:Step6 rdf:type :WorkflowStep ;
+    rdfs:label "步骤 6 - 审核员主管汇总" ;
+    :stepOrder "6"^^xsd:integer ;
+    :hasAssociatedTask :Task_MetaReview ;
+    :nextStep :Step7 .
+
+:Step7 rdf:type :EndStep ;
+    rdfs:label "步骤 7 - 完成并定稿" ;
+    :stepOrder "7"^^xsd:integer ;
+    :hasAssociatedTask :Task_Finalize .
+
+################################################################################
+# Additional connections and metadata
+################################################################################
+
+# Link pattern to team (already done) and label relationships
+:WritingReviewPattern rdfs:comment "Pattern encoding the sequence: Writer -> Critic -> SEO -> Legal -> Ethics -> Meta -> Finalize." .
+
+# Ensure prompts are connected (agentPrompt / taskPrompt done above)
+# Ensure tool usage: Agents use the API tool and the API tool references the language model (resourceUsage)
+# All individuals referenced above are defined in this document.

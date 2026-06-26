@@ -1,0 +1,165 @@
+# Execution time: 52.82 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+# Issues / Assumptions:
+# - No issues detected. Assumptions: "human_input_mode", "is_termination_msg" and "summary_method" are represented as :Config entries (the ontology does not define specialized properties for these runtime flags). The conversational messages used as inputs are modeled as :Prompt individuals and task prompts.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+### Language Model
+:LM_gpt_3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "OpenAI chat model referenced in llm_config from the notebook (llm_config = {\"model\": \"gpt-3.5-turbo\"})." .
+
+### Agents
+:Agent_chatbot rdf:type :LLMAgent ;
+    :agentID "chatbot" ;
+    :agentRole "conversable" ;
+    :agentPrompt :Prompt_chatbot_system ;
+    :hasAgentConfig :Config_chatbot_model, :Config_chatbot_human_input_mode ;
+    :useLanguageModel :LM_gpt_3_5_turbo .
+
+:Agent_GuoDeGang rdf:type :LLMAgent ;
+    :agentID "郭德纲" ;
+    :agentRole "相声逗哏 (stand-up/comedy role: dougen)" ;
+    :agentPrompt :Prompt_guodegang_system ;
+    :hasAgentConfig :Config_guo_model, :Config_guo_human_input_mode, :Config_guo_termination ;
+    :useLanguageModel :LM_gpt_3_5_turbo .
+
+:Agent_YuQian rdf:type :LLMAgent ;
+    :agentID "于谦" ;
+    :agentRole "相声捧哏 (supporting role: penggen)" ;
+    :agentPrompt :Prompt_yuqian_system ;
+    :hasAgentConfig :Config_yu_model, :Config_yu_human_input_mode, :Config_yu_termination ;
+    :useLanguageModel :LM_gpt_3_5_turbo .
+
+### Team
+:Team_StandupComedy rdf:type :Team ;
+    :hasAgentMember :Agent_GuoDeGang, :Agent_YuQian, :Agent_chatbot ;
+    :hasWorkflowPattern :WorkflowPattern_StandupComedy .
+
+### Configurations (each :Config has :configKey and :configValue)
+:Config_chatbot_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_chatbot_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:Config_guo_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_guo_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:Config_guo_termination rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda msg: '那个人去上厕所了' in msg['content']" .
+
+:Config_yu_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_yu_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:Config_yu_termination rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda msg: '那个人去上厕所了' in msg['content'] or '想上厕所' in msg['content']" .
+
+### Prompts (every :Prompt has :promptInstruction, other prompt fields preserved where relevant)
+:Prompt_chatbot_system rdf:type :Prompt ;
+    :promptInstruction "Conversable agent used to generate replies. Example interactions from notebook: messages [{'content': 'Tell me a joke.', 'role': 'user'}, {'content': 'Repeat the joke.', 'role': 'user'}]. No explicit system_message provided in creation; used with llm_config to produce replies." ;
+    :promptContext "Used by the 'chatbot' ConversableAgent to generate reply outputs for provided messages." ;
+    :promptInputData "Example user messages: 'Tell me a joke.'; 'Repeat the joke.'." .
+
+:Prompt_guodegang_system rdf:type :Prompt ;
+    :promptInstruction "你的名字是郭德纲，著名的相声演员，擅长说学逗唱，作为一名逗哏,你能想出任何笑话包袱逗笑大家！" ;
+    :promptContext "System message provided at agent creation for 郭德纲; guides style and persona." .
+
+:Prompt_yuqian_system rdf:type :Prompt ;
+    :promptInstruction "你的名字是于谦，著名的相声演员，擅长说学逗唱，作为一名捧哏,你能接住任何逗哏说出来的笑话包袱！逗哏说出笑话包袱之后你再接话。你最多只能回复8个字！当你想结束这场相声时，说‘那个人去上厕所了’" ;
+    :promptContext "System message provided at agent creation for 于谦; persona and behavioral constraint (max reply length 8 characters) and termination phrase." .
+
+:Prompt_initiate_chat_guo_to_yu rdf:type :Prompt ;
+    :promptInstruction "我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？" ;
+    :promptContext "Initial message used by guodegang.initiate_chat(recipient=yuqian, message=...). Mode: initiating conversation." .
+
+:Prompt_initiate_chat_guo_to_yu_reflection_summary rdf:type :Prompt ;
+    :promptInstruction "简洁的总结下这场相声表演。" ;
+    :promptContext "summary_prompt passed to initiate_chat with summary_method='reflection_with_llm'." .
+
+:Prompt_send_guo_question rdf:type :Prompt ;
+    :promptInstruction "我们刚才的相声在讲什么?" ;
+    :promptContext "Message used with guodegang.send(message=..., recipient=yuqian)." .
+
+### Tasks (each :Task has :performedByAgent and :taskPrompt where applicable)
+:Task_generate_reply_chatbot rdf:type :Task ;
+    :performedByAgent :Agent_chatbot ;
+    :taskPrompt :Prompt_chatbot_system ;
+    dcterms:description "The agent.generate_reply(...) action used to produce replies to provided messages (examples: 'Tell me a joke.', 'Repeat the joke.')." .
+
+:Task_initiate_chat_guo_to_yu rdf:type :Task ;
+    :performedByAgent :Agent_GuoDeGang ;
+    :taskPrompt :Prompt_initiate_chat_guo_to_yu ;
+    dcterms:description "guodegang.initiate_chat(recipient=yuqian, message='我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？', max_turns=6) and variants with summary_method and summary_prompt." .
+
+:Task_send_guo_to_yu rdf:type :Task ;
+    :performedByAgent :Agent_GuoDeGang ;
+    :taskPrompt :Prompt_send_guo_question ;
+    dcterms:description "guodegang.send(message='我们刚才的相声在讲什么?', recipient=yuqian) used to ask about the previous conversation." .
+
+:Task_summarize_conversation_guo rdf:type :Task ;
+    :performedByAgent :Agent_GuoDeGang ;
+    :taskPrompt :Prompt_initiate_chat_guo_to_yu_reflection_summary ;
+    dcterms:description "Summary action invoked via initiate_chat(..., summary_method='reflection_with_llm', summary_prompt='简洁的总结下这场相声表演。')." .
+
+### Workflow Pattern and Steps
+:WorkflowPattern_StandupComedy rdf:type :WorkflowPattern ;
+    :hasWorkflowStep :Step_1_StartInitiate, :Step_2_ExchangeAndReply, :Step_3_SummarizeEnd ;
+    dcterms:title "Stand-up (相声) conversation pattern" ;
+    dcterms:description "Simple workflow representing initiating a chat, exchanging turns, and producing a summary/end signal." .
+
+:Step_1_StartInitiate rdf:type :StartStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_initiate_chat_guo_to_yu ;
+    :nextStep :Step_2_ExchangeAndReply ;
+    dcterms:description "Start: agent 郭德纲 initiates the conversation." .
+
+:Step_2_ExchangeAndReply rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_generate_reply_chatbot, :Task_send_guo_to_yu ;
+    :nextStep :Step_3_SummarizeEnd ;
+    dcterms:description "Exchange: agents (郭德纲, 于谦, chatbot) exchange turns; replies generated via generate_reply; messages sent via send/initiated chat." .
+
+:Step_3_SummarizeEnd rdf:type :EndStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_summarize_conversation_guo ;
+    dcterms:description "End: summary is produced (if summary_method used) or conversation terminated via termination phrases." .
+
+### Additional metadata linking agents to workflow
+:Agent_GuoDeGang :hasWorkflowPattern :WorkflowPattern_StandupComedy .
+:Agent_YuQian :hasWorkflowPattern :WorkflowPattern_StandupComedy .
+:Agent_chatbot :hasWorkflowPattern :WorkflowPattern_StandupComedy .
+
+### Notes preserved as description resources (connected, not orphaned)
+:Resource_notebook_reference rdf:type :Instance ;
+    dcterms:title "L1_Multi-Agent_Conversation_and_Stand-up_Comedy.ipynb excerpt" ;
+    dcterms:description "Contains agent creation calls (ConversableAgent), example calls: generate_reply, initiate_chat, send; llm_config = {\"model\":\"gpt-3.5-turbo\"}; human_input_mode='NEVER'; optional summary_method and summary_prompt; is_termination_msg lambdas for termination detection." ;
+    dcterms:reference "Source: provided notebook excerpt in user input." ;
+    .
+
+# End of instance data.

@@ -1,0 +1,320 @@
+# Execution time: 55.94 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions:
+#   * All agents in the source are represented as :LLMAgent individuals (the source defines ConversableAgent / AssistantAgent instances implemented with an LLM).
+#   * The group chat speaker-transition configuration is modeled as a :WorkflowPattern with ordered :WorkflowStep individuals (Start/End steps included).
+#   * Tools that appear implicitly in the code (autogen library, group chat manager, code executor) are represented as :Tool individuals and linked via :agentToolUsage.
+#   * Executor's code_execution_config and the shared llm_config are modeled as :Config individuals; config values are stored as string literals.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances for the "L6-Planning_and_Stock_Report_Generation" solution
+#################################################################
+
+# Agents (LLM-based agents defined in the source)
+:AdminAgent rdf:type :LLMAgent ;
+    :agentID "Admin" ;
+    :agentRole "task-manager / user proxy" ;
+    :agentPrompt :Prompt_Admin ;
+    :hasAgentConfig :Config_llm ;
+    :useLanguageModel :LM_gpt4t ;
+    :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+
+:PlannerAgent rdf:type :LLMAgent ;
+    :agentID "Planner" ;
+    :agentRole "planner" ;
+    :agentPrompt :Prompt_Planner ;
+    :hasAgentConfig :Config_llm ;
+    :useLanguageModel :LM_gpt4t ;
+    :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+
+:EngineerAgent rdf:type :LLMAgent ;
+    :agentID "Engineer" ;
+    :agentRole "engineer / code author" ;
+    :agentPrompt :Prompt_Engineer ;
+    :hasAgentConfig :Config_llm ;
+    :useLanguageModel :LM_gpt4t ;
+    :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+
+:ExecutorAgent rdf:type :LLMAgent ;
+    :agentID "Executor" ;
+    :agentRole "code executor / runner" ;
+    :agentPrompt :Prompt_Executor ;
+    :hasAgentConfig :Config_executorCode ;
+    :useLanguageModel :LM_gpt4t ;
+    :agentToolUsage :AutogenLibrary , :CodeExecutionEngineTool , :GroupChatManagerTool .
+
+:WriterAgent rdf:type :LLMAgent ;
+    :agentID "Writer" ;
+    :agentRole "writer / blog author" ;
+    :agentPrompt :Prompt_Writer ;
+    :hasAgentConfig :Config_llm ;
+    :useLanguageModel :LM_gpt4t ;
+    :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+
+#################################################################
+# Prompts (system_message / behavior descriptions preserved as promptInstruction)
+#################################################################
+:Prompt_Admin rdf:type :Prompt ;
+    :promptInstruction "Give the task, and send instructions to writer to refine the blog post." ;
+    :promptContext "This agent (Admin) always requests human input or obtains the task, then sends instructions to the writer to refine the blog post." .
+
+:Prompt_Planner rdf:type :Prompt ;
+    :promptInstruction "Given a task, please determine what information is needed to complete the task. Please note that the information will all be retrieved using Python code. Please only suggest information that can be retrieved using Python code. After each step is done by others, check the progress and instruct the remaining steps. If a step fails, try to workaround." ;
+    :promptContext "Planner decomposes complex tasks into simpler sub-tasks and assigns them to other agents. Also checks progress and handles failures." .
+
+:Prompt_Engineer rdf:type :Prompt ;
+    :promptInstruction "An engineer that writes code based on the plan provided by the planner." ;
+    :promptContext "Writes Python code to retrieve or process information as specified by the Planner's steps." .
+
+:Prompt_Executor rdf:type :Prompt ;
+    :promptInstruction "Execute the code written by the engineer and report the result." ;
+    :promptContext "Executor automatically executes code found in recent messages (last_n_messages) in a configured work directory and reports results." .
+
+:Prompt_Writer rdf:type :Prompt ;
+    :promptInstruction "Writer. Please write blogs in markdown format (with relevant titles) and put the content in pseudo mdcode block. You take feedback from the admin and refine your blog." ;
+    :promptContext "Writes blog posts based on code execution results and refines them according to Admin feedback." .
+
+#################################################################
+# Language Model resource
+#################################################################
+:LM_gpt4t rdf:type :LanguageModel ;
+    rdfs:label "gpt-4-turbo" ;
+    <http://purl.org/dc/terms/title> "gpt-4-turbo" ;
+    <http://purl.org/dc/terms/description> "Language model specified in llm_config (\"model\": \"gpt-4-turbo\")." .
+
+#################################################################
+# Configurations
+#################################################################
+:Config_llm rdf:type :Config ;
+    :configKey "llm_config" ;
+    :configValue "{\"model\": \"gpt-4-turbo\"}" .
+
+:Config_executorCode rdf:type :Config ;
+    :configKey "code_execution_config" ;
+    :configValue "{\"last_n_messages\": 3, \"work_dir\": \"coding\", \"use_docker\": false}" .
+
+:Config_groupchat rdf:type :Config ;
+    :configKey "groupchat_config" ;
+    :configValue "{\"max_round\": 10, \"allowed_speaker_transitions_defined\": true}" .
+
+:Config_CodeExecutionEngineTool rdf:type :Config ;
+    :configKey "engine_work_dir" ;
+    :configValue "coding" .
+
+#################################################################
+# Tools (implicit components represented as Tools)
+#################################################################
+:AutogenLibrary rdf:type :Tool ;
+    rdfs:label "autogen library" ;
+    :hasToolConfig :Config_llm ;
+    <http://purl.org/dc/terms/description> "The autogen python library used to create ConversableAgent, AssistantAgent, GroupChat, and GroupChatManager objects." .
+
+:GroupChatManagerTool rdf:type :Tool ;
+    rdfs:label "GroupChatManager (autogen)" ;
+    :hasToolConfig :Config_groupchat ;
+    <http://purl.org/dc/terms/description> "GroupChatManager used to coordinate group chat among agents." .
+
+:CodeExecutionEngineTool rdf:type :Tool ;
+    rdfs:label "CodeExecutionEngine" ;
+    :hasToolConfig :Config_CodeExecutionEngineTool ;
+    <http://purl.org/dc/terms/description> "Executor's local code execution facility which runs code from recent messages into the 'coding' work_dir." .
+
+#################################################################
+# Team & Workflow Pattern (group chat + speaker transition pattern)
+#################################################################
+:BlogTeam rdf:type :Team ;
+    rdfs:label "Nvidia Stock Blog Generation Team" ;
+    :hasAgentMember :AdminAgent , :PlannerAgent , :EngineerAgent , :ExecutorAgent , :WriterAgent ;
+    :hasSystemConfig :Config_groupchat ;
+    :hasWorkflowPattern :GroupChatPattern ;
+    <http://purl.org/dc/terms/description> "A team of agents collaborating to produce a blog post about Nvidia stock performance (task date 2024-04-23)." .
+
+:GroupChatPattern rdf:type :WorkflowPattern ;
+    rdfs:label "GroupChat Speaker Transition Pattern" ;
+    :hasWorkflowStep :Step1_Start_Admin , :Step2_Planner , :Step3_Engineer , :Step4_Executor , :Step5_Writer_End ;
+    <http://purl.org/dc/terms/description> "Defines allowed speaker transitions and logical sequence of steps in the group chat. Mirrors allowed_or_disallowed_speaker_transitions and max_round configuration." .
+
+#################################################################
+# Tasks and related resources/artifacts
+#################################################################
+:Task_Main_WriteBlog rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Write a blogpost about the stock price performance of Nvidia in the past month (Today's date is 2024-04-23)." ;
+    :taskPrompt :Prompt_Task_Main ;
+    :performedByAgent :WriterAgent ;
+    :requiresResource :Resource_MarketData ;
+    :producedResource :Resource_BlogMD ;
+    <http://purl.org/dc/terms/description> "Primary user task from source code: write a blogpost about Nvidia's past month stock performance. Exact user message preserved." .
+
+:Prompt_Task_Main rdf:type :Prompt ;
+    :promptInstruction "Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23." ;
+    :promptContext "User-provided task string used to initialize the group chat." .
+
+:Task_Plan_Information rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Determine data and steps needed (planning)" ;
+    :performedByAgent :PlannerAgent ;
+    :contributesToObjective :Objective_ProduceBlog ;
+    :producedResource :Resource_Plan ;
+    <http://purl.org/dc/terms/description> "Planner decomposes the main task into information retrieval and processing steps; restricts suggestions to information retrievable by Python code." .
+
+:Task_Write_Code rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Engineer writes Python code to retrieve/process data" ;
+    :performedByAgent :EngineerAgent ;
+    :producedResource :Resource_Code ;
+    <http://purl.org/dc/terms/description> "Engineer implements code per Planner's plan to fetch market data, compute summary statistics, and produce textual input for Writer." .
+
+:Task_Execute_Code rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Executor runs the code and reports results" ;
+    :performedByAgent :ExecutorAgent ;
+    :producedResource :Resource_CodeOutput ;
+    :requiresResource :Resource_Code ;
+    <http://purl.org/dc/terms/description> "Executor executes the engineer's code using configured execution parameters and returns outputs for the Writer." .
+
+:Task_Write_Blog rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Writer composes the blog post in markdown" ;
+    :performedByAgent :WriterAgent ;
+    :producedResource :Resource_BlogMD ;
+    <http://purl.org/dc/terms/description> "Writer composes the final markdown blog using code outputs and feedback from Admin." .
+
+:Task_Refine_Blog rdf:type :Task ;
+    <http://purl.org/dc/terms/title> "Admin requests refinements; Writer updates blog" ;
+    :performedByAgent :WriterAgent ;
+    :contributesToObjective :Objective_ProduceBlog ;
+    :producedResource :Resource_BlogMD_Refined ;
+    <http://purl.org/dc/terms/description> "Admin (user_proxy) provides feedback; Writer refines the blog accordingly." .
+
+#################################################################
+# Resources / Artifacts produced or required
+#################################################################
+:Resource_MarketData rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Nvidia market data (past month)" ;
+    <http://purl.org/dc/terms/description> "Time series or summary statistics retrieved by Python code executed by Executor (source implied in planner's plan)." .
+
+:Resource_Plan rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Planning output / step list" ;
+    <http://purl.org/dc/terms/description> "Plan produced by Planner listing required information and steps to retrieve via Python." .
+
+:Resource_Code rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Python code artifacts" ;
+    <http://purl.org/dc/terms/description> "Code written by Engineer to fetch/process data; executed by Executor." .
+
+:Resource_CodeOutput rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Code execution outputs" ;
+    <http://purl.org/dc/terms/description> "Numbers, charts, and textual summaries produced by executing the Engineer's code." .
+
+:Resource_BlogMD rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Blog post (markdown)" ;
+    <http://purl.org/dc/terms/description> "Initial blog post produced by Writer in markdown format." .
+
+:Resource_BlogMD_Refined rdf:type <http://w3id.org/beam/core#Instance> ;
+    rdfs:label "Refined blog post (markdown)" ;
+    <http://purl.org/dc/terms/description> "Refined blog post after Admin feedback." .
+
+#################################################################
+# Objective / Goal
+#################################################################
+:Objective_ProduceBlog rdf:type :Objective ;
+    rdfs:label "Produce published blogpost about Nvidia monthly stock performance" ;
+    :contributesToGoal :Goal_PublishBlog ;
+    <http://purl.org/dc/terms/description> "Collective objective assigned to the team to produce the blog post." .
+
+:Goal_PublishBlog rdf:type :Goal ;
+    rdfs:label "Publish blogpost" ;
+    <http://purl.org/dc/terms/description> "Final goal: publish the refined markdown blog." .
+
+# Link goals to agents/team
+:BlogTeam :hasTeamGoal :Goal_PublishBlog .
+:WriterAgent :hasAgentGoal :Goal_PublishBlog .
+
+#################################################################
+# Workflow Steps (Start -> ... -> End) and links to tasks
+#################################################################
+:Step1_Start_Admin rdf:type :StartStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_Main_WriteBlog ;
+    :nextStep :Step2_Planner ;
+    rdfs:label "Start: Admin provides task" .
+
+:Step2_Planner rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_Plan_Information ;
+    :nextStep :Step3_Engineer ;
+    rdfs:label "Planner decomposes the task" .
+
+:Step3_Engineer rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_Write_Code ;
+    :nextStep :Step4_Executor ;
+    rdfs:label "Engineer writes code" .
+
+:Step4_Executor rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Task_Execute_Code ;
+    :nextStep :Step5_Writer_End ;
+    rdfs:label "Executor runs code and reports results" .
+
+:Step5_Writer_End rdf:type :EndStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Task_Write_Blog , :Task_Refine_Blog ;
+    rdfs:label "Writer composes and refines the blog (End step)" .
+
+#################################################################
+# Additional structural links ensuring connectivity and completeness
+#################################################################
+# Team has workflow pattern and members (already set). Add related step links to pattern.
+:GroupChatPattern :hasWorkflowStep :Step1_Start_Admin , :Step2_Planner , :Step3_Engineer , :Step4_Executor , :Step5_Writer_End .
+
+# Tasks -> who performs them (ensures performedByAgent links exist)
+:Task_Plan_Information :performedByAgent :PlannerAgent .
+:Task_Write_Code :performedByAgent :EngineerAgent .
+:Task_Execute_Code :performedByAgent :ExecutorAgent .
+:Task_Write_Blog :performedByAgent :WriterAgent .
+:Task_Refine_Blog :performedByAgent :WriterAgent .
+
+# Agents use the language model explicitly (preserves llm_config usage)
+:AdminAgent :useLanguageModel :LM_gpt4t .
+:PlannerAgent :useLanguageModel :LM_gpt4t .
+:EngineerAgent :useLanguageModel :LM_gpt4t .
+:ExecutorAgent :useLanguageModel :LM_gpt4t .
+:WriterAgent :useLanguageModel :LM_gpt4t .
+
+# Agent tool usage (map agents to tools used or referenced)
+:AdminAgent :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+:PlannerAgent :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+:EngineerAgent :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+:ExecutorAgent :agentToolUsage :AutogenLibrary , :CodeExecutionEngineTool , :GroupChatManagerTool .
+:WriterAgent :agentToolUsage :AutogenLibrary , :GroupChatManagerTool .
+
+# Ensure every Config used by Tools/Agents is connected back
+:AutogenLibrary :hasToolConfig :Config_llm .
+:GroupChatManagerTool :hasToolConfig :Config_groupchat .
+:CodeExecutionEngineTool :hasToolConfig :Config_CodeExecutionEngineTool .
+
+#################################################################
+# provenance-like participation (optional links to show involvement)
+#################################################################
+:AdminAgent <http://w3id.org/beam/core#participatedIn> :Task_Main_WriteBlog .
+:PlannerAgent <http://w3id.org/beam/core#participatedIn> :Task_Plan_Information .
+:EngineerAgent <http://w3id.org/beam/core#participatedIn> :Task_Write_Code .
+:ExecutorAgent <http://w3id.org/beam/core#participatedIn> :Task_Execute_Code .
+:WriterAgent <http://w3id.org/beam/core#participatedIn> :Task_Write_Blog .
+
+#################################################################
+# End of instance data for this solution
+#################################################################

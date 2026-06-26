@@ -1,0 +1,262 @@
+# Execution time: 67.83 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - Assumed both "code_writer_agent" and "code_executor_agent" map to :LLMAgent individuals (ConversableAgent / AssistantAgent abstraction).
+# - Represented the LocalCommandLineCodeExecutor as a :Tool with associated :Config entries and :Capability individuals.
+# - Represented Python functions get_stock_prices and plot_stock_prices as tasks/capabilities and listed them in tool config; preserved their code and docstrings in a Prompt used by the code_writer agent.
+# - Preserved user messages exactly as present in source (including the TLSA vs TSLA spelling in the first message).
+# - All created :Config individuals include both :configKey and :configValue. All :Prompt individuals include :promptInstruction.
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Team, Goal, Workflow Pattern, Steps
+#################################################################
+
+:team_coding rdf:type :Team ;
+    rdfs:label "Coding Team" ;
+    :hasAgentMember :agent_code_writer , :agent_code_executor ;
+    :hasTeamGoal :goal_create_plot ;
+    :hasWorkflowPattern :workflowpattern_stock_plot .
+
+:goal_create_plot rdf:type :Goal ;
+    rdfs:label "Create stock price plot YTD" ;
+    <http://purl.org/dc/terms/description> "Produce a plot showing year-to-date stock gains for NVDA and TSLA and save to file." .
+
+:workflowpattern_stock_plot rdf:type :WorkflowPattern ;
+    rdfs:label "Stock Plot Workflow" ;
+    :hasWorkflowStep :step_start_fetch , :step_fetch_data , :step_generate_plot , :step_end .
+
+:step_start_fetch rdf:type :StartStep ;
+    :stepOrder 1 ;
+    rdfs:label "Start: initiate chat and plan" ;
+    :hasAssociatedTask :task_initiate_chat ;
+    :nextStep :step_fetch_data .
+
+:step_fetch_data rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    rdfs:label "Fetch stock prices (download)" ;
+    :hasAssociatedTask :task_download_prices ;
+    :nextStep :step_generate_plot .
+
+:step_generate_plot rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    rdfs:label "Generate plot from data" ;
+    :hasAssociatedTask :task_create_plot ;
+    :nextStep :step_end .
+
+:step_end rdf:type :EndStep ;
+    :stepOrder 4 ;
+    rdfs:label "End: save artifact" ;
+    :hasAssociatedTask :task_store_plot .
+
+#################################################################
+# Agents
+#################################################################
+
+:agent_code_executor rdf:type :LLMAgent ;
+    :agentID "code_executor_agent" ;
+    rdfs:label "code_executor_agent" ;
+    :agentPrompt :prompt_executor_default ;
+    :hasAgentConfig :config_code_executor_human_input ,
+                     :config_code_executor_default_reply ,
+                     :config_code_executor_executor ;
+    :agentToolUsage :tool_local_executor .
+
+:agent_code_writer rdf:type :LLMAgent ;
+    :agentID "code_writer_agent" ;
+    rdfs:label "code_writer_agent" ;
+    :agentPrompt :prompt_code_writer_system ;
+    :hasAgentConfig :config_code_writer_llm ,
+                    :config_code_writer_human_input ,
+                    :config_code_writer_execution_config ;
+    :useLanguageModel :lm_gpt4_turbo .
+
+:lm_gpt4_turbo rdf:type :LanguageModel ;
+    rdfs:label "gpt-4-turbo" .
+
+#################################################################
+# Tool, Capabilities, Tool Configs
+#################################################################
+
+:tool_local_executor rdf:type :Tool ;
+    rdfs:label "LocalCommandLineCodeExecutor" ;
+    :hasToolConfig :config_tool_executor_timeout ,
+                   :config_tool_executor_workdir ,
+                   :config_tool_executor_functions ;
+    :hasCapability :cap_code_execution , :cap_fetch_data , :cap_plot .
+
+:cap_code_execution rdf:type :Capability ;
+    rdfs:label "execute code" .
+
+:cap_fetch_data rdf:type :Capability ;
+    rdfs:label "fetch stock data" .
+
+:cap_plot rdf:type :Capability ;
+    rdfs:label "generate plots" .
+
+:config_tool_executor_timeout rdf:type :Config ;
+    :configKey "timeout" ;
+    :configValue "60" .
+
+:config_tool_executor_workdir rdf:type :Config ;
+    :configKey "work_dir" ;
+    :configValue "coding" .
+
+:config_tool_executor_functions rdf:type :Config ;
+    :configKey "functions" ;
+    :configValue "get_stock_prices, plot_stock_prices" .
+
+#################################################################
+# Agent Configs
+#################################################################
+
+:config_code_executor_human_input rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "ALWAYS" .
+
+:config_code_executor_default_reply rdf:type :Config ;
+    :configKey "default_auto_reply" ;
+    :configValue "Please continue. If everything is done, reply 'TERMINATE'." .
+
+:config_code_executor_executor rdf:type :Config ;
+    :configKey "code_execution_executor" ;
+    :configValue "LocalCommandLineCodeExecutor(timeout=60, work_dir='coding', functions=[get_stock_prices, plot_stock_prices])" .
+
+:config_code_writer_llm rdf:type :Config ;
+    :configKey "llm_config" ;
+    :configValue "gpt-4-turbo" .
+
+:config_code_writer_human_input rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:config_code_writer_execution_config rdf:type :Config ;
+    :configKey "code_execution_config" ;
+    :configValue "False (this agent proposes code but does not execute it)" .
+
+#################################################################
+# Prompts
+#################################################################
+
+:prompt_executor_default rdf:type :Prompt ;
+    :promptInstruction "Please continue. If everything is done, reply 'TERMINATE'." ;
+    :promptContext "Default auto-reply for code_executor_agent." .
+
+:prompt_initial_message rdf:type :Prompt ;
+    :promptInstruction
+        "今天是 {today}.创建图表，显示 NVDA 和 TLSA 的股票收益。\n确保代码位于标记代码块中，并将图表保存到文件 ytd_stock_gains.png。" ;
+    :promptContext "Initial user message used to instruct agents (Chinese message from notebook)." .
+
+:prompt_download_prices rdf:type :Prompt ;
+    :promptInstruction
+        "Download the stock prices YTD for NVDA and TSLA and create a plot. Make sure the code is in markdown code block and save the figure to a file stock_prices_YTD_plot.png." ;
+    :promptContext "User instruction to download data and create plot (English message used later)." .
+
+:prompt_create_plot rdf:type :Prompt ;
+    :promptInstruction
+        "Create a plot showing stock gain YTD for NVDA and TLSA (or TSLA). Save the figure to a file (e.g., ytd_stock_gains.png or stock_prices_YTD_plot.png). Ensure matplotlib code is used and figure is saved to disk." ;
+    :promptContext "Plotting instructions (preserves both TLSA/TSLA mentions from source)." .
+
+:prompt_code_writer_system rdf:type :Prompt ;
+    :promptInstruction
+        """Assistant agent system message for code_writer_agent (provides guidance on writing code and handling conditions).
+Includes knowledge of two local helper functions (provided to the agent via executor.format_functions_for_prompt()):
+
+def get_stock_prices(stock_symbols, start_date, end_date):
+    \"\"\"Get the stock prices for the given stock symbols between
+    the start and end dates.
+
+    Args:
+        stock_symbols (str or list): The stock symbols to get the
+        prices for.
+        start_date (str): The start date in the format
+        'YYYY-MM-DD'.
+        end_date (str): The end date in the format 'YYYY-MM-DD'.
+
+    Returns:
+        pandas.DataFrame: The stock prices for the given stock
+        symbols indexed by date, with one column per stock
+        symbol.
+    \"\"\"
+    (function available to describe and propose calls in generated code)
+
+def plot_stock_prices(stock_prices, filename):
+    \"\"\"Plot the stock prices for the given stock symbols.
+
+    Args:
+        stock_prices (pandas.DataFrame): The stock prices for the given stock symbols.
+    \"\"\"
+    (function available to describe and propose calls in generated code)
+
+System message instructs: produce code in markdown code blocks, use provided functions where appropriate, and do not execute code (this agent's code_execution_config=False).
+""" ;
+    :promptContext "System message augmented with function signatures and docstrings provided to code_writer_agent." .
+
+#################################################################
+# Tasks and Produced Resources
+#################################################################
+
+:task_initiate_chat rdf:type :Task ;
+    rdfs:label "Initiate chat between agents" ;
+    :performedByAgent :agent_code_executor ;
+    :taskPrompt :prompt_initial_message ;
+    :producedResource :resource_chat_log .
+
+:task_download_prices rdf:type :Task ;
+    rdfs:label "Download stock prices YTD" ;
+    :performedByAgent :agent_code_executor ;
+    :taskPrompt :prompt_download_prices ;
+    :producedResource :resource_stock_prices .
+
+:task_create_plot rdf:type :Task ;
+    rdfs:label "Create plot and save image" ;
+    :performedByAgent :agent_code_executor ;
+    :taskPrompt :prompt_create_plot ;
+    :requiresResource :resource_stock_prices ;
+    :producedResource :resource_plot_image .
+
+:task_store_plot rdf:type :Task ;
+    rdfs:label "Save plot to file" ;
+    :performedByAgent :agent_code_executor ;
+    :requiresResource :resource_plot_image ;
+    :producedResource :resource_plot_image .
+
+#################################################################
+# Resources
+#################################################################
+
+:resource_chat_log rdf:type beam:Instance ;
+    rdfs:label "chat_result" ;
+    rdfs:comment "Artifact storing exchange between code_executor_agent and code_writer_agent (chat_result)." .
+
+:resource_stock_prices rdf:type beam:Instance ;
+    rdfs:label "ytd_stock_prices" ;
+    rdfs:comment "Dataframe of Close prices for NVDA and TSLA/TLSA for the year-to-date period, produced by get_stock_prices." .
+
+:resource_plot_image rdf:type beam:Instance ;
+    rdfs:label "stock_prices_YTD_plot.png" ;
+    rdfs:comment "Plot image file saved by executor (stock_prices_YTD_plot.png or ytd_stock_gains.png as produced by agents)." .
+
+#################################################################
+# Additional links and provenance
+#################################################################
+
+:task_download_prices :contributesToObjective :goal_create_plot .
+:task_create_plot :contributesToObjective :goal_create_plot .
+:task_store_plot :contributesToObjective :goal_create_plot .
+
+:agent_code_writer :interactsWith :agent_code_executor .
+:agent_code_executor :interactsWith :agent_code_writer .

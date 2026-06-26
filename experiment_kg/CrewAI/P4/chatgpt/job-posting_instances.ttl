@@ -1,0 +1,287 @@
+# Execution time: 64.40 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions: the LLM used by agents is represented as a LanguageModel individual (GPT4o) to capture model usage. Agents' role/goal/backstory and tasks' descriptions/expected_outputs are preserved in Prompt individuals. Tool configuration (file path / description) modeled as Config individuals where applicable.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Team / Crew
+:JobPostingCrew rdf:type :Team ;
+    :hasAgentMember :Research_Agent ,
+                    :Writer_Agent ,
+                    :Review_Agent ;
+    :hasWorkflowPattern :JobPosting_WorkflowPattern ;
+    :hasSystemConfig :Crew_Config_filepaths .
+
+:Crew_Config_filepaths rdf:type :Config ;
+    :configKey "agents_config" ;
+    :configValue "config/agents.yaml" .
+
+:Agents_Tasks_Config rdf:type :Config ;
+    :configKey "tasks_config" ;
+    :configValue "config/tasks.yaml" .
+
+### Language Model used
+:GPT4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o (default for CrewAI example)" ;
+    dcterms:description "The example code uses GPT-4o by default as the underlying LLM model." .
+
+#################################################################
+# Agents (LLMAgent individuals)
+#################################################################
+
+:Research_Agent rdf:type :LLMAgent ;
+    :agentID "research_agent" ;
+    :agentRole "Research Analyst" ;
+    :agentPrompt :Research_Agent_Prompt ;
+    :hasAgentGoal :Research_Agent_Goal ;
+    :agentToolUsage :WebsiteSearch_Tool , :SerperDev_Tool ;
+    :useLanguageModel :GPT4o ;
+    :hasAgentConfig :Research_Agent_Config .
+
+:Research_Agent_Config rdf:type :Config ;
+    :configKey "agent_key" ;
+    :configValue "research_agent (from config/agents.yaml)" .
+
+:Writer_Agent rdf:type :LLMAgent ;
+    :agentID "writer_agent" ;
+    :agentRole "Job Description Writer" ;
+    :agentPrompt :Writer_Agent_Prompt ;
+    :hasAgentGoal :Writer_Agent_Goal ;
+    :agentToolUsage :WebsiteSearch_Tool , :SerperDev_Tool , :FileRead_Tool ;
+    :useLanguageModel :GPT4o ;
+    :hasAgentConfig :Writer_Agent_Config .
+
+:Writer_Agent_Config rdf:type :Config ;
+    :configKey "agent_key" ;
+    :configValue "writer_agent (from config/agents.yaml)" .
+
+:Review_Agent rdf:type :LLMAgent ;
+    :agentID "review_agent" ;
+    :agentRole "Review and Editing Specialist" ;
+    :agentPrompt :Review_Agent_Prompt ;
+    :hasAgentGoal :Review_Agent_Goal ;
+    :agentToolUsage :WebsiteSearch_Tool , :SerperDev_Tool , :FileRead_Tool ;
+    :useLanguageModel :GPT4o ;
+    :hasAgentConfig :Review_Agent_Config .
+
+:Review_Agent_Config rdf:type :Config ;
+    :configKey "agent_key" ;
+    :configValue "review_agent (from config/agents.yaml)" .
+
+#################################################################
+# Agent Goals
+#################################################################
+
+:Research_Agent_Goal rdf:type :Goal ;
+    dcterms:description "Analyze the company website and provided description to extract insights on culture, values, and specific needs." .
+
+:Writer_Agent_Goal rdf:type :Goal ;
+    dcterms:description "Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting." .
+
+:Review_Agent_Goal rdf:type :Goal ;
+    dcterms:description "Review the job posting for clarity, engagement, grammatical accuracy, and alignment with company values and refine it to ensure perfection." .
+
+#################################################################
+# Agent Prompts (store role, goal, backstory / agent configuration)
+#################################################################
+
+:Research_Agent_Prompt rdf:type :Prompt ;
+    :promptInstruction "Role: Research Analyst\nGoal: Analyze the company website and provided description to extract insights on culture, values, and specific needs.\nBackstory: Expert in analyzing company cultures and identifying key values and needs from various sources, including websites and brief descriptions." ;
+    :promptContext "Agent config: research_agent from config/agents.yaml" ;
+    :promptOutputIndicator "A comprehensive report summarizing insights and suggestions for job posting content." .
+
+:Writer_Agent_Prompt rdf:type :Prompt ;
+    :promptInstruction "Role: Job Description Writer\nGoal: Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting.\nBackstory: Skilled in crafting compelling job descriptions that resonate with the company's values and attract the right candidates." ;
+    :promptContext "Agent config: writer_agent from config/agents.yaml" ;
+    :promptOutputIndicator "A detailed, engaging job posting including introduction, role description, responsibilities, requirements, and benefits." .
+
+:Review_Agent_Prompt rdf:type :Prompt ;
+    :promptInstruction "Role: Review and Editing Specialist\nGoal: Review the job posting for clarity, engagement, grammatical accuracy, and alignment with company values.\nBackstory: A meticulous editor with an eye for detail, ensuring every piece of content is clear, engaging, and grammatically perfect." ;
+    :promptContext "Agent config: review_agent from config/agents.yaml" ;
+    :promptOutputIndicator "A polished, error-free job posting with feedback and final approval for publishing." .
+
+#################################################################
+# Tools
+#################################################################
+
+:WebsiteSearch_Tool rdf:type :Tool ;
+    dcterms:title "WebsiteSearchTool (WebsiteSearchTool wrapper from crewai_tools)" ;
+    dcterms:description "A tool used to search web resources for company information." ;
+    :hasToolConfig :WebsiteSearch_Tool_Config .
+
+:WebsiteSearch_Tool_Config rdf:type :Config ;
+    :configKey "tool_name" ;
+    :configValue "WebsiteSearchTool" .
+
+:SerperDev_Tool rdf:type :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "A tool to perform web search/API lookups via Serper.dev." ;
+    :hasToolConfig :SerperDev_Tool_Config .
+
+:SerperDev_Tool_Config rdf:type :Config ;
+    :configKey "tool_name" ;
+    :configValue "SerperDevTool" .
+
+:FileRead_Tool rdf:type :Tool ;
+    dcterms:title "FileReadTool" ;
+    dcterms:description "A tool to read local files (job_description_example.md) used by writer and review agents." ;
+    :hasToolConfig :FileRead_Tool_Config_Path , :FileRead_Tool_Config_Desc ;
+    :resourceUsage :JobDescription_Example_Instance .
+
+:FileRead_Tool_Config_Path rdf:type :Config ;
+    :configKey "file_path" ;
+    :configValue "job_description_example.md" .
+
+:FileRead_Tool_Config_Desc rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "A tool to read the job description example file." .
+
+#################################################################
+# Resources / Files
+#################################################################
+
+:JobDescription_Example_Instance rdf:type beam:Instance ;
+    dcterms:title "job_description_example.md" ;
+    dcterms:description """# Amazing Job Description Example
+
+Company Overview: At InnovateTech, we're at the forefront of digital transformation, leveraging cutting-edge technologies to create impactful solutions. Our culture thrives on innovation, collaboration, and a commitment to excellence.
+
+Job Title: Senior Software Engineer
+Location: Remote - Global Team
+Job Summary: Lead development of scalable software solutions.
+Responsibilities: Design, develop, implement, lead technical discussions, mentor junior engineers, collaborate with stakeholders.
+Requirements: Bachelor's degree in Computer Science, 5+ years, proven track record, problem solving, communication.
+Benefits: Competitive salary and equity, health/dental/vision, unlimited PTO, remote flexibility, development stipends, wellness allowances.
+How to Apply: careers@innovatetech.com
+""" .
+
+#################################################################
+# Tasks and their Prompts and Outputs
+#################################################################
+
+:Research_Company_Culture_Task rdf:type :Task ;
+    dcterms:description "Analyze the provided company website and the hiring manager's company's domain {company_domain}, description {company_description}. Focus on understanding the company's culture, values, and mission. Identify unique selling points and specific projects or achievements highlighted on the site. Compile a report summarizing these insights, specifically how they can be leveraged in a job posting to attract the right candidates." ;
+    :performedByAgent :Research_Agent ;
+    :taskPrompt :Research_Company_Culture_Prompt .
+
+:Research_Company_Culture_Prompt rdf:type :Prompt ;
+    :promptInstruction "Task: Analyze the provided company website and given company_description to extract culture, values, mission, unique selling points, and projects. Inputs: {company_domain}, {company_description}." ;
+    :promptOutputIndicator "A comprehensive report detailing the company's culture, values, mission, and suggestions for incorporating insights into a job posting." .
+
+:Research_Role_Requirements_Task rdf:type :Task ;
+    dcterms:description "Based on the hiring manager's needs: {hiring_needs}, identify key skills, experiences, and qualities for the ideal candidate. Consider company's projects, competitive landscape, and industry trends. Prepare recommended job requirements and qualifications." ;
+    :performedByAgent :Research_Agent ;
+    :taskPrompt :Research_Role_Requirements_Prompt .
+
+:Research_Role_Requirements_Prompt rdf:type :Prompt ;
+    :promptInstruction "Task: Identify key skills, experiences, and qualities for the role given hiring_needs. Inputs: {hiring_needs}, {company_description}, {company_domain}." ;
+    :promptOutputIndicator "A structured JSON-like output matching the ResearchRoleRequirements model: {skills: [...], experience: [...], qualities: [...]}." .
+
+# The Pydantic output model (ResearchRoleRequirements) is preserved in the promptOutputIndicator
+:Research_Role_Requirements_Model rdf:type :Config ;
+    :configKey "output_model" ;
+    :configValue "ResearchRoleRequirements: {skills: List[str], experience: List[str], qualities: List[str]}" .
+
+:Draft_Job_Posting_Task rdf:type :Task ;
+    dcterms:description "Draft a job posting for the role described by the hiring manager: {hiring_needs}. Use insights on {company_description} to create introduction, role description, responsibilities, required skills, qualifications, and incorporate specific benefits: {specific_benefits}." ;
+    :performedByAgent :Writer_Agent ;
+    :taskPrompt :Draft_Job_Posting_Prompt .
+
+:Draft_Job_Posting_Prompt rdf:type :Prompt ;
+    :promptInstruction "Task: Draft a job posting using research outputs and inputs: {hiring_needs}, {company_description}, {specific_benefits}. Create a compelling intro, role description, responsibilities, requirements, and benefits." ;
+    :promptOutputIndicator "A detailed, engaging job posting formatted for publishing (markdown recommended)." .
+
+:Review_and_Edit_Job_Posting_Task rdf:type :Task ;
+    dcterms:description "Review the draft job posting for the role {hiring_needs}. Check clarity, engagement, grammatical accuracy, alignment with company values. Edit and refine content, provide feedback for revisions, and format in markdown." ;
+    :performedByAgent :Review_Agent ;
+    :taskPrompt :Review_and_Edit_Job_Posting_Prompt .
+
+:Review_and_Edit_Job_Posting_Prompt rdf:type :Prompt ;
+    :promptInstruction "Task: Review and edit the draft job posting. Inputs: draft job posting produced by Draft_Job_Posting_Task, original company insights." ;
+    :promptOutputIndicator "A polished, error-free job posting with suggested edits and final approval. Formatted in markdown." .
+
+:Industry_Analysis_Task rdf:type :Task ;
+    dcterms:description "Conduct an in-depth analysis of the industry related to the company's domain {company_domain}. Investigate trends, challenges, and opportunities. Assess how these factors impact the role and how the company's position can be leveraged to attract candidates." ;
+    :performedByAgent :Research_Agent ;
+    :taskPrompt :Industry_Analysis_Prompt .
+
+:Industry_Analysis_Prompt rdf:type :Prompt ;
+    :promptInstruction "Task: Produce an industry analysis for {company_domain} considering market reports, recent developments, and expert opinions. Inputs: {company_domain}, {company_description}." ;
+    :promptOutputIndicator "A detailed analysis report identifying trends, challenges, opportunities, and strategic recommendations for positioning the role." .
+
+#################################################################
+# Workflow Pattern and Steps (sequential process)
+#################################################################
+
+:JobPosting_WorkflowPattern rdf:type :WorkflowPattern ;
+    :hasWorkflowStep :Step_1_Research_Culture ,
+                     :Step_2_Research_Role_Requirements ,
+                     :Step_3_Industry_Analysis ,
+                     :Step_4_Draft_Job_Posting ,
+                     :Step_5_Review_and_Edit .
+
+:Step_1_Research_Culture rdf:type :StartStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Research_Company_Culture_Task ;
+    :nextStep :Step_2_Research_Role_Requirements .
+
+:Step_2_Research_Role_Requirements rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Research_Role_Requirements_Task ;
+    :nextStep :Step_3_Industry_Analysis .
+
+:Step_3_Industry_Analysis rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Industry_Analysis_Task ;
+    :nextStep :Step_4_Draft_Job_Posting .
+
+:Step_4_Draft_Job_Posting rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Draft_Job_Posting_Task ;
+    :nextStep :Step_5_Review_and_Edit .
+
+:Step_5_Review_and_Edit rdf:type :EndStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Review_and_Edit_Job_Posting_Task .
+
+#################################################################
+# Links between Workflow Pattern and Team (already linked)
+#################################################################
+
+:JobPostingCrew :hasWorkflowPattern :JobPosting_WorkflowPattern .
+
+#################################################################
+# Additional provenance / process metadata (connections)
+#################################################################
+
+# Link tasks to produced resources optionally (examples)
+:Draft_Job_Posting_Task :producedResource :Draft_JobPosting_Output .
+:Draft_JobPosting_Output rdf:type beam:Instance ;
+    dcterms:title "draft_job_posting.md" ;
+    dcterms:description "Output produced by Draft_Job_Posting_Task (a draft job posting)." .
+
+# All agents reference knowledgebase/memory optionally (not required, but connected)
+:Crew_KnowledgeBase rdf:type :KnowledgeBase ;
+    dcterms:description "Aggregated knowledge collected by Research_Agent during web scraping and analysis." .
+
+:Research_Agent :hasKnowledge :Crew_KnowledgeBase .
+:Writer_Agent :hasKnowledge :Crew_KnowledgeBase .
+:Review_Agent :hasKnowledge :Crew_KnowledgeBase .
+
+#################################################################
+# End of instance data
+#################################################################

@@ -1,0 +1,337 @@
+# Execution time: 68.98 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+# Issues / Assumptions:
+# - Assumption: The interactive "customer_proxy_agent" in the source acts as a human participant; it is represented as a :HumanAgent and also included as a member of the :Team to reflect "every agent" membership despite rdfs:range of :hasAgentMember being :LLMAgent in the schema (this is an instance-level linking choice to reflect the source code). No new classes or properties were introduced.
+# - All prompts (system messages and chat messages) from both Chinese and English variations present in the source have been preserved as distinct :Prompt individuals to maintain fidelity.
+# - The "autogen/ConversableAgent framework" is represented as a :Tool instance to capture the implicit tooling used by agents; this is modeled as an instance (not a new class/property).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+#################################################################
+# Instances describing the "L2_Sequential_Chats_and_Customer_Onboarding" solution
+#################################################################
+
+### Language model instance used by agents
+:gpt_3_5_turbo rdf:type :LanguageModel ;
+               rdfs:label "gpt-3.5-turbo" ;
+               <http://purl.org/dc/terms/description> "Configuration model referenced in llm_config={\"model\": \"gpt-3.5-turbo\"}." .
+
+### Tool representing the autogen ConversableAgent framework
+:tool_autogen_conversable rdf:type :Tool ;
+                          rdfs:label "autogen ConversableAgent framework" ;
+                          :hasCapability :cap_conversable ;
+                          :hasToolConfig :config_tool_autogen_framework .
+
+:cap_conversable rdf:type :Capability ;
+                 rdfs:label "conversable agent runtime" ;
+                 <http://purl.org/dc/terms/description> "Capability representing the framework runtime for ConversableAgent instances." .
+
+:config_tool_autogen_framework rdf:type :Config ;
+                              :configKey "framework" ;
+                              :configValue "autogen ConversableAgent" .
+
+#################################################################
+# Agents
+#################################################################
+
+:agent_onboarding_personal_information rdf:type :LLMAgent ;
+    rdfs:label "Onboarding Personal Information Agent" ;
+    :agentID "Onboarding Personal Information Agent" ;
+    :agentRole "personal_info_collector" ;
+    :agentPrompt :prompt_onboarding_personal_information_sys_cn ,
+                 :prompt_onboarding_personal_information_sys_en ;
+    :useLanguageModel :gpt_3_5_turbo ;
+    :hasAgentConfig :config_onboarding_personal_model ,
+                    :config_onboarding_personal_codeexec ,
+                    :config_onboarding_personal_humaninput ;
+    :agentToolUsage :tool_autogen_conversable .
+
+:agent_onboarding_topic_preference rdf:type :LLMAgent ;
+    rdfs:label "Onboarding Topic preference Agent" ;
+    :agentID "Onboarding Topic preference Agent" ;
+    :agentRole "topic_preference_collector" ;
+    :agentPrompt :prompt_onboarding_topic_preference_sys_cn ,
+                 :prompt_onboarding_topic_preference_sys_en ;
+    :useLanguageModel :gpt_3_5_turbo ;
+    :hasAgentConfig :config_onboarding_topic_model ,
+                    :config_onboarding_topic_codeexec ,
+                    :config_onboarding_topic_humaninput ;
+    :agentToolUsage :tool_autogen_conversable .
+
+:agent_customer_engagement rdf:type :LLMAgent ;
+    rdfs:label "Customer Engagement Agent" ;
+    :agentID "Customer Engagement Agent" ;
+    :agentRole "engagement_provider" ;
+    :agentPrompt :prompt_customer_engagement_sys_cn ,
+                 :prompt_customer_engagement_sys_en ;
+    :useLanguageModel :gpt_3_5_turbo ;
+    :hasAgentConfig :config_customer_engagement_model ,
+                    :config_customer_engagement_codeexec ,
+                    :config_customer_engagement_humaninput ;
+    :agentToolUsage :tool_autogen_conversable ;
+    :hasAgentConfig :config_customer_engagement_termination_rule .
+
+### Human proxy agent (represents real customer input)
+:agent_customer_proxy rdf:type :HumanAgent ;
+    rdfs:label "customer_proxy_agent" ;
+    :agentID "customer_proxy_agent" ;
+    :agentRole "real_customer_proxy" ;
+    :hasAgentConfig :config_customer_proxy_humaninput .
+
+#################################################################
+# Configurations (each :Config has both configKey and configValue)
+#################################################################
+
+:config_onboarding_personal_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_onboarding_personal_codeexec rdf:type :Config ;
+    :configKey "code_execution_config" ;
+    :configValue "False" .
+
+:config_onboarding_personal_humaninput rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:config_onboarding_topic_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_onboarding_topic_codeexec rdf:type :Config ;
+    :configKey "code_execution_config" ;
+    :configValue "False" .
+
+:config_onboarding_topic_humaninput rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:config_customer_engagement_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_customer_engagement_codeexec rdf:type :Config ;
+    :configKey "code_execution_config" ;
+    :configValue "False" .
+
+:config_customer_engagement_humaninput rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:config_customer_engagement_termination_rule rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda msg: 'terminate' in msg.get('content').lower()" .
+
+:config_customer_proxy_humaninput rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "ALWAYS" .
+
+:config_onboarding_personal_model_en rdf:type :Config ;
+    :configKey "note" ;
+    :configValue "English/Chinese prompts both preserved for fidelity." .
+
+#################################################################
+# Prompts (system messages and task/chat messages preserved verbatim)
+#################################################################
+
+### System messages (Chinese and English variants where present)
+:prompt_onboarding_personal_information_sys_cn rdf:type :Prompt ;
+    :promptInstruction """你是一名乐于助人的客户入职代理人，
+    你要帮助新客户顺利开始使用我们的产品。
+    你的任务是分步集客户的姓名和家庭住址这两个个人信息。
+    不要询问其他信息。
+    收集完所有信息后，返回 "TERMINATE"。""" ;
+    :promptContext "system_message (Chinese)" .
+
+:prompt_onboarding_personal_information_sys_en rdf:type :Prompt ;
+    :promptInstruction """You are a helpful customer onboarding agent,
+    you are here to help new customers get started with our product.
+    Your job is to gather customer's name and location.
+    Do not ask for other information. Return 'TERMINATE'
+    when you have gathered all the information.""" ;
+    :promptContext "system_message (English fallback)" .
+
+:prompt_onboarding_topic_preference_sys_cn rdf:type :Prompt ;
+    :promptInstruction """你是一名乐于助人的客户入职代理人，
+    你要帮助新客户顺利开始使用我们的产品。
+    你的任务是收集客户对新闻主题的偏好。
+    不要询问其他信息。
+    收集完所有信息后，请返回 "TERMINATE"。""" ;
+    :promptContext "system_message (Chinese)" .
+
+:prompt_onboarding_topic_preference_sys_en rdf:type :Prompt ;
+    :promptInstruction """You are a helpful customer onboarding agent,
+    you are here to help new customers get started with our product.
+    Your job is to gather customer's preferences on news topics.
+    Do not ask for other information.
+    Return 'TERMINATE' when you have gathered all the information.""" ;
+    :promptContext "system_message (English fallback)" .
+
+:prompt_customer_engagement_sys_cn rdf:type :Prompt ;
+    :promptInstruction """你是一位乐于助人的客户服务人员，
+    你要根据客户的个人信息和主题偏好为客户提供乐趣。
+    这可以包括有趣的事实、笑话或有意思的故事。
+    必须要具有吸引力和趣味性！
+    完成后返回'TERMINATE'. """ ;
+    :promptContext "system_message (Chinese)" ;
+    :promptOutputIndicator "TERMINATE" .
+
+:prompt_customer_engagement_sys_en rdf:type :Prompt ;
+    :promptInstruction """You are a helpful customer service agent
+    here to provide fun for the customer based on the user's
+    personal information and topic preferences.
+    This could include fun facts, jokes, or interesting stories.
+    Make sure to make it engaging and fun!
+    Return 'TERMINATE' when you are done.""" ;
+    :promptContext "system_message (English fallback)" ;
+    :promptOutputIndicator "TERMINATE" .
+
+### Task / chat messages used as prompts
+:prompt_task_collect_personal_info_cn rdf:type :Prompt ;
+    :promptInstruction "您好，我是来帮助您开始使用我们的产品的。能告诉我您的姓名和家庭住址吗？" ;
+    :promptContext "chat message (Chinese)" .
+
+:prompt_task_collect_personal_info_en rdf:type :Prompt ;
+    :promptInstruction "Hello, I'm here to help you get started with our product. Could you tell me your name and location?" ;
+    :promptContext "chat message (English)" ;
+    :promptInputData "{'name': '', 'location': ''}" ;
+    :promptOutputIndicator "TERMINATE" .
+
+:prompt_task_collect_topic_preference_cn rdf:type :Prompt ;
+    :promptInstruction "ok！能告诉我您对哪些主题感兴趣吗？" ;
+    :promptContext "chat message (Chinese)" .
+
+:prompt_task_collect_topic_preference_en rdf:type :Prompt ;
+    :promptInstruction "Great! Could you tell me what topics you are interested in reading about?" ;
+    :promptContext "chat message (English)" .
+
+:prompt_task_customer_engagement_cn rdf:type :Prompt ;
+    :promptInstruction "让我们找点有意思的东西来读吧。" ;
+    :promptContext "chat message (Chinese)" .
+
+:prompt_task_customer_engagement_en rdf:type :Prompt ;
+    :promptInstruction "Let's find something fun to read." ;
+    :promptContext "chat message (English)" .
+
+### Summary prompt used in first chat's summary_args
+:prompt_summary_first_chat rdf:type :Prompt ;
+    :promptInstruction "仅以 JSON 对象形式返回客户信息: {'姓名': '', '家庭住址': ''}" ;
+    :promptContext "summary_prompt (Chinese)" .
+
+:prompt_summary_first_chat_en rdf:type :Prompt ;
+    :promptInstruction "Return the customer information into as JSON object only: {'name': '', 'location': ''}" ;
+    :promptContext "summary_prompt (English)" .
+
+#################################################################
+# Tasks and produced resources
+#################################################################
+
+:task_collect_personal_info rdf:type :Task ;
+    rdfs:label "Collect Personal Information" ;
+    :performedByAgent :agent_onboarding_personal_information ;
+    :taskPrompt :prompt_task_collect_personal_info_cn ,
+                :prompt_task_collect_personal_info_en ;
+    :producedResource :kb_customer_profile ;
+    <http://purl.org/dc/terms/description> "Task that collects customer's name and location as specified in the agent system_message." .
+
+:task_collect_topic_preference rdf:type :Task ;
+    rdfs:label "Collect Topic Preference" ;
+    :performedByAgent :agent_onboarding_topic_preference ;
+    :taskPrompt :prompt_task_collect_topic_preference_cn ,
+                :prompt_task_collect_topic_preference_en ;
+    :producedResource :kb_customer_profile ;
+    <http://purl.org/dc/terms/description> "Task that collects customer's topic preferences." .
+
+:task_provide_engagement rdf:type :Task ;
+    rdfs:label "Provide Customer Engagement" ;
+    :performedByAgent :agent_customer_engagement ;
+    :taskPrompt :prompt_task_customer_engagement_cn ,
+                :prompt_task_customer_engagement_en ;
+    :requiresResource :kb_customer_profile ;
+    <http://purl.org/dc/terms/description> "Task that produces engaging content (fun facts, jokes or stories) based on customer's personal info and topic preferences." .
+
+#################################################################
+# Knowledge base / produced resource (customer profile)
+#################################################################
+
+:kb_customer_profile rdf:type :KnowledgeBase ;
+    rdfs:label "customer_profile_kb" ;
+    <http://purl.org/dc/terms/description> "Aggregated customer profile containing collected name, location, and topic preferences from onboarding tasks." .
+
+### Link knowledge to agent that uses it
+:agent_customer_engagement :hasKnowledge :kb_customer_profile .
+
+#################################################################
+# Team and assignment
+#################################################################
+
+:OnboardingTeam rdf:type :Team ;
+    rdfs:label "Onboarding Team" ;
+    :hasAgentMember :agent_onboarding_personal_information ,
+                    :agent_onboarding_topic_preference ,
+                    :agent_customer_engagement ,
+                    :agent_customer_proxy ;
+    :hasWorkflowPattern :OnboardingWorkflowPattern ;
+    <http://purl.org/dc/terms/description> "Team grouping agents involved in the customer onboarding and engagement workflow." .
+
+#################################################################
+# Workflow pattern and steps (sequential chain)
+#################################################################
+
+:OnboardingWorkflowPattern rdf:type :WorkflowPattern ;
+    rdfs:label "Onboarding Sequential Chat Workflow" ;
+    :hasWorkflowStep :step_onboarding_1_start ,
+                     :step_onboarding_2_collect_topic ,
+                     :step_onboarding_3_end .
+
+:step_onboarding_1_start rdf:type :StartStep ;
+    rdfs:label "Start: Collect Personal Info" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_collect_personal_info ;
+    :nextStep :step_onboarding_2_collect_topic .
+
+:step_onboarding_2_collect_topic rdf:type :WorkflowStep ;
+    rdfs:label "Step: Collect Topic Preference" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_collect_topic_preference ;
+    :nextStep :step_onboarding_3_end .
+
+:step_onboarding_3_end rdf:type :EndStep ;
+    rdfs:label "End: Provide Engagement" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_provide_engagement .
+
+#################################################################
+# Additional linkage and metadata preserving runtime settings
+#################################################################
+
+# The three LLMAgents reference the language model used
+:agent_onboarding_personal_information :useLanguageModel :gpt_3_5_turbo .
+:agent_onboarding_topic_preference :useLanguageModel :gpt_3_5_turbo .
+:agent_customer_engagement :useLanguageModel :gpt_3_5_turbo .
+
+# Agents use the autogen ConversableAgent framework tool
+:agent_onboarding_personal_information :agentToolUsage :tool_autogen_conversable .
+:agent_onboarding_topic_preference :agentToolUsage :tool_autogen_conversable .
+:agent_customer_engagement :agentToolUsage :tool_autogen_conversable .
+
+# Prompt relations: link task prompts to tasks explicitly (also above via :taskPrompt)
+:task_collect_personal_info :taskPrompt :prompt_task_collect_personal_info_cn .
+:task_collect_topic_preference :taskPrompt :prompt_task_collect_topic_preference_cn .
+:task_provide_engagement :taskPrompt :prompt_task_customer_engagement_en .
+
+# No duplicate IRIs; all individuals are referenced at least once in connections above.
+
+# End of instance population for the onboarding solution.

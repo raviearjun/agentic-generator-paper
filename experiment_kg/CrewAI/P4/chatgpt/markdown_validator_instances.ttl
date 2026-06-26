@@ -1,0 +1,197 @@
+# Execution time: 37.98 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+
+# Issues / Assumptions:
+# - No issues detected. Assumed the Crew is represented as a single :Team individual named MarkDownValidatorCrew and that the single task covers all workflow steps. Environment variables are represented as config values referencing their env variable names rather than secret values.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances for "AI Crew for Reviewing Markdown Syntax"
+#################################################################
+
+### Team / Crew
+:MarkDownValidatorCrew rdf:type :Team ;
+    rdfs:label "MarkDownValidatorCrew" ;
+    :hasAgentMember :RequirementsManagerAgent ;
+    :hasWorkflowPattern :MarkDownValidationPattern ;
+    :hasSystemConfig :teamConfig_process_sequential .
+
+:teamConfig_process_sequential rdf:type :Config ;
+    :configKey "process" ;
+    :configValue "sequential" .
+
+### Agent (LLM Agent)
+:RequirementsManagerAgent rdf:type :LLMAgent ;
+    :agentID "Requirements_Manager" ;
+    :agentRole "Requirements Manager" ;
+    :agentPrompt :RequirementsManagerPrompt ;
+    :hasAgentConfig :agentConfig_model_name,
+                    :agentConfig_temperature,
+                    :agentConfig_top_p,
+                    :agentConfig_openai_api_base,
+                    :agentConfig_openai_api_key_env ;
+    :agentToolUsage :markdown_validation_tool_Instance ;
+    :useLanguageModel :ChatOpenAIModel ;
+    rdfs:comment "Agent defined in config/agents.yaml and instantiated in crew.py. Responsible for driving the syntax_review_task." .
+
+### Agent Prompt (captures role, goal, backstory)
+:RequirementsManagerPrompt rdf:type :Prompt ;
+    :promptInstruction """Role: Requirements Manager
+Goal: Provide a detailed list of the markdown linting results.
+Give a summary with actionable tasks to address the validation results.
+Write your response as if you were handing it to a developer to fix the issues.
+DO NOT provide examples of how to fix the issues or recommend other tools to use.
+Backstory: You are an expert business analyst and software QA specialist. You provide high quality, thorough, insightful, and actionable feedback via a detailed list of changes and actionable tasks.
+""" ;
+    :promptContext "Agent configuration prompt from config/agents.yaml" .
+
+### Language Model used by the agent (represents ChatOpenAI configuration)
+:ChatOpenAIModel rdf:type :LanguageModel ;
+    rdfs:label "ChatOpenAI (configured)" ;
+    :hasConfig :agentConfig_model_name,
+                :agentConfig_temperature,
+                :agentConfig_top_p,
+                :agentConfig_openai_api_base,
+                :agentConfig_openai_api_key_env ;
+    rdfs:comment "Represents the LLM instance used by the agent (parameters mirror initialization in main.py)." .
+
+:agentConfig_model_name rdf:type :Config ;
+    :configKey "model_name" ;
+    :configValue "gpt-4o-mini" .
+
+:agentConfig_temperature rdf:type :Config ;
+    :configKey "temperature" ;
+    :configValue "0.1" .
+
+:agentConfig_top_p rdf:type :Config ;
+    :configKey "top_p" ;
+    :configValue "0.3" .
+
+:agentConfig_openai_api_base rdf:type :Config ;
+    :configKey "openai_api_base" ;
+    :configValue "https://api.openai.com/v1" .
+
+:agentConfig_openai_api_key_env rdf:type :Config ;
+    :configKey "openai_api_key_env" ;
+    :configValue "OPENAI_API_KEY (from environment variable)" .
+
+### Tool: markdown_validation_tool
+:markdown_validation_tool_Instance rdf:type :Tool ;
+    rdfs:label "markdown_validation_tool (langchain tool wrapping PyMarkdownApi)" ;
+    :hasToolConfig :toolConfig_tool_impl,
+                   :toolConfig_pymarkdown_version ;
+    rdfs:comment "Tool defined in src/markdown_validator/tools/markdownTools.py implemented using PyMarkdownApi and exposed as a langchain tool." .
+
+:toolConfig_tool_impl rdf:type :Config ;
+    :configKey "implementation" ;
+    :configValue "langchain tool wrapper function markdown_validation_tool (calls PyMarkdownApi.scan_path)" .
+
+:toolConfig_pymarkdown_version rdf:type :Config ;
+    :configKey "pymarkdown_package" ;
+    :configValue "pymarkdown.api.PyMarkdownApi (package ~ pymarkdownlnt==0.9.15 as declared in pyproject.toml)" .
+
+### Task
+:syntax_review_task rdf:type :Task ;
+    :description """Use the markdown_validation_tool to review the file(s) at this path: {filename}.
+Be sure to pass only the file path to the markdown_validation_tool.
+Use the following format to call the markdown_validation_tool:
+Do I need to use a tool? Yes
+Action: markdown_validation_tool
+Action Input: {filename}
+
+Get the validation results from the tool and then summarize it into a list of changes
+the developer should make to the document.
+DO NOT recommend ways to update the document.
+DO NOT change any of the content of the document or add content to it.
+It is critical to your task to only respond with a list of changes.
+
+If you already know the answer or if you do not need to use a tool,
+return it as your Final Answer.
+""" ;
+    :taskPrompt :syntaxReviewTaskPrompt ;
+    :performedByAgent :RequirementsManagerAgent ;
+    :producedResource <http://www.w3id.org/beam/core#Resource/markdown_validation_report> ;
+    rdfs:comment "Task defined in config/tasks.yaml and instantiated in crew.py as syntax_review_task." .
+
+:syntaxReviewTaskPrompt rdf:type :Prompt ;
+    :promptInstruction """Task Instruction:
+Call the markdown_validation_tool with the file path only (e.g., README.md).
+Format to call tool:
+Do I need to use a tool? Yes
+Action: markdown_validation_tool
+Action Input: {filename}
+After obtaining results from the tool, summarize as a list of changes the developer should make. Only return a list of changes as the final answer.
+""" ;
+    :promptContext "Task prompt from config/tasks.yaml" .
+
+### Produced / Required Resources
+<http://www.w3id.org/beam/core#Resource/README_md> rdf:type <http://www.w3id.org/beam/core#Resource> ;
+    rdfs:label "README.md (input file)" ;
+    rdfs:comment "An input markdown file passed as filename argument to main.py (examples in repository include README.md). Represented as a resource in the workflow." .
+
+<http://www.w3id.org/beam/core#Resource/markdown_validation_report> rdf:type <http://www.w3id.org/beam/core#Resource> ;
+    rdfs:label "Markdown validation results (tool output)" ;
+    rdfs:comment "Structured output produced by markdown_validation_tool.format_scan_result; includes list of scan failures or success message." .
+
+### Workflow Pattern and Steps
+:MarkDownValidationPattern rdf:type :WorkflowPattern ;
+    rdfs:label "MarkDown Validation Pattern" ;
+    :hasWorkflowStep :md_step_start,
+                     :md_step_analyze,
+                     :md_step_end ;
+    rdfs:comment "A simple sequential workflow pattern representing the crew process (start -> analyze -> end)." .
+
+:md_step_start rdf:type :StartStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :syntax_review_task ;
+    :nextStep :md_step_analyze ;
+    rdfs:label "Start: Request file and kickoff analysis" ;
+    rdfs:comment "Initial step requesting filename and starting the syntax review task." .
+
+:md_step_analyze rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :syntax_review_task ;
+    :nextStep :md_step_end ;
+    rdfs:label "Analyze: Agent calls tool and summarizes results" ;
+    rdfs:comment "Core analysis step where the agent uses the markdown_validation_tool to scan the file and summarizes the detected issues." .
+
+:md_step_end rdf:type :EndStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :syntax_review_task ;
+    rdfs:label "End: Produce final recommendations" ;
+    rdfs:comment "Final step where the agent returns the list of changes/recommendations; workflow completes." .
+
+#################################################################
+# Links/Usages tying components together (ensures no orphaned nodes)
+#################################################################
+
+# Team -> WorkflowPattern already declared (:MarkDownValidatorCrew :hasWorkflowPattern :MarkDownValidationPattern)
+# Agent membership already declared (:MarkDownValidatorCrew :hasAgentMember :RequirementsManagerAgent)
+# Agent -> Tool usage
+:RequirementsManagerAgent :agentToolUsage :markdown_validation_tool_Instance .
+
+# Task -> Agent performance
+:syntax_review_task :performedByAgent :RequirementsManagerAgent .
+
+# Tool -> Config already declared
+:markdown_validation_tool_Instance :hasToolConfig :toolConfig_tool_impl, :toolConfig_pymarkdown_version .
+
+# LanguageModel configs linked
+:ChatOpenAIModel :hasConfig :agentConfig_model_name, :agentConfig_temperature, :agentConfig_top_p, :agentConfig_openai_api_base, :agentConfig_openai_api_key_env .
+
+# Task produced resource (already declared)
+:syntax_review_task :producedResource <http://www.w3id.org/beam/core#Resource/markdown_validation_report> .

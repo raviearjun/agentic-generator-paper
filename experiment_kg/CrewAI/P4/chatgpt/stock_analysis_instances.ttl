@@ -1,0 +1,333 @@
+# Execution time: 64.56 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No issues detected. Assumptions:
+#   * The Crew is represented as a :Team instance named StockAnalysisCrew.
+#   * The two separate definitions of "financial_analysis" in source were modeled as a single Task instance reused by the primary financial agent (financial_analyst_agent) and one financial agent alias to avoid duplicate task individuals.
+#   * SEC tools instantiated with and without a stock_name were modeled as separate Tool individuals (AMZN-specific and generic) with Config entries capturing stock_name when present.
+#   * Agent prompt content includes role, goal, and backstory from agents.yaml. Task prompts include description and expected_output from tasks.yaml.
+#   * The sequential Process is modeled as a WorkflowPattern with ordered WorkflowStep instances (StartStep, intermediate WorkflowSteps, EndStep).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Team / Crew
+#################################################################
+
+:StockAnalysisCrew rdf:type :Team ;
+    rdfs:label "Stock Analysis Crew" ;
+    :hasAgentMember :agent_financial_1 , :agent_research_1 , :agent_financial_analyst_1 , :agent_investment_advisor_1 ;
+    :hasWorkflowPattern :StockAnalysisWorkflowPattern ;
+    :hasSystemConfig :Config_system_project .
+
+:Config_system_project rdf:type :Config ;
+    :configKey "project" ;
+    :configValue "stock_analysis" ;
+    dct:description "Project-level system configuration captured from pyproject.toml and project structure." .
+
+#################################################################
+# Language Model used by agents
+#################################################################
+
+:llm_ollama_llama3_1 rdf:type :LanguageModel ;
+    rdfs:label "Ollama llama3.1" ;
+    dct:description "Ollama model instance created in source code: Ollama(model=\"llama3.1\")." .
+
+#################################################################
+# Config files shared
+#################################################################
+
+:Config_agents_file rdf:type :Config ;
+    :configKey "agents_config_file" ;
+    :configValue "config/agents.yaml" ;
+    dct:description "Path to agents configuration YAML used by the CrewBase class." .
+
+:Config_tasks_file rdf:type :Config ;
+    :configKey "tasks_config_file" ;
+    :configValue "config/tasks.yaml" ;
+    dct:description "Path to tasks configuration YAML used by the CrewBase class." .
+
+#################################################################
+# Agents (LLMAgent instances)
+#################################################################
+
+:agent_financial_1 rdf:type :LLMAgent ;
+    rdfs:label "financial_agent (The Best Financial Analyst)" ;
+    :agentID "financial_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :hasAgentConfig :Config_agents_file ;
+    :useLanguageModel :llm_ollama_llama3_1 ;
+    :agentPrompt :prompt_financial_1 ;
+    :hasAgentGoal :goal_financial_analyst ;
+    :agentToolUsage :tool_scrape_website , :tool_website_search , :tool_calculator , :tool_sec10q_amzn , :tool_sec10k_amzn ;
+    dct:description "Agent returned by StockAnalysisCrew.financial_agent() in crew.py. Instantiated with llm=Ollama(model='llama3.1') and tools: ScrapeWebsiteTool, WebsiteSearchTool, CalculatorTool, SEC10QTool('AMZN'), SEC10KTool('AMZN')." .
+
+:agent_research_1 rdf:type :LLMAgent ;
+    rdfs:label "research_analyst_agent (Staff Research Analyst)" ;
+    :agentID "research_analyst_agent" ;
+    :agentRole "Staff Research Analyst" ;
+    :hasAgentConfig :Config_agents_file ;
+    :useLanguageModel :llm_ollama_llama3_1 ;
+    :agentPrompt :prompt_research_1 ;
+    :hasAgentGoal :goal_research_analyst ;
+    :agentToolUsage :tool_scrape_website , :tool_sec10q_amzn , :tool_sec10k_amzn ;
+    dct:description "Agent returned by StockAnalysisCrew.research_analyst_agent() in crew.py. Instantiated with llm=Ollama(model='llama3.1') and tools: ScrapeWebsiteTool, SEC10QTool('AMZN'), SEC10KTool('AMZN'). WebsiteSearchTool is commented out in source." .
+
+:agent_financial_analyst_1 rdf:type :LLMAgent ;
+    rdfs:label "financial_analyst_agent (The Best Financial Analyst - alias)" ;
+    :agentID "financial_analyst_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :hasAgentConfig :Config_agents_file ;
+    :useLanguageModel :llm_ollama_llama3_1 ;
+    :agentPrompt :prompt_financial_analyst_1 ;
+    :hasAgentGoal :goal_financial_analyst ;
+    :agentToolUsage :tool_scrape_website , :tool_website_search , :tool_calculator , :tool_sec10q_generic , :tool_sec10k_generic ;
+    dct:description "Agent returned by StockAnalysisCrew.financial_analyst_agent() in crew.py. Instantiated with llm=Ollama(model='llama3.1') and tools: ScrapeWebsiteTool, WebsiteSearchTool, CalculatorTool, SEC10QTool(), SEC10KTool() (generic instances without stock_name)." .
+
+:agent_investment_advisor_1 rdf:type :LLMAgent ;
+    rdfs:label "investment_advisor_agent (Private Investment Advisor)" ;
+    :agentID "investment_advisor_agent" ;
+    :agentRole "Private Investment Advisor" ;
+    :hasAgentConfig :Config_agents_file ;
+    :useLanguageModel :llm_ollama_llama3_1 ;
+    :agentPrompt :prompt_investment_advisor_1 ;
+    :hasAgentGoal :goal_investment_advisor ;
+    :agentToolUsage :tool_scrape_website , :tool_website_search , :tool_calculator ;
+    dct:description "Agent returned by StockAnalysisCrew.investment_advisor_agent() in crew.py. Tools: ScrapeWebsiteTool, WebsiteSearchTool, CalculatorTool." .
+
+#################################################################
+# Agent Goals (Goal individuals)
+#################################################################
+
+:goal_financial_analyst rdf:type :Goal ;
+    rdfs:label "Financial Analyst Goal" ;
+    dct:description "Impress all customers with your financial data and market trends analysis" .
+
+:goal_research_analyst rdf:type :Goal ;
+    rdfs:label "Research Analyst Goal" ;
+    dct:description "Being the best at gathering, interpreting data and amazing your customer with it" .
+
+:goal_investment_advisor rdf:type :Goal ;
+    rdfs:label "Investment Advisor Goal" ;
+    dct:description "Impress your customers with full analyses over stocks and complete investment recommendations" .
+
+#################################################################
+# Prompts for Agents (agentPrompt)
+#################################################################
+
+:prompt_financial_1 rdf:type :Prompt ;
+    rdfs:label "Prompt for The Best Financial Analyst (financial_agent)" ;
+    :promptInstruction "role: The Best Financial Analyst\ngoal: Impress all customers with your financial data and market trends analysis\nbackstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." ;
+    :promptContext "Agent configuration loaded from config/agents.yaml" .
+
+:prompt_research_1 rdf:type :Prompt ;
+    rdfs:label "Prompt for Staff Research Analyst (research_analyst_agent)" ;
+    :promptInstruction "role: Staff Research Analyst\ngoal: Being the best at gathering, interpreting data and amazing your customer with it\nbackstory: Known as the BEST research analyst, you're skilled in sifting through news, company announcements, and market sentiments. Now you're working on a super important customer." ;
+    :promptContext "Agent configuration loaded from config/agents.yaml" .
+
+:prompt_financial_analyst_1 rdf:type :Prompt ;
+    rdfs:label "Prompt for The Best Financial Analyst (financial_analyst_agent)" ;
+    :promptInstruction "role: The Best Financial Analyst\ngoal: Impress all customers with your financial data and market trends analysis\nbackstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." ;
+    :promptContext "Agent configuration loaded from config/agents.yaml" .
+
+:prompt_investment_advisor_1 rdf:type :Prompt ;
+    rdfs:label "Prompt for Private Investment Advisor (investment_advisor_agent)" ;
+    :promptInstruction "role: Private Investment Advisor\ngoal: Impress your customers with full analyses over stocks and complete investment recommendations\nbackstory: You're the most experienced investment advisor and you combine various analytical insights to formulate strategic investment advice. You are now working for a super important customer you need to impress." ;
+    :promptContext "Agent configuration loaded from config/agents.yaml" .
+
+#################################################################
+# Tools
+#################################################################
+
+:tool_scrape_website rdf:type :Tool ;
+    rdfs:label "ScrapeWebsiteTool" ;
+    dct:description "ScrapeWebsiteTool() from crew.py imports; used to scrape and summarize website content. (Represented as a Tool individual.)" ;
+    :hasToolConfig :Config_tool_scrape_1 .
+
+:Config_tool_scrape_1 rdf:type :Config ;
+    :configKey "tool" ;
+    :configValue "ScrapeWebsiteTool" ;
+    dct:description "Placeholder config for ScrapeWebsiteTool instantiation." .
+
+:tool_website_search rdf:type :Tool ;
+    rdfs:label "WebsiteSearchTool" ;
+    dct:description "WebsiteSearchTool() from crew.py imports; used to search websites. (Represented as a Tool individual.)" ;
+    :hasToolConfig :Config_tool_website_search_1 .
+
+:Config_tool_website_search_1 rdf:type :Config ;
+    :configKey "tool" ;
+    :configValue "WebsiteSearchTool" ;
+    dct:description "Placeholder config for WebsiteSearchTool instantiation." .
+
+:tool_calculator rdf:type :Tool ;
+    rdfs:label "CalculatorTool" ;
+    dct:description "CalculatorTool from src/stock_analysis/tools/calculator_tool.py: safe arithmetic evaluation implementing allowed operators and validation. See source for details and error handling." ;
+    :hasCapability :capability_calculation ;
+    :hasToolConfig :Config_tool_calculator_1 .
+
+:capability_calculation rdf:type :Capability ;
+    rdfs:label "Calculation capability" ;
+    dct:description "Capability representing arithmetic calculations provided by CalculatorTool." .
+
+:Config_tool_calculator_1 rdf:type :Config ;
+    :configKey "tool" ;
+    :configValue "CalculatorTool" ;
+    dct:description "Placeholder config for CalculatorTool instantiation." .
+
+:tool_sec10q_amzn rdf:type :Tool ;
+    rdfs:label "SEC10QTool_AMZN" ;
+    dct:description "SEC10QTool instantiated with stock_name='AMZN' in crew.py. This tool fetches the latest 10-Q via SEC API, converts HTML to text, strips non-alphanumeric characters, and indexes content for semantic search (see src/stock_analysis/tools/sec_tools.py)." ;
+    :hasToolConfig :Config_tool_sec10q_amzn .
+
+:Config_tool_sec10q_amzn rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "AMZN" ;
+    dct:description "SEC10QTool was created with stock_name 'AMZN' in the source." .
+
+:tool_sec10k_amzn rdf:type :Tool ;
+    rdfs:label "SEC10KTool_AMZN" ;
+    dct:description "SEC10KTool instantiated with stock_name='AMZN' in crew.py. This tool fetches the latest 10-K via SEC API, converts HTML to text, strips non-alphanumeric characters, and indexes content for semantic search (see src/stock_analysis/tools/sec_tools.py)." ;
+    :hasToolConfig :Config_tool_sec10k_amzn .
+
+:Config_tool_sec10k_amzn rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "AMZN" ;
+    dct:description "SEC10KTool was created with stock_name 'AMZN' in the source." .
+
+:tool_sec10q_generic rdf:type :Tool ;
+    rdfs:label "SEC10QTool_Generic" ;
+    dct:description "SEC10QTool instantiated without a fixed stock_name in crew.py (used by financial_analyst_agent). When not given a stock_name at construction, the tool expects stock parameter at runtime." ;
+    :hasToolConfig :Config_tool_sec10q_generic .
+
+:Config_tool_sec10q_generic rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "" ;
+    dct:description "Generic SEC10QTool instance (no stock_name provided at construction)." .
+
+:tool_sec10k_generic rdf:type :Tool ;
+    rdfs:label "SEC10KTool_Generic" ;
+    dct:description "SEC10KTool instantiated without a fixed stock_name in crew.py (used by financial_analyst_agent). When not given a stock_name at construction, the tool expects stock parameter at runtime." ;
+    :hasToolConfig :Config_tool_sec10k_generic .
+
+:Config_tool_sec10k_generic rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "" ;
+    dct:description "Generic SEC10KTool instance (no stock_name provided at construction)." .
+
+#################################################################
+# Tasks (Task instances), Prompts for tasks, and Task Config linkage
+#################################################################
+
+:task_financial_analysis rdf:type :Task ;
+    rdfs:label "financial_analysis" ;
+    :performedByAgent :agent_financial_analyst_1 ;
+    :taskPrompt :prompt_task_financial_analysis ;
+    :hasConfig :Config_tasks_file ;
+    dct:description """Conduct a thorough analysis of {company_stock}'s stock financial health and market performance. This includes examining key financial metrics such as P/E ratio, EPS growth, revenue trends, and debt-to-equity ratio. Also, analyze the stock's performance in comparison to its industry peers and overall market trends.""" .
+
+:prompt_task_financial_analysis rdf:type :Prompt ;
+    rdfs:label "Prompt for financial_analysis task" ;
+    :promptInstruction """Conduct a thorough analysis of {company_stock}'s stock financial health and market performance. This includes examining key financial metrics such as P/E ratio, EPS growth, revenue trends, and debt-to-equity ratio. Also, analyze the stock's performance in comparison to its industry peers and overall market trends.""" ;
+    :promptOutputIndicator """The final report must expand on the summary provided but now including a clear assessment of the stock's financial standing, its strengths and weaknesses, and how it fares against its competitors in the current market scenario. Make sure to use the most recent data possible.""" .
+
+:task_research rdf:type :Task ;
+    rdfs:label "research" ;
+    :performedByAgent :agent_research_1 ;
+    :taskPrompt :prompt_task_research ;
+    :hasConfig :Config_tasks_file ;
+    dct:description """Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others.""" .
+
+:prompt_task_research rdf:type :Prompt ;
+    rdfs:label "Prompt for research task" ;
+    :promptInstruction """Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others.""" ;
+    :promptOutputIndicator """A report that includes a comprehensive summary of the latest news, any notable shifts in market sentiment, and potential impacts on the stock. Also make sure to return the stock ticker as {company_stock}. Make sure to use the most recent data as possible.""" .
+
+:task_filings_analysis rdf:type :Task ;
+    rdfs:label "filings_analysis" ;
+    :performedByAgent :agent_financial_analyst_1 ;
+    :taskPrompt :prompt_task_filings_analysis ;
+    :hasConfig :Config_tasks_file ;
+    dct:description """Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock} in question. Focus on key sections like Management's Discussion and analysis, financial statements, insider trading activity, and any disclosed risks. Extract relevant data and insights that could influence the stock's future performance.""" .
+
+:prompt_task_filings_analysis rdf:type :Prompt ;
+    rdfs:label "Prompt for filings_analysis task" ;
+    :promptInstruction """Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock} in question. Focus on key sections like Management's Discussion and analysis, financial statements, insider trading activity, and any disclosed risks. Extract relevant data and insights that could influence the stock's future performance.""" ;
+    :promptOutputIndicator """Final answer must be an expanded report that now also highlights significant findings from these filings including any red flags or positive indicators for your customer.""" .
+
+:task_recommend rdf:type :Task ;
+    rdfs:label "recommend" ;
+    :performedByAgent :agent_investment_advisor_1 ;
+    :taskPrompt :prompt_task_recommend ;
+    :hasConfig :Config_tasks_file ;
+    dct:description """Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. You MUST Consider all aspects, including financial health, market sentiment, and qualitative data from EDGAR filings. Make sure to include a section that shows insider trading activity, and upcoming events like earnings.""" .
+
+:prompt_task_recommend rdf:type :Prompt ;
+    rdfs:label "Prompt for recommend task" ;
+    :promptInstruction """Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. Consider financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings.""" ;
+    :promptOutputIndicator """Your final answer MUST be a recommendation for your customer. It should be a full super detailed report, providing a clear investment stance and strategy with supporting evidence. Make it pretty and well formatted for your customer.""" .
+
+#################################################################
+# Workflow Pattern and Steps (sequential)
+#################################################################
+
+:StockAnalysisWorkflowPattern rdf:type :WorkflowPattern ;
+    rdfs:label "Stock Analysis Sequential Workflow Pattern" ;
+    :hasWorkflowStep :step_start_research , :step_financial_analysis , :step_filings_analysis , :step_recommend , :step_end .
+
+:step_start_research rdf:type :StartStep ;
+    rdfs:label "Start: Research" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_research ;
+    :nextStep :step_financial_analysis .
+
+:step_financial_analysis rdf:type :WorkflowStep ;
+    rdfs:label "Financial Analysis Step" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_financial_analysis ;
+    :nextStep :step_filings_analysis .
+
+:step_filings_analysis rdf:type :WorkflowStep ;
+    rdfs:label "Filings Analysis Step" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_filings_analysis ;
+    :nextStep :step_recommend .
+
+:step_recommend rdf:type :WorkflowStep ;
+    rdfs:label "Recommendation Step" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_recommend ;
+    :nextStep :step_end .
+
+:step_end rdf:type :EndStep ;
+    rdfs:label "End Step" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_recommend .
+
+#################################################################
+# Additional links to ensure connectivity and completeness
+#################################################################
+
+# Link team to task and config artifacts
+:StockAnalysisCrew :hasSystemConfig :Config_tasks_file .
+
+# Ensure agents are referenced by team (already done) and tasks point to prompts (done).
+# All individuals created above are connected to at least one other individual.
+
+#################################################################
+# End of instance data
+#################################################################

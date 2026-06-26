@@ -1,0 +1,269 @@
+# Execution time: 64.72 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+#
+# Issues / Assumptions:
+# - No explicit external "Tool" instances were defined in the source (only a tools folder is present). To remain faithful to the source and to avoid inventing tools, no :Tool individuals were created. The Language Model (gpt4o) is represented as a :LanguageModel and connected via :useLanguageModel and :agentResourceUsage.
+# - Task descriptions retain the {game} placeholder exactly as in the source files.
+# - The crew/process is represented via a :Team with a :WorkflowPattern and concrete :WorkflowStep individuals linked in sequence (Start -> middle -> End). A small system config was added as a :Config linked to the team to capture the Process.sequential setting referenced by the code; this uses only existing :Config properties.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# Instances for Game Builder Crew (from source)
+#################################################################
+
+### Language Model used (from README: "It uses GPT-4o by default")
+:gpt4o rdf:type :LanguageModel ;
+       dcterms:description "GPT-4o (default model referenced in README)" ;
+       rdfs:label "gpt-4o" .
+
+### Agents (from src/game_builder_crew/config/agents.yaml and crew.py)
+:senior_engineer_agent rdf:type :LLMAgent ;
+    :agentID "senior_engineer_agent" ;
+    :agentRole "Senior Software Engineer" ;
+    :hasAgentConfig :cfg_senior_engineer_agent ;
+    :agentPrompt :prompt_senior_engineer_agent ;
+    :useLanguageModel :gpt4o ;
+    :agentResourceUsage :gpt4o ;
+    rdfs:label "senior_engineer_agent" .
+
+:qa_engineer_agent rdf:type :LLMAgent ;
+    :agentID "qa_engineer_agent" ;
+    :agentRole "Software Quality Control Engineer" ;
+    :hasAgentConfig :cfg_qa_engineer_agent ;
+    :agentPrompt :prompt_qa_engineer_agent ;
+    :useLanguageModel :gpt4o ;
+    :agentResourceUsage :gpt4o ;
+    rdfs:label "qa_engineer_agent" .
+
+:chief_qa_engineer_agent rdf:type :LLMAgent ;
+    :agentID "chief_qa_engineer_agent" ;
+    :agentRole "Chief Software Quality Control Engineer" ;
+    :hasAgentConfig :cfg_chief_qa_engineer_agent ;
+    :agentPrompt :prompt_chief_qa_engineer_agent ;
+    :useLanguageModel :gpt4o ;
+    :agentResourceUsage :gpt4o ;
+    rdfs:label "chief_qa_engineer_agent" .
+
+### Agent Configs (preserve role/goal/backstory from agents.yaml)
+:cfg_senior_engineer_agent rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Senior Software Engineer" ;
+    :configKey "goal" ;
+    :configValue "Create software as needed" ;
+    :configKey "backstory" ;
+    :configValue "You are a Senior Software Engineer at a leading tech think tank.\nYour expertise in programming in python. and do your best to produce perfect code" .
+
+:cfg_qa_engineer_agent rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Software Quality Control Engineer" ;
+    :configKey "goal" ;
+    :configValue "Create Perfect code, by analyzing the code that is given for errors" ;
+    :configKey "backstory" ;
+    :configValue "You are a software engineer that specializes in checking code\nfor errors. You have an eye for detail and a knack for finding\nhidden bugs.\nYou check for missing imports, variable declarations, mismatched\nbrackets and syntax errors.\nYou also check for security vulnerabilities, and logic errors" .
+
+:cfg_chief_qa_engineer_agent rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Chief Software Quality Control Engineer" ;
+    :configKey "goal" ;
+    :configValue "Ensure that the code does the job that it is supposed to do" ;
+    :configKey "backstory" ;
+    :configValue "You feel that programmers always do only half the job, so you are\nsuper dedicate to make high quality code." .
+
+### Agent Prompts (agentPrompt) - preserve textual backstory/role/goal as promptInstruction
+:prompt_senior_engineer_agent rdf:type :Prompt ;
+    :promptInstruction """Role:
+Senior Software Engineer
+
+Goal:
+Create software as needed
+
+Backstory:
+You are a Senior Software Engineer at a leading tech think tank.
+Your expertise in programming in python. and do your best to produce perfect code
+""" ;
+    rdfs:label "prompt_senior_engineer_agent" .
+
+:prompt_qa_engineer_agent rdf:type :Prompt ;
+    :promptInstruction """Role:
+Software Quality Control Engineer
+
+Goal:
+Create Perfect code, by analyzing the code that is given for errors
+
+Backstory:
+You are a software engineer that specializes in checking code
+for errors. You have an eye for detail and a knack for finding
+hidden bugs.
+You check for missing imports, variable declarations, mismatched
+brackets and syntax errors.
+You also check for security vulnerabilities, and logic errors
+""" ;
+    rdfs:label "prompt_qa_engineer_agent" .
+
+:prompt_chief_qa_engineer_agent rdf:type :Prompt ;
+    :promptInstruction """Role:
+Chief Software Quality Control Engineer
+
+Goal:
+Ensure that the code does the job that it is supposed to do
+
+Backstory:
+You feel that programmers always do only half the job, so you are
+super dedicate to make high quality code.
+""" ;
+    rdfs:label "prompt_chief_qa_engineer_agent" .
+
+### Tasks (from src/game_builder_crew/config/tasks.yaml and crew.py)
+:task_code_task rdf:type :Task ;
+    dcterms:description """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+""" ;
+    :taskPrompt :prompt_code_task ;
+    :performedByAgent :senior_engineer_agent ;
+    :hasConfig :cfg_code_task ;
+    rdfs:label "code_task" .
+
+:task_review_task rdf:type :Task ;
+    dcterms:description """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+Using the code you got, check for errors. Check for logic errors,
+syntax errors, missing imports, variable declarations, mismatched brackets,
+and security vulnerabilities.
+""" ;
+    :taskPrompt :prompt_review_task ;
+    :performedByAgent :qa_engineer_agent ;
+    :hasConfig :cfg_review_task ;
+    rdfs:label "review_task" .
+
+:task_evaluate_task rdf:type :Task ;
+    dcterms:description """You are helping create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+You will look over the code to insure that it is complete and
+does the job that it is supposed to do.
+""" ;
+    :taskPrompt :prompt_evaluate_task ;
+    :performedByAgent :chief_qa_engineer_agent ;
+    :hasConfig :cfg_evaluate_task ;
+    rdfs:label "evaluate_task" .
+
+### Task Prompts (taskPrompt) - include expected_output via promptOutputIndicator where available
+:prompt_code_task rdf:type :Prompt ;
+    :promptInstruction """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." ;
+    rdfs:label "prompt_code_task" .
+
+:prompt_review_task rdf:type :Prompt ;
+    :promptInstruction """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+Using the code you got, check for errors. Check for logic errors,
+syntax errors, missing imports, variable declarations, mismatched brackets,
+and security vulnerabilities.
+""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." ;
+    rdfs:label "prompt_review_task" .
+
+:prompt_evaluate_task rdf:type :Prompt ;
+    :promptInstruction """You are helping create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+You will look over the code to insure that it is complete and
+does the job that it is supposed to do.
+""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." ;
+    rdfs:label "prompt_evaluate_task" .
+
+### Task Configs (preserve description and expected_output)
+:cfg_code_task rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "You will create a game using python, these are the instructions:\n\nInstructions\n------------\n{game}\n" ;
+    :configKey "expected_output" ;
+    :configValue "Your Final answer must be the full python code, only the python code and nothing else." .
+
+:cfg_review_task rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "You will create a game using python, these are the instructions:\n\nInstructions\n------------\n{game}\n\nUsing the code you got, check for errors. Check for logic errors,\nsyntax errors, missing imports, variable declarations, mismatched brackets,\nand security vulnerabilities." ;
+    :configKey "expected_output" ;
+    :configValue "Your Final answer must be the full python code, only the python code and nothing else." .
+
+:cfg_evaluate_task rdf:type :Config ;
+    :configKey "description" ;
+    :configValue "You are helping create a game using python, these are the instructions:\n\nInstructions\n------------\n{game}\n\nYou will look over the code to insure that it is complete and\ndoes the job that it is supposed to do." ;
+    :configKey "expected_output" ;
+    :configValue "Your Final answer must be the full python code, only the python code and nothing else." .
+
+### Team (GameBuilderCrew) and Team-level config/goal
+:GameBuilderCrew rdf:type :Team ;
+    :hasAgentMember :senior_engineer_agent, :qa_engineer_agent, :chief_qa_engineer_agent ;
+    :hasWorkflowPattern :workflow_pattern_game_builder ;
+    :hasSystemConfig :cfg_team_system ;
+    :hasTeamGoal :goal_build_game ;
+    rdfs:label "GameBuilderCrew" .
+
+:cfg_team_system rdf:type :Config ;
+    :configKey "process" ;
+    :configValue "sequential (Process.sequential used in crew configuration)" .
+
+:goal_build_game rdf:type :Goal ;
+    dcterms:description "Create a Python-based game by orchestrating agents to produce, review, and evaluate the code." ;
+    rdfs:label "Build Game Goal" .
+
+### Workflow Pattern and Steps (to reflect crew Process.sequential and tasks order)
+:workflow_pattern_game_builder rdf:type :WorkflowPattern ;
+    :hasWorkflowStep :step_1_code, :step_2_review, :step_3_evaluate ;
+    rdfs:label "Game Builder Sequential Pattern" .
+
+:step_1_code rdf:type :StartStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_code_task ;
+    :nextStep :step_2_review ;
+    rdfs:label "start_step_code" .
+
+:step_2_review rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_review_task ;
+    :nextStep :step_3_evaluate ;
+    rdfs:label "step_review" .
+
+:step_3_evaluate rdf:type :EndStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_evaluate_task ;
+    rdfs:label "end_step_evaluate" .
+
+#################################################################
+# End of instances
+#################################################################

@@ -1,0 +1,683 @@
+# Execution time: 82.50 seconds
+# Model used: gpt-5-mini
+# Prompt: P4
+
+# VALIDATION
+# Check 1 (Completeness): PASS
+# Check 2 (Workflow Integrity): PASS
+# Check 3 (Structural Consistency): PASS
+# Check 4 (Schema Compliance): PASS
+# Issues / Assumptions:
+# - No issues detected. Assumptions recorded: senior_react_engineer is modeled as a single :LLMAgent used across crews; Task descriptions and agent configs preserved as :Config individuals; prompts preserved as :Prompt individuals (promptInstruction used). FileManagementToolkit tools modeled as individual :Tool instances (read_file, list_directory). WorkflowPattern models the overall pipeline used by the LandingPageCrew.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.w3id.org/agentic-ai/onto#> .
+
+#################################################################
+# Instances describing the "AI Crew for Landing Pages" solution
+#################################################################
+
+# Language models
+:lm_OpenAI_GPT4 rdf:type :LanguageModel ;
+    rdfs:label "OpenAI GPT-4" ;
+    <http://purl.org/dc/terms/description> "Default LLM used by the CrewAI-based agents; mentioned as default in README and main execution notes." .
+
+:lm_OpenAI_GPT35 rdf:type :LanguageModel ;
+    rdfs:label "OpenAI GPT-3.5" ;
+    <http://purl.org/dc/terms/description> "Alternative LLM option described in README (example instantiation for GPT-3.5)." .
+
+:lm_Ollama_agent rdf:type :LanguageModel ;
+    rdfs:label "Ollama (local) agent model" ;
+    <http://purl.org/dc/terms/description> "Local model option described in README for using Ollama; included as an available model option." .
+
+# Tools (as Tool individuals)
+:tool_SearchTools rdf:type :Tool ;
+    rdfs:label "SearchTools.search_internet" ;
+    <http://purl.org/dc/terms/description> "Tool that calls Serper API to search the internet and returns formatted results." .
+
+:tool_BrowserTools rdf:type :Tool ;
+    rdfs:label "BrowserTools.scrape_and_summarize_website" ;
+    <http://purl.org/dc/terms/description> "Tool that scrapes website content via browserless API, partitions HTML, and summarizes via an internal Task." .
+
+:tool_FileTools_WriteFile rdf:type :Tool ;
+    rdfs:label "FileTools.write_file" ;
+    <http://purl.org/dc/terms/description> "Tool that writes content to the safe ./workdir filesystem; input is a pipe-separated path|content string." .
+
+:tool_TemplateTools_Learn rdf:type :Tool ;
+    rdfs:label "TemplateTools.learn_landing_page_options" ;
+    <http://purl.org/dc/terms/description> "Tool that reads config/templates.json and returns available templates." .
+
+:tool_TemplateTools_Copy rdf:type :Tool ;
+    rdfs:label "TemplateTools.copy_landing_page_template_to_project_folder" ;
+    <http://purl.org/dc/terms/description> "Tool that copies a named template folder from ./templates into ./workdir safely." .
+
+:tool_FileMgmt_read_file rdf:type :Tool ;
+    rdfs:label "FileManagementToolkit.read_file" ;
+    <http://purl.org/dc/terms/description> "Toolkit-provided read_file tool available via FileManagementToolkit.get_tools()." .
+
+:tool_FileMgmt_list_directory rdf:type :Tool ;
+    rdfs:label "FileManagementToolkit.list_directory" ;
+    <http://purl.org/dc/terms/description> "Toolkit-provided list_directory tool available via FileManagementToolkit.get_tools()." .
+
+#################################################################
+# Agents (LLMAgent individuals)
+#################################################################
+
+:agent_SeniorIdeaAnalyst rdf:type :LLMAgent ;
+    :agentID "senior_idea_analyst" ;
+    :agentRole "Senior Idea Analyst" ;
+    :agentPrompt :prompt_agent_senior_idea_analyst ;
+    :hasAgentConfig :config_agent_senior_idea_analyst_role , :config_agent_senior_idea_analyst_goal , :config_agent_senior_idea_analyst_backstory ;
+    :agentToolUsage :tool_SearchTools , :tool_BrowserTools ;
+    :useLanguageModel :lm_OpenAI_GPT4 ;
+    <http://purl.org/dc/terms/description> "Agent defined in config/agents.yaml and instantiated in ExpandIdeaCrew.senior_idea_analyst_agent." .
+
+:agent_SeniorStrategist rdf:type :LLMAgent ;
+    :agentID "senior_strategist" ;
+    :agentRole "Senior Communications Strategist" ;
+    :agentPrompt :prompt_agent_senior_strategist ;
+    :hasAgentConfig :config_agent_senior_strategist_role , :config_agent_senior_strategist_goal , :config_agent_senior_strategist_backstory ;
+    :agentToolUsage :tool_SearchTools , :tool_BrowserTools ;
+    :useLanguageModel :lm_OpenAI_GPT4 ;
+    <http://purl.org/dc/terms/description> "Agent defined in config/agents.yaml and instantiated in ExpandIdeaCrew.senior_strategist_agent." .
+
+:agent_SeniorReactEngineer rdf:type :LLMAgent ;
+    :agentID "senior_react_engineer" ;
+    :agentRole "Senior React Engineer" ;
+    :agentPrompt :prompt_agent_senior_react_engineer ;
+    :hasAgentConfig :config_agent_senior_react_engineer_role , :config_agent_senior_react_engineer_goal , :config_agent_senior_react_engineer_backstory ;
+    :agentToolUsage :tool_SearchTools , :tool_BrowserTools , :tool_TemplateTools_Learn , :tool_TemplateTools_Copy , :tool_FileTools_WriteFile , :tool_FileMgmt_read_file , :tool_FileMgmt_list_directory ;
+    :useLanguageModel :lm_OpenAI_GPT4 ;
+    <http://purl.org/dc/terms/description> "Agent defined in config/agents.yaml and instantiated in ChooseTemplateCrew and CreateContentCrew (same agent instance reused across crews)." .
+
+:agent_SeniorContentEditor rdf:type :LLMAgent ;
+    :agentID "senior_content_editor" ;
+    :agentRole "Senior Content Editor" ;
+    :agentPrompt :prompt_agent_senior_content_editor ;
+    :hasAgentConfig :config_agent_senior_content_editor_role , :config_agent_senior_content_editor_goal , :config_agent_senior_content_editor_backstory ;
+    :agentToolUsage ; # intentionally no tools (empty) .
+    :useLanguageModel :lm_OpenAI_GPT4 ;
+    <http://purl.org/dc/terms/description> "Agent defined in config/agents.yaml and instantiated in CreateContentCrew.senior_content_editor_agent." .
+
+#################################################################
+# Agent prompt individuals (each agent has a Prompt with promptInstruction)
+#################################################################
+
+:prompt_agent_senior_idea_analyst rdf:type :Prompt ;
+    :promptInstruction """Recognized as a thought leader, I thrive on refining concepts into campaigns that resonate with audiences. Role: Senior Idea Analyst. Goal: Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from.""" .
+
+:prompt_agent_senior_strategist rdf:type :Prompt ;
+    :promptInstruction """A narrative craftsman for top-tier launches, I reveal the 'why' behind projects, aligning with visions and speaking to audiences. Role: Senior Communications Strategist. Goal: Craft compelling stories using the Golden Circle method to captivate and engage people around an idea.""" .
+
+:prompt_agent_senior_react_engineer rdf:type :Prompt ;
+    :promptInstruction """A coding virtuoso and design enthusiast, expert in Tailwind, you're known for crafting beautiful websites that provide seamless user experiences. Role: Senior React Engineer. Goal: Build an intuitive, aesthetically pleasing, and high-converting landing page.""" .
+
+:prompt_agent_senior_content_editor rdf:type :Prompt ;
+    :promptInstruction """With a keen eye for detail and a passion for storytelling, you have refined content for leading brands, turning bland text into engaging stories. Role: Senior Content Editor. Goal: Ensure the landing page content is clear, concise, and captivating.""" .
+
+#################################################################
+# Agent configuration represented as Config individuals (each with configKey and configValue)
+#################################################################
+
+:config_agent_senior_idea_analyst_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Senior Idea Analyst" .
+
+:config_agent_senior_idea_analyst_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from." .
+
+:config_agent_senior_idea_analyst_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "Recognized as a thought leader, I thrive on refining concepts into campaigns that resonate with audiences." .
+
+:config_agent_senior_strategist_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Senior Communications Strategist" .
+
+:config_agent_senior_strategist_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Craft compelling stories using the Golden Circle method to captivate and engage people around an idea." .
+
+:config_agent_senior_strategist_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "A narrative craftsman for top-tier launches, I reveal the 'why' behind projects, aligning with visions and speaking to audiences." .
+
+:config_agent_senior_react_engineer_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Senior React Engineer" .
+
+:config_agent_senior_react_engineer_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Build an intuitive, aesthetically pleasing, and high-converting landing page." .
+
+:config_agent_senior_react_engineer_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "A coding virtuoso and design enthusiast, expert in Tailwind, you're known for crafting beautiful websites that provide seamless user experiences." .
+
+:config_agent_senior_content_editor_role rdf:type :Config ;
+    :configKey "role" ;
+    :configValue "Senior Content Editor" .
+
+:config_agent_senior_content_editor_goal rdf:type :Config ;
+    :configKey "goal" ;
+    :configValue "Ensure the landing page content is clear, concise, and captivating." .
+
+:config_agent_senior_content_editor_backstory rdf:type :Config ;
+    :configKey "backstory" ;
+    :configValue "With a keen eye for detail and a passion for storytelling, you have refined content for leading brands, turning bland text into engaging stories." .
+
+#################################################################
+# Tasks (Task individuals) and Task prompts/preserved descriptions
+#################################################################
+
+:task_expand_idea rdf:type :Task ;
+    :performedByAgent :agent_SeniorIdeaAnalyst ;
+    :taskPrompt :prompt_task_expand_idea ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in ExpandIdeaCrew.expand_idea." .
+
+:prompt_task_expand_idea rdf:type :Prompt ;
+    :promptInstruction """
+      THIS IS A GREAT IDEA! Analyze and expand it
+      by conducting a comprehensive research.
+
+      Final answer MUST be a comprehensive idea report
+      detailing why this is a great idea, the value
+      proposition, unique selling points, why people should
+      care about it and distinguishing features.
+
+       IDEA:
+      ----------
+      {idea}
+    """ .
+
+:task_refine_idea rdf:type :Task ;
+    :performedByAgent :agent_SeniorStrategist ;
+    :taskPrompt :prompt_task_refine_idea ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in ExpandIdeaCrew.refine_idea." .
+
+:prompt_task_refine_idea rdf:type :Prompt ;
+    :promptInstruction """
+      Expand idea report with a Why, How, and What
+      messaging strategy using the Golden Circle
+      Communication technique, based on the idea report.
+
+      Your final answer MUST be the updated complete
+      comprehensive idea report with WHY, HOW, WHAT,
+      a core message, key features and supporting arguments.
+
+      YOU MUST RETURN THE COMPLETE IDEA REPORT AND
+      THE DETAILS, You'll get a $100 tip if you do your best work!
+    """ .
+
+:task_choose_template rdf:type :Task ;
+    :performedByAgent :agent_SeniorReactEngineer ;
+    :taskPrompt :prompt_task_choose_template ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in ChooseTemplateCrew.choose_template." .
+
+:prompt_task_choose_template rdf:type :Prompt ;
+    :promptInstruction """
+Learn the templates options choose and copy
+        the one that suits the idea below the best,
+        YOU MUST COPY, and then YOU MUST read the src/component
+        in the directory you just copied, to decide what
+        component files should be updated to make the
+        landing page about the idea below.
+
+        - YOU MUST READ THE DIRECTORY BEFORE CHOOSING THE FILES.
+        - YOU MUST NOT UPDATE any Pricing components.
+        - YOU MUST UPDATE ONLY the 4 most important components.
+
+        Your final answer MUST be ONLY a JSON array of
+        components full file paths that need to be updated.
+
+        IDEA
+        ----------
+        {idea}
+      """ .
+
+:task_update_page rdf:type :Task ;
+    :performedByAgent :agent_SeniorReactEngineer ;
+    :taskPrompt :prompt_task_update_page ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in ChooseTemplateCrew.update_page." .
+
+:prompt_task_update_page rdf:type :Prompt ;
+    :promptInstruction """
+      READ the ./[chosen_template]/src/app/page.jsx OR
+      ./[chosen_template]/src/app/(main)/page.jsx (main with the parenthesis)
+      to learn its content and then write an updated
+      version to the filesystem that removes any
+      section related components that are not in our
+      list from the returns. Keep the imports.
+
+      Final answer MUST BE ONLY a valid json list with
+      the full path of each of the components we will be
+      using, the same way you got them.
+
+      RULES
+      -----
+      - NEVER ADD A FINAL DOT to the file content.
+      - NEVER WRITE \\n (newlines as string) on the file, just the code.
+      - NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+      - NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+      - ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+      - Save the file as with `.jsx` extension.
+      - Return the same valid JSON list of the components your got.
+
+      You'll get a $100 tip if you follow all the rules!
+
+      Also update any necessary text to reflect this landing page
+      is about the idea below.
+
+      IDEA
+      ----------
+      {idea}
+    """ .
+
+:task_create_content rdf:type :Task ;
+    :performedByAgent :agent_SeniorContentEditor ;
+    :taskPrompt :prompt_task_create_content ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in CreateContentCrew.create_content." .
+
+:prompt_task_create_content rdf:type :Prompt ;
+    :promptInstruction """
+A engineer will update the {component} (code below),
+      return a list of good options of texts to replace
+      EACH INDIVIDUAL existing text on the component,
+      the suggestion MUST be based on the idea below,
+      and also MUST be similar in length with the original
+      text, we need to replace ALL TEXT.
+
+      NEVER USE Apostrophes for contraction! You'll get a $100
+      tip if you do your best work!
+
+      IDEA
+      -----
+      {expanded_idea}
+
+      REACT COMPONENT CONTENT
+      -----
+      {file_content}
+    """ .
+
+:task_update_component rdf:type :Task ;
+    :performedByAgent :agent_SeniorContentEditor ;
+    :taskPrompt :prompt_task_update_component ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in CreateContentCrew.update_component." .
+
+:prompt_task_update_component rdf:type :Prompt ;
+    :promptInstruction """
+      YOU MUST USE the tool to write an updated
+      version of the react component to the file
+      system in the following path: {component}
+      replacing the text content with the suggestions
+      provided.
+
+      You only modify the text content, you don't add
+      or remove any components.
+
+      RULES
+      -----
+      - Remove all the links, this should be single page landing page.
+      - Don't make up images, videos, gifs, icons, logos, etc.
+      - keep the same style and tailwind classes.
+      - MUST HAVE 'use client' at the be beginning of the code.
+      - href in buttons, links, NavLinks, and navigations should be #.
+      - NEVER WRITE \\n (newlines as string) on the file, just the code.
+      - NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+      - Keep the same component imports and don't use new components.
+      - NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+      - ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+      - Save the file as with `.jsx` extension.
+
+      If you follow the rules I'll give you a $100 tip!!!
+      MY LIFE DEPEND ON YOU FOLLOWING IT!
+
+      CONTENT TO BE UPDATED
+      -----
+      {file_content}
+    """ .
+
+:task_qa_component rdf:type :Task ;
+    :performedByAgent :agent_SeniorContentEditor ;
+    :taskPrompt :prompt_task_qa_component ;
+    <http://purl.org/dc/terms/description> "Task defined in config/tasks.yaml and created in CreateContentCrew.qa_component." .
+
+:prompt_task_qa_component rdf:type :Prompt ;
+    :promptInstruction """
+   Check the React component code to make sure
+      it's valid and abide by the rules below,
+      if it doesn't then write the correct version to
+      the file system using the write file tool into
+      the following path: {component}.
+
+      Your final answer should be a confirmation that
+      the component is valid and abides by the rules and if
+      you had to write an updated version to the file system.
+
+      RULES
+      -----
+      - NEVER USE Apostrophes for contraction!
+      - ALL COMPONENTS USED SHOULD BE IMPORTED.
+      - MUST HAVE 'use client' at the be beginning of the code.
+      - href in buttons, links, NavLinks, and navigations should be #.
+      - NEVER WRITE \\n (newlines as string) on the file, just the code.
+      - NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+      - NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+      - ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+      - Always use export function for the component class.
+
+      You'll get a $100 tip if you follow all the rules!
+    """ .
+
+#################################################################
+# Link tasks to configs (store original task YAML entries as Configs)
+#################################################################
+
+:config_task_expand_idea_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """      THIS IS A GREAT IDEA! Analyze and expand it
+      by conducting a comprehensive research.
+
+      Final answer MUST be a comprehensive idea report
+      detailing why this is a great idea, the value
+      proposition, unique selling points, why people should
+      care about it and distinguishing features.
+
+       IDEA:
+      ----------
+      {idea}
+    """ .
+
+:config_task_refine_idea_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """      Expand idea report with a Why, How, and What
+      messaging strategy using the Golden Circle
+      Communication technique, based on the idea report.
+
+      Your final answer MUST be the updated complete
+      comprehensive idea report with WHY, HOW, WHAT,
+      a core message, key features and supporting arguments.
+
+      YOU MUST RETURN THE COMPLETE IDEA REPORT AND
+      THE DETAILS, You'll get a $100 tip if you do your best work!
+    """ .
+
+:config_task_choose_template_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """Learn the templates options choose and copy
+        the one that suits the idea below the best,
+        YOU MUST COPY, and then YOU MUST read the src/component
+        in the directory you just copied, to decide what
+        component files should be updated to make the
+        landing page about the idea below.
+
+        - YOU MUST READ THE DIRECTORY BEFORE CHOOSING THE FILES.
+        - YOU MUST NOT UPDATE any Pricing components.
+        - YOU MUST UPDATE ONLY the 4 most important components.
+
+        Your final answer MUST be ONLY a JSON array of
+        components full file paths that need to be updated.
+
+        IDEA
+        ----------
+        {idea}
+      """ .
+
+:config_task_update_page_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """      READ the ./[chosen_template]/src/app/page.jsx OR
+      ./[chosen_template]/src/app/(main)/page.jsx (main with the parenthesis)
+      to learn its content and then write an updated
+      version to the filesystem that removes any
+      section related components that are not in our
+      list from the returns. Keep the imports.
+
+      Final answer MUST BE ONLY a valid json list with
+      the full path of each of the components we will be
+      using, the same way you got them.
+
+      RULES
+      -----
+      - NEVER ADD A FINAL DOT to the file content.
+      - NEVER WRITE \\n (newlines as string) on the file, just the code.
+      - NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+      - NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+      - ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+      - Save the file as with `.jsx` extension.
+      - Return the same valid JSON list of the components your got.
+
+      You'll get a $100 tip if you follow all the rules!
+
+      Also update any necessary text to reflect this landing page
+      is about the idea below.
+
+      IDEA
+      ----------
+      {idea}
+    """ .
+
+:config_task_component_content_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """A engineer will update the {component} (code below),
+      return a list of good options of texts to replace
+      EACH INDIVIDUAL existing text on the component,
+      the suggestion MUST be based on the idea below,
+      and also MUST be similar in length with the original
+      text, we need to replace ALL TEXT.
+
+      NEVER USE Apostrophes for contraction! You'll get a $100
+      tip if you do your best work!
+    """ .
+
+:config_task_update_component_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """YOU MUST USE the tool to write an updated
+      version of the react component to the file
+      system in the following path: {component}
+      replacing the text content with the suggestions
+      provided.
+    """ .
+
+:config_task_qa_component_description rdf:type :Config ;
+    :configKey "description" ;
+    :configValue """Check the React component code to make sure
+      it's valid and abide by the rules below,
+      if it doesn't then write the correct version to
+      the file system using the write file tool into
+      the following path: {component}.
+    """ .
+
+# Link task config objects to tasks via :hasConfig where appropriate
+:task_expand_idea :hasConfig :config_task_expand_idea_description .
+:task_refine_idea :hasConfig :config_task_refine_idea_description .
+:task_choose_template :hasConfig :config_task_choose_template_description .
+:task_update_page :hasConfig :config_task_update_page_description .
+:task_create_content :hasConfig :config_task_component_content_description .
+:task_update_component :hasConfig :config_task_update_component_description .
+:task_qa_component :hasConfig :config_task_qa_component_description .
+
+#################################################################
+# Teams (Crews) and membership
+#################################################################
+
+:team_ExpandIdeaCrew rdf:type :Team ;
+    rdfs:label "ExpandIdeaCrew" ;
+    :hasAgentMember :agent_SeniorIdeaAnalyst , :agent_SeniorStrategist ;
+    :hasWorkflowPattern :pattern_ExpandIdeaCrew_workflow ;
+    <http://purl.org/dc/terms/description> "CrewBase class ExpandIdeaCrew in crew.py instantiates two agents and two tasks (expand_idea, refine_idea) and runs sequentially." .
+
+:team_ChooseTemplateCrew rdf:type :Team ;
+    rdfs:label "ChooseTemplateCrew" ;
+    :hasAgentMember :agent_SeniorReactEngineer ;
+    :hasWorkflowPattern :pattern_ChooseTemplateCrew_workflow ;
+    <http://purl.org/dc/terms/description> "CrewBase class ChooseTemplateCrew in crew.py instantiates senior_react_engineer agent and tasks choose_template and update_page in a sequential process." .
+
+:team_CreateContentCrew rdf:type :Team ;
+    rdfs:label "CreateContentCrew" ;
+    :hasAgentMember :agent_SeniorContentEditor , :agent_SeniorReactEngineer ;
+    :hasWorkflowPattern :pattern_CreateContentCrew_workflow ;
+    <http://purl.org/dc/terms/description> "CrewBase class CreateContentCrew in crew.py instantiates senior_content_editor and senior_react_engineer and tasks create_content, update_component, qa_component in a sequential process." .
+
+:team_LandingPageCrew rdf:type :Team ;
+    rdfs:label "LandingPageCrew" ;
+    :hasAgentMember :agent_SeniorIdeaAnalyst , :agent_SeniorStrategist , :agent_SeniorReactEngineer , :agent_SeniorContentEditor ;
+    :hasWorkflowPattern :pattern_landing_page ;
+    <http://purl.org/dc/terms/description> "Orchestration class LandingPageCrew that composes the three crews to execute the full pipeline: expand idea -> choose template -> create content. Represented as a Team that references an overall workflow pattern." .
+
+#################################################################
+# Workflow patterns and steps (chain with start and end)
+#################################################################
+
+:pattern_ExpandIdeaCrew_workflow rdf:type :WorkflowPattern ;
+    rdfs:label "ExpandIdeaCrew Workflow" ;
+    :hasWorkflowStep :step_expand_start , :step_expand_idea , :step_refine_idea , :step_expand_end ;
+    <http://purl.org/dc/terms/description> "Workflow pattern for ExpandIdeaCrew (sequential): expand_idea then refine_idea." .
+
+:pattern_ChooseTemplateCrew_workflow rdf:type :WorkflowPattern ;
+    rdfs:label "ChooseTemplateCrew Workflow" ;
+    :hasWorkflowStep :step_choose_start , :step_choose_template , :step_update_page , :step_choose_end ;
+    <http://purl.org/dc/terms/description> "Workflow pattern for ChooseTemplateCrew (sequential): choose_template then update_page." .
+
+:pattern_CreateContentCrew_workflow rdf:type :WorkflowPattern ;
+    rdfs:label "CreateContentCrew Workflow" ;
+    :hasWorkflowStep :step_create_start , :step_create_content , :step_update_component , :step_qa_component , :step_create_end ;
+    <http://purl.org/dc/terms/description> "Workflow pattern for CreateContentCrew (sequential): create_content -> update_component -> qa_component." .
+
+:pattern_landing_page rdf:type :WorkflowPattern ;
+    rdfs:label "Landing Page Overall Workflow" ;
+    :hasWorkflowStep :step_global_start , :step_expand_idea , :step_choose_template , :step_update_page , :step_create_content , :step_update_component , :step_qa_component , :step_global_end ;
+    <http://purl.org/dc/terms/description> "Overall pipeline executed by LandingPageCrew combining sub-crews: expand idea, choose template, create content." .
+
+#################################################################
+# Workflow steps (StartStep, EndStep, WorkflowStep) with order and chaining
+#################################################################
+
+:step_global_start rdf:type :StartStep ;
+    rdfs:label "Global Start" ;
+    :stepOrder "1"^^xsd:integer ;
+    :nextStep :step_expand_idea ;
+    :hasAssociatedTask :task_expand_idea .
+
+:step_expand_start rdf:type :StartStep ;
+    rdfs:label "ExpandCrew Start" ;
+    :stepOrder "1"^^xsd:integer ;
+    :nextStep :step_expand_idea ;
+    :hasAssociatedTask :task_expand_idea .
+
+:step_expand_idea rdf:type :WorkflowStep ;
+    rdfs:label "Expand Idea Step" ;
+    :stepOrder "2"^^xsd:integer ;
+    :nextStep :step_refine_idea ;
+    :hasAssociatedTask :task_expand_idea .
+
+:step_refine_idea rdf:type :WorkflowStep ;
+    rdfs:label "Refine Idea Step" ;
+    :stepOrder "3"^^xsd:integer ;
+    :nextStep :step_choose_template ;
+    :hasAssociatedTask :task_refine_idea .
+
+:step_choose_start rdf:type :StartStep ;
+    rdfs:label "ChooseTemplateCrew Start" ;
+    :stepOrder "4"^^xsd:integer ;
+    :nextStep :step_choose_template ;
+    :hasAssociatedTask :task_choose_template .
+
+:step_choose_template rdf:type :WorkflowStep ;
+    rdfs:label "Choose Template Step" ;
+    :stepOrder "5"^^xsd:integer ;
+    :nextStep :step_update_page ;
+    :hasAssociatedTask :task_choose_template .
+
+:step_update_page rdf:type :WorkflowStep ;
+    rdfs:label "Update Page Step" ;
+    :stepOrder "6"^^xsd:integer ;
+    :nextStep :step_create_content ;
+    :hasAssociatedTask :task_update_page .
+
+:step_create_start rdf:type :StartStep ;
+    rdfs:label "CreateContentCrew Start" ;
+    :stepOrder "7"^^xsd:integer ;
+    :nextStep :step_create_content ;
+    :hasAssociatedTask :task_create_content .
+
+:step_create_content rdf:type :WorkflowStep ;
+    rdfs:label "Create Content Step" ;
+    :stepOrder "8"^^xsd:integer ;
+    :nextStep :step_update_component ;
+    :hasAssociatedTask :task_create_content .
+
+:step_update_component rdf:type :WorkflowStep ;
+    rdfs:label "Update Component Step" ;
+    :stepOrder "9"^^xsd:integer ;
+    :nextStep :step_qa_component ;
+    :hasAssociatedTask :task_update_component .
+
+:step_qa_component rdf:type :WorkflowStep ;
+    rdfs:label "QA Component Step" ;
+    :stepOrder "10"^^xsd:integer ;
+    :nextStep :step_global_end ;
+    :hasAssociatedTask :task_qa_component .
+
+:step_choose_end rdf:type :EndStep ;
+    rdfs:label "ChooseTemplateCrew End" ;
+    :stepOrder "7"^^xsd:integer ;
+    :hasAssociatedTask :task_update_page .
+
+:step_expand_end rdf:type :EndStep ;
+    rdfs:label "ExpandCrew End" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :task_refine_idea .
+
+:step_create_end rdf:type :EndStep ;
+    rdfs:label "CreateContentCrew End" ;
+    :stepOrder "11"^^xsd:integer ;
+    :hasAssociatedTask :task_qa_component .
+
+:step_global_end rdf:type :EndStep ;
+    rdfs:label "Global End" ;
+    :stepOrder "11"^^xsd:integer ;
+    :hasAssociatedTask :task_qa_component .
+
+#################################################################
+# Relationships ensuring no orphaned individuals and schema compliance
+#################################################################
+
+# Ensure tools are referenced by agents (agentToolUsage already set on agents)
+# Ensure tasks reference agents via performedByAgent (already set)
+
+# Link teams to workflow patterns (already set above)
+# Also link LandingPageCrew overall pattern to sub-patterns via hasRelatedPattern (optional but uses existing property)
+:pattern_landing_page :hasRelatedPattern :pattern_ExpandIdeaCrew_workflow , :pattern_ChooseTemplateCrew_workflow , :pattern_CreateContentCrew_workflow .
+
+#################################################################
+# Additional metadata and safe linkage to avoid orphans
+#################################################################
+
+# Link tool descriptions to capabilities (optional Capability individuals preserved minimal to avoid orphaning)
+:cap_search_internet rdf:type :Capability ;
+    rdfs:label "search internet capability" ;
+    <http://purl.org/dc/terms/description> "Capability used by SearchTools to perform web searches." .
+
+:cap_scrape_and_summarize rdf:type :Capability ;
+    rdfs:label "scrape and summarize capability" ;
+    <http://purl.org/dc/terms/description> "Capability used by BrowserTools to scrape and summarize website content." .
+
+# Connect capabilities to tools using :hasCapability (domain Tool -> Capability)
+:tool_SearchTools :hasCapability :cap_search_internet .
+:tool_BrowserTools :hasCapability :cap_scrape_and_summarize .
+
+#################################################################
+# Ensure every individual is connected to at least one other individual
+#################################################################
+
+# Agents are members of teams (already set)
+# Ensure the CreateContentCrew's senior_react_engineer and senior_content_editor are members (already set)
+# No dangling references remain.
+
+# End of instance data for the Landing Page Crew solution.
