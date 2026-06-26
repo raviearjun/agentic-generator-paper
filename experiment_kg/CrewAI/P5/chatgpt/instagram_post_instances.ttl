@@ -1,0 +1,347 @@
+# Execution time: 50.48 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Environment variables (MODEL, BROWSERLESS_API_KEY, SERPER_API_KEY) not available; created LanguageModel and Config individuals referencing these env names as placeholders.
+# - Agent interactions are not explicitly present in code; no :interactsWith triples created.
+# - Team-level goals are synthesized from agent/task intents where not explicitly stated.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model (created because agents use Ollama with env var MODEL)
+:LM_Ollama rdf:type :LanguageModel ;
+           dcterms:title "Ollama (env: MODEL)" ;
+           dcterms:description "Language model provided via Ollama; model name supplied by environment variable MODEL." .
+
+#################################################################
+# Tools and Capabilities
+#################################################################
+
+:Tool_ScrapeWebsite rdf:type :Tool ;
+                    dcterms:title "Scrape website content (BrowserTools.scrape_and_summarize_website)" ;
+                    dcterms:description "Scrapes a webpage via Browserless API and summarizes chunks using an LLM." ;
+                    :hasCapability :cap_WebScraping ;
+                    :hasToolConfig :config_browserless_api_key .
+
+:Tool_SearchInternet rdf:type :Tool ;
+                    dcterms:title "Search internet (SearchTools.search_internet)" ;
+                    dcterms:description "Performs web searches using the Serper (google.serper.dev) API and returns top results." ;
+                    :hasCapability :cap_WebSearch ;
+                    :hasToolConfig :config_serper_api_key .
+
+:Tool_SearchInstagram rdf:type :Tool ;
+                      dcterms:title "Search instagram (SearchTools.search_instagram)" ;
+                      dcterms:description "Performs targeted Instagram site searches (site:instagram.com ...) via Serper API." ;
+                      :hasCapability :cap_InstagramSearch ;
+                      :hasToolConfig :config_serper_api_key .
+
+:cap_WebScraping rdf:type :Capability ;
+                 dcterms:description "Extract and summarize HTML content from websites." .
+
+:cap_WebSearch rdf:type :Capability ;
+               dcterms:description "Query web search API and return ranked result snippets." .
+
+:cap_InstagramSearch rdf:type :Capability ;
+                     dcterms:description "Search Instagram content via web search for post examples and snippets." .
+
+:config_browserless_api_key rdf:type :Config ;
+                           :configKey "BROWSERLESS_API_KEY" ;
+                           :configValue "env:BROWSERLESS_API_KEY" .
+
+:config_serper_api_key rdf:type :Config ;
+                      :configKey "SERPER_API_KEY" ;
+                      :configValue "env:SERPER_API_KEY" .
+
+#################################################################
+# Agents
+#################################################################
+
+:agent_product_competitor rdf:type :LLMAgent ;
+                          :agentID "product_competitor_agent" ;
+                          :agentRole "Lead Market Analyst" ;
+                          :agentPrompt :prompt_agent_product_competitor ;
+                          :useLanguageModel :LM_Ollama ;
+                          :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet ;
+                          :hasAgentConfig :config_product_competitor_verbose , :config_product_competitor_allow_delegation ;
+                          :hasAgentGoal :goal_product_competitor .
+
+:prompt_agent_product_competitor rdf:type :Prompt ;
+                                 :promptInstruction """Goal: Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.
+Backstory: As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.
+Instruction: Use web search and website scraping tools to analyze the given product website and competitors, produce a comprehensive report articulating key selling points, market appeal, and suggestions for enhancement or positioning. Attention to detail and up-to-date (2024) context required.""" .
+
+:config_product_competitor_verbose rdf:type :Config ;
+                                   :configKey "verbose" ;
+                                   :configValue "True" .
+
+:config_product_competitor_allow_delegation rdf:type :Config ;
+                                           :configKey "allow_delegation" ;
+                                           :configValue "False" .
+
+:goal_product_competitor rdf:type :Goal ;
+                         dcterms:description "Produce thorough product and competitor analysis to inform marketing strategy." .
+
+:agent_strategy_planner rdf:type :LLMAgent ;
+                       :agentID "strategy_planner_agent" ;
+                       :agentRole "Chief Marketing Strategist" ;
+                       :agentPrompt :prompt_agent_strategy_planner ;
+                       :useLanguageModel :LM_Ollama ;
+                       :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram ;
+                       :hasAgentConfig :config_strategy_planner_verbose ;
+                       :hasAgentGoal :goal_strategy_planner .
+
+:prompt_agent_strategy_planner rdf:type :Prompt ;
+                              :promptInstruction """Goal: Synthesize amazing insights from product analysis to formulate incredible marketing strategies.
+Backstory: You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success.
+Instruction: Based on competitor and product analyses, produce a campaign strategy and creative content ideas designed to captivate the target audience. Include context about the product and customer.""" .
+
+:config_strategy_planner_verbose rdf:type :Config ;
+                                :configKey "verbose" ;
+                                :configValue "True" .
+
+:goal_strategy_planner rdf:type :Goal ;
+                      dcterms:description "Formulate marketing strategies and creative ideas based on product and competitor analysis." .
+
+:agent_creative_content_creator rdf:type :LLMAgent ;
+                               :agentID "creative_content_creator_agent" ;
+                               :agentRole "Creative Content Creator" ;
+                               :agentPrompt :prompt_agent_creative_content_creator ;
+                               :useLanguageModel :LM_Ollama ;
+                               :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram ;
+                               :hasAgentConfig :config_creative_verbose ;
+                               :hasAgentGoal :goal_creative_content_creator .
+
+:prompt_agent_creative_content_creator rdf:type :Prompt ;
+                                      :promptInstruction """Goal: Develop compelling and innovative content for social media campaigns, focusing on high-impact Instagram ad copies.
+Backstory: As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences on social media.
+Instruction: Craft concise, punchy ad copy options aligned with the marketing strategy; provide multiple creative variants to test.""" .
+
+:config_creative_verbose rdf:type :Config ;
+                        :configKey "verbose" ;
+                        :configValue "True" .
+
+:goal_creative_content_creator rdf:type :Goal ;
+                              dcterms:description "Produce multiple Instagram ad copy options aligned with campaign strategy." .
+
+:agent_senior_photographer rdf:type :LLMAgent ;
+                           :agentID "senior_photographer_agent" ;
+                           :agentRole "Senior Photographer" ;
+                           :agentPrompt :prompt_agent_senior_photographer ;
+                           :useLanguageModel :LM_Ollama ;
+                           :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram ;
+                           :hasAgentConfig :config_senior_photographer_verbose , :config_senior_photographer_allow_delegation ;
+                           :hasAgentGoal :goal_senior_photographer .
+
+:prompt_agent_senior_photographer rdf:type :Prompt ;
+                                  :promptInstruction """Goal: Take the most amazing photographs for instagram ads that capture emotions and convey a compelling message.
+Backstory: As a Senior Photographer at a leading digital marketing agency, you are an expert at taking amazing photographs that inspire and engage. You're working on a new campaign for a super important customer and must take the most amazing photograph.
+Instruction: Given ad copy and product context, imagine and describe three distinct high-quality photograph concepts in paragraph form.""" .
+
+:config_senior_photographer_verbose rdf:type :Config ;
+                                   :configKey "verbose" ;
+                                   :configValue "True" .
+
+:config_senior_photographer_allow_delegation rdf:type :Config ;
+                                             :configKey "allow_delegation" ;
+                                             :configValue "False" .
+
+:goal_senior_photographer rdf:type :Goal ;
+                          dcterms:description "Generate three photographic concepts that best represent the campaign and product without showing the actual product." .
+
+:agent_chief_creative_director rdf:type :LLMAgent ;
+                              :agentID "chief_creative_diretor_agent" ;
+                              :agentRole "Chief Creative Director" ;
+                              :agentPrompt :prompt_agent_chief_creative_director ;
+                              :useLanguageModel :LM_Ollama ;
+                              :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram ;
+                              :hasAgentConfig :config_chief_creative_verbose ;
+                              :hasAgentGoal :goal_chief_creative_director .
+
+:prompt_agent_chief_creative_director rdf:type :Prompt ;
+                                     :promptInstruction """Goal: Oversee the work done by your team to make sure it's the best possible and aligned with the product's goals; review, approve, ask clarifying questions or delegate follow-up work as necessary.
+Backstory: You're the Chief Content Officer of a leading digital marketing agency specialized in product branding.
+Instruction: Review photographic drafts and approve or delegate refinement; ensure alignment with campaign objectives.""" .
+
+:config_chief_creative_verbose rdf:type :Config ;
+                              :configKey "verbose" ;
+                              :configValue "True" .
+
+:goal_chief_creative_director rdf:type :Goal ;
+                             dcterms:description "Ensure final creative outputs are aligned with product goals; review and approve imagery." .
+
+#################################################################
+# Tasks and their Prompts
+#################################################################
+
+:task_product_analysis rdf:type :Task ;
+                      :performedByAgent :agent_product_competitor ;
+                      :taskPrompt :prompt_task_product_analysis ;
+                      dcterms:description "Analyze the given product website, identify unique features, benefits, narrative, and recommendations." .
+
+:prompt_task_product_analysis rdf:type :Prompt ;
+                              :promptInstruction """Analyze the given product website: {product_website}.
+Extra details provided by the customer: {product_details}.
+Focus on identifying unique features, benefits, and the overall narrative. Provide a final report articulating key selling points, market appeal, and suggestions for enhancement or positioning. Attention to detail and up-to-date (2024) context required.""" ;
+                              :promptOutputIndicator "A comprehensive analysis report covering product key selling points, market appeal, and suggestions." .
+
+:task_competitor_analysis rdf:type :Task ;
+                         :performedByAgent :agent_product_competitor ;
+                         :taskPrompt :prompt_task_competitor_analysis ;
+                         dcterms:description "Identify top competitors and analyze their strategies and positioning relative to the product." .
+
+:prompt_task_competitor_analysis rdf:type :Prompt ;
+                                 :promptInstruction """Explore competitors of: {product_website}.
+Extra details provided by the customer: {product_details}.
+Identify the top 3 competitors and analyze their strategies, market positioning, and customer perception. Include context about the target website and detailed comparison.""" ;
+                                 :promptOutputIndicator "A ranked list of top 3 competitors with comparative analysis and implications for strategy." .
+
+:task_campaign_development rdf:type :Task ;
+                          :performedByAgent :agent_strategy_planner ;
+                          :taskPrompt :prompt_task_campaign_development ;
+                          dcterms:description "Create a targeted marketing campaign strategy and creative ideas." .
+
+:prompt_task_campaign_development rdf:type :Prompt ;
+                                 :promptInstruction """Create a targeted marketing campaign for: {product_website}.
+Extra details provided by the customer: {product_details}.
+Produce strategy and creative content ideas designed to captivate the target audience. Provide ideas that resonate with the audience and include all available product/context information.""" ;
+                                 :promptOutputIndicator "A detailed campaign strategy with creative content ideas and contextual rationale." .
+
+:task_instagram_ad_copy rdf:type :Task ;
+                       :performedByAgent :agent_creative_content_creator ;
+                       :taskPrompt :prompt_task_instagram_ad_copy ;
+                       dcterms:description "Craft engaging Instagram post copy aligned with marketing strategy." .
+
+:prompt_task_instagram_ad_copy rdf:type :Prompt ;
+                              :promptInstruction """Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.""" ;
+                              :promptOutputIndicator "Return 3 distinct Instagram ad copy options, each concise and attention-grabbing." .
+
+:task_take_photograph rdf:type :Task ;
+                     :performedByAgent :agent_senior_photographer ;
+                     :taskPrompt :prompt_task_take_photograph ;
+                     dcterms:description "Imagine and describe three photograph concepts for the Instagram post based on provided copy and product context." .
+
+:prompt_task_take_photograph rdf:type :Prompt ;
+                            :promptInstruction """You MUST take the most amazing photo ever for an instagram post regarding the product. Provided ad copy: {copy}
+Product: {product_website}
+Extra details: {product_details}
+Imagine the photograph and describe it in a paragraph. Follow examples (professional wide shot, soft lighting, 4k, crisp, etc.). Do not show the actual product in photos.""" ;
+                            :promptOutputIndicator "Provide 3 photographic options, each described in one paragraph following the examples." .
+
+:task_review_photo rdf:type :Task ;
+                   :performedByAgent :agent_chief_creative_director ;
+                   :taskPrompt :prompt_task_review_photo ;
+                   dcterms:description "Review photography drafts, approve or request clarifications or delegations; ensure alignment with product goals." .
+
+:prompt_task_review_photo rdf:type :Prompt ;
+                         :promptInstruction """Review the photos from the senior photographer. Ensure alignment with product goals; review, approve, ask clarifying questions or delegate follow-up work as necessary. When delegating, include the full draft as part of the information.
+Product: {product_website}
+Extra details: {product_details}
+Examples: (high tech airplane in a beautiful blue sky ...; the last supper ...; a bearded old man in the snows ...).""" ;
+                         :promptOutputIndicator "Return 3 reviewed photograph options with approval status or delegation instructions." .
+
+#################################################################
+# Teams (Crews) and Workflows
+#################################################################
+
+:Team_CopyCrew rdf:type :Team ;
+               dcterms:title "Copy Crew (agents for copy generation)" ;
+               :hasAgentMember :agent_product_competitor , :agent_strategy_planner , :agent_creative_content_creator ;
+               :hasWorkflowPattern :Workflow_CopyCrew ;
+               :hasTeamGoal :goal_copy_crew ;
+               :hasSystemConfig :config_copy_crew_verbose .
+
+:goal_copy_crew rdf:type :Goal ;
+                dcterms:description "Produce marketing analysis and 3 Instagram ad copy options for the product." .
+
+:config_copy_crew_verbose rdf:type :Config ;
+                         :configKey "verbose" ;
+                         :configValue "True" .
+
+:Workflow_CopyCrew rdf:type :WorkflowPattern ;
+                   dcterms:title "Copy Crew Workflow (sequential tasks for copy generation)" ;
+                   :hasWorkflowStep :step_copy_1 , :step_copy_2 , :step_copy_3 , :step_copy_4 .
+
+:step_copy_1 rdf:type :StartStep , :WorkflowStep ;
+             :stepOrder 1 ;
+             dcterms:description "Analyze product website (website_analysis)" ;
+             :hasAssociatedTask :task_product_analysis ;
+             :nextStep :step_copy_2 .
+
+:step_copy_2 rdf:type :WorkflowStep ;
+             :stepOrder 2 ;
+             dcterms:description "Analyze competitors (market_analysis)" ;
+             :hasAssociatedTask :task_competitor_analysis ;
+             :nextStep :step_copy_3 .
+
+:step_copy_3 rdf:type :WorkflowStep ;
+             :stepOrder 3 ;
+             dcterms:description "Develop campaign strategy and ideas (campaign_development)" ;
+             :hasAssociatedTask :task_campaign_development ;
+             :nextStep :step_copy_4 .
+
+:step_copy_4 rdf:type :EndStep , :WorkflowStep ;
+             :stepOrder 4 ;
+             dcterms:description "Craft Instagram ad copy (instagram_ad_copy)" ;
+             :hasAssociatedTask :task_instagram_ad_copy .
+
+#################################################################
+:Team_ImageCrew rdf:type :Team ;
+                dcterms:title "Image Crew (agents for photography)" ;
+                :hasAgentMember :agent_senior_photographer , :agent_chief_creative_director ;
+                :hasWorkflowPattern :Workflow_ImageCrew ;
+                :hasTeamGoal :goal_image_crew ;
+                :hasSystemConfig :config_image_crew_verbose .
+
+:goal_image_crew rdf:type :Goal ;
+                 dcterms:description "Produce three photograph concepts and a reviewed final selection aligned with campaign copy." .
+
+:config_image_crew_verbose rdf:type :Config ;
+                          :configKey "verbose" ;
+                          :configValue "True" .
+
+:Workflow_ImageCrew rdf:type :WorkflowPattern ;
+                    dcterms:title "Image Crew Workflow" ;
+                    :hasWorkflowStep :step_image_1 , :step_image_2 .
+
+:step_image_1 rdf:type :StartStep , :WorkflowStep ;
+              :stepOrder 1 ;
+              dcterms:description "Senior photographer imagines and describes photos (take_photograph_task)" ;
+              :hasAssociatedTask :task_take_photograph ;
+              :nextStep :step_image_2 .
+
+:step_image_2 rdf:type :EndStep , :WorkflowStep ;
+              :stepOrder 2 ;
+              dcterms:description "Chief creative director reviews and approves or delegates (review_photo)" ;
+              :hasAssociatedTask :task_review_photo .
+
+#################################################################
+# Link Tool usage to Agents (explicit summarization)
+#################################################################
+
+# product_competitor_agent tools
+:agent_product_competitor :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet .
+
+# strategy_planner_agent tools
+:agent_strategy_planner :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram .
+
+# creative_content_creator_agent tools
+:agent_creative_content_creator :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram .
+
+# senior_photographer tools
+:agent_senior_photographer :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram .
+
+# chief creative director tools
+:agent_chief_creative_director :agentToolUsage :Tool_ScrapeWebsite , :Tool_SearchInternet , :Tool_SearchInstagram .
+
+#################################################################
+# End of instance data
+#################################################################

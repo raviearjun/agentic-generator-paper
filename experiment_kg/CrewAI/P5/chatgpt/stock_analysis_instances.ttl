@@ -1,0 +1,309 @@
+# Execution time: 56.90 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Two `financial_analysis` task definitions exist in source; assumed single logical task performed by `financial_analyst_agent`.
+# - SEC tools reference an environment variable `SEC_API_API_KEY`; created a tool config referencing this env var (value noted as env:SEC_API_API_KEY).
+# - Some tools (ScrapeWebsiteTool, WebsiteSearchTool, TXTSearchTool) are from external `crewai_tools` library and source not provided; descriptions assumed from typical behavior.
+# - For SEC tools, both AMZN-bound instances (constructed with "AMZN" in some agent initializers) and generic instances (no stock_name) are represented and linked to the agents that use them as per the code.
+# - Agents' prompts combine the YAML-provided goal and backstory as the promptInstruction.
+# - Workflow ordering inferred from crew.Crew(Process.sequential) and available tasks: financial_analysis -> research -> filings_analysis -> recommend.
+# - All agents explicitly linked to the detected Ollama model `llama3.1` as :LanguageModel.
+# - Interactions inferred: the investment advisor synthesizes outputs from financial & research analysts; created bidirectional :interactsWith links between those agents.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Model
+#################################################################
+:LM_llama3_1 rdf:type :LanguageModel ;
+    dcterms:title "llama3.1" ;
+    dcterms:description "Ollama local model instance used as agent LLM." .
+
+#################################################################
+# Capabilities
+#################################################################
+:Capability_calculator rdf:type :Capability ;
+    dcterms:description "Performs arithmetic and mathematical calculations." .
+
+:Capability_scrape rdf:type :Capability ;
+    dcterms:description "Scrapes and summarizes web page content." .
+
+:Capability_website_search rdf:type :Capability ;
+    dcterms:description "Performs web searches and retrieves relevant results." .
+
+:Capability_txt_search rdf:type :Capability ;
+    dcterms:description "Searches textual sources or indexes." .
+
+:Capability_sec_10k rdf:type :Capability ;
+    dcterms:description "Semantic search within a company's 10-K filing content." .
+
+:Capability_sec_10q rdf:type :Capability ;
+    dcterms:description "Semantic search within a company's 10-Q filing content." .
+
+#################################################################
+# Tools
+#################################################################
+:Tool_CalculatorTool rdf:type :Tool ;
+    dcterms:title "CalculatorTool" ;
+    dcterms:description "Performs safe mathematical expression evaluation (add, sub, mul, div, pow, mod)." ;
+    :hasCapability :Capability_calculator .
+
+:Tool_ScrapeWebsiteTool rdf:type :Tool ;
+    dcterms:title "ScrapeWebsiteTool" ;
+    dcterms:description "Tool to scrape website content and convert to text for summarization." ;
+    :hasCapability :Capability_scrape .
+
+:Tool_WebsiteSearchTool rdf:type :Tool ;
+    dcterms:title "WebsiteSearchTool" ;
+    dcterms:description "Tool to search the web for relevant pages and summaries." ;
+    :hasCapability :Capability_website_search .
+
+:Tool_TXTSearchTool rdf:type :Tool ;
+    dcterms:title "TXTSearchTool" ;
+    dcterms:description "Text search tool for searching indexed textual data." ;
+    :hasCapability :Capability_txt_search .
+
+:Tool_SEC10KTool_Generic rdf:type :Tool ;
+    dcterms:title "SEC10KTool" ;
+    dcterms:description "A tool to semantically search a company's latest 10-K SEC filing content." ;
+    :hasCapability :Capability_sec_10k ;
+    :hasToolConfig :Config_sec_api_key .
+
+:Tool_SEC10QTool_Generic rdf:type :Tool ;
+    dcterms:title "SEC10QTool" ;
+    dcterms:description "A tool to semantically search a company's latest 10-Q SEC filing content." ;
+    :hasCapability :Capability_sec_10q ;
+    :hasToolConfig :Config_sec_api_key .
+
+:Tool_SEC10KTool_AMZN rdf:type :Tool ;
+    dcterms:title "SEC10KTool (AMZN)" ;
+    dcterms:description "SEC10KTool initialized with stock_name=AMZN to pre-load AMZN latest 10-K content." ;
+    :hasCapability :Capability_sec_10k ;
+    :hasToolConfig :Config_sec_api_key , :Config_sec_10k_AMZN .
+
+:Tool_SEC10QTool_AMZN rdf:type :Tool ;
+    dcterms:title "SEC10QTool (AMZN)" ;
+    dcterms:description "SEC10QTool initialized with stock_name=AMZN to pre-load AMZN latest 10-Q content." ;
+    :hasCapability :Capability_sec_10q ;
+    :hasToolConfig :Config_sec_api_key , :Config_sec_10q_AMZN .
+
+#################################################################
+# Tool Configs
+#################################################################
+:Config_sec_api_key rdf:type :Config ;
+    :configKey "SEC_API_API_KEY" ;
+    :configValue "env:SEC_API_API_KEY" ;
+    dcterms:description "SEC API key expected in environment variable SEC_API_API_KEY." .
+
+:Config_sec_10k_AMZN rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "AMZN" ;
+    dcterms:description "SEC10KTool preloaded for AMZN." .
+
+:Config_sec_10q_AMZN rdf:type :Config ;
+    :configKey "stock_name" ;
+    :configValue "AMZN" ;
+    dcterms:description "SEC10QTool preloaded for AMZN." .
+
+#################################################################
+# Agents (LLMAgents)
+#################################################################
+:Agent_financial_agent rdf:type :LLMAgent ;
+    :agentID "financial_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :agentPrompt :Prompt_financial_agent ;
+    :useLanguageModel :LM_llama3_1 ;
+    :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool , :Tool_SEC10QTool_AMZN , :Tool_SEC10KTool_AMZN ;
+    :hasAgentConfig :Config_financial_agent_verbose .
+
+:Agent_research_analyst_agent rdf:type :LLMAgent ;
+    :agentID "research_analyst_agent" ;
+    :agentRole "Staff Research Analyst" ;
+    :agentPrompt :Prompt_research_analyst_agent ;
+    :useLanguageModel :LM_llama3_1 ;
+    :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_SEC10QTool_AMZN , :Tool_SEC10KTool_AMZN ;
+    :hasAgentConfig :Config_research_analyst_agent_verbose .
+
+:Agent_financial_analyst_agent rdf:type :LLMAgent ;
+    :agentID "financial_analyst_agent" ;
+    :agentRole "The Best Financial Analyst" ;
+    :agentPrompt :Prompt_financial_analyst_agent ;
+    :useLanguageModel :LM_llama3_1 ;
+    :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool , :Tool_SEC10QTool_Generic , :Tool_SEC10KTool_Generic ;
+    :hasAgentConfig :Config_financial_analyst_agent_verbose .
+
+:Agent_investment_advisor_agent rdf:type :LLMAgent ;
+    :agentID "investment_advisor_agent" ;
+    :agentRole "Private Investment Advisor" ;
+    :agentPrompt :Prompt_investment_advisor_agent ;
+    :useLanguageModel :LM_llama3_1 ;
+    :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool ;
+    :hasAgentConfig :Config_investment_advisor_agent_verbose .
+
+#################################################################
+# Agent Configs
+#################################################################
+:Config_financial_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" ;
+    dcterms:description "Agent created with verbose=True in code." .
+
+:Config_research_analyst_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" ;
+    dcterms:description "Agent created with verbose=True in code." .
+
+:Config_financial_analyst_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" ;
+    dcterms:description "Agent created with verbose=True in code." .
+
+:Config_investment_advisor_agent_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" ;
+    dcterms:description "Agent created with verbose=True in code." .
+
+#################################################################
+# Agent Prompts (combine goal + backstory as promptInstruction)
+#################################################################
+:Prompt_financial_agent rdf:type :Prompt ;
+    :promptInstruction "Goal: Impress all customers with your financial data and market trends analysis. Backstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." .
+
+:Prompt_research_analyst_agent rdf:type :Prompt ;
+    :promptInstruction "Goal: Being the best at gathering, interpreting data and amazing your customer with it. Backstory: Known as the BEST research analyst, you're skilled in sifting through news, company announcements, and market sentiments. Now you're working on a super important customer." .
+
+:Prompt_financial_analyst_agent rdf:type :Prompt ;
+    :promptInstruction "Goal: Impress all customers with your financial data and market trends analysis. Backstory: The most seasoned financial analyst with lots of expertise in stock market analysis and investment strategies that is working for a super important customer." .
+
+:Prompt_investment_advisor_agent rdf:type :Prompt ;
+    :promptInstruction "Goal: Impress your customers with full analyses over stocks and complete investment recommendations. Backstory: You're the most experienced investment advisor and you combine various analytical insights to formulate strategic investment advice. You are now working for a super important customer you need to impress." .
+
+#################################################################
+# Tasks and their Prompts
+#################################################################
+:Task_financial_analysis rdf:type :Task ;
+    :performedByAgent :Agent_financial_analyst_agent ;
+    :taskPrompt :Prompt_task_financial_analysis ;
+    dcterms:description "Conduct a thorough analysis of {company_stock}'s stock financial health and market performance." .
+
+:Prompt_task_financial_analysis rdf:type :Prompt ;
+    :promptInstruction "Conduct a thorough analysis of {company_stock}'s stock financial health and market performance. This includes examining key financial metrics such as P/E ratio, EPS growth, revenue trends, and debt-to-equity ratio. Also, analyze the stock's performance in comparison to its industry peers and overall market trends." ;
+    :promptOutputIndicator "The final report must expand on the summary provided but now including a clear assessment of the stock's financial standing, its strengths and weaknesses, and how it fares against its competitors in the current market scenario. Make sure to use the most recent data possible." .
+
+:Task_research rdf:type :Task ;
+    :performedByAgent :Agent_research_analyst_agent ;
+    :taskPrompt :Prompt_task_research ;
+    dcterms:description "Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry." .
+
+:Prompt_task_research rdf:type :Prompt ;
+    :promptInstruction "Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others." ;
+    :promptOutputIndicator "A report that includes a comprehensive summary of the latest news, any notable shifts in market sentiment, and potential impacts on the stock. Also return the stock ticker as {company_stock}." .
+
+:Task_filings_analysis rdf:type :Task ;
+    :performedByAgent :Agent_financial_analyst_agent ;
+    :taskPrompt :Prompt_task_filings_analysis ;
+    dcterms:description "Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock} in question." .
+
+:Prompt_task_filings_analysis rdf:type :Prompt ;
+    :promptInstruction "Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock}. Focus on Management's Discussion and Analysis, financial statements, insider trading activity, and any disclosed risks. Extract relevant data and insights that could influence the stock's future performance." ;
+    :promptOutputIndicator "Final answer must be an expanded report that highlights significant findings from these filings including any red flags or positive indicators for your customer." .
+
+:Task_recommend rdf:type :Task ;
+    :performedByAgent :Agent_investment_advisor_agent ;
+    :taskPrompt :Prompt_task_recommend ;
+    dcterms:description "Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst to form a comprehensive investment recommendation." .
+
+:Prompt_task_recommend rdf:type :Prompt ;
+    :promptInstruction "Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. Consider all aspects, including financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings." ;
+    :promptOutputIndicator "A full detailed recommendation for the customer with clear investment stance and strategy, supporting evidence, and a well formatted report." .
+
+#################################################################
+# Workflow Pattern and Steps (Sequential)
+#################################################################
+:Workflow_stock_analysis rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    dcterms:description "Sequential workflow for the Stock Analysis Crew." ;
+    :hasWorkflowStep :Step1 , :Step2 , :Step3 , :Step4 .
+
+:Step1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_financial_analysis ;
+    :nextStep :Step2 ;
+    dcterms:description "Initial financial analysis step." .
+
+:Step2 rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_research ;
+    :nextStep :Step3 ;
+    dcterms:description "Research and news aggregation step." .
+
+:Step3 rdf:type :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_filings_analysis ;
+    :nextStep :Step4 ;
+    dcterms:description "EDGAR filings analysis step." .
+
+:Step4 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :Task_recommend ;
+    dcterms:description "Final recommendation synthesis and reporting step." .
+
+#################################################################
+# Team / Crew
+#################################################################
+:Crew_StockAnalysis rdf:type :Team ;
+    dcterms:title "Stock Analysis Crew" ;
+    dcterms:description "CrewAI-based team coordinating multiple analyst agents to produce stock analysis and recommendations." ;
+    :hasAgentMember :Agent_financial_agent , :Agent_research_analyst_agent , :Agent_financial_analyst_agent , :Agent_investment_advisor_agent ;
+    :hasWorkflowPattern :Workflow_stock_analysis ;
+    :hasSystemConfig :Config_input_query , :Config_input_company_stock ;
+    :hasTeamGoal :Goal_automate_stock_analysis .
+
+#################################################################
+# Team-level Configs / Inputs (from main.py kickoff defaults)
+#################################################################
+:Config_input_query rdf:type :Config ;
+    :configKey "query" ;
+    :configValue "What is the company you want to analyze?" ;
+    dcterms:description "Default kickoff prompt question." .
+
+:Config_input_company_stock rdf:type :Config ;
+    :configKey "company_stock" ;
+    :configValue "AMZN" ;
+    dcterms:description "Default company stock ticker used in examples." .
+
+#################################################################
+# Team Goal
+#################################################################
+:Goal_automate_stock_analysis rdf:type :Goal ;
+    dcterms:description "Automate the process of analyzing a stock to produce a detailed report and investment recommendation." .
+
+#################################################################
+# Agent Interactions (multi-agent collaboration)
+#################################################################
+:Agent_financial_analyst_agent :interactsWith :Agent_research_analyst_agent , :Agent_investment_advisor_agent .
+:Agent_research_analyst_agent :interactsWith :Agent_financial_analyst_agent , :Agent_investment_advisor_agent .
+:Agent_investment_advisor_agent :interactsWith :Agent_financial_analyst_agent , :Agent_research_analyst_agent .
+
+#################################################################
+# Linking Tools to Agents (explicit agentToolUsage)
+#################################################################
+# (already expressed above as :agentToolUsage on agents; repeating for clarity)
+:Agent_financial_agent :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool , :Tool_SEC10QTool_AMZN , :Tool_SEC10KTool_AMZN .
+:Agent_research_analyst_agent :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_SEC10QTool_AMZN , :Tool_SEC10KTool_AMZN .
+:Agent_financial_analyst_agent :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool , :Tool_SEC10QTool_Generic , :Tool_SEC10KTool_Generic .
+:Agent_investment_advisor_agent :agentToolUsage :Tool_ScrapeWebsiteTool , :Tool_WebsiteSearchTool , :Tool_CalculatorTool .
+
+#################################################################
+# End of instance data
+#################################################################

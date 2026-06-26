@@ -1,0 +1,123 @@
+# Execution time: 31.63 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - agentRole is not specified in source; assigned "directory" as an assumed role.
+# - No explicit workflow defined in source; created a simple 2-step WorkflowPattern (Fetch -> Process) to satisfy StartStep/EndStep requirement.
+# - No tool runtime config (API keys) present; no :hasToolConfig generated for yc-directory tool.
+# - Assumed the agent's model provider ("ANTHROPIC") is part of the LanguageModel description.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# Agent individual
+:YC_Directory_Agent rdf:type :LLMAgent ;
+    :agentID "YC Directory Agent" ;
+    :agentRole "directory" ;
+    :agentPrompt :YC_Directory_Agent_Prompt ;
+    :useLanguageModel :Claude_3_5_Sonnet_20241022 ;
+    :agentToolUsage :YC_Directory_Tool ;
+    :hasAgentConfig :YC_Agent_Config_ModelProvider , :YC_Agent_Config_ToolChoice ;
+    :hasAgentCapability :Capability_Query_YC_Directory ;
+    dcterms:description "Mastra Agent defined in src/mastra/agents/index.ts that answers questions about the Y Combinator directory for 2024." .
+
+# Agent Prompt
+:YC_Directory_Agent_Prompt rdf:type :Prompt ;
+    :promptInstruction """You are a helpful assistant that answers questions about the Y Combinator directory for 2024.
+
+Only provide information from the Y Combinator directory for 2024.
+Include the batch number when referencing any companies in your response.
+If you don't know the answer, say "I don't know" and don't make up an answer.
+You only know information about the YC Company name, long description, tags, industries, and batch.
+""" ;
+    dcterms:title "YC Directory Agent Instructions" .
+
+# Language Model
+:Claude_3_5_Sonnet_20241022 rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-sonnet-20241022" ;
+    dcterms:description "Provider: ANTHROPIC (as specified in agent.model.provider). Model used by YC Directory Agent." .
+
+# Tool for fetching YC directory
+:YC_Directory_Tool rdf:type :Tool ;
+    dcterms:title "yc-directory" ;
+    dcterms:description "Get data from the 2024 YC directory" ;
+    :hasCapability :Capability_YC_Tool_Capability .
+
+:Capability_YC_Tool_Capability rdf:type :Capability ;
+    dcterms:title "Provide YC 2024 directory dataset" ;
+    dcterms:description "Returns an array of company records with fields: name, longDescription, tags, industries, batch." .
+
+# Agent Configs
+:YC_Agent_Config_ModelProvider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "ANTHROPIC" .
+
+:YC_Agent_Config_ToolChoice rdf:type :Config ;
+    :configKey "model.toolChoice" ;
+    :configValue "auto" .
+
+# Agent capability (what the agent can do)
+:Capability_Query_YC_Directory rdf:type :Capability ;
+    dcterms:title "answer_yc_directory_queries" ;
+    dcterms:description "Ability to answer questions using the 2024 YC directory dataset." .
+
+# Tasks
+:FetchYCDirectoryTask rdf:type :Task ;
+    :performedByAgent :YC_Directory_Agent ;
+    :taskPrompt :FetchYCDirectory_Prompt ;
+    dcterms:description "Task to retrieve the YC directory dataset using the yc-directory tool." .
+
+:FetchYCDirectory_Prompt rdf:type :Prompt ;
+    :promptInstruction "Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool." ;
+    :promptOutputIndicator "Array of objects with fields: name (string), longDescription (string), tags (string), industries (string), batch (string)." ;
+    dcterms:title "Fetch YC Directory Prompt" .
+
+:ProcessYCDataTask rdf:type :Task ;
+    :performedByAgent :YC_Directory_Agent ;
+    :taskPrompt :ProcessYCData_Prompt ;
+    dcterms:description "Task to process/format the YC directory data for consumption by downstream callers (e.g., filtering, adding batch metadata)." .
+
+:ProcessYCData_Prompt rdf:type :Prompt ;
+    :promptInstruction "Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary." ;
+    :promptOutputIndicator "A list of formatted company summaries including name, batch, industries, and a one-sentence summary." ;
+    dcterms:title "Process YC Data Prompt" .
+
+# Workflow Pattern (synthetic, derived for extraction completeness)
+:YC_Directory_Workflow rdf:type :WorkflowPattern ;
+    dcterms:title "YC Directory Retrieval Workflow" ;
+    :hasWorkflowStep :StartStep_Fetch , :EndStep_Process ;
+    dcterms:description "Simple workflow: Start -> Fetch directory -> Process results." .
+
+# Workflow Steps
+:StartStep_Fetch rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :FetchYCDirectoryTask ;
+    :dcterms:title "Start: Fetch Directory" .
+
+:EndStep_Process rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :ProcessYCDataTask ;
+    dcterms:title "End: Process Directory Results" .
+
+# Step sequencing
+:StartStep_Fetch :nextStep :EndStep_Process .
+
+# Team (Mastra instance)
+:YC_Mastra_Team rdf:type :Team ;
+    dcterms:title "Mastra Instance (yc-agent)" ;
+    :hasAgentMember :YC_Directory_Agent ;
+    :hasWorkflowPattern :YC_Directory_Workflow ;
+    dcterms:description "Mastra instance constructed in src/mastra/index.ts with a single agent 'ycAgent' and logger configuration." .
+
+# Additional linkage: tools and capabilities (tool used by agent already linked above)
+# (No external tool configs detected; if present they would be added as :hasToolConfig)
+
+# End of generated instances.

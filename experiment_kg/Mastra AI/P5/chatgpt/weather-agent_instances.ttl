@@ -1,0 +1,149 @@
+# Execution time: 40.14 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Assumed the workflow steps are performed by the registered Mastra agent "Weather Agent" for the purpose of :performedByAgent links (workflow steps contain code executed by the workflow runtime).
+# - Assumed agent role value as "weather assistant" derived from the agent instructions.
+# - No external API keys/configs were detected; only agent model settings were added as :Config entries.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent: Weather Agent
+:agent_weatherAgent rdf:type :LLMAgent ;
+    dcterms:title "Weather Agent" ;
+    :agentID "Weather Agent" ;
+    :agentRole "weather assistant" ;
+    :agentPrompt :prompt_weatherAgent ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_get_weather ;
+    :hasAgentConfig :config_weatherAgent_modelProvider ,
+                    :config_weatherAgent_modelName ;
+    :hasAgentCapability :cap_agent_weather_info .
+
+:prompt_weatherAgent rdf:type :Prompt ;
+    :promptInstruction "You are a helpful weather assistant that provides accurate weather information.
+
+Your primary function is to help users get weather details for specific locations. When responding:
+- Always ask for a location if none is provided
+- Include relevant details like humidity, wind conditions, and precipitation
+- Keep responses concise but informative
+
+Use the weatherTool to fetch current weather data." .
+
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Language model specified in agent.model (provider: OPEN_AI, name: gpt-4o)." .
+
+:cap_agent_weather_info rdf:type :Capability ;
+    dcterms:description "Provide concise weather information including humidity, wind, precipitation; ask for location if not provided." .
+
+:config_weatherAgent_modelProvider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "OPEN_AI" .
+
+:config_weatherAgent_modelName rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "gpt-4o" .
+
+### Tool: weatherTool (get-weather)
+:tool_get_weather rdf:type :Tool ;
+    dcterms:title "get-weather" ;
+    dcterms:description "Get current weather for a location" ;
+    :hasCapability :cap_get_weather .
+
+:cap_get_weather rdf:type :Capability ;
+    dcterms:description "Fetch current weather and geocoding for a given location using Open-Meteo APIs." .
+
+### Workflow: weather-workflow and Steps
+:workflow_weather_workflow rdf:type :WorkflowPattern ;
+    dcterms:title "weather-workflow" ;
+    :hasWorkflowStep :step_fetch_weather , :step_plan_activities .
+
+:step_fetch_weather rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "fetch-weather" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_fetch_weather ;
+    :nextStep :step_plan_activities .
+
+:step_plan_activities rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "plan-activities" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_plan_activities .
+
+### Tasks and Prompts
+:task_fetch_weather rdf:type :Task ;
+    dcterms:title "fetch-weather task" ;
+    dcterms:description "Fetches weather forecast for a given city" ;
+    :performedByAgent :agent_weatherAgent ;
+    :taskPrompt :prompt_fetchWeather .
+
+:prompt_fetchWeather rdf:type :Prompt ;
+    :promptInstruction "Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects." ;
+    :promptInputData "triggerData.city (string)" ;
+    :promptOutputIndicator "Array of daily forecast objects with fields: date, maxTemp, minTemp, precipitationChance, condition, location" .
+
+:task_plan_activities rdf:type :Task ;
+    dcterms:title "plan-activities task" ;
+    dcterms:description "Suggests activities based on weather conditions" ;
+    :performedByAgent :agent_weatherAgent ;
+    :taskPrompt :prompt_planActivities .
+
+:prompt_planActivities rdf:type :Prompt ;
+    :promptInstruction "You are a local activities and travel expert who excels at weather-based planning. Analyze the weather data and provide practical activity recommendations.
+
+For each day in the forecast, structure your response exactly as follows:
+
+📅 [Day, Month Date, Year]
+═══════════════════════════
+
+🌡️ WEATHER SUMMARY
+• Conditions: [brief description]
+• Temperature: [X°C/Y°F to A°C/B°F]
+• Precipitation: [X% chance]
+
+🌅 MORNING ACTIVITIES
+Outdoor:
+• [Activity Name] - [Brief description including specific location/route]
+  Best timing: [specific time range]
+  Note: [relevant weather consideration]
+
+🌞 AFTERNOON ACTIVITIES
+Outdoor:
+• [Activity Name] - [Brief description including specific location/route]
+  Best timing: [specific time range]
+  Note: [relevant weather consideration]
+
+🏠 INDOOR ALTERNATIVES
+• [Activity Name] - [Brief description including specific venue]
+  Ideal for: [weather condition that would trigger this alternative]
+
+⚠️ SPECIAL CONSIDERATIONS
+• [Any relevant weather warnings, UV index, wind conditions, etc.]
+
+Guidelines:
+- Suggest 2-3 time-specific outdoor activities per day
+- Include 1-2 indoor backup options
+- For precipitation >50%, lead with indoor activities
+- All activities must be specific to the location
+- Include specific venues, trails, or locations
+- Consider activity intensity based on temperature
+- Keep descriptions concise but informative
+
+Maintain this exact formatting for consistency, using the emoji and section headers as shown." ;
+    :promptInputData "forecast array (daily objects)" ;
+    :promptOutputIndicator "Formatted activities string using the specified emoji headers and sections" .
+
+### Team / Mastra instance
+:team_mastra rdf:type :Team ;
+    dcterms:title "mastra-instance" ;
+    :hasAgentMember :agent_weatherAgent ;
+    :hasWorkflowPattern :workflow_weather_workflow .

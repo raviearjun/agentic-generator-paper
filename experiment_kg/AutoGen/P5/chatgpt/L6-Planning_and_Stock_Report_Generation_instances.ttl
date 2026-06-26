@@ -1,0 +1,267 @@
+# Execution time: 48.53 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - No explicit external Tools or registered functions detected in the source; therefore no :Tool individuals created.
+# - Single llm_config {"model":"gpt-4-turbo"} is reused for multiple agents; created one :LanguageModel and linked to all agents.
+# - Admin (user_proxy) is implemented as ConversableAgent with human_input_mode="ALWAYS"; per AutoGen mapping treated as :LLMAgent (not :HumanAgent).
+# - Allowed speaker transition mapping stored in a system-level :Config string (ontology has no dedicated property for speaker transition graphs).
+# - Team-level goal not stated in code; no :hasTeamGoal created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Model
+#################################################################
+:LM_gpt4_turbo rdf:type :LanguageModel ;
+              dcterms:title "gpt-4-turbo" ;
+              dcterms:description "Language model referenced by llm_config in the code." .
+
+#################################################################
+# Configs
+#################################################################
+:cfg_model_gpt4 rdf:type :Config ;
+                :configKey "model" ;
+                :configValue "gpt-4-turbo" ;
+                dcterms:description "Shared llm_config used across agents." .
+
+:cfg_executor_last_n_messages rdf:type :Config ;
+                              :configKey "last_n_messages" ;
+                              :configValue "3" ;
+                              dcterms:description "Executor code_execution_config: number of last messages to look for code." .
+
+:cfg_executor_work_dir rdf:type :Config ;
+                      :configKey "work_dir" ;
+                      :configValue "coding" ;
+                      dcterms:description "Executor code_execution_config: working directory for code and artifacts." .
+
+:cfg_executor_use_docker rdf:type :Config ;
+                         :configKey "use_docker" ;
+                         :configValue "False" ;
+                         dcterms:description "Executor code_execution_config: whether to use docker." .
+
+:cfg_groupchat_max_round rdf:type :Config ;
+                        :configKey "max_round" ;
+                        :configValue "10" ;
+                        dcterms:description "GroupChat parameter max_round." .
+
+:cfg_groupchat_allowed_transitions rdf:type :Config ;
+                                  :configKey "allowed_speaker_transitions" ;
+                                  :configValue "{ user_proxy: [engineer, writer, executor, planner], engineer: [user_proxy, executor], writer: [user_proxy, planner], executor: [user_proxy, engineer, planner], planner: [user_proxy, engineer, writer] }" ;
+                                  dcterms:description "Allowed speaker transitions mapping provided in GroupChat initialization." .
+
+#################################################################
+# Agents (LLMAgents)
+#################################################################
+:agent_Admin rdf:type :LLMAgent ;
+             :agentID "Admin" ;
+             :agentRole "Admin" ;
+             :agentPrompt :prompt_Admin ;
+             :useLanguageModel :LM_gpt4_turbo ;
+             :hasAgentConfig :cfg_model_gpt4 ;
+             dcterms:description "ConversableAgent user proxy that initiates tasks and provides instructions to the writer." .
+
+:agent_Planner rdf:type :LLMAgent ;
+               :agentID "Planner" ;
+               :agentRole "Planner" ;
+               :agentPrompt :prompt_Planner ;
+               :useLanguageModel :LM_gpt4_turbo ;
+               :hasAgentConfig :cfg_model_gpt4 ;
+               dcterms:description "Planner that decomposes tasks and orchestrates steps." .
+
+:agent_Engineer rdf:type :LLMAgent ;
+                :agentID "Engineer" ;
+                :agentRole "Engineer" ;
+                :agentPrompt :prompt_Engineer ;
+                :useLanguageModel :LM_gpt4_turbo ;
+                :hasAgentConfig :cfg_model_gpt4 ;
+                dcterms:description "AssistantAgent that writes code based on the planner's plan." .
+
+:agent_Executor rdf:type :LLMAgent ;
+                :agentID "Executor" ;
+                :agentRole "Executor" ;
+                :agentPrompt :prompt_Executor ;
+                :useLanguageModel :LM_gpt4_turbo ;
+                :hasAgentConfig :cfg_model_gpt4 , :cfg_executor_last_n_messages , :cfg_executor_work_dir , :cfg_executor_use_docker ;
+                dcterms:description "ConversableAgent that executes code produced by the engineer and reports results." .
+
+:agent_Writer rdf:type :LLMAgent ;
+              :agentID "Writer" ;
+              :agentRole "Writer" ;
+              :agentPrompt :prompt_Writer ;
+              :useLanguageModel :LM_gpt4_turbo ;
+              :hasAgentConfig :cfg_model_gpt4 ;
+              dcterms:description "Writer agent that composes blog posts in markdown and refines them from admin feedback." .
+
+:agent_GroupChatManager rdf:type :LLMAgent ;
+                       :agentID "GroupChatManager" ;
+                       :agentRole "GroupChatManager" ;
+                       :agentPrompt :prompt_Manager ;
+                       :useLanguageModel :LM_gpt4_turbo ;
+                       :hasAgentConfig :cfg_model_gpt4 ;
+                       dcterms:description "GroupChatManager instance managing the groupchat and using the shared llm_config." .
+
+#################################################################
+# Prompts (agent system messages and task prompts)
+#################################################################
+:prompt_Admin rdf:type :Prompt ;
+              :promptInstruction "Give the task, and send instructions to writer to refine the blog post." ;
+              dcterms:description "Admin system_message; instructs Admin to provide tasks and send instructions to writer." .
+
+:prompt_Planner rdf:type :Prompt ;
+                :promptInstruction "Given a task, please determine what information is needed to complete the task. Please note that the information will all be retrieved using Python code. Please only suggest information that can be retrieved using Python code. After each step is done by others, check the progress and instruct the remaining steps. If a step fails, try to workaround" ;
+                dcterms:description "Planner system_message describing its planning responsibilities." .
+
+:prompt_Engineer rdf:type :Prompt ;
+                 :promptInstruction "An engineer that writes code based on the plan provided by the planner." ;
+                 dcterms:description "Engineer description used as system prompt." .
+
+:prompt_Executor rdf:type :Prompt ;
+                 :promptInstruction "Execute the code written by the engineer and report the result." ;
+                 dcterms:description "Executor system_message and execution role." .
+
+:prompt_Writer rdf:type :Prompt ;
+               :promptInstruction "Writer. Please write blogs in markdown format (with relevant titles) and put the content in pseudo mdcode block. You take feedback from the admin and refine your blog." ;
+               dcterms:description "Writer system_message describing output format and refinement behavior." .
+
+:prompt_Manager rdf:type :Prompt ;
+                :promptInstruction "GroupChatManager: manage the groupchat with the provided llm_config." ;
+                dcterms:description "Manager creation call context." .
+
+#################################################################
+# Tasks
+#################################################################
+:task_Initiate_WriteBlog rdf:type :Task ;
+                         :performedByAgent :agent_Admin ;
+                         :taskPrompt :prompt_Task_Initiate ;
+                         dcterms:description "Initial user task message used to start the groupchat planning and execution." .
+
+:prompt_Task_Initiate rdf:type :Prompt ;
+                      :promptInstruction "Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23." ;
+                      :promptOutputIndicator "A blogpost in markdown analyzing Nvidia's past-month stock performance, with relevant charts or code results if available." ;
+                      dcterms:description "Task message stored in the 'task' variable in the notebook." .
+
+:task_Planner_Plan rdf:type :Task ;
+                   :performedByAgent :agent_Planner ;
+                   :taskPrompt :prompt_Planner_Task ;
+                   dcterms:description "Planner's task to decompose the initial blogpost task into retrievable Python-code-based steps." .
+
+:prompt_Planner_Task rdf:type :Prompt ;
+                     :promptInstruction "Given the blogpost task, determine what information can be retrieved using Python code (e.g., historical prices, volumes) and produce a stepwise plan. After each step is executed, inspect results and direct remaining steps; on failure, suggest workarounds." ;
+                     :promptOutputIndicator "A list of ordered, executable steps for data retrieval and analysis." .
+
+:task_Engineer_WriteCode rdf:type :Task ;
+                         :performedByAgent :agent_Engineer ;
+                         :taskPrompt :prompt_Engineer_Task ;
+                         dcterms:description "Engineer tasked to implement code per the planner's steps." .
+
+:prompt_Engineer_Task rdf:type :Prompt ;
+                      :promptInstruction "Write Python code to retrieve stock data and produce analysis outputs based on the planner's specifications." ;
+                      :promptOutputIndicator "Python scripts or code snippets that retrieve and preprocess data, compute metrics, and produce figures or tables." .
+
+:task_Executor_RunCode rdf:type :Task ;
+                       :performedByAgent :agent_Executor ;
+                       :taskPrompt :prompt_Executor_Task ;
+                       dcterms:description "Executor runs the engineer's code and reports outputs." .
+
+:prompt_Executor_Task rdf:type :Prompt ;
+                      :promptInstruction "Execute the latest code message from the engineer (look back up to last 3 messages for code), store artifacts in the 'coding' directory, and report outputs and errors." ;
+                      :promptOutputIndicator "Execution logs, produced files (data, charts), and error reports." .
+
+:task_Writer_ProduceBlog rdf:type :Task ;
+                        :performedByAgent :agent_Writer ;
+                        :taskPrompt :prompt_Writer_Task ;
+                        dcterms:description "Writer composes the final blogpost using execution outputs and admin feedback." .
+
+:prompt_Writer_Task rdf:type :Prompt ;
+                    :promptInstruction "Write a blog post in markdown summarizing Nvidia's stock performance in the past month using provided analysis outputs. Use appropriate titles and place content in a pseudo mdcode block. Accept and apply admin feedback to refine." ;
+                    :promptOutputIndicator "Final blogpost in markdown ready for publishing." .
+
+#################################################################
+# Team and Workflow Pattern
+#################################################################
+:team_GroupChat1 rdf:type :Team ;
+                 dcterms:title "GroupChat Team for Blog Generation" ;
+                 :hasAgentMember :agent_Admin , :agent_Planner , :agent_Engineer , :agent_Executor , :agent_Writer , :agent_GroupChatManager ;
+                 :hasWorkflowPattern :wp_GroupChat1 ;
+                 :hasSystemConfig :cfg_groupchat_max_round , :cfg_groupchat_allowed_transitions ;
+                 dcterms:description "Team instantiated by GroupChat(agents=[...]) with a max_round and allowed speaker transitions." .
+
+:wp_GroupChat1 rdf:type :WorkflowPattern ;
+               dcterms:title "GroupChat-based blog generation workflow" ;
+               dcterms:description "Workflow pattern representing the conversational workflow among Admin, Planner, Engineer, Executor, and Writer" ;
+               :hasWorkflowStep :step_start_Admin , :step_planner , :step_engineer , :step_executor , :step_writer , :step_end .
+
+#################################################################
+# Workflow Steps (Start, intermediate, End) and associations
+#################################################################
+:step_start_Admin rdf:type :StartStep , :WorkflowStep ;
+                  :stepOrder 1 ;
+                  :hasAssociatedTask :task_Initiate_WriteBlog ;
+                  :nextStep :step_planner ;
+                  dcterms:description "Start step: Admin initiates the blog generation task." .
+
+:step_planner rdf:type :WorkflowStep ;
+              :stepOrder 2 ;
+              :hasAssociatedTask :task_Planner_Plan ;
+              :nextStep :step_engineer ;
+              dcterms:description "Planner decomposes the task into executable steps." .
+
+:step_engineer rdf:type :WorkflowStep ;
+               :stepOrder 3 ;
+               :hasAssociatedTask :task_Engineer_WriteCode ;
+               :nextStep :step_executor ;
+               dcterms:description "Engineer implements code for data retrieval and analysis." .
+
+:step_executor rdf:type :WorkflowStep ;
+               :stepOrder 4 ;
+               :hasAssociatedTask :task_Executor_RunCode ;
+               :nextStep :step_writer ;
+               dcterms:description "Executor runs code and reports results." .
+
+:step_writer rdf:type :WorkflowStep ;
+             :stepOrder 5 ;
+             :hasAssociatedTask :task_Writer_ProduceBlog ;
+             :nextStep :step_end ;
+             dcterms:description "Writer writes and refines the blog post based on analysis and admin feedback." .
+
+:step_end rdf:type :EndStep , :WorkflowStep ;
+          :stepOrder 6 ;
+          dcterms:description "End step marking completion of the workflow." .
+
+#################################################################
+# Agent Interactions (bidirectional where communication occurs)
+#################################################################
+:agent_Admin :interactsWith :agent_Engineer , :agent_Writer , :agent_Executor , :agent_Planner .
+:agent_Engineer :interactsWith :agent_Admin , :agent_Executor .
+:agent_Writer :interactsWith :agent_Admin , :agent_Planner .
+:agent_Executor :interactsWith :agent_Admin , :agent_Engineer , :agent_Planner .
+:agent_Planner :interactsWith :agent_Admin , :agent_Engineer , :agent_Writer .
+
+# Add reciprocal triples to represent bidirectional interactions (AutoGen checklist)
+:agent_Engineer :interactsWith :agent_Admin .
+:agent_Writer :interactsWith :agent_Admin .
+:agent_Executor :interactsWith :agent_Admin .
+:agent_Planner :interactsWith :agent_Admin .
+:agent_Admin :interactsWith :agent_Planner .
+:agent_Admin :interactsWith :agent_Executor .
+:agent_Admin :interactsWith :agent_Writer .
+:agent_Planner :interactsWith :agent_Writer .
+:agent_Executor :interactsWith :agent_Engineer .
+:agent_Engineer :interactsWith :agent_Executor .
+:agent_Writer :interactsWith :agent_Planner .
+
+#################################################################
+# Additional metadata / descriptions
+#################################################################
+:task_Initiate_WriteBlog dcterms:description "User-provided task to write a blogpost about Nvidia's past month stock performance (date 2024-04-23)." .
+:wp_GroupChat1 dcterms:description "Derived workflow pattern from the GroupChat agent configuration." .

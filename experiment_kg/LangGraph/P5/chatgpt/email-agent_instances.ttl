@@ -1,0 +1,246 @@
+# Execution time: 83.36 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: LangGraph
+
+# Issues / Assumptions:
+# - Assumption: No explicit agent-level system prompt was provided in code; created a default agent prompt noting task-level prompts are used.
+# - Assumption: Created a generic HumanAgent :HumanUser to represent the human who interacts via the interrupt node.
+# - No external API keys or tool configs detected; tool schemas used as tool descriptions only.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################
+# Agents / Language Models / Tools
+#################################
+
+:EmailAssistantAgent rdf:type :LLMAgent ;
+    :agentID "email-assistant-agent" ;
+    :agentRole "Email Assistant" ;
+    :agentPrompt :Prompt_AgentSystem ;
+    :useLanguageModel :LM_gpt4o ;
+    :agentToolUsage :Tool_write_email ;
+    :hasAgentConfig :Config_model_gpt4o , :Config_temperature_0 ;
+    dcterms:title "Email Assistant Agent" .
+
+:LM_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "ChatOpenAI model instance using gpt-4o as configured in nodes" .
+
+:Tool_write_email rdf:type :Tool ;
+    dcterms:title "write_email" ;
+    dcterms:description "Write an email based on the conversation history" ;
+    :hasCapability :Capability_write_email .
+
+:Capability_write_email rdf:type :Capability ;
+    dcterms:title "Write email capability" ;
+    dcterms:description "Produces an email object with subject, body, and recipient based on conversation history or user edits." .
+
+:Config_model_gpt4o rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-4o" .
+
+:Config_temperature_0 rdf:type :Config ;
+    :configKey "temperature" ;
+    :configValue "0" .
+
+#################################
+# Prompts
+#################################
+
+:Prompt_AgentSystem rdf:type :Prompt ;
+    :promptInstruction "No explicit system prompt provided; agent uses task-level prompts (write/rewrite prompts and human interrupt UI) from node implementations." ;
+    dcterms:title "Agent-level placeholder prompt" .
+
+:Prompt_WriteEmail rdf:type :Prompt ;
+    :promptInstruction """You're an AI email assistant, tasked with writing an email for the user.
+Use the entire conversation history between you, and the user to craft the email for them.
+
+<conversation>
+{CONVERSATION}
+</conversation>
+
+If there is NOT enough information to send an email, respond to the user requesting the missing information.
+Required fields:
+- subject - The subject of the email
+- body - The body of the email
+- to - The recipient of the email""" ;
+    :promptOutputIndicator "An email object with fields: subject, body, to" ;
+    dcterms:title "Send Email Prompt" .
+
+:Prompt_RewriteEmail rdf:type :Prompt ;
+    :promptInstruction """You're an AI email assistant, tasked with rewriting an email for the user.
+Here is the current state of the email for the user:
+<email>
+  <subject>
+    {SUBJECT}
+  </subject>
+  <body>
+    {BODY}
+  </body>
+  <to>
+    {TO}
+  </to>
+</email>
+
+Here is the user's response, which should contain some request for changes to the email:
+<user-response>
+{USER_RESPONSE}
+</user-response>
+
+Given that, please rewrite the email. Do NOT modify anything the user does not request to be changed.""" ;
+    :promptOutputIndicator "An email object with fields: subject, body, to" ;
+    dcterms:title "Rewrite Email Prompt" .
+
+:Prompt_InterruptUI rdf:type :Prompt ;
+    :promptInstruction """# New Email
+
+## Subject
+{subject}
+
+## To
+{to}
+
+## Body
+{body}
+
+## Response Instructions
+
+- **Response**: Any response submitted will be passed to an LLM to rewrite the email. It can rewrite the email body, subject, or recipient.
+
+- **Edit or Accept**: Editing/Accepting the email will send the email.
+
+- **Ignore**: Ignoring the email will end the conversation, and the email will not be sent.""" ;
+    dcterms:title "Human Interrupt UI Description" .
+
+:Prompt_RouteAfterWriting rdf:type :Prompt ;
+    :promptInstruction "Router logic for writeEmail node: if no email exists in state -> END; otherwise -> interrupt node." ;
+    dcterms:title "Route after writeEmail" .
+
+:Prompt_RouteAfterInterrupt rdf:type :Prompt ;
+    :promptInstruction "Router logic for interrupt node: if humanResponse.type is missing or 'ignore' -> END; if 'response' -> rewriteEmail; otherwise -> sendEmail." ;
+    dcterms:title "Route after interrupt" .
+
+#################################
+# Tasks
+#################################
+
+:Task_writeEmail rdf:type :Task ;
+    :taskPrompt :Prompt_WriteEmail ;
+    :promptOutputIndicator "email object with subject, body, to" ;
+    :performedByAgent :EmailAssistantAgent ;
+    dcterms:title "Write Email Task" ;
+    dcterms:description "LLM task that generates an initial email draft from conversation history." .
+
+:Task_rewriteEmail rdf:type :Task ;
+    :taskPrompt :Prompt_RewriteEmail ;
+    :promptOutputIndicator "email object with subject, body, to" ;
+    :performedByAgent :EmailAssistantAgent ;
+    dcterms:title "Rewrite Email Task" ;
+    dcterms:description "LLM task that rewrites the email according to user edits or responses." .
+
+:Task_sendEmail rdf:type :Task ;
+    :taskPrompt :Prompt_SendEmail ;
+    :performedByAgent :EmailAssistantAgent ;
+    dcterms:title "Send Email Task" ;
+    dcterms:description "Finalization step that sends/renders the sent email confirmation." .
+
+:Prompt_SendEmail rdf:type :Prompt ;
+    :promptInstruction "Render a confirmation UI indicating the email was successfully sent." ;
+    :promptOutputIndicator "Confirmation message or sent-email UI component" ;
+    dcterms:title "Send Email Confirmation Prompt" .
+
+:Task_interrupt rdf:type :Task ;
+    :taskPrompt :Prompt_InterruptUI ;
+    dcterms:title "Human Interrupt Task" ;
+    dcterms:description "Human-in-the-loop interruption UI which can edit, accept, ignore, or request a rewrite." .
+
+#################################
+# Human participant
+#################################
+
+:HumanUser rdf:type :HumanAgent ;
+    dcterms:title "End user / Human participant" .
+
+:HumanUser :humanParticipatedIn :Task_interrupt .
+
+#################################
+# Workflow pattern and steps (StateGraph)
+#################################
+
+:EmailAgent_StateGraph rdf:type :WorkflowPattern ;
+    dcterms:title "StateGraph" ;
+    :hasWorkflowStep :StartStep_1 , :Step_writeEmail , :Step_interrupt , :Step_rewriteEmail , :Step_sendEmail , :EndStep_1 ;
+    dcterms:description "WorkflowPattern generated from LangGraph StateGraph in index.ts" .
+
+# Start and End Steps
+:StartStep_1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "0"^^xsd:integer ;
+    :nextStep :Step_writeEmail ;
+    :hasAssociatedTask :Task_writeEmail ;
+    dcterms:title "Start" .
+
+:EndStep_1 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "5"^^xsd:integer ;
+    dcterms:title "End" .
+
+# Concrete Steps
+:Step_writeEmail rdf:type :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_writeEmail ;
+    :taskPrompt :Prompt_RouteAfterWriting ;
+    :nextStep :Step_interrupt , :EndStep_1 ;
+    dcterms:title "writeEmail" .
+
+:Step_interrupt rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_interrupt ;
+    :taskPrompt :Prompt_RouteAfterInterrupt ;
+    :nextStep :Step_sendEmail , :Step_rewriteEmail , :EndStep_1 ;
+    dcterms:title "interrupt" .
+
+:Step_rewriteEmail rdf:type :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_rewriteEmail ;
+    :nextStep :Step_interrupt ;
+    dcterms:title "rewriteEmail" .
+
+:Step_sendEmail rdf:type :WorkflowStep ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :Task_sendEmail ;
+    :nextStep :EndStep_1 ;
+    dcterms:title "sendEmail" .
+
+#################################
+# Team / System linking
+#################################
+
+:EmailAssistantTeam rdf:type :Team ;
+    dcterms:title "Email Assistant Team (StateGraph system)" ;
+    :hasAgentMember :EmailAssistantAgent ;
+    :hasWorkflowPattern :EmailAgent_StateGraph .
+
+#################################
+# Additional links ensuring completeness
+#################################
+
+# Link tasks to the performing agent where applicable
+# (writeEmail, rewriteEmail, sendEmail are LLM-invoking or performed by the agent)
+:Task_writeEmail :performedByAgent :EmailAssistantAgent .
+:Task_rewriteEmail :performedByAgent :EmailAssistantAgent .
+:Task_sendEmail :performedByAgent :EmailAssistantAgent .
+
+# Link agent to tool
+:EmailAssistantAgent :agentToolUsage :Tool_write_email .
+
+# Ensure agent has knowledge/memory if applicable (none explicitly declared in code)
+# (No Memory created because none present in source)
+
+# End of generated instances.

@@ -1,0 +1,122 @@
+# Execution time: 31.93 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit workflow defined in code; created a simple 3-step workflow (Fetch Image -> Analyze Image -> End) to represent UI flow.
+# - Agent role inferred from agent name; used "Bird checker" as :agentRole.
+# - Tool config for Unsplash access key inferred from code usage of NEXT_PUBLIC_UNSPLASH_ACCESS_KEY; value set as "env:NEXT_PUBLIC_UNSPLASH_ACCESS_KEY".
+# - Model config values taken from agent.model in code (provider and name). toolChoice included as agent config.
+# - Single agent in repository; no multi-agent interactions present.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# Agent (Mastra Agent)
+:BirdAgent rdf:type :LLMAgent ;
+    dcterms:title "Bird checker" ;
+    :agentID "birdAgent" ;
+    :agentRole "Bird checker" ;
+    :agentPrompt :BirdAgentPrompt ;
+    :useLanguageModel :Claude3Haiku ;
+    :hasAgentConfig :BirdAgentConfig_ModelProvider ,
+                    :BirdAgentConfig_ModelName ,
+                    :BirdAgentConfig_ToolChoice ;
+    :agentToolUsage :GetRandomImageTool ;
+    :hasAgentGoal :DetectBirdGoal .
+
+:BirdAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "You can view an image and figure out if it is a bird or not. You can also figure out the species of the bird and where the picture was taken." .
+
+:BirdAgentConfig_ModelProvider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "ANTHROPIC" .
+
+:BirdAgentConfig_ModelName rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "claude-3-haiku-20240307" .
+
+:BirdAgentConfig_ToolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" .
+
+# Language Model (always create)
+:Claude3Haiku rdf:type :LanguageModel ;
+    dcterms:title "claude-3-haiku-20240307" ;
+    dcterms:description "Anthropic model configured for the Bird checker agent" .
+
+# Tool: getRandomImage (Mastra createTool)
+:GetRandomImageTool rdf:type :Tool ;
+    dcterms:title "Get a random image from unsplash" ;
+    dcterms:description "Gets a random image from unsplash based on the selected option" ;
+    :hasCapability :GetRandomImageCapability ;
+    :hasToolConfig :UnsplashAccessKeyConfig .
+
+:GetRandomImageCapability rdf:type :Capability ;
+    dcterms:description "Fetch random image matching a query from the Unsplash API" .
+
+:UnsplashAccessKeyConfig rdf:type :Config ;
+    :configKey "NEXT_PUBLIC_UNSPLASH_ACCESS_KEY" ;
+    :configValue "env:NEXT_PUBLIC_UNSPLASH_ACCESS_KEY" .
+
+# Goal
+:DetectBirdGoal rdf:type :Goal ;
+    dcterms:title "Determine whether an image contains a bird" ;
+    dcterms:description "Identify if an image depicts a bird, provide the scientific name if it is a bird, and summarize the image location in one or two short sentences." .
+
+# Tasks
+:GetImageTask rdf:type :Task ;
+    dcterms:title "Fetch random image" ;
+    :performedBy :GetRandomImageTool ;
+    :taskPrompt :GetImagePrompt .
+
+:GetImagePrompt rdf:type :Prompt ;
+    :promptInstruction "Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds)." ;
+    :promptInputData "query: one of (wildlife, feathers, flying, birds)" ;
+    :promptOutputIndicator "Image object with fields: alt_description, urls { regular, raw }, user { first_name, links { html } }." .
+
+:BirdCheckTask rdf:type :Task ;
+    dcterms:title "Bird check classification" ;
+    :performedByAgent :BirdAgent ;
+    :taskPrompt :BirdCheckPrompt .
+
+:BirdCheckPrompt rdf:type :Prompt ;
+    :promptInstruction "view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student" ;
+    :promptInputData "image: URL string" ;
+    :promptOutputIndicator "JSON object: { bird: boolean, species: string, location: string }" .
+
+# Workflow Pattern (inferred simple UI flow)
+:BirdCheckerWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Bird Checker Workflow" ;
+    :hasWorkflowStep :Step_FetchImage , :Step_AnalyzeImage , :Step_End .
+
+:Step_FetchImage rdf:type :StartStep ;
+    dcterms:title "Fetch Image Step" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :GetImageTask ;
+    :nextStep :Step_AnalyzeImage .
+
+:Step_AnalyzeImage rdf:type :WorkflowStep ;
+    dcterms:title "Analyze Image Step" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :BirdCheckTask ;
+    :nextStep :Step_End .
+
+:Step_End rdf:type :EndStep ;
+    dcterms:title "End Step" ;
+    :stepOrder "3"^^xsd:integer ;
+    rdfs:comment "Final step indicating completion of the Bird Checker workflow." .
+
+# Team / Mastra instance
+:BirdCheckerSystem rdf:type :Team ;
+    dcterms:title "Bird Checker System" ;
+    :hasAgentMember :BirdAgent ;
+    :hasWorkflowPattern :BirdCheckerWorkflow ;
+    :hasTeamGoal :DetectBirdGoal .

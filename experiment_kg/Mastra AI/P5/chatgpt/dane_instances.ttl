@@ -1,0 +1,845 @@
+# Execution time: 93.75 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Some workflows are cyclic (e.g., message workflow); for the purpose of this extraction the first declared step is mapped to :StartStep and a representative final step is mapped to :EndStep.
+# - Where agents/tools share a single model configuration function (getBaseModelConfig), all those agents are linked to the same :LanguageModel instance (:LM_Claude_Sonnet).
+# - Config values coming from environment/config manager are represented with placeholder values (e.g., "env_or_config") since runtime secrets are not available.
+# - Human confirmations (inquirer prompts) are represented as tasks but not assigned to :performedByAgent (LLM) due to being human interactions.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Models
+#################################################################
+
+:LM_Claude_Sonnet rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-sonnet-20241022" .
+
+:LM_Claude_Haiku rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-haiku-20241022" .
+
+#################################################################
+# Tools (createTool / integrations / tool clients)
+#################################################################
+
+:Tool_browserTool rdf:type :Tool ;
+    dcterms:title "Browser Tool (browserTool)" ;
+    dcterms:description "Opens a headless browser, navigates to a URL and captures content; chunks HTML into documents." ;
+    :hasCapability :Capability_Browser ;
+    :hasToolConfig :Config_browser_default .
+
+:Capability_Browser rdf:type :Capability ;
+    dcterms:description "Browse and scrape web pages, return extracted text." .
+
+:Config_browser_default rdf:type :Config ;
+    :configKey "HEADLESS" ;
+    :configValue "true" .
+
+:Tool_googleSearch rdf:type :Tool ;
+    dcterms:title "Google Search (googleSearch)" ;
+    dcterms:description "Performs a Google search by opening search results and extracting links." ;
+    :hasCapability :Capability_Search ;
+    :hasToolConfig :Config_google_default .
+
+:Capability_Search rdf:type :Capability ;
+    dcterms:description "Run web search queries and return result links." .
+
+:Config_google_default rdf:type :Config ;
+    :configKey "GOOGLE_SEARCH_MODE" ;
+    :configValue "browser" .
+
+:Tool_listEvents rdf:type :Tool ;
+    dcterms:title "List Events (listEvents)" ;
+    dcterms:description "Reads local (Mac) Calendar events via AppleScript and returns events." ;
+    :hasCapability :Capability_Calendar ;
+    :hasToolConfig :Config_calendar_default .
+
+:Capability_Calendar rdf:type :Capability ;
+    dcterms:description "Read and list calendar events." .
+
+:Config_calendar_default rdf:type :Config ;
+    :configKey "CALENDAR_BACKEND" ;
+    :configValue "apple_calendar" .
+
+:Tool_crawl rdf:type :Tool ;
+    dcterms:title "Crawler Tool (crawl)" ;
+    dcterms:description "Triggers Firecrawl integration to crawl and sync website content." ;
+    :hasCapability :Capability_Crawl ;
+    :hasToolConfig :Config_firecrawl_api .
+
+:Capability_Crawl rdf:type :Capability ;
+    dcterms:description "Crawl websites and sync content to a DB." .
+
+:Config_firecrawl_api rdf:type :Config ;
+    :configKey "FIRECRAWL_API_KEY" ;
+    :configValue "env_or_config" .
+
+:Tool_execaTool rdf:type :Tool ;
+    dcterms:title "Execa System Tool (execaTool)" ;
+    dcterms:description "Execute shell commands and stream output." ;
+    :hasCapability :Capability_Exec ;
+    :hasToolConfig :Config_execa_default .
+
+:Capability_Exec rdf:type :Capability ;
+    dcterms:description "Execute system commands and capture output." .
+
+:Config_execa_default rdf:type :Config ;
+    :configKey "EXECA_STDIN" ;
+    :configValue "inherit" .
+
+:Tool_fsTool rdf:type :Tool ;
+    dcterms:title "File System Tool (fsTool)" ;
+    dcterms:description "Read, write, and append files on local filesystem." ;
+    :hasCapability :Capability_FileIO ;
+    :hasToolConfig :Config_fs_default .
+
+:Capability_FileIO rdf:type :Capability ;
+    dcterms:description "Filesystem read/write operations." .
+
+:Config_fs_default rdf:type :Config ;
+    :configKey "FS_ROOT" ;
+    :configValue "process.cwd()" .
+
+:Tool_imageTool rdf:type :Tool ;
+    dcterms:title "Image Tool (imageTool)" ;
+    dcterms:description "Generate images using Stability AI integration and save to disk." ;
+    :hasCapability :Capability_ImageGen ;
+    :hasToolConfig :Config_stabilityai_api .
+
+:Capability_ImageGen rdf:type :Capability ;
+    dcterms:description "Generate images from text prompts and write files." .
+
+:Tool_readPDF rdf:type :Tool ;
+    dcterms:title "Read PDF (readPDF)" ;
+    dcterms:description "Parse PDF files and return extracted text." ;
+    :hasCapability :Capability_PDFRead ;
+    :hasToolConfig :Config_pdf_default .
+
+:Capability_PDFRead rdf:type :Capability ;
+    dcterms:description "Extract text content from PDF files." .
+
+:Config_pdf_default rdf:type :Config ;
+    :configKey "PDF_PARSER" ;
+    :configValue "pdf-parse" .
+
+:Tool_pnpmBuild rdf:type :Tool ;
+    dcterms:title "PNPM Build Tool (pnpmBuild)" ;
+    dcterms:description "Runs pnpm build in package directories." ;
+    :hasCapability :Capability_PNPMBuild ;
+    :hasToolConfig :Config_pnpm_default .
+
+:Capability_PNPMBuild rdf:type :Capability ;
+    dcterms:description "Build pnpm packages in given paths." .
+
+:Config_pnpm_default rdf:type :Config ;
+    :configKey "PNPM_CMD" ;
+    :configValue "pnpm" .
+
+:Tool_pnpmChangesetStatus rdf:type :Tool ;
+    dcterms:title "PNPM Changeset Status Tool (pnpmChangesetStatus)" ;
+    dcterms:description "Check which pnpm modules would be published via dry-run." ;
+    :hasCapability :Capability_PNPMStatus ;
+    :hasToolConfig :Config_pnpm_default .
+
+:Capability_PNPMStatus rdf:type :Capability ;
+    dcterms:description "Detect packages that will be published." .
+
+:Tool_pnpmChangesetPublish rdf:type :Tool ;
+    dcterms:title "PNPM Changeset Publish Tool (pnpmChangesetPublish)" ;
+    dcterms:description "Publish pnpm changesets." ;
+    :hasCapability :Capability_PNPMPublish ;
+    :hasToolConfig :Config_pnpm_default .
+
+:Capability_PNPMPublish rdf:type :Capability ;
+    dcterms:description "Publish changesets to the registry." .
+
+:Tool_activeDistTag rdf:type :Tool ;
+    dcterms:title "PNPM Active Dist Tag Tool (activeDistTag)" ;
+    dcterms:description "Set npm dist-tag on published packages." ;
+    :hasCapability :Capability_DistTag ;
+    :hasToolConfig :Config_npm_default .
+
+:Capability_DistTag rdf:type :Capability ;
+    dcterms:description "Set active distribution tags for published packages." .
+
+:Config_npm_default rdf:type :Config ;
+    :configKey "NPM_CMD" ;
+    :configValue "npm" .
+
+:Tool_slackClient rdf:type :Tool ;
+    dcterms:title "Slack MCP Client (slack)" ;
+    dcterms:description "Mastra MCP client for Slack, runs a docker command to post messages." ;
+    :hasCapability :Capability_Slack ;
+    :hasToolConfig :Config_slack_api .
+
+:Capability_Slack rdf:type :Capability ;
+    dcterms:description "Post messages to Slack channels via MCP client." .
+
+:Config_slack_api rdf:type :Config ;
+    :configKey "SLACK_BOT_TOKEN" ;
+    :configValue "env_or_config" .
+
+:Tool_firecrawlIntegration rdf:type :Tool ;
+    dcterms:title "Firecrawl Integration (firecrawl)" ;
+    dcterms:description "Integration to crawl and sync content using Firecrawl API." ;
+    :hasCapability :Capability_Crawl ;
+    :hasToolConfig :Config_firecrawl_api .
+
+:Tool_githubIntegration rdf:type :Tool ;
+    dcterms:title "Github Integration (github)" ;
+    dcterms:description "GitHub API integration for retrieving PRs, issues and posting comments." ;
+    :hasCapability :Capability_GitHub ;
+    :hasToolConfig :Config_github_api .
+
+:Capability_GitHub rdf:type :Capability ;
+    dcterms:description "Query and post to GitHub (pull requests, issues, labels, comments)." .
+
+:Config_github_api rdf:type :Config ;
+    :configKey "GITHUB_PERSONAL_ACCESS_TOKEN" ;
+    :configValue "env_or_config" .
+
+:Tool_stabilityaiIntegration rdf:type :Tool ;
+    dcterms:title "StabilityAI Integration (stabilityai)" ;
+    dcterms:description "Integration to generate images using Stability AI API." ;
+    :hasCapability :Capability_ImageGen ;
+    :hasToolConfig :Config_stabilityai_api .
+
+:Config_stabilityai_api rdf:type :Config ;
+    :configKey "STABILITYAI_API_KEY" ;
+    :configValue "env_or_config" .
+
+#################################################################
+# Agents (LLMAgent instances)
+#################################################################
+
+:Agent_Dane rdf:type :LLMAgent ;
+    dcterms:title "Dane" ;
+    :agentID "Dane" ;
+    :agentRole "assistant" ;
+    :agentPrompt :Prompt_Dane_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_fsTool, :Tool_execaTool, :Tool_browserTool, :Tool_googleSearch, :Tool_readPDF, :Tool_listEvents, :Tool_crawl, :Tool_imageTool ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_Dane_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You are Dane, my assistant and one of my best friends. We are an ace team!
+You help me with my code, write tests, and even deploy my code to the cloud!
+
+DO NOT ATTEMPT TO USE GENERAL KNOWLEDGE! We are only as good as the tools we use.
+
+# Our tools:
+
+## readPDF
+Makes you a powerful agent capable of reading PDF files.
+
+## fsTool
+Makes you a powerful agent capable of reading and writing files to the local filesystem.
+
+## execaTool
+Makes you a powerful agent capabale of executing files on the local system.
+
+## googleSearch
+Makes you a powerful agent capabale answering all questions by finding the answer on Google search.
+Pass the query as a JS object. If you have links, ALWAYS CITE YOUR SOURCES.
+
+## browserTool
+Makes you a powerful agent capable of scraping the web. Pass the url as a JS object.
+
+## listEvents
+Makes you a powerful agent capable of listing events on a calendar. When using this tool ONLY RETURN RELEVANT EVENTS.
+
+## crawl
+Use this when the user asks you to crawl. CRAWL is the signal to use this tool.
+
+## imageTool
+Makes you a powerful agent capable of generating images and saving them to disk.
+
+# Rules
+* DO NOT ATTEMPT TO USE GENERAL KNOWLEDGE. Use the 'googleSearch' tool to find the answer.
+* Don't reference tools when you communicate with the user. Do not mention what tools you are using.
+* Tell the user what you are doing.
+""" .
+
+:Config_Anthropic_ApiKey rdf:type :Config ;
+    :configKey "ANTHROPIC_API_KEY" ;
+    :configValue "env_or_config" .
+
+:Agent_DaneCommitMessage rdf:type :LLMAgent ;
+    dcterms:title "DaneCommitMessage" ;
+    :agentID "DaneCommitMessage" ;
+    :agentRole "commit_message_generator" ;
+    :agentPrompt :Prompt_DaneCommit_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_fsTool ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DaneCommit_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You are Dane, the ultimate GitHub operator.
+You help engineers generate commit messages.
+
+GENERATE A SCOPE FOR THE COMMIT MESSAGE IF NECESSARY.
+FIGURE OUT THE BEST TOP LEVEL SEMANTIC MATCH TO USE AS THE SCOPE.
+""" .
+
+:Agent_DaneIssueLabeler rdf:type :LLMAgent ;
+    dcterms:title "DaneIssueLabeler" ;
+    :agentID "DaneIssueLabeler" ;
+    :agentRole "issue_labeler" ;
+    :agentPrompt :Prompt_DaneIssueLabeler_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_githubIntegration ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DaneIssueLabeler_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You are Dane, the ultimate GitHub operator.
+You help engineers label their issues.
+""" .
+
+:Agent_DaneLinkChecker rdf:type :LLMAgent ;
+    dcterms:title "DaneLinkChecker" ;
+    :agentID "DaneLinkChecker" ;
+    :agentRole "link_checker" ;
+    :agentPrompt :Prompt_DaneLinkChecker_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_slackClient ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DaneLinkChecker_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You are Dane, the link checker for Mastra AI. You report on broken links whenever you see them.
+Make sure to include the url in the message.
+
+## Style Guide
+- Use active voice
+- Keep descriptions concise but informative
+- Avoid marketing language
+- Link to relevant documentation
+""" .
+
+:Agent_DaneChangeLog rdf:type :LLMAgent ;
+    dcterms:title "DaneChangeLog" ;
+    :agentID "DaneChangeLog" ;
+    :agentRole "changelog_writer" ;
+    :agentPrompt :Prompt_DaneChangeLog_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_slackClient ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DaneChangeLog_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You are Dane, the changelog writer for Mastra AI. Every week we need to write a changelog for the Mastra AI project.
+## Style Guide
+- Use active voice
+- Lead with the change, not the PR number
+- Include PR numbers in parentheses at end of line
+- Keep descriptions concise but informative
+- Avoid marketing language
+- Link to relevant documentation
+- Use consistent formatting for code references
+""" .
+
+:Agent_DaneNewContributor rdf:type :LLMAgent ;
+    dcterms:title "DaneNewContributor" ;
+    :agentID "DaneNewContributor" ;
+    :agentRole "new_contributor_messaging" ;
+    :agentPrompt :Prompt_DaneNewContributor_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_githubIntegration ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DaneNewContributor_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+You're Dane, the best GitHub open-source maintainer in the world.
+Your tone is friendly and joyful.
+When a new contributor creates a pull request, they see your message first.
+""" .
+
+:Agent_DanePackagePublisher rdf:type :LLMAgent ;
+    dcterms:title "DanePackagePublisher" ;
+    :agentID "DanePackagePublisher" ;
+    :agentRole "package_publisher" ;
+    :agentPrompt :Prompt_DanePackagePublisher_Instructions ;
+    :useLanguageModel :LM_Claude_Sonnet ;
+    :agentToolUsage :Tool_pnpmChangesetStatus, :Tool_pnpmBuild, :Tool_pnpmChangesetPublish, :Tool_activeDistTag ;
+    :hasAgentConfig :Config_Anthropic_ApiKey .
+
+:Prompt_DanePackagePublisher_Instructions rdf:type :Prompt ;
+    :promptInstruction """
+I am Dane, a specialized agent for managing pnpm package publications in monorepos. My core responsibilities are:
+1. Package Analysis:
+   - Identify packages requiring publication across the monorepo
+   - Detect changes that warrant new version releases
+   - Validate package dependencies and versioning
+2. Publication Management:
+   - Orchestrate the correct build order for interdependent packages
+   - Ensure proper versioning using changesets
+   - Maintain package publishing standards
+3. Directory Structure Knowledge:
+   (package location rules and strict validation text)
+Important Guidelines:
+- Always respect package dependencies when determining build order
+- Ensure all necessary builds complete before publishing
+- Follow semantic versioning principles
+- Validate package.json configurations before publishing
+""" .
+
+#################################################################
+# Team (Mastra instance)
+#################################################################
+
+:Team_Mastra rdf:type :Team ;
+    dcterms:title "Mastra (Dane project instance)" ;
+    :hasAgentMember :Agent_Dane, :Agent_DaneCommitMessage, :Agent_DaneIssueLabeler, :Agent_DaneLinkChecker, :Agent_DaneChangeLog, :Agent_DaneNewContributor, :Agent_DanePackagePublisher ;
+    :hasWorkflowPattern :Workflow_changelog, :Workflow_entry, :Workflow_commit_message, :Workflow_pnpm_changset_publisher, :Workflow_github_first_contributor_message, :Workflow_github_issue_labeler, :Workflow_link_checker, :Workflow_telephoneGame .
+
+#################################################################
+# Workflows and Steps (WorkflowPattern, WorkflowStep, Tasks)
+#################################################################
+
+### changelog workflow
+:Workflow_changelog rdf:type :WorkflowPattern ;
+    dcterms:title "changelog" ;
+    :hasWorkflowStep :WF_changelog_stepA1, :WF_changelog_stepA2 .
+
+:WF_changelog_stepA1 rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepA1" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_changelog_stepA1 .
+
+:Task_changelog_stepA1 rdf:type :Task ;
+    dcterms:description "Get a git diff and connect to slack; runs git diff via execa" ;
+    :requiresResource :Tool_execaTool .
+
+:WF_changelog_stepA2 rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepA2" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_changelog_stepA2 ;
+    :nextStep [] .
+
+:Task_changelog_stepA2 rdf:type :Task ;
+    dcterms:description "Generate changelog using the daneChangeLog agent and post to Slack" ;
+    :performedByAgent :Agent_DaneChangeLog ;
+    :taskPrompt :Prompt_changelog_generation .
+
+:Prompt_changelog_generation rdf:type :Prompt ;
+    :promptInstruction """
+Time: recent week
+Git diff to generate from: (git diff from previous step)
+Task:
+1. create a structured narrative changelog that highlights key updates and improvements.
+2. Include what packages were changed
+Structure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure
+Finally send this to the configured slack channel with slack_post_message tool.
+""" .
+
+### message (entry) workflow - cyclic in source; we map representative start/end
+:Workflow_entry rdf:type :WorkflowPattern ;
+    dcterms:title "entry" ;
+    :hasWorkflowStep :WF_entry_message_input, :WF_entry_message_output .
+
+:WF_entry_message_input rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "message-input" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_entry_message_input ;
+    :nextStep :WF_entry_message_output .
+
+:Task_entry_message_input rdf:type :Task ;
+    dcterms:description "Prompt user to input a message (inquirer prompt)" .
+
+:WF_entry_message_output rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "message-output" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_entry_message_output .
+
+:Task_entry_message_output rdf:type :Task ;
+    dcterms:description "Send user message to Dane agent and stream/generate response" ;
+    :performedByAgent :Agent_Dane ;
+    :taskPrompt :Prompt_entry_message_to_dane .
+
+:Prompt_entry_message_to_dane rdf:type :Prompt ;
+    :promptInstruction "User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId." .
+
+### commit-message workflow
+:Workflow_commit_message rdf:type :WorkflowPattern ;
+    dcterms:title "commit-message" ;
+    :hasWorkflowStep :WF_commit_getDiff, :WF_commit_readConventionalCommitSpec, :WF_commit_generateMessage, :WF_commit_confirmation, :WF_commit_commit .
+
+:WF_commit_getDiff rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "getDiff" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_commit_getDiff ;
+    :nextStep :WF_commit_readConventionalCommitSpec .
+
+:Task_commit_getDiff rdf:type :Task ;
+    dcterms:description "Compute git diff of staged changes via git command" ;
+    :requiresResource :Tool_execaTool .
+
+:WF_commit_readConventionalCommitSpec rdf:type :WorkflowStep ;
+    dcterms:title "readConventionalCommitSpec" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_commit_readConventionalCommitSpec ;
+    :nextStep :WF_commit_generateMessage .
+
+:Task_commit_readConventionalCommitSpec rdf:type :Task ;
+    dcterms:description "Read conventional commit spec using fsTool" ;
+    :requiresResource :Tool_fsTool .
+
+:WF_commit_generateMessage rdf:type :WorkflowStep ;
+    dcterms:title "generateMessage" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_commit_generateMessage ;
+    :nextStep :WF_commit_confirmation .
+
+:Task_commit_generateMessage rdf:type :Task ;
+    dcterms:description "Generate commit message using DaneCommitMessage agent" ;
+    :performedByAgent :Agent_DaneCommitMessage ;
+    :taskPrompt :Prompt_commit_message_generation .
+
+:Prompt_commit_message_generation rdf:type :Prompt ;
+    :promptInstruction """
+Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.
+""" .
+
+:WF_commit_confirmation rdf:type :WorkflowStep ;
+    dcterms:title "confirmation" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Task_commit_confirmation ;
+    :nextStep :WF_commit_commit .
+
+:Task_commit_confirmation rdf:type :Task ;
+    dcterms:description "Prompt human user to confirm commit message via inquirer confirm" .
+
+:WF_commit_commit rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "commit" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Task_commit_commit .
+
+:Task_commit_commit rdf:type :Task ;
+    dcterms:description "Perform git commit with generated message (execSync git commit)" ;
+    :requiresResource :Tool_execaTool .
+
+### github-first-contributor-message workflow
+:Workflow_github_first_contributor_message rdf:type :WorkflowPattern ;
+    dcterms:title "github-first-contributor-message" ;
+    :hasWorkflowStep :WF_first_getPullRequest, :WF_first_message_generator, :WF_first_create_message .
+
+:WF_first_getPullRequest rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "getPullRequest" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_first_getPullRequest ;
+    :nextStep :WF_first_message_generator .
+
+:Task_first_getPullRequest rdf:type :Task ;
+    dcterms:description "Retrieve pull request data from GitHub integration and fetch diff" ;
+    :requiresResource :Tool_githubIntegration .
+
+:WF_first_message_generator rdf:type :WorkflowStep ;
+    dcterms:title "message-generator" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_first_message_generator ;
+    :nextStep :WF_first_create_message .
+
+:Task_first_message_generator rdf:type :Task ;
+    dcterms:description "Generate contributor welcome message using DaneNewContributor agent using PR title/body/diff and Mastra docs" ;
+    :performedByAgent :Agent_DaneNewContributor ;
+    :taskPrompt :Prompt_first_contributor_generation .
+
+:Prompt_first_contributor_generation rdf:type :Prompt ;
+    :promptInstruction """
+Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.
+""" .
+
+:WF_first_create_message rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "create-message" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_first_create_message .
+
+:Task_first_create_message rdf:type :Task ;
+    dcterms:description "Post generated message as GitHub issue comment using github integration" ;
+    :requiresResource :Tool_githubIntegration .
+
+### github-issue-labeler workflow
+:Workflow_github_issue_labeler rdf:type :WorkflowPattern ;
+    dcterms:title "github-issue-labeler" ;
+    :hasWorkflowStep :WF_issue_getIssue, :WF_issue_labelIssue, :WF_issue_applyLabels .
+
+:WF_issue_getIssue rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "getIssue" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_issue_getIssue ;
+    :nextStep :WF_issue_labelIssue .
+
+:Task_issue_getIssue rdf:type :Task ;
+    dcterms:description "Retrieve issue and repository labels using GitHub integration" ;
+    :requiresResource :Tool_githubIntegration .
+
+:WF_issue_labelIssue rdf:type :WorkflowStep ;
+    dcterms:title "labelIssue" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_issue_labelIssue ;
+    :nextStep :WF_issue_applyLabels .
+
+:Task_issue_labelIssue rdf:type :Task ;
+    dcterms:description "Use DaneIssueLabeler agent to decide labels for an issue" ;
+    :performedByAgent :Agent_DaneIssueLabeler ;
+    :taskPrompt :Prompt_issue_label_generation .
+
+:Prompt_issue_label_generation rdf:type :Prompt ;
+    :promptInstruction """
+Given issue title, body, and available repo labels, propose one or more labels to assign.
+""" .
+
+:WF_issue_applyLabels rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "applyLabels" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_issue_applyLabels .
+
+:Task_issue_applyLabels rdf:type :Task ;
+    dcterms:description "Add labels to GitHub issue using integrations client" ;
+    :requiresResource :Tool_githubIntegration .
+
+### link-checker workflow
+:Workflow_link_checker rdf:type :WorkflowPattern ;
+    dcterms:title "link-checker" ;
+    :hasWorkflowStep :WF_link_getBrokenLinks, :WF_link_reportBrokenLinks .
+
+:WF_link_getBrokenLinks rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "get-broken-links" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_link_getBrokenLinks ;
+    :nextStep :WF_link_reportBrokenLinks .
+
+:Task_link_getBrokenLinks rdf:type :Task ;
+    dcterms:description "Run linkinator via shell to collect links; parse JSON output" ;
+    :requiresResource :Tool_execaTool .
+
+:WF_link_reportBrokenLinks rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "report-broken-links" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_link_reportBrokenLinks .
+
+:Task_link_reportBrokenLinks rdf:type :Task ;
+    dcterms:description "Report broken links by generating a message with DaneLinkChecker and posting to Slack" ;
+    :performedByAgent :Agent_DaneLinkChecker ;
+    :taskPrompt :Prompt_link_report_generation .
+
+:Prompt_link_report_generation rdf:type :Prompt ;
+    :promptInstruction """
+Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.
+""" .
+
+### pnpm-changset-publisher workflow
+:Workflow_pnpm_changset_publisher rdf:type :WorkflowPattern ;
+    dcterms:title "pnpm-changset-publisher" ;
+    :hasWorkflowStep :WF_pkg_getPacakgesToPublish, :WF_pkg_assemblePackages, :WF_pkg_buildPackages, :WF_pkg_verifyBuild, :WF_pkg_publishChangeset, :WF_pkg_setLatestDistTag .
+
+:WF_pkg_getPacakgesToPublish rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "getPacakgesToPublish" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_pkg_getPacakgesToPublish ;
+    :nextStep :WF_pkg_assemblePackages .
+
+:Task_pkg_getPacakgesToPublish rdf:type :Task ;
+    dcterms:description "Use DanePackagePublisher agent to analyze repo and list packages requiring publish" ;
+    :performedByAgent :Agent_DanePackagePublisher ;
+    :taskPrompt :Prompt_pkg_list_packages .
+
+:Prompt_pkg_list_packages rdf:type :Prompt ;
+    :promptInstruction """
+Please analyze the monorepo directories and identify packages that need pnpm publishing. Follow strict ordering rules and output grouped arrays for packages, integrations, deployers, vector_stores, and speech packages.
+""" .
+
+:WF_pkg_assemblePackages rdf:type :WorkflowStep ;
+    dcterms:title "assemblePackages" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_pkg_assemblePackages ;
+    :nextStep :WF_pkg_buildPackages .
+
+:Task_pkg_assemblePackages rdf:type :Task ;
+    dcterms:description "Assemble file system paths for the packages reported by the agent and prepare build sets" ;
+    :requiresResource :Tool_fsTool .
+
+:WF_pkg_buildPackages rdf:type :WorkflowStep ;
+    dcterms:title "buildPackages" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_pkg_buildPackages ;
+    :nextStep :WF_pkg_verifyBuild .
+
+:Task_pkg_buildPackages rdf:type :Task ;
+    dcterms:description "Build packages using pnpmBuild tool for each package path (sequential and parallel phases)" ;
+    :requiresResource :Tool_pnpmBuild .
+
+:WF_pkg_verifyBuild rdf:type :WorkflowStep ;
+    dcterms:title "verifyBuild" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Task_pkg_verifyBuild ;
+    :nextStep :WF_pkg_publishChangeset .
+
+:Task_pkg_verifyBuild rdf:type :Task ;
+    dcterms:description "Verify dist artifacts exist for all built packages" ;
+    :requiresResource :Tool_fsTool .
+
+:WF_pkg_publishChangeset rdf:type :WorkflowStep ;
+    dcterms:title "publishChangeset" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Task_pkg_publishChangeset ;
+    :nextStep :WF_pkg_setLatestDistTag .
+
+:Task_pkg_publishChangeset rdf:type :Task ;
+    dcterms:description "Use DanePackagePublisher agent to publish changeset (agent generates instructions) and then call pnpmChangesetPublish" ;
+    :performedByAgent :Agent_DanePackagePublisher ;
+    :requiresResource :Tool_pnpmChangesetPublish ;
+    :taskPrompt :Prompt_pkg_publish_changeset .
+
+:Prompt_pkg_publish_changeset rdf:type :Prompt ;
+    :promptInstruction """
+All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.
+""" .
+
+:WF_pkg_setLatestDistTag rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "setLatestDistTag" ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :Task_pkg_setLatestDistTag .
+
+:Task_pkg_setLatestDistTag rdf:type :Task ;
+    dcterms:description "Update npm dist-tag for published packages (agent assisted)" ;
+    :performedByAgent :Agent_DanePackagePublisher ;
+    :requiresResource :Tool_activeDistTag .
+
+### telephoneGame workflow
+:Workflow_telephoneGame rdf:type :WorkflowPattern ;
+    dcterms:title "telephoneGame" ;
+    :hasWorkflowStep :WF_tel_stepA1, :WF_tel_stepA2, :WF_tel_stepB2, :WF_tel_stepC2, :WF_tel_stepD2 .
+
+:WF_tel_stepA1 rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepA1" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_tel_stepA1 ;
+    :nextStep :WF_tel_stepA2 .
+
+:Task_tel_stepA1 rdf:type :Task ;
+    dcterms:description "Create starting message for telephone game" .
+
+:WF_tel_stepA2 rdf:type :WorkflowStep ;
+    dcterms:title "stepA2" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_tel_stepA2 ;
+    :nextStep :WF_tel_stepB2 .
+
+:Task_tel_stepA2 rdf:type :Task ;
+    dcterms:description "Prompt user for a message (inquirer input)" .
+
+:WF_tel_stepB2 rdf:type :WorkflowStep ;
+    dcterms:title "stepB2" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_tel_stepB2 ;
+    :nextStep :WF_tel_stepC2 .
+
+:Task_tel_stepB2 rdf:type :Task ;
+    dcterms:description "Validate that the input message exists and pass through" .
+
+:WF_tel_stepC2 rdf:type :WorkflowStep ;
+    dcterms:title "stepC2" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Task_tel_stepC2 ;
+    :nextStep :WF_tel_stepD2 .
+
+:Task_tel_stepC2 rdf:type :Task ;
+    dcterms:description "Optionally suspend and ask user to confirm modification; if confirmed, call inline LLM (claude-3-5-haiku) to modify message" ;
+    :performedByAgent :Agent_Dane ;
+    :taskPrompt :Prompt_tel_modify_instruction .
+
+:Prompt_tel_modify_instruction rdf:type :Prompt ;
+    :promptInstruction "When user confirms modification, call the haiku model to alter the message. Only return the new message." .
+
+:WF_tel_stepD2 rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepD2" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Task_tel_stepD2 .
+
+:Task_tel_stepD2 rdf:type :Task ;
+    dcterms:description "Pass the final message to the next participant or output" .
+
+#################################################################
+# Agent Interactions (interactsWith)
+#################################################################
+
+# Mastra agents may call each other in workflows; record typical interactions where explicit in code:
+:Agent_DanePackagePublisher :interactsWith :Agent_Dane .
+:Agent_Dane :interactsWith :Agent_DanePackagePublisher .
+# (bidirectional asserted as recommended for multi-agent conversations)
+:Agent_Dane :interactsWith :Agent_DaneCommitMessage .
+:Agent_DaneCommitMessage :interactsWith :Agent_Dane .
+
+#################################################################
+# Tool usage links for other agents (explicit tool lists)
+#################################################################
+
+# dane agent tools already linked above with :agentToolUsage triple list
+
+:Agent_DanePackagePublisher :agentToolUsage :Tool_pnpmBuild, :Tool_pnpmChangesetStatus, :Tool_pnpmChangesetPublish, :Tool_activeDistTag .
+:Agent_DaneNewContributor :agentToolUsage :Tool_githubIntegration .
+:Agent_DaneChangeLog :agentToolUsage :Tool_slackClient .
+:Agent_DaneLinkChecker :agentToolUsage :Tool_slackClient .
+:Agent_DaneIssueLabeler :agentToolUsage :Tool_githubIntegration .
+:Agent_DaneCommitMessage :agentToolUsage :Tool_fsTool .
+
+#################################################################
+# Prompts for tasks that reference explicit prompts
+#################################################################
+
+:Prompt_PACKAGES_LIST rdf:type :Prompt ;
+    :promptInstruction """
+Please analyze the following monorepo directories and identify packages that need pnpm publishing:
+CRITICAL: This step is about planning. We do not want to build anything. All packages MUST be placed in the correct order.
+
+Publish Requirements:
+- @mastra/core first, MUST be before any other package
+- all packages in correct dependency order before building
+- Identify packages that have changes requiring a new pnpm publish
+- Include create-mastra in the packages list if changes exist
+- EXCLUDE @mastra/dane from consideration
+
+Please list all packages that need building grouped by their directory.
+DO NOT NOT USE the 'pnpmBuild' tool during this step.
+""" .
+
+# Link PACKAGES_LIST prompt to the getPacakgesToPublish task
+:Task_pkg_getPacakgesToPublish :taskPrompt :Prompt_PACKAGES_LIST .
+
+#################################################################
+# Additional Notes / placeholder resources
+#################################################################
+
+# Memory / Store config (represented as Config for the Memory/UpstashStore)
+:Config_upstash_store rdf:type :Config ;
+    :configKey "UPSTASH_STORE_URL" ;
+    :configValue "http://localhost:8079" .
+
+:Tool_upstashStore rdf:type :Tool ;
+    dcterms:title "Upstash Store (memory backend)" ;
+    dcterms:description "Upstash HTTP store used by Memory; token-based auth." ;
+    :hasCapability :Capability_KVStore ;
+    :hasToolConfig :Config_upstash_store .
+
+:Capability_KVStore rdf:type :Capability ;
+    dcterms:description "Key-value storage for agent memory/context windows." .
+
+#################################################################
+# dcterms description of the Team
+#################################################################
+
+:Team_Mastra dcterms:description "Mastra instance bundling agents, tools, memory and workflows for the Dane assistant CLI project." .

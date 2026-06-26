@@ -1,0 +1,107 @@
+# Execution time: 40.41 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit LLMAgent instance is declared in the source; created an implicit :LLMAgent (:mastra-llm) to represent the LLM used via mastra.llm(...) in steps.
+# - Prompts containing runtime values use placeholder tokens (e.g., ${resumeText}, ${candidateName}, ${specialty}) because the actual runtime values are provided at execution time.
+# - Both branch steps (askAboutSpecialty, askAboutRole) are treated as EndStep individuals since there is no further chaining in the source.
+# - No external tools/APIs (other than the language model) are present in the source; therefore no :Tool individuals were created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:mastraInstance rdf:type :Team ;
+    dcterms:title "mastra-instance-workflow-ai-recruiter" ;
+    dcterms:description "Mastra instance hosting the candidate-workflow" ;
+    :hasWorkflowPattern :candidateWorkflowPattern ;
+    :hasAgentMember :mastra-llm ;
+    :hasSystemConfig :cfg_triggerSchema .
+
+:candidateWorkflowPattern rdf:type :WorkflowPattern ;
+    dcterms:title "candidate-workflow" ;
+    dcterms:description "Workflow to extract candidate information from a resume and generate follow-up questions" ;
+    :hasWorkflowStep :gatherCandidateInfoStep, :askAboutSpecialtyStep, :askAboutRoleStep .
+
+:gatherCandidateInfoStep rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "gatherCandidateInfo" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :gatherCandidateInfoTask ;
+    :nextStep :askAboutSpecialtyStep , :askAboutRoleStep .
+
+:askAboutSpecialtyStep rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "askAboutSpecialty" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :askAboutSpecialtyTask .
+
+:askAboutRoleStep rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "askAboutRole" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :askAboutRoleTask .
+
+:gatherCandidateInfoTask rdf:type :Task ;
+    dcterms:title "gatherCandidateInfoTask" ;
+    :performedByAgent :mastra-llm ;
+    :taskPrompt :gatherCandidateInfoPrompt .
+
+:askAboutSpecialtyTask rdf:type :Task ;
+    dcterms:title "askAboutSpecialtyTask" ;
+    :performedByAgent :mastra-llm ;
+    :taskPrompt :askAboutSpecialtyPrompt .
+
+:askAboutRoleTask rdf:type :Task ;
+    dcterms:title "askAboutRoleTask" ;
+    :performedByAgent :mastra-llm ;
+    :taskPrompt :askAboutRolePrompt .
+
+:gatherCandidateInfoPrompt rdf:type :Prompt ;
+    :promptInstruction "You are given this resume text: \"${resumeText}\"" ;
+    :promptOutputIndicator "candidateName, isTechnical, specialty, resumeText" ;
+    dcterms:description "Prompt used to extract structured candidate information from resume text (output: candidateName, isTechnical, specialty, resumeText)." .
+
+:askAboutSpecialtyPrompt rdf:type :Prompt ;
+    :promptInstruction "You are a recruiter. Given the resume below, craft a short question for ${candidateName} about how they got into \"${specialty}\". Resume: ${resumeText}" ;
+    :promptOutputIndicator "question" ;
+    dcterms:description "Prompt to craft a follow-up question about the candidate's specialty." .
+
+:askAboutRolePrompt rdf:type :Prompt ;
+    :promptInstruction "You are a recruiter. Given the resume below, craft a short question for ${candidateName} asking what interests them most about this role. Resume: ${resumeText}" ;
+    :promptOutputIndicator "question" ;
+    dcterms:description "Prompt to craft a follow-up question about the candidate's interest in the role." .
+
+:mastra-llm rdf:type :LLMAgent ;
+    :agentID "mastra-llm" ;
+    :agentRole "workflow-processor" ;
+    :agentPrompt :mastraAgentPrompt ;
+    :useLanguageModel :gpt4o-model ;
+    :hasAgentConfig :cfg_provider, :cfg_modelName .
+
+:mastraAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "Executes workflow steps using the configured language model to generate outputs for workflow tasks." ;
+    dcterms:description "Implicit agent prompt describing the agent's role in executing workflow steps." .
+
+:gpt4o-model rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Language model invoked via mastra.llm({ provider: 'OPEN_AI', name: 'gpt-4o' }) in workflow steps." .
+
+:cfg_provider rdf:type :Config ;
+    :configKey "model_provider" ;
+    :configValue "OPEN_AI" ;
+    dcterms:description "Provider passed to mastra.llm(...)." .
+
+:cfg_modelName rdf:type :Config ;
+    :configKey "model_name" ;
+    :configValue "gpt-4o" ;
+    dcterms:description "Model name passed to mastra.llm(...)." .
+
+:cfg_triggerSchema rdf:type :Config ;
+    :configKey "triggerSchema" ;
+    :configValue "resumeText: string" ;
+    dcterms:description "Trigger schema for the workflow (expected input field and type)." .

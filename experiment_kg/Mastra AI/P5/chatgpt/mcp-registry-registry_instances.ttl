@@ -1,0 +1,180 @@
+# Execution time: 41.54 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Other
+
+# Issues / Assumptions:
+# - No explicit LLM-backed agents or "Agent" constructs found; assumed the MCP "Registry Registry Server" acts as a logical :LLMAgent for the purposes of tool execution and workflow modeling.
+# - No explicit language model specified in code; created a default :LanguageModel with dcterms:title "default".
+# - Workflow steps and task boundaries inferred from functions: fetchServersFromRegistry -> postProcessServers -> filterServers -> return (getServersFromRegistry).
+# - Tool capabilities and configs derived from tool names, descriptions, and Zod input schemas.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# --- Language Model (default) ---
+:LM_default rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default language model placeholder created because no explicit model is declared in the code." .
+
+# --- Agent (logical representation of the MCP server) ---
+:RegistryRegistryAgent rdf:type :LLMAgent ;
+    :agentID "registry-registry-server" ;
+    :agentRole "mcp-server" ;
+    :agentPrompt :Prompt_RegistryRegistryAgent_Backstory ;
+    :useLanguageModel :LM_default ;
+    :agentToolUsage :Tool_registryList , :Tool_registryServers ;
+    dcterms:title "Registry Registry Agent" ;
+    dcterms:description "Logical LLM-backed actor representing the MCP 'Registry Registry' server that exposes tools for listing registries and fetching servers." .
+
+:Prompt_RegistryRegistryAgent_Backstory rdf:type :Prompt ;
+    :promptInstruction "Registry Registry Server exposes tools to list MCP registries and fetch servers from registries, performing validation and post-processing. Acts as an MCP Server implementing Model Context Protocol. Tools: registryList, registryServers." .
+
+# --- Tools ---
+:Tool_registryList rdf:type :Tool ;
+    dcterms:title "registryList" ;
+    dcterms:description "List available MCP registries. Can filter by ID, tag, or name and provide detailed or summary views." ;
+    :hasCapability :Capability_registryList ;
+    :hasToolConfig :Config_registryList_id , :Config_registryList_tag , :Config_registryList_name , :Config_registryList_detailed .
+
+:Capability_registryList rdf:type :Capability ;
+    dcterms:description "Provides filtered listings of MCP registries (id, tag, name) and can emit detailed or summary responses." .
+
+:Config_registryList_id rdf:type :Config ;
+    :configKey "id" ;
+    :configValue "string (optional) - registry id to filter by" .
+
+:Config_registryList_tag rdf:type :Config ;
+    :configKey "tag" ;
+    :configValue "string (optional) - filter registries by tag" .
+
+:Config_registryList_name rdf:type :Config ;
+    :configKey "name" ;
+    :configValue "string (optional) - search term for registry name" .
+
+:Config_registryList_detailed rdf:type :Config ;
+    :configKey "detailed" ;
+    :configValue "boolean (optional) - whether to include detailed registry fields" .
+
+:Tool_registryServers rdf:type :Tool ;
+    dcterms:title "registryServers" ;
+    dcterms:description "Get servers from a specific MCP registry. Can filter by tag or search term. Internally fetches registry data, invokes post-processing, and filters results." ;
+    :hasCapability :Capability_registryServers ;
+    :hasToolConfig :Config_registryServers_registryId , :Config_registryServers_tag , :Config_registryServers_search .
+
+:Capability_registryServers rdf:type :Capability ;
+    dcterms:description "Fetch servers from a registry endpoint, apply registry-specific post-processing, and filter results by tag or search term." .
+
+:Config_registryServers_registryId rdf:type :Config ;
+    :configKey "registryId" ;
+    :configValue "string (required) - identifier of the registry to query" .
+
+:Config_registryServers_tag rdf:type :Config ;
+    :configKey "tag" ;
+    :configValue "string (optional) - filter servers by tag" .
+
+:Config_registryServers_search rdf:type :Config ;
+    :configKey "search" ;
+    :configValue "string (optional) - search term to match server name or description" .
+
+# --- Tasks (functions / processing steps) ---
+:Task_fetchServersFromRegistry rdf:type :Task ;
+    dcterms:title "fetchServersFromRegistry" ;
+    dcterms:description "Locate registry entry, validate servers_url, fetch raw registry data, and hand off to post-processor." ;
+    :taskPrompt :Prompt_fetchServersFromRegistry_instr ;
+    :performedByAgent :RegistryRegistryAgent .
+
+:Prompt_fetchServersFromRegistry_instr rdf:type :Prompt ;
+    :promptInstruction "Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing." .
+
+:Task_postProcessServers rdf:type :Task ;
+    dcterms:title "postProcessServers" ;
+    dcterms:description "Apply registry-specific post-processing function (e.g., processApifyServers, processDockerServers) to normalize server entries into standard ServerEntry shape." ;
+    :taskPrompt :Prompt_postProcessServers_instr ;
+    :performedByAgent :RegistryRegistryAgent .
+
+:Prompt_postProcessServers_instr rdf:type :Prompt ;
+    :promptInstruction "Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available." .
+
+:Task_filterServers rdf:type :Task ;
+    dcterms:title "filterServers" ;
+    dcterms:description "Filter ServerEntry results by search term or tag (if implemented), returning matched servers." ;
+    :taskPrompt :Prompt_filterServers_instr ;
+    :performedByAgent :RegistryRegistryAgent .
+
+:Prompt_filterServers_instr rdf:type :Prompt ;
+    :promptInstruction "Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags." .
+
+:Task_getServersFromRegistry rdf:type :Task ;
+    dcterms:title "getServersFromRegistry" ;
+    dcterms:description "High-level function orchestrating fetchServersFromRegistry and filterServers, providing the external API used by tools and tests." ;
+    :taskPrompt :Prompt_getServersFromRegistry_instr ;
+    :taskPrompt :Prompt_getServersFromRegistry_instr ;
+    :performedByAgent :RegistryRegistryAgent .
+
+:Prompt_getServersFromRegistry_instr rdf:type :Prompt ;
+    :promptInstruction "Orchestrate fetching, post-processing, and filtering of servers for a given registryId and optional filters; return final server list or throw on error." .
+
+# --- WorkflowPattern for registryServers execution ---
+:Workflow_registryServers rdf:type :WorkflowPattern ;
+    dcterms:title "Registry Servers Workflow" ;
+    :hasWorkflowStep :Step_fetch_start , :Step_fetch_process , :Step_fetch_filter , :Step_fetch_end ;
+    dcterms:description "Inferred workflow for serving registry server listing: start -> fetch & post-process -> filter -> return results." .
+
+# Steps
+:Step_fetch_start rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    dcterms:title "Start - locate registry and fetch" ;
+    :hasAssociatedTask :Task_fetchServersFromRegistry ;
+    :nextStep :Step_fetch_process .
+
+:Step_fetch_process rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    dcterms:title "Process - post-process registry data" ;
+    :hasAssociatedTask :Task_postProcessServers ;
+    :nextStep :Step_fetch_filter .
+
+:Step_fetch_filter rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    dcterms:title "Filter - apply search / tag filters" ;
+    :hasAssociatedTask :Task_filterServers ;
+    :nextStep :Step_fetch_end .
+
+:Step_fetch_end rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 4 ;
+    dcterms:title "End - return final server list" ;
+    :hasAssociatedTask :Task_getServersFromRegistry .
+
+# --- Team (the MCP server instance / system) ---
+:RegistryRegistryTeam rdf:type :Team ;
+    dcterms:title "Registry Registry MCP Server" ;
+    dcterms:description "An MCP server that provides a registry of MCP registries and exposes tools 'registryList' and 'registryServers'." ;
+    :hasAgentMember :RegistryRegistryAgent ;
+    :hasWorkflowPattern :Workflow_registryServers ;
+    :hasTeamGoal :Goal_registryTeamGoal ;
+    :hasSystemConfig :Config_system_runtime_version .
+
+:Goal_registryTeamGoal rdf:type :Goal ;
+    dcterms:description "Provide discovery and access to MCP registries and their servers; normalize heterogeneous registry responses into a standard ServerEntry format." .
+
+:Config_system_runtime_version rdf:type :Config ;
+    :configKey "node_package_version" ;
+    :configValue "inferred from package.json at runtime (not resolved statically)" .
+
+# --- Linking tools to workflow/tasks (which tools trigger the workflow) ---
+:Tool_registryServers :performedByAgent :RegistryRegistryAgent .
+:Tool_registryList :performedByAgent :RegistryRegistryAgent .
+
+# --- Agent capabilities (high-level) ---
+:Capability_agent_manage_registries rdf:type :Capability ;
+    dcterms:description "Ability to list registries and retrieve servers from registries via exposed tools." .
+
+:RegistryRegistryAgent :hasAgentCapability :Capability_agent_manage_registries .
+
+# End of extracted instances.

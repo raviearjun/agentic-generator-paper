@@ -1,0 +1,183 @@
+# Execution time: 44.19 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - No explicit team-level goal provided; created a WorkflowPattern to represent the Crew tasks.
+# - API keys and cluster URLs are not committed in source; represented as config values referencing environment variables.
+# - SerperDevTool assumed to require SERPER_API_KEY (represented as env:SERPER_API_KEY).
+# - Using a single LanguageModel individual for all agents (:LM_gpt_4o_mini).
+# - Task descriptions include the placeholder {weaviate_feature} as present in source.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:LM_gpt_4o_mini a :LanguageModel ;
+    dcterms:title "gpt-4o-mini" ;
+    dcterms:description "Language model used by the agents (from Agent(llm=\"gpt-4o-mini\"))." .
+
+:Capability_WeaviateVectorSearch a :Capability ;
+    dcterms:description "Performs semantic vector search over document chunks in Weaviate." .
+
+:Capability_WebSearch a :Capability ;
+    dcterms:description "Performs web search via Serper.dev." .
+
+:Tool_WeaviateVectorSearchTool a :Tool ;
+    dcterms:title "WeaviateVectorSearchTool" ;
+    dcterms:description "Vector search tool using Weaviate for semantic retrieval from collection 'WeaviateBlogChunk'." ;
+    :hasCapability :Capability_WeaviateVectorSearch ;
+    :hasToolConfig :Config_Weaviate_collection , :Config_Weaviate_limit , :Config_Weaviate_cluster_url , :Config_Weaviate_api_key .
+
+:Config_Weaviate_collection a :Config ;
+    :configKey "collection_name" ;
+    :configValue "WeaviateBlogChunk" .
+
+:Config_Weaviate_limit a :Config ;
+    :configKey "limit" ;
+    :configValue "4" .
+
+:Config_Weaviate_cluster_url a :Config ;
+    :configKey "weaviate_cluster_url" ;
+    :configValue "env:WCD_CLUSTER_URL" .
+
+:Config_Weaviate_api_key a :Config ;
+    :configKey "weaviate_api_key" ;
+    :configValue "env:WCD_CLUSTER_KEY" .
+
+:Tool_SerperDevTool a :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "Web search tool backed by Serper.dev." ;
+    :hasCapability :Capability_WebSearch ;
+    :hasToolConfig :Config_Serper_api_key .
+
+:Config_Serper_api_key a :Config ;
+    :configKey "api_key" ;
+    :configValue "env:SERPER_API_KEY" .
+
+:Agent_BiomedicalMarketingAgent a :LLMAgent ;
+    :agentID "BiomedicalMarketingAgent" ;
+    :agentRole "Industry researcher focused on biomedical trends and their applications in AI" ;
+    :agentPrompt :Prompt_BiomedicalMarketingAgent ;
+    :useLanguageModel :LM_gpt_4o_mini ;
+    :hasAgentConfig :Config_Agent_Biomedical_verbose ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_WeaviateVectorSearchTool ;
+    :hasAgentGoal :Goal_Biomedical .
+
+:Config_Agent_Biomedical_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Prompt_BiomedicalMarketingAgent a :Prompt ;
+    :promptInstruction """As a former biomedical product marketer turned AI strategist, you understand the complex language and regulatory landscape of biomedical innovation. With a keen eye on genomics, clinical research, and medical devices, it now leverages LLMs and vector search to explore how Weaviate’s capabilities can streamline scientific discovery and patient-centric campaigns.
+Goal: Continuously track the latest biomedical advancements and identify how Weaviate’s features can support AI applications in biomedical research, diagnostics, and personalized medicine.""" .
+
+:Goal_Biomedical a :Goal ;
+    dcterms:description "Continuously track the latest biomedical advancements and identify how Weaviate’s features can support AI applications in biomedical research, diagnostics, and personalized medicine." .
+
+:Agent_HealthcareMarketingAgent a :LLMAgent ;
+    :agentID "HealthcareMarketingAgent" ;
+    :agentRole "AI-savvy marketer specializing in healthcare systems, digital health, and patient engagement." ;
+    :agentPrompt :Prompt_HealthcareMarketingAgent ;
+    :useLanguageModel :LM_gpt_4o_mini ;
+    :hasAgentConfig :Config_Agent_Healthcare_verbose ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_WeaviateVectorSearchTool ;
+    :hasAgentGoal :Goal_Healthcare .
+
+:Config_Agent_Healthcare_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Prompt_HealthcareMarketingAgent a :Prompt ;
+    :promptInstruction """Rooted in public health communications, this agent has evolved into a digital health consultant. You focus on how retrieval-augmented generation (RAG), semantic search, and hybrid models can be applied to solve healthcare-specific challenges—from patient triage to clinical support systems.
+Goal: Stay updated on healthcare policy shifts, digital health trends, and explore how Weaviate’s features can optimize workflows in hospital systems, EHR integration, and health communication.""" .
+
+:Goal_Healthcare a :Goal ;
+    dcterms:description "Stay updated on healthcare policy shifts, digital health trends, and explore how Weaviate’s features can optimize workflows in hospital systems, EHR integration, and health communication." .
+
+:Agent_FinancialMarketingAgent a :LLMAgent ;
+    :agentID "FinancialMarketingAgent" ;
+    :agentRole "Insight analyst exploring innovations in finance, wealth tech, and regulatory tech" ;
+    :agentPrompt :Prompt_FinancialMarketingAgent ;
+    :useLanguageModel :LM_gpt_4o_mini ;
+    :hasAgentConfig :Config_Agent_Financial_verbose ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_WeaviateVectorSearchTool ;
+    :hasAgentGoal :Goal_Financial .
+
+:Config_Agent_Financial_verbose a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Prompt_FinancialMarketingAgent a :Prompt ;
+    :promptInstruction """With experience at a fintech startup and a background in capital markets, this agent specializes in using structured + unstructured data to surface insights for analysts and advisors. Now, it’s looking into how vector databases and LLMs can automate tasks like fraud detection, investor personalization, and market research.
+Goal: Monitor financial sector trends including AI in trading, compliance automation, and client advisory, and assess how Weaviate’s tools can enable cutting-edge financial applications.""" .
+
+:Goal_Financial a :Goal ;
+    dcterms:description "Monitor financial sector trends including AI in trading, compliance automation, and client advisory, and assess how Weaviate’s tools can enable cutting-edge financial applications." .
+
+:Task_BiomedicalResearch a :Task ;
+    dcterms:title "Biomedical marketing research task" ;
+    :performedByAgent :Agent_BiomedicalMarketingAgent ;
+    :taskPrompt :Prompt_Task_Biomedical ;
+    dcterms:description "Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs." .
+
+:Prompt_Task_Biomedical a :Prompt ;
+    :promptInstruction """Conduct a thorough research about {weaviate_feature}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.""" ;
+    :promptOutputIndicator """Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.""" .
+
+:Task_HealthcareResearch a :Task ;
+    dcterms:title "Healthcare marketing research task" ;
+    :performedByAgent :Agent_HealthcareMarketingAgent ;
+    :taskPrompt :Prompt_Task_Healthcare ;
+    dcterms:description "Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs." .
+
+:Prompt_Task_Healthcare a :Prompt ;
+    :promptInstruction """Conduct a thorough research about {weaviate_feature}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.""" ;
+    :promptOutputIndicator """Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.""" .
+
+:Task_FinancialResearch a :Task ;
+    dcterms:title "Financial marketing research task" ;
+    :performedByAgent :Agent_FinancialMarketingAgent ;
+    :taskPrompt :Prompt_Task_Financial ;
+    dcterms:description "Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs." .
+
+:Prompt_Task_Financial a :Prompt ;
+    :promptInstruction """Conduct a thorough research about {weaviate_feature}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.""" ;
+    :promptOutputIndicator """Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.""" .
+
+:Workflow_blog_crew a :WorkflowPattern ;
+    dcterms:title "Crew Tasks Workflow" ;
+    :hasWorkflowStep :WorkflowStep_blog_step1 , :WorkflowStep_blog_step2 , :WorkflowStep_blog_step3 .
+
+:WorkflowStep_blog_step1 a :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_BiomedicalResearch ;
+    :nextStep :WorkflowStep_blog_step2 .
+
+:WorkflowStep_blog_step2 a :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_HealthcareResearch ;
+    :nextStep :WorkflowStep_blog_step3 .
+
+:WorkflowStep_blog_step3 a :EndStep , :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_FinancialResearch .
+
+:Team_blog_crew a :Team ;
+    dcterms:title "blog_crew" ;
+    :hasAgentMember :Agent_BiomedicalMarketingAgent , :Agent_HealthcareMarketingAgent , :Agent_FinancialMarketingAgent ;
+    :hasWorkflowPattern :Workflow_blog_crew ;
+    :hasSystemConfig :Config_Team_inputs .
+
+:Config_Team_inputs a :Config ;
+    :configKey "inputs" ;
+    :configValue "MUVERA, Multi-tenancy, Compliance, Hybrid Search" .

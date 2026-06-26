@@ -1,0 +1,96 @@
+# Execution time: 31.69 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: LangGraph
+
+# Issues / Assumptions:
+# - Assumed a single LLM-backed agent ("writer_agent") represents the code's LLM caller across nodes (no explicit Agent object in the source).
+# - Created a LanguageModel individual from MODEL_NAME constant; assumed writer node system prompt as the agentPrompt.
+# - Created a Tool individual for the bound tool "draft_text_document" based on bindTools description.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:WriterTeam rdf:type :Team ;
+    dcterms:title "Writer StateGraph Team" ;
+    :hasWorkflowPattern :WriterStateGraphPattern ;
+    :hasAgentMember :writer_agent .
+
+:WriterStateGraphPattern rdf:type :WorkflowPattern ;
+    dcterms:title "StateGraph" ;
+    :hasWorkflowStep :step_prepare , :step_writer , :step_suggestions .
+
+:step_prepare rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "prepare" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_prepare ;
+    :nextStep :step_writer .
+
+:step_writer rdf:type :WorkflowStep ;
+    dcterms:title "writer" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_writer ;
+    :nextStep :step_suggestions .
+
+:step_suggestions rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "suggestions" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_suggestions .
+
+:task_prepare rdf:type :Task ;
+    dcterms:description "Create an initial draft of the document by invoking the bound tool and streaming response to the UI." ;
+    :performedByAgent :writer_agent ;
+    :taskPrompt :prompt_prepare .
+
+:task_writer rdf:type :Task ;
+    dcterms:description "Generate the full document content based on the user's request and earlier messages; stream to UI, then finalise." ;
+    :performedByAgent :writer_agent ;
+    :taskPrompt :prompt_writer .
+
+:task_suggestions rdf:type :Task ;
+    dcterms:description "Call the model to produce a finishing/suggestions message based on collected messages and tool call completions." ;
+    :performedByAgent :writer_agent ;
+    :taskPrompt :prompt_suggestions .
+
+:prompt_prepare rdf:type :Prompt ;
+    :promptInstruction "Prepare a text document for the user with a short title and short description for browsing purposes. Can be also used when creating a new version of the document." .
+
+:prompt_writer rdf:type :Prompt ;
+    :promptInstruction "Write a text document based on the user's request. Only output the content, do not ask any additional questions. If there is selected text in state.context.writer.selected, include that context in the generation." .
+
+:prompt_suggestions rdf:type :Prompt ;
+    :promptInstruction "Invoke the model on the conversation messages (including tool finished signals) to produce the finish/suggestions message; append the resulting model output to the message stream." .
+
+:writer_agent rdf:type :LLMAgent ;
+    :agentID "writer_agent" ;
+    :agentRole "writer" ;
+    :agentPrompt :prompt_writer ;
+    :useLanguageModel :lm_claude_3_5_sonnet_latest ;
+    :agentToolUsage :tool_draft_text_document ;
+    :hasAgentConfig :config_model , :config_tags .
+
+:lm_claude_3_5_sonnet_latest rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-sonnet-latest" .
+
+:tool_draft_text_document rdf:type :Tool ;
+    dcterms:title "draft_text_document" ;
+    dcterms:description "Prepare a text document for the user with a short title and short description for browsing purposes. Can be also used when creating a new version of the document." ;
+    :hasCapability :cap_CreateTextDocument .
+
+:cap_CreateTextDocument rdf:type :Capability ;
+    dcterms:title "Create text document" ;
+    dcterms:description "Creates an initial draft document (short title and short description) given title/description inputs." .
+
+:config_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "claude-3-5-sonnet-latest" .
+
+:config_tags rdf:type :Config ;
+    :configKey "tags" ;
+    :configValue "[\"nostream\"]" .

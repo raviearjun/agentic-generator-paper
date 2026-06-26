@@ -1,0 +1,305 @@
+# Execution time: 63.93 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Assumed both workflows ("Travel Submission" and "Sync CSV Data") are part of the system even though only Sync CSV Data is registered in mastra index; included both for completeness.
+# - For the workflow step that calls mastra.getAgent("travelAnalyzer"), assigned tasks to :travelAnalyzer as the performing agent (to satisfy mandatory performedByAgent).
+# - Environment secrets (RAPID_API_KEY, DB URLs) are represented using their env names as configValue (prefixed with "env:") because actual values are not present.
+# - Where multiple "accommodation" steps exist (hotels vs airbnb), created two distinct task individuals for clarity.
+# - Added bidirectional :interactsWith between the two agents because they are both used in the request flow (runAgent calls both); no explicit direct messaging exists in code.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Models
+#################################################################
+:lm_claude_3_5_sonnet_20240620 rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-sonnet-20240620" .
+
+#################################################################
+# Agents
+#################################################################
+:agent_travelAgent rdf:type :LLMAgent ;
+    :agentID "travelAgent" ;
+    :agentRole "travel agent" ;
+    :agentPrompt :prompt_travelAgent ;
+    :useLanguageModel :lm_claude_3_5_sonnet_20240620 ;
+    :agentToolUsage :tool_searchFlights ,
+                    :tool_searchHotels ,
+                    :tool_searchAttractions ,
+                    :tool_searchAirbnbLocation ,
+                    :tool_searchAirbnb ;
+    :hasAgentConfig :config_travelAgent_model_provider ,
+                    :config_travelAgent_model_name ,
+                    :config_travelAgent_toolChoice .
+
+:agent_travelAnalyzer rdf:type :LLMAgent ;
+    :agentID "travel-analyzer" ;
+    :agentRole "travel analyzer" ;
+    :agentPrompt :prompt_travelAnalyzer ;
+    :useLanguageModel :lm_claude_3_5_sonnet_20240620 ;
+    :hasAgentConfig :config_travelAnalyzer_model_provider ,
+                    :config_travelAnalyzer_model_name ,
+                    :config_travelAnalyzer_toolChoice .
+
+#################################################################
+# Agent Prompts
+#################################################################
+:prompt_travelAgent rdf:type :Prompt ;
+    :promptInstruction """You are an expert travel agent responsible for finding a flight, hotel, and three attractions for a user. You will be given a set of user preferences along with some tools and you will need to find the best options for them. Be as concise as possible with your response.""" ;
+    dcterms:description "Instructions provided when creating the travelAgent in src/mastra/agents/index.ts" .
+
+:prompt_travelAnalyzer rdf:type :Prompt ;
+    :promptInstruction """You are an expert travel agent responsible for finding a flight, hotel, and three attractions for a user. You will be given a set of user preferences along with some data to find the best options for them.""" ;
+    dcterms:description "Instructions for the travel-analyzer agent in src/mastra/agents/index.ts" .
+
+#################################################################
+# Agent Configs
+#################################################################
+:config_travelAgent_model_provider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "ANTHROPIC" .
+
+:config_travelAgent_model_name rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "claude-3-5-sonnet-20240620" .
+
+:config_travelAgent_toolChoice rdf:type :Config ;
+    :configKey "model.toolChoice" ;
+    :configValue "auto" .
+
+:config_travelAnalyzer_model_provider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "ANTHROPIC" .
+
+:config_travelAnalyzer_model_name rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "claude-3-5-sonnet-20240620" .
+
+:config_travelAnalyzer_toolChoice rdf:type :Config ;
+    :configKey "model.toolChoice" ;
+    :configValue "auto" .
+
+#################################################################
+# Tools and Capabilities and Tool Configs
+#################################################################
+:tool_searchFlights rdf:type :Tool ;
+    dcterms:title "Get Flight Info" ;
+    dcterms:description "Fetches flight information for a given date range, origin and destination. Origin and Destination are Airport codes like DFW.AIRPORT or SEA.AIRPORT" ;
+    :hasCapability :cap_searchFlights ;
+    :hasToolConfig :config_booking_api_key .
+
+:cap_searchFlights rdf:type :Capability ;
+    dcterms:title "Search flights (booking.com integration)" .
+
+:tool_searchHotels rdf:type :Tool ;
+    dcterms:title "Search Hotels" ;
+    dcterms:description "Searches for hotels in a specified location. Destination is a cityId like 20015732 for 20015733" ;
+    :hasCapability :cap_searchHotels ;
+    :hasToolConfig :config_booking_api_key .
+
+:cap_searchHotels rdf:type :Capability ;
+    dcterms:title "Search hotels (booking.com integration)" .
+
+:tool_searchAttractions rdf:type :Tool ;
+    dcterms:title "Search Attractions" ;
+    dcterms:description "Searches for attractions in a specified location. Destination is a cityId like 20015732 for 20015733" ;
+    :hasCapability :cap_searchAttractions ;
+    :hasToolConfig :config_booking_api_key .
+
+:cap_searchAttractions rdf:type :Capability ;
+    dcterms:title "Search attractions (booking.com integration)" .
+
+:tool_searchAirbnbLocation rdf:type :Tool ;
+    dcterms:title "Search Airbnb Location" ;
+    dcterms:description "Searches for Airbnb places in a specified location. Place is a city name like New York, NY" ;
+    :hasCapability :cap_searchAirbnbLocation ;
+    :hasToolConfig :config_airbnb_api_key .
+
+:cap_searchAirbnbLocation rdf:type :Capability ;
+    dcterms:title "Search Airbnb locations" .
+
+:tool_searchAirbnb rdf:type :Tool ;
+    dcterms:title "Search Airbnb" ;
+    dcterms:description "Searches for Airbnb in a specified location. Place is a cityId like 20015732 for 20015733" ;
+    :hasCapability :cap_searchAirbnb ;
+    :hasToolConfig :config_airbnb_api_key .
+
+:cap_searchAirbnb rdf:type :Capability ;
+    dcterms:title "Search Airbnb properties" .
+
+:config_booking_api_key rdf:type :Config ;
+    :configKey "RAPID_API_KEY" ;
+    :configValue "env:RAPID_API_KEY" .
+
+:config_airbnb_api_key rdf:type :Config ;
+    :configKey "RAPID_API_KEY" ;
+    :configValue "env:RAPID_API_KEY" .
+
+#################################################################
+# Team (Mastra instance)
+#################################################################
+:team_mastra rdf:type :Team ;
+    dcterms:title "Mastra Instance" ;
+    :hasAgentMember :agent_travelAgent , :agent_travelAnalyzer ;
+    :hasWorkflowPattern :workflow_syncCsvData , :workflow_travelSubmission ;
+    :hasSystemConfig :config_mastra_engine_url , :config_mastra_memory_store_conn_string .
+
+:config_mastra_engine_url rdf:type :Config ;
+    :configKey "PostgresEngine.url" ;
+    :configValue "postgresql://postgres:postgres@localhost:5433/mastra" .
+
+:config_mastra_memory_store_conn_string rdf:type :Config ;
+    :configKey "PostgresStore.connectionString" ;
+    :configValue "env:PostgresStore_CONNECTION" .
+
+#################################################################
+# Workflows and Steps and Tasks (Travel Submission)
+#################################################################
+:workflow_travelSubmission rdf:type :WorkflowPattern ;
+    dcterms:title "Travel Submission" ;
+    :hasWorkflowStep :step_outboundFlight ,
+                     :step_returnFlight ,
+                     :step_accommodation_hotels ,
+                     :step_attraction ,
+                     :step_airbnbLocation ,
+                     :step_accommodation_airbnb .
+
+# Start step
+:step_outboundFlight rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "outboundFlight" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_outboundFlight .
+
+:step_returnFlight rdf:type :WorkflowStep ;
+    dcterms:title "returnFlight" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_returnFlight ;
+    :nextStep :step_accommodation_hotels .
+
+:step_accommodation_hotels rdf:type :WorkflowStep ;
+    dcterms:title "accommodation (hotels branch)" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_accommodation_hotels ;
+    :nextStep :step_attraction .
+
+:step_attraction rdf:type :WorkflowStep ;
+    dcterms:title "attraction" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_attraction ;
+    :nextStep :step_airbnbLocation .
+
+:step_airbnbLocation rdf:type :WorkflowStep ;
+    dcterms:title "airbnbLocation" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_airbnbLocation ;
+    :nextStep :step_accommodation_airbnb .
+
+:step_accommodation_airbnb rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "accommodation (airbnb branch)" ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :task_accommodation_airbnb .
+
+#################################################################
+# Tasks & Task Prompts (Travel Submission)
+#################################################################
+:task_outboundFlight rdf:type :Task ;
+    dcterms:title "Select outbound flight" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_outboundFlight .
+
+:prompt_outboundFlight rdf:type :Prompt ;
+    :promptInstruction """Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+:task_returnFlight rdf:type :Task ;
+    dcterms:title "Select return flight" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_returnFlight .
+
+:prompt_returnFlight rdf:type :Prompt ;
+    :promptInstruction """Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+:task_accommodation_hotels rdf:type :Task ;
+    dcterms:title "Select hotel accommodation" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_accommodation_hotels .
+
+:prompt_accommodation_hotels rdf:type :Prompt ;
+    :promptInstruction """Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+:task_airbnbLocation rdf:type :Task ;
+    dcterms:title "Search Airbnb Location" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_airbnbLocation .
+
+:prompt_airbnbLocation rdf:type :Prompt ;
+    :promptInstruction """Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+:task_accommodation_airbnb rdf:type :Task ;
+    dcterms:title "Select Airbnb accommodation" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_accommodation_airbnb .
+
+:prompt_accommodation_airbnb rdf:type :Prompt ;
+    :promptInstruction """Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+:task_attraction rdf:type :Task ;
+    dcterms:title "Select attractions" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_attraction .
+
+:prompt_attraction rdf:type :Prompt ;
+    :promptInstruction """Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available.""" ;
+    :promptOutputIndicator "ids: [string], reasoning: string" .
+
+#################################################################
+# Workflow: Sync CSV Data
+#################################################################
+:workflow_syncCsvData rdf:type :WorkflowPattern ;
+    dcterms:title "Sync CSV Data" ;
+    :hasWorkflowStep :step_sync_csv_data .
+
+:step_sync_csv_data rdf:type :StartStep , :EndStep , :WorkflowStep ;
+    dcterms:title "sync-csv-data-step" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_syncCsvData .
+
+:task_syncCsvData rdf:type :Task ;
+    dcterms:title "Sync City CSV Data" ;
+    :performedByAgent :agent_travelAnalyzer ;
+    :taskPrompt :prompt_syncCsvData .
+
+:prompt_syncCsvData rdf:type :Prompt ;
+    :promptInstruction """Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.""" ;
+    :promptOutputIndicator "status: success | failure" .
+
+#################################################################
+# Agent Interactions
+#################################################################
+# runAgent and workflow use both agents; add interactsWith relationships to indicate multi-agent usage
+:agent_travelAgent :interactsWith :agent_travelAnalyzer .
+:agent_travelAnalyzer :interactsWith :agent_travelAgent .
+
+#################################################################
+# Produced Resources / Misc links (best-effort)
+#################################################################
+# Tools are available to the team (tool usage by agent already set on agents)
+:team_mastra :hasSystemConfig :config_mastra_engine_url .
+
+#################################################################
+# End of generated instance data
+#################################################################

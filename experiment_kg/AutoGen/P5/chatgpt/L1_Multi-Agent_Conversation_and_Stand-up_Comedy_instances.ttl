@@ -1,0 +1,242 @@
+# Execution time: 71.09 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - Reused single LanguageModel individual for all agents since llm_config points to the same model "gpt-3.5-turbo".
+# - Created Tools for external APIs referenced in code: OpenAI API and utils.get_openai_api_key (treated as an external helper). Assumed agents depend on the OpenAI API.
+# - Some agent fields (agentRole) are inferred from names/system messages when not explicitly provided.
+# - For boolean/lambda termination handlers, stored a descriptive string in Config since code provides lambda-based checks not explicit data values.
+# - Grouping the two performers into one Team representing the stand-up duo (no explicit GroupChat object in code).
+# - Task/order/workflow decisions reflect a high-level ordering of the highlighted actions in the notebook (not every conversational turn).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:LM_gpt3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "Language model referenced by llm_config in the notebook." .
+
+### Tools and Capabilities
+:Tool_OpenAI_API rdf:type :Tool ;
+    dcterms:title "OpenAI API" ;
+    dcterms:description "External LLM API used by ConversableAgent (via autogen/OpenAI client)." ;
+    :hasCapability :Cap_OpenAI_API ;
+    :hasToolConfig :Config_OpenAI_API_Key .
+
+:Cap_OpenAI_API rdf:type :Capability ;
+    dcterms:description "Provides LLM inference and chat functionality." .
+
+:Config_OpenAI_API_Key rdf:type :Config ;
+    :configKey "api_key" ;
+    :configValue "env:OPENAI_API_KEY (obtained via utils.get_openai_api_key)" .
+
+:Tool_get_openai_api_key rdf:type :Tool ;
+    dcterms:title "utils.get_openai_api_key" ;
+    dcterms:description "Helper function used to retrieve the OpenAI API key from environment/config." ;
+    :hasCapability :Cap_Get_API_Key ;
+    :hasToolConfig :Config_get_key_mode .
+
+:Cap_Get_API_Key rdf:type :Capability ;
+    dcterms:description "Retrieves OpenAI API key from environment or secret store." .
+
+:Config_get_key_mode rdf:type :Config ;
+    :configKey "retrieval_method" ;
+    :configValue "function call utils.get_openai_api_key()" .
+
+### Agents
+:agent_chatbot rdf:type :LLMAgent ;
+    :agentID "chatbot" ;
+    :agentRole "conversable agent" ;
+    :agentPrompt :prompt_chatbot_default ;
+    :useLanguageModel :LM_gpt3_5_turbo ;
+    :agentToolUsage :Tool_OpenAI_API , :Tool_get_openai_api_key ;
+    :hasAgentConfig :Config_chatbot_model , :Config_chatbot_human_input_mode ;
+    dcterms:description "A generic ConversableAgent instance created as 'agent' in the notebook." .
+
+:prompt_chatbot_default rdf:type :Prompt ;
+    :promptInstruction "No explicit system_message provided in notebook; agent uses default ConversableAgent behavior." .
+
+:Config_chatbot_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_chatbot_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:agent_guodegang rdf:type :LLMAgent ;
+    :agentID "郭德纲" ;
+    :agentRole "逗哏 / stand-up comedian (performer)" ;
+    :agentPrompt :prompt_guodegang_system ;
+    :useLanguageModel :LM_gpt3_5_turbo ;
+    :agentToolUsage :Tool_OpenAI_API ;
+    :hasAgentConfig :Config_guodegang_model , :Config_guodegang_human_input_mode , :Config_guodegang_termination ;
+    dcterms:description "ConversableAgent representing 郭德纲 (dougen, comic lead)." .
+
+:prompt_guodegang_system rdf:type :Prompt ;
+    :promptInstruction "你的名字是郭德纲，著名的相声演员，擅长说学逗唱，作为一名逗哏,你能想出任何笑话包袱逗笑大家！当你想结束这场相声时，说‘那个人去上厕所了’" .
+
+:Config_guodegang_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_guodegang_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:Config_guodegang_termination rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda checks for string '那个人去上厕所了' in returned message" .
+
+:agent_yuqian rdf:type :LLMAgent ;
+    :agentID "于谦" ;
+    :agentRole "捧哏 / stand-up partner (support)" ;
+    :agentPrompt :prompt_yuqian_system ;
+    :useLanguageModel :LM_gpt3_5_turbo ;
+    :agentToolUsage :Tool_OpenAI_API ;
+    :hasAgentConfig :Config_yuqian_model , :Config_yuqian_human_input_mode , :Config_yuqian_termination ;
+    dcterms:description "ConversableAgent representing 于谦 (support comic)." .
+
+:prompt_yuqian_system rdf:type :Prompt ;
+    :promptInstruction "你的名字是于谦，著名的相声演员，擅长说学逗唱，作为一名捧哏,你能接住任何逗哏说出来的笑话包袱！逗哏说出笑话包袱之后你再接话。你最多只能回复8个字！当你想结束这场相声时，说‘那个人去上厕所了’" .
+
+:Config_yuqian_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_yuqian_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "NEVER" .
+
+:Config_yuqian_termination rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda checks for presence of '那个人去上厕所了' or '想上厕所' in returned message" .
+
+### Agent Interactions
+:agent_guodegang :interactsWith :agent_yuqian .
+:agent_yuqian :interactsWith :agent_guodegang .
+
+### Team (stand-up duo)
+:team_xiangsheng rdf:type :Team ;
+    dcterms:title "郭德纲 & 于谦 Stand-up Duo" ;
+    :hasAgentMember :agent_guodegang , :agent_yuqian ;
+    :hasWorkflowPattern :workflow_xiangsheng ;
+    :hasSystemConfig :Config_team_performance ;
+    :hasTeamGoal :Goal_perform_standup .
+
+:Config_team_performance rdf:type :Config ;
+    :configKey "performance_type" ;
+    :configValue "相声 / stand-up comedy" .
+
+:Goal_perform_standup rdf:type :Goal ;
+    dcterms:title "Perform stand-up comedy for audience" ;
+    dcterms:description "Deliver a short comedic routine for the audience." .
+
+### Tasks (representative conversation actions)
+:Task_chatbot_reply_1 rdf:type :Task ;
+    dcterms:title "chatbot generate_reply: Tell me a joke." ;
+    :performedByAgent :agent_chatbot ;
+    :taskPrompt :prompt_chatbot_task1 ;
+    :hasConfig :Config_task_chatbot_reply_1_maxturns .
+
+:prompt_chatbot_task1 rdf:type :Prompt ;
+    :promptInstruction "messages=[{\"content\": \"Tell me a joke.\", \"role\": \"user\"}]" ;
+    :promptOutputIndicator "A generated joke." .
+
+:Config_task_chatbot_reply_1_maxturns rdf:type :Config ;
+    :configKey "context" ;
+    :configValue "single generate_reply call" .
+
+:Task_chatbot_reply_2 rdf:type :Task ;
+    dcterms:title "chatbot generate_reply: Repeat the joke." ;
+    :performedByAgent :agent_chatbot ;
+    :taskPrompt :prompt_chatbot_task2 .
+
+:prompt_chatbot_task2 rdf:type :Prompt ;
+    :promptInstruction "messages=[{\"content\": \"Repeat the joke.\", \"role\": \"user\"}]" ;
+    :promptOutputIndicator "Repeat of the previously generated joke." .
+
+:Task_guodegang_initiate_chat_1 rdf:type :Task ;
+    dcterms:title "郭德纲 initiate_chat -> 于谦 (max_turns=6)" ;
+    :performedByAgent :agent_guodegang ;
+    :taskPrompt :prompt_guodegang_init1 ;
+    :hasConfig :Config_task_guodegang_init1_maxturns .
+
+:prompt_guodegang_init1 rdf:type :Prompt ;
+    :promptInstruction "message=\"我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？\"; recipient=于谦; max_turns=6" ;
+    :promptOutputIndicator "A multi-turn conversational performance between 郭德纲 and 于谦." .
+
+:Config_task_guodegang_init1_maxturns rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "6" .
+
+:Task_guodegang_initiate_chat_2 rdf:type :Task ;
+    dcterms:title "郭德纲 initiate_chat -> 于谦 (summary requested)" ;
+    :performedByAgent :agent_guodegang ;
+    :taskPrompt :prompt_guodegang_init2 ;
+    :hasConfig :Config_task_guodegang_init2_summary .
+
+:prompt_guodegang_init2 rdf:type :Prompt ;
+    :promptInstruction "message=\"我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？\"; summary_method=\"reflection_with_llm\"; summary_prompt=\"简洁的总结下这场相声表演。\"" ;
+    :promptOutputIndicator "Conversation with an appended LLM-generated summary." .
+
+:Config_task_guodegang_init2_summary rdf:type :Config ;
+    :configKey "summary_method" ;
+    :configValue "reflection_with_llm; summary_prompt='简洁的总结下这场相声表演。'" .
+
+:Task_guodegang_send_followup rdf:type :Task ;
+    dcterms:title "郭德纲 send -> 于谦 (follow-up question)" ;
+    :performedByAgent :agent_guodegang ;
+    :taskPrompt :prompt_guodegang_send1 .
+
+:prompt_guodegang_send1 rdf:type :Prompt ;
+    :promptInstruction "message='我们刚才的相声在讲什么?'; recipient=于谦" ;
+    :promptOutputIndicator "Clarifying question about previous performance." .
+
+### Workflow Pattern and Steps
+:workflow_xiangsheng rdf:type :WorkflowPattern ;
+    dcterms:title "Stand-up Conversation Workflow" ;
+    :hasWorkflowStep :step_start_init_chat , :step_summary , :step_end_followup ;
+    dcterms:description "High-level workflow capturing initiation, summary, and follow-up interactions for the stand-up duo." .
+
+:step_start_init_chat rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "Start: Initiate chat" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_guodegang_initiate_chat_1 ;
+    :nextStep :step_summary .
+
+:step_summary rdf:type :WorkflowStep ;
+    dcterms:title "Conversation & Summary" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_guodegang_initiate_chat_2 ;
+    :nextStep :step_end_followup .
+
+:step_end_followup rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "End: Follow-up" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_guodegang_send_followup .
+
+### Link team to workflow and tasks
+:workflow_xiangsheng :hasWorkflowStep :step_start_init_chat , :step_summary , :step_end_followup .
+:team_xiangsheng :hasWorkflowPattern :workflow_xiangsheng .
+
+### Link tasks' prompts and performedByAgent already set above
+# (Also include the chatbot's generate_reply tasks in sequence for independent conversational example)
+:step_chatbot_interaction rdf:type :WorkflowStep ;
+    dcterms:title "Chatbot generate_reply sequence" ;
+    :stepOrder 100 ;
+    :hasAssociatedTask :Task_chatbot_reply_1 , :Task_chatbot_reply_2 .
+
+### Ensure agents reference tools and language model (already set), and tools have configs
+:Tool_OpenAI_API :hasToolConfig :Config_OpenAI_API_Key .
+
+# End of instance data.

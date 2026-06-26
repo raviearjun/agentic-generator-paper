@@ -1,0 +1,147 @@
+# Execution time: 32.57 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Agent role not explicitly specified in source; assigned "bird-checker" as an assumed role.
+# - The getRandomImage tool is defined in the project but not explicitly attached to the agent in code; assume birdCheckerAgent can use it and linked via :agentToolUsage.
+# - A simple two-step workflow (get image → analyze image) is created to represent the repository's endpoints/features; this workflow was not explicitly defined in the code.
+# - Unsplash API key is represented as a Tool config (UNSPLASH_ACCESS_KEY) with placeholder value; actual secret not included.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent: birdCheckerAgent
+:birdCheckerAgent rdf:type :LLMAgent ;
+    dcterms:title "Bird checker agent" ;
+    :agentID "Bird checker" ;
+    :agentRole "bird-checker" ;
+    :agentPrompt :Prompt_BirdCheckerInstructions ;
+    :useLanguageModel :claude_3_haiku_20240307 ;
+    :agentToolUsage :getRandomImageTool ;
+    :hasAgentConfig :AgentConfig_model_provider , :AgentConfig_model_name , :AgentConfig_toolChoice ;
+    :hasAgentCapability :BirdClassificationCapability ;
+    dcterms:description "An agent configured to look at images and determine if they contain birds, identify species, and summarize location." .
+
+:Prompt_BirdCheckerInstructions rdf:type :Prompt ;
+    :promptInstruction "You can view an image and figure out if it is a bird or not. You can also figure out the species of the bird and where the picture was taken." ;
+    dcterms:description "Instructions passed as agent-level system prompt for bird classification and location summarization." .
+
+:BirdClassificationCapability rdf:type :Capability ;
+    dcterms:description "Classify images as bird/non-bird, identify species, and summarize location." .
+
+### Language Model used by agent (always create)
+:claude_3_haiku_20240307 rdf:type :LanguageModel ;
+    dcterms:title "claude-3-haiku-20240307" ;
+    dcterms:description "Anthropic model referenced in agent configuration (provider: ANTHROPIC)." .
+
+### Agent configs (model & toolChoice)
+:AgentConfig_model_provider rdf:type :Config ;
+    :configKey "model_provider" ;
+    :configValue "ANTHROPIC" ;
+    dcterms:description "Model provider configured for the agent." .
+
+:AgentConfig_model_name rdf:type :Config ;
+    :configKey "model_name" ;
+    :configValue "claude-3-haiku-20240307" ;
+    dcterms:description "Model name configured for the agent." .
+
+:AgentConfig_toolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" ;
+    dcterms:description "Agent tool selection strategy." .
+
+### Tool: getRandomImageTool
+:getRandomImageTool rdf:type :Tool ;
+    dcterms:title "Get a random image from unsplash" ;
+    dcterms:description "Gets a random image from Unsplash based on the selected option" ;
+    :hasCapability :GetRandomImageCapability ;
+    :hasToolConfig :GetRandomImageToolConfig ;
+    dcterms:description "Tool that wraps Unsplash search and returns an imageUrl, photographerName and photographerProfile." .
+
+:GetRandomImageCapability rdf:type :Capability ;
+    dcterms:description "Search Unsplash and return a random image matching a query (returns imageUrl, photographerName, photographerProfile)." .
+
+:GetRandomImageToolConfig rdf:type :Config ;
+    :configKey "UNSPLASH_ACCESS_KEY" ;
+    :configValue "ENV_UNSPLASH_ACCESS_KEY (placeholder)" ;
+    dcterms:description "Access key for Unsplash API (stored in environment variable in source)." .
+
+### Goal: identify birds
+:Goal_IdentifyBirds rdf:type :Goal ;
+    dcterms:title "Identify birds in images" ;
+    dcterms:description "Determine whether an image contains a bird, identify the species, and summarize the location." .
+
+# Link goal to agent
+:birdCheckerAgent :hasAgentGoal :Goal_IdentifyBirds .
+
+### Team / System
+:BirdCheckerTeam rdf:type :Team ;
+    dcterms:title "Bird Checker System" ;
+    dcterms:description "Mastra instance that hosts the bird checker agent and associated tools." ;
+    :hasAgentMember :birdCheckerAgent ;
+    :hasTeamGoal :Goal_IdentifyBirds ;
+    :hasWorkflowPattern :BirdCheckWorkflow ;
+    :hasSystemConfig :TeamConfig_runtime .
+
+:TeamConfig_runtime rdf:type :Config ;
+    :configKey "runtime" ;
+    :configValue "express-server" ;
+    dcterms:description "Runtime environment for the system (Express.js server)." .
+
+### Workflow Pattern (constructed to represent project flow)
+:BirdCheckWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "bird-check-workflow" ;
+    dcterms:description "Simple workflow representing (1) obtaining an image and (2) analyzing it with the birdCheckerAgent." ;
+    :hasWorkflowStep :Step1_GetRandomImage , :Step2_AnalyzeImage .
+
+# Workflow Step 1 — StartStep: obtain image
+:Step1_GetRandomImage rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "Get random image step" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :GetRandomImageTask ;
+    :nextStep :Step2_AnalyzeImage ;
+    dcterms:description "Start step: retrieve a random image from Unsplash (or other provided image URL)." .
+
+:GetRandomImageTask rdf:type :Task ;
+    dcterms:title "Get Random Image Task" ;
+    :performedBy :getRandomImageTool ;
+    :taskPrompt :Prompt_GetRandomImage ;
+    dcterms:description "Task that obtains an image (imageUrl, photographer info) from Unsplash based on a query." .
+
+:Prompt_GetRandomImage rdf:type :Prompt ;
+    :promptInstruction "Fetch a random image from Unsplash matching the provided query parameter (wildlife | bird | feathers | flying). Return imageUrl, photographerName, and photographerProfile." ;
+    :promptOutputIndicator "JSON object with imageUrl (string), photographerName (string), photographerProfile (string)" ;
+    dcterms:description "Input schema: query ∈ {wildlife, feathers, flying, birds}." .
+
+# Workflow Step 2 — EndStep: analyze image
+:Step2_AnalyzeImage rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "Analyze image step" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :ImageMetadataTask ;
+    dcterms:description "Final step: analyze the provided image and produce structured metadata (is bird, species, location summary)." .
+
+:ImageMetadataTask rdf:type :Task ;
+    dcterms:title "Image metadata analysis task" ;
+    :performedByAgent :birdCheckerAgent ;
+    :taskPrompt :Prompt_ImageMetadata ;
+    dcterms:description "Task where the agent inspects an image and returns structured output indicating whether it is a bird, the species, and a short location summary." .
+
+:Prompt_ImageMetadata rdf:type :Prompt ;
+    :promptInstruction "View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student." ;
+    :promptInputData "imageUrl (string) or embedded image content" ;
+    :promptOutputIndicator "JSON object with keys: bird (boolean), species (string), location (string)" ;
+    dcterms:description "User-level instruction used in the /api/image-metadata endpoint to request structured metadata about the image." .
+
+### Additional links and properties to satisfy completeness checklist
+# Ensure agent links to language model (already present) and agent-tool usage (already present).
+# No multi-agent interactions in this project; thus no :interactsWith triples added.
+
+### End of instances.

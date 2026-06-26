@@ -1,0 +1,215 @@
+# Execution time: 66.42 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - README states the project uses GPT-4 by default; a single :LanguageModel individual "gpt-4" is created and linked to all agents.
+# - API keys and other runtime secrets are provided via environment variables (represented here as Config values "from_env").
+# - No explicit inter-agent runtime message passing was present in code/config; therefore no :interactsWith triples were created.
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:LM_gpt4 rdf:type :LanguageModel ;
+    dcterms:title "gpt-4" ;
+    dcterms:description "Default model referenced in project README. Created as required by the extraction checklist." .
+
+### Team (Crew)
+:Team_SurpriseTravelCrew rdf:type :Team ;
+    dcterms:title "SurpriseTravelCrew" ;
+    :hasAgentMember :Agent_personalized_activity_planner ,
+                     :Agent_restaurant_scout ,
+                     :Agent_itinerary_compiler ;
+    :hasWorkflowPattern :Workflow_Sequential ;
+    :hasSystemConfig :Config_input_origin ,
+                     :Config_input_destination ,
+                     :Config_input_age ,
+                     :Config_input_hotel_location ,
+                     :Config_input_flight_information ,
+                     :Config_input_trip_duration ;
+    :hasTeamGoal :Goal_surprise_travel_planning .
+
+:Goal_surprise_travel_planning rdf:type :Goal ;
+    dcterms:description "Create a comprehensive surprise travel plan for the traveler covering activities, restaurants, and a day-by-day itinerary." .
+
+### Agents
+:Agent_personalized_activity_planner rdf:type :LLMAgent ;
+    :agentID "personalized_activity_planner" ;
+    :agentRole "Activity Planner" ;
+    :agentPrompt :Prompt_agent_personalized_activity_planner ;
+    :useLanguageModel :LM_gpt4 ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_ScrapeWebsiteTool ;
+    :hasAgentConfig :Config_pap_verbose , :Config_pap_allow_delegation ;
+    :hasAgentCapability :Capability_activity_planning .
+
+:Prompt_agent_personalized_activity_planner rdf:type :Prompt ;
+    :promptInstruction "You are skilled at creating personalized itineraries that cater to the specific preferences and demographics of travelers." ;
+    dcterms:description "Agent backstory and role used as agent-level prompt (from agents.yaml)." .
+
+:Agent_restaurant_scout rdf:type :LLMAgent ;
+    :agentID "restaurant_scout" ;
+    :agentRole "Restaurant Scout" ;
+    :agentPrompt :Prompt_agent_restaurant_scout ;
+    :useLanguageModel :LM_gpt4 ;
+    :agentToolUsage :Tool_SerperDevTool , :Tool_ScrapeWebsiteTool ;
+    :hasAgentConfig :Config_rs_verbose , :Config_rs_allow_delegation ;
+    :hasAgentCapability :Capability_restaurant_scouting .
+
+:Prompt_agent_restaurant_scout rdf:type :Prompt ;
+    :promptInstruction "As a food lover, you know the best spots in town for a delightful culinary experience. You also have a knack for finding picturesque and entertaining locations." ;
+    dcterms:description "Agent backstory and role used as agent-level prompt (from agents.yaml)." .
+
+:Agent_itinerary_compiler rdf:type :LLMAgent ;
+    :agentID "itinerary_compiler" ;
+    :agentRole "Itinerary Compiler" ;
+    :agentPrompt :Prompt_agent_itinerary_compiler ;
+    :useLanguageModel :LM_gpt4 ;
+    :agentToolUsage :Tool_SerperDevTool ;
+    :hasAgentConfig :Config_ic_verbose , :Config_ic_allow_delegation ;
+    :hasAgentCapability :Capability_itinerary_compilation .
+
+:Prompt_agent_itinerary_compiler rdf:type :Prompt ;
+    :promptInstruction "With an eye for detail, you organize all the information into a coherent and enjoyable travel plan." ;
+    dcterms:description "Agent backstory and role used as agent-level prompt (from agents.yaml)." .
+
+### Agent Configs (per-agent settings shown in crew.py)
+:Config_pap_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Config_pap_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:Config_rs_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Config_rs_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:Config_ic_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Config_ic_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+### Tools
+:Tool_SerperDevTool rdf:type :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "Web search tool (Serper.dev) used to search the web for activities, restaurants, and general information." ;
+    :hasCapability :Capability_search ;
+    :hasToolConfig :Config_tool_serper_api_key .
+
+:Config_tool_serper_api_key rdf:type :Config ;
+    :configKey "api_key" ;
+    :configValue "from_env" .
+
+:Tool_ScrapeWebsiteTool rdf:type :Tool ;
+    dcterms:title "ScrapeWebsiteTool" ;
+    dcterms:description "Tool used to scrape website content for details about venues, restaurants and events." ;
+    :hasCapability :Capability_scrape ;
+    :hasToolConfig :Config_tool_scrape_user_agent .
+
+:Config_tool_scrape_user_agent rdf:type :Config ;
+    :configKey "user_agent" ;
+    :configValue "from_env_or_default" .
+
+### Tool Capabilities
+:Capability_search rdf:type :Capability ;
+    dcterms:description "Performs web searches for information such as events, activities, and restaurant listings." .
+
+:Capability_scrape rdf:type :Capability ;
+    dcterms:description "Extracts structured information from web pages (addresses, ratings, descriptions)." .
+
+### Agent Capabilities
+:Capability_activity_planning rdf:type :Capability ;
+    dcterms:description "Research and recommend activities suitable to traveler preferences." .
+
+:Capability_restaurant_scouting rdf:type :Capability ;
+    dcterms:description "Find and recommend restaurants and scenic dining locations." .
+
+:Capability_itinerary_compilation rdf:type :Capability ;
+    dcterms:description "Compile research into a day-by-day itinerary document." .
+
+### Tasks and Prompts (from tasks.yaml and crew.task definitions)
+:Task_personalized_activity_planning_task rdf:type :Task ;
+    :performedByAgent :Agent_personalized_activity_planner ;
+    :taskPrompt :Prompt_task_personalized_activity_planning ;
+    dcterms:description "Research and find cool things to do at {destination}. Focus on activities and events that match the traveler's interests and age group. Utilize internet search tools and recommendation engines to gather the information." .
+
+:Prompt_task_personalized_activity_planning rdf:type :Prompt ;
+    :promptInstruction "Research and find cool things to do at {destination}. Focus on activities and events that match the traveler's interests and age group. Utilize internet search tools and recommendation engines to gather the information.\n\nTraveler's information:\n- origin: {origin}\n- destination: {destination}\n- age of the traveler: {age}\n- hotel localtion: {hotel_location}\n- flight infromation: {flight_information}\n- how long is the trip: {trip_duration}" ;
+    :promptOutputIndicator "A list of recommended activities and events for each day of the trip. Each entry should include the activity name, location, a brief description, and why it's suitable for the traveler. And potential reviews and ratings of the activities." .
+
+:Task_restaurant_scenic_location_scout_task rdf:type :Task ;
+    :performedByAgent :Agent_restaurant_scout ;
+    :taskPrompt :Prompt_task_restaurant_scout ;
+    dcterms:description "Find highly-rated restaurants and dining experiences at {destination}. Recommend scenic locations and fun activities that align with the traveler's preferences. Use internet search tools, restaurant review sites, and travel guides." .
+
+:Prompt_task_restaurant_scout rdf:type :Prompt ;
+    :promptInstruction "Find highly-rated restaurants and dining experiences at {destination}. Recommend scenic locations and fun activities that align with the traveler's preferences. Use internet search tools, restaurant review sites, and travel guides.\n\nTraveler's information:\n- origin: {origin}\n- destination: {destination}\n- age of the traveler: {age}\n- hotel localtion: {hotel_location}\n- flight infromation: {flight_information}\n- how long is the trip: {trip_duration}" ;
+    :promptOutputIndicator "A list of recommended restaurants, scenic locations, and fun activities for each day of the trip including name, address, type of cuisine/activity, brief description and ratings." .
+
+:Task_itinerary_compilation_task rdf:type :Task ;
+    :performedByAgent :Agent_itinerary_compiler ;
+    :taskPrompt :Prompt_task_itinerary_compilation ;
+    dcterms:description "Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}. Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences." .
+
+:Prompt_task_itinerary_compilation rdf:type :Prompt ;
+    :promptInstruction "Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}. Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences. Use text formatting and document creation tools to organize the information." ;
+    :promptOutputIndicator "A detailed itinerary document including a day-by-day plan with flights, hotel details, activities, restaurants, and scenic locations." .
+
+### Workflow Pattern (Process.sequential -> Sequential workflow)
+:Workflow_Sequential rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :Step_1 , :Step_2 , :Step_3 .
+
+:Step_1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_personalized_activity_planning_task ;
+    :nextStep :Step_2 .
+
+:Step_2 rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_restaurant_scenic_location_scout_task ;
+    :nextStep :Step_3 .
+
+:Step_3 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :Task_itinerary_compilation_task .
+
+### Team Input Configs (from main.run inputs)
+:Config_input_origin rdf:type :Config ;
+    :configKey "origin" ;
+    :configValue "São Paulo, GRU" .
+
+:Config_input_destination rdf:type :Config ;
+    :configKey "destination" ;
+    :configValue "New York, JFK" .
+
+:Config_input_age rdf:type :Config ;
+    :configKey "age" ;
+    :configValue "31" .
+
+:Config_input_hotel_location rdf:type :Config ;
+    :configKey "hotel_location" ;
+    :configValue "Brooklyn" .
+
+:Config_input_flight_information rdf:type :Config ;
+    :configKey "flight_information" ;
+    :configValue "GOL 1234, leaving at June 30th, 2024, 10:00" .
+
+:Config_input_trip_duration rdf:type :Config ;
+    :configKey "trip_duration" ;
+    :configValue "14 days" .

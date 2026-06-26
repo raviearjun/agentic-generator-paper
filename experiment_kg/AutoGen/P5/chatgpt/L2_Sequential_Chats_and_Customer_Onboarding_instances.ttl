@@ -1,0 +1,155 @@
+# Execution time: 49.56 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - Assumed the final (English) re-definitions of agents/chats are the intended runtime set (earlier Chinese definitions were redefined).
+# - For the third chat, the sender is the human proxy; to satisfy the ontology's Task -> performedByAgent requirement, the Task is modeled as being performed by the recipient LLM agent (Customer Engagement Agent).
+# - A single LanguageModel (gpt-3.5-turbo) is created and attached to all LLM agents via hasAgentConfig/useLanguageModel as llm_config is shared.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# Language Model (global llm_config)
+:LM_gpt_3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" .
+
+# Agents (LLM-backed ConversableAgent instances)
+:Agent_Onboarding_Personal_Information rdf:type :LLMAgent ;
+    :agentID "Onboarding Personal Information Agent" ;
+    :agentRole "onboarding_personal_information" ;
+    :agentPrompt :Prompt_Agent_Onboarding_Personal_Information ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :Config_Agent_Onboarding_Personal_Information ;
+    :hasAgentGoal :Goal_Onboard_PersonalInfo ;
+    :interactsWith :Agent_customer_proxy_agent .
+
+:Agent_Onboarding_Topic_Preference rdf:type :LLMAgent ;
+    :agentID "Onboarding Topic preference Agent" ;
+    :agentRole "onboarding_topic_preference" ;
+    :agentPrompt :Prompt_Agent_Onboarding_Topic_Preference ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :Config_Agent_Onboarding_Topic_Preference ;
+    :hasAgentGoal :Goal_Onboard_TopicPreference ;
+    :interactsWith :Agent_customer_proxy_agent .
+
+:Agent_Customer_Engagement rdf:type :LLMAgent ;
+    :agentID "Customer Engagement Agent" ;
+    :agentRole "customer_engagement" ;
+    :agentPrompt :Prompt_Agent_Customer_Engagement ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :Config_Agent_Customer_Engagement ;
+    :hasAgentGoal :Goal_Customer_Engagement ;
+    :interactsWith :Agent_customer_proxy_agent .
+
+# Human proxy agent (represents the real customer input)
+:Agent_customer_proxy_agent rdf:type :HumanAgent ;
+    :agentID "customer_proxy_agent" ;
+    :agentRole "customer_proxy" ;
+    :interactsWith :Agent_Onboarding_Personal_Information ,
+                  :Agent_Onboarding_Topic_Preference ,
+                  :Agent_Customer_Engagement .
+
+# Prompts for agents (system messages / instructions)
+:Prompt_Agent_Onboarding_Personal_Information rdf:type :Prompt ;
+    :promptInstruction "You are a helpful customer onboarding agent, you are here to help new customers get started with our product. Your job is to gather customer's name and location. Do not ask for other information. Return 'TERMINATE' when you have gathered all the information." .
+
+:Prompt_Agent_Onboarding_Topic_Preference rdf:type :Prompt ;
+    :promptInstruction "You are a helpful customer onboarding agent, you are here to help new customers get started with our product. Your job is to gather customer's preferences on news topics. Do not ask for other information. Return 'TERMINATE' when you have gathered all the information." .
+
+:Prompt_Agent_Customer_Engagement rdf:type :Prompt ;
+    :promptInstruction "You are a helpful customer service agent here to provide fun for the customer based on the user's personal information and topic preferences. This could include fun facts, jokes, or interesting stories. Make sure to make it engaging and fun! Return 'TERMINATE' when you are done." .
+
+# Agent configs (from llm_config used in ConversableAgent)
+:Config_Agent_Onboarding_Personal_Information rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_Agent_Onboarding_Topic_Preference rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:Config_Agent_Customer_Engagement rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+# Goals extracted from system messages
+:Goal_Onboard_PersonalInfo rdf:type :Goal ;
+    dcterms:description "Gather customer's name and location." .
+
+:Goal_Onboard_TopicPreference rdf:type :Goal ;
+    dcterms:description "Collect customer's preferences on news topics." .
+
+:Goal_Customer_Engagement rdf:type :Goal ;
+    dcterms:description "Provide engaging and fun content based on customer's info and topic preferences." .
+
+# Tasks (each chat initiation is modeled as a Task)
+:Task_Onboarding_Personal_Info rdf:type :Task ;
+    :performedByAgent :Agent_Onboarding_Personal_Information ;
+    :taskPrompt :Prompt_Task_Onboarding_Personal_Info .
+
+:Task_Onboarding_Topic_Preference rdf:type :Task ;
+    :performedByAgent :Agent_Onboarding_Topic_Preference ;
+    :taskPrompt :Prompt_Task_Onboarding_Topic_Preference .
+
+:Task_Customer_Engagement_Request rdf:type :Task ;
+    # Sender is human proxy; task is to be performed by the recipient LLM (Customer Engagement Agent)
+    :performedByAgent :Agent_Customer_Engagement ;
+    :taskPrompt :Prompt_Task_Customer_Engagement_Request .
+
+# Task prompts (messages sent as part of chats)
+:Prompt_Task_Onboarding_Personal_Info rdf:type :Prompt ;
+    :promptInstruction "Hello, I'm here to help you get started with our product. Could you tell me your name and location?" ;
+    :promptOutputIndicator "Return the customer information into as JSON object only: {'name': '', 'location': ''}" .
+
+:Prompt_Task_Onboarding_Topic_Preference rdf:type :Prompt ;
+    :promptInstruction "Great! Could you tell me what topics you are interested in reading about?" .
+
+:Prompt_Task_Customer_Engagement_Request rdf:type :Prompt ;
+    :promptInstruction "Let's find something fun to read." .
+
+# Workflow pattern (sequential chats)
+:OnboardingWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential Onboarding Chats" ;
+    :hasWorkflowStep :Step_1 , :Step_2 , :Step_3 .
+
+# Workflow steps mapped to tasks
+:Step_1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    dcterms:title "Step 1: Collect personal information" ;
+    :hasAssociatedTask :Task_Onboarding_Personal_Info ;
+    :nextStep :Step_2 .
+
+:Step_2 rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    dcterms:title "Step 2: Collect topic preferences" ;
+    :hasAssociatedTask :Task_Onboarding_Topic_Preference ;
+    :nextStep :Step_3 .
+
+:Step_3 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 3 ;
+    dcterms:title "Step 3: Provide engagement content" ;
+    :hasAssociatedTask :Task_Customer_Engagement_Request .
+
+# Team that groups the agents and the workflow
+:OnboardingTeam rdf:type :Team ;
+    dcterms:title "Onboarding Team" ;
+    :hasAgentMember :Agent_Onboarding_Personal_Information ,
+                    :Agent_Onboarding_Topic_Preference ,
+                    :Agent_Customer_Engagement ,
+                    :Agent_customer_proxy_agent ;
+    :hasWorkflowPattern :OnboardingWorkflow .
+
+# Bi-directional interactsWith relations (agent <-> proxy)
+:Agent_customer_proxy_agent :interactsWith :Agent_Onboarding_Personal_Information ,
+                                   :Agent_Onboarding_Topic_Preference ,
+                                   :Agent_Customer_Engagement .
+
+# end of individuals

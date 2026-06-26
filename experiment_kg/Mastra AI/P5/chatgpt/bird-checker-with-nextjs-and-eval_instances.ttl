@@ -1,0 +1,156 @@
+# Execution time: 35.55 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit Team-level goal string found; created a concise goal from README (Determine if image is a bird).
+# - Agent role was not explicitly provided; assumed role "bird classifier".
+# - The getRandomImage function is provided both as a Mastra Tool and as an executor; represented as a single :Tool (:GetRandomImageTool).
+# - Environment secrets (API keys) are represented as config values with "env:..." placeholders.
+# - No explicit workflow API used; inferred a two-step workflow (fetch image → classify image) from application flow.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent
+:birdAgent rdf:type :LLMAgent ;
+    :agentID "birdAgent" ;
+    :agentRole "bird classifier" ;
+    :agentPrompt :birdAgentPrompt ;
+    :useLanguageModel :claude_3_haiku_20240307 ;
+    :hasAgentConfig :birdAgentConfig_provider ,
+                     :birdAgentConfig_model ,
+                     :birdAgentConfig_toolChoice ;
+    dcterms:title "birdAgent" ;
+    dcterms:description "Mastra AI agent configured to view images and determine whether they contain birds, identify species and summarize location." .
+
+:birdAgentPrompt rdf:type :Prompt ;
+    dcterms:title "birdAgent instructions" ;
+    :promptInstruction "You can view an image and figure out if it is a bird or not. You can also figure out the species of the bird and where the picture was taken." .
+
+### Language Model
+:claude_3_haiku_20240307 rdf:type :LanguageModel ;
+    dcterms:title "claude-3-haiku-20240307" ;
+    dcterms:description "Anthropic model specified in mastra agent configuration." .
+
+### Agent Configs
+:birdAgentConfig_provider rdf:type :Config ;
+    :configKey "provider" ;
+    :configValue "ANTHROPIC" ;
+    dcterms:description "Provider configured for birdAgent." .
+
+:birdAgentConfig_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "claude-3-haiku-20240307" ;
+    dcterms:description "Model name configured for birdAgent." .
+
+:birdAgentConfig_toolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" ;
+    dcterms:description "Tool selection mode for birdAgent." .
+
+### Tools and Capabilities
+:GetRandomImageTool rdf:type :Tool ;
+    dcterms:title "Get a random image from unsplash" ;
+    dcterms:description "Gets a random image from unsplash based on the selected option" ;
+    :hasCapability :capability_get_random_image ;
+    :hasToolConfig :Unsplash_AccessKey_Config ;
+    dcterms:description "Mastra tool defined in src/mastra/tools for fetching Unsplash images." .
+
+:capability_get_random_image rdf:type :Capability ;
+    dcterms:description "Fetch a random image from Unsplash matching the given query (wildlife | feathers | flying | birds)." .
+
+:Unsplash_AccessKey_Config rdf:type :Config ;
+    :configKey "NEXT_PUBLIC_UNSPLASH_ACCESS_KEY" ;
+    :configValue "env:NEXT_PUBLIC_UNSPLASH_ACCESS_KEY" ;
+    dcterms:description "Unsplash access key provided via environment variable." .
+
+### System / Team
+:birdCheckerSystem rdf:type :Team ;
+    dcterms:title "Bird Checker System" ;
+    dcterms:description "Mastra instance wrapping the birdAgent and application workflow." ;
+    :hasAgentMember :birdAgent ;
+    :hasWorkflowPattern :birdCheckerWorkflow ;
+    :hasSystemConfig :systemConfig_anthropic_key ,
+                     :systemConfig_braintrust_key .
+
+:systemConfig_anthropic_key rdf:type :Config ;
+    :configKey "ANTHROPIC_API_KEY" ;
+    :configValue "env:ANTHROPIC_API_KEY" ;
+    dcterms:description "Anthropic API key provided via environment variable." .
+
+:systemConfig_braintrust_key rdf:type :Config ;
+    :configKey "BRAINTRUST_API_KEY" ;
+    :configValue "env:BRAINTRUST_API_KEY" ;
+    dcterms:description "Braintrust API key provided via environment variable." .
+
+### Goal
+:birdCheckerGoal rdf:type :Goal ;
+    dcterms:title "Determine if image is a bird" ;
+    dcterms:description "System should determine whether a provided image contains a bird, identify its scientific name if present, and summarize location." .
+
+:birdCheckerSystem :hasTeamGoal :birdCheckerGoal .
+:birdAgent :hasAgentGoal :birdCheckerGoal .
+
+### Tasks and Prompts
+:GetImageTask rdf:type :Task ;
+    dcterms:title "Fetch random image task" ;
+    :taskPrompt :getImagePrompt ;
+    :performedBy :GetRandomImageTool ;
+    dcterms:description "UI-triggered task to obtain a random image from Unsplash based on selected query." .
+
+:getImagePrompt rdf:type :Prompt ;
+    dcterms:title "Get image prompt" ;
+    :promptInstruction "Get a random image from Unsplash based on the selected option (wildlife, feathers, flying, birds)." ;
+    :promptOutputIndicator "Image object with metadata (alt_description, urls, user links)" .
+
+:ClassifyImageTask rdf:type :Task ;
+    dcterms:title "Classify image (bird check) task" ;
+    :taskPrompt :classifyPrompt ;
+    :performedByAgent :birdAgent ;
+    dcterms:description "Agent task to determine bird presence, species, and summarize location." .
+
+:classifyPrompt rdf:type :Prompt ;
+    dcterms:title "Bird classification prompt" ;
+    :promptInstruction "view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student" ;
+    :promptOutputIndicator "Object with fields: bird (boolean), species (string), location (string)" .
+
+### Workflow Pattern and Steps
+:birdCheckerWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Bird Checker Workflow" ;
+    dcterms:description "Inferred two-step workflow: fetch an image, then classify it." ;
+    :hasWorkflowStep :step1_fetch_image , :step2_classify_image .
+
+:step1_fetch_image rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "Fetch Image Step" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :GetImageTask ;
+    :nextStep :step2_classify_image .
+
+:step2_classify_image rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "Classify Image Step" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :ClassifyImageTask .
+
+### Additional notes linking code artefacts
+# Link from evaluation code (braintrust eval) to classification task and tool usage (informational only)
+:braintrustEval rdf:type :Instance ;
+    dcterms:title "Braintrust Eval Script" ;
+    dcterms:description "Eval harness (src/lib/evals) that calls promptClaude and uses the agent to classify images." .
+
+# Produced resources (expected outputs)
+:GetImageTask :producedResource :ImageResourceTemplate .
+:ClassifyImageTask :producedResource :ClassificationResourceTemplate .
+
+:ImageResourceTemplate rdf:type beam:Instance ;
+    dcterms:description "Image object returned from Unsplash (urls, alt_description, user metadata)." .
+
+:ClassificationResourceTemplate rdf:type beam:Instance ;
+    dcterms:description "Structured classification output { bird: boolean, species: string, location: string }." .

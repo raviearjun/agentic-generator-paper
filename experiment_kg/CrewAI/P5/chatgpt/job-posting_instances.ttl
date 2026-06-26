@@ -1,0 +1,248 @@
+# Execution time: 58.54 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Assumed team-level goal from README: "Automate the creation of job postings using CrewAI"
+# - Assumed language model "gpt-4o" as default per README note ("It uses GPT-4o by default")
+# - For tools without explicit API keys, created placeholder Config with key "api_key" value "unspecified"
+# - Task execution order inferred from the @task definition order in src/job_posting/crew.py
+# - No explicit inter-agent chat calls found; therefore no :interactsWith relations were created
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+####################
+# Language Model
+####################
+:gpt4o a :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Default language model used by the crew as indicated in README." .
+
+####################
+# Capabilities
+####################
+:WebSearchCapability a :Capability ;
+    dcterms:description "Performs general website search and retrieval." .
+
+:SerperCapability a :Capability ;
+    dcterms:description "Uses Serper.dev API for search and rich web results." .
+
+:FileReadCapability a :Capability ;
+    dcterms:description "Reads the contents of a local file for use by agents." .
+
+####################
+# Tools and Tool Configs
+####################
+:WebsiteSearchTool a :Tool ;
+    dcterms:title "WebsiteSearchTool" ;
+    dcterms:description "A generic website search tool used to look up pages and content." ;
+    :hasCapability :WebSearchCapability ;
+    :hasToolConfig :WebsiteSearchToolConfig .
+
+:WebsiteSearchToolConfig a :Config ;
+    :configKey "api_key" ;
+    :configValue "unspecified" .
+
+:SerperDevTool a :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "Serper.dev integration tool for advanced search queries." ;
+    :hasCapability :SerperCapability ;
+    :hasToolConfig :SerperDevToolConfig .
+
+:SerperDevToolConfig a :Config ;
+    :configKey "api_key" ;
+    :configValue "unspecified" .
+
+:FileReadTool a :Tool ;
+    dcterms:title "FileReadTool" ;
+    dcterms:description "A tool to read a local job description example file." ;
+    :hasCapability :FileReadCapability ;
+    :hasToolConfig :FileReadToolConfig .
+
+:FileReadToolConfig a :Config ;
+    :configKey "file_path" ;
+    :configValue "job_description_example.md" .
+
+####################
+# Agents, Prompts, Goals, and Agent Configs
+####################
+:ResearchAgent a :LLMAgent ;
+    :agentID "research_agent" ;
+    :agentRole "Research Analyst" ;
+    :agentPrompt :ResearchAgentPrompt ;
+    :useLanguageModel :gpt4o ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool ;
+    :hasAgentConfig :ResearchAgentConfig ;
+    :hasAgentGoal :ResearchAgentGoal .
+
+:ResearchAgentPrompt a :Prompt ;
+    :promptInstruction """Expert in analyzing company cultures and identifying key values and needs from various sources, including websites and brief descriptions.
+Goal: Analyze the company website and provided description to extract insights on culture, values, and specific needs.""" .
+
+:ResearchAgentConfig a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:ResearchAgentGoal a :Goal ;
+    dcterms:description "Analyze the company website and provided description to extract insights on culture, values, and specific needs." .
+
+:WriterAgent a :LLMAgent ;
+    :agentID "writer_agent" ;
+    :agentRole "Job Description Writer" ;
+    :agentPrompt :WriterAgentPrompt ;
+    :useLanguageModel :gpt4o ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
+    :hasAgentConfig :WriterAgentConfig ;
+    :hasAgentGoal :WriterAgentGoal .
+
+:WriterAgentPrompt a :Prompt ;
+    :promptInstruction """Skilled in crafting compelling job descriptions that resonate with the company's values and attract the right candidates.
+Goal: Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting.""" .
+
+:WriterAgentConfig a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:WriterAgentGoal a :Goal ;
+    dcterms:description "Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting." .
+
+:ReviewAgent a :LLMAgent ;
+    :agentID "review_agent" ;
+    :agentRole "Review and Editing Specialist" ;
+    :agentPrompt :ReviewAgentPrompt ;
+    :useLanguageModel :gpt4o ;
+    :agentToolUsage :WebsiteSearchTool , :SerperDevTool , :FileReadTool ;
+    :hasAgentConfig :ReviewAgentConfig ;
+    :hasAgentGoal :ReviewAgentGoal .
+
+:ReviewAgentPrompt a :Prompt ;
+    :promptInstruction """A meticulous editor with an eye for detail, ensuring every piece of content is clear, engaging, and grammatically perfect.
+Goal: Review the job posting for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values, and refine it.""" .
+
+:ReviewAgentConfig a :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:ReviewAgentGoal a :Goal ;
+    dcterms:description "Review the job posting for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values." .
+
+####################
+# Tasks and Task Prompts
+####################
+:ResearchCompanyCultureTask a :Task ;
+    dcterms:title "research_company_culture_task" ;
+    :performedByAgent :ResearchAgent ;
+    :taskPrompt :ResearchCompanyCulturePrompt .
+
+:ResearchCompanyCulturePrompt a :Prompt ;
+    :promptInstruction """Analyze the provided company website and the hiring manager's company's domain {company_domain}, description {company_description}. Focus on understanding the company's culture, values, and mission. Identify unique selling points and specific projects or achievements highlighted on the site. Compile a report summarizing these insights, specifically how they can be leveraged in a job posting to attract the right candidates.""" ;
+    :promptOutputIndicator """A comprehensive report detailing the company's culture, values, and mission, along with specific selling points relevant to the job role. Suggestions on incorporating these insights into the job posting should be included.""" .
+
+:ResearchRoleRequirementsTask a :Task ;
+    dcterms:title "research_role_requirements_task" ;
+    :performedByAgent :ResearchAgent ;
+    :taskPrompt :ResearchRoleRequirementsPrompt .
+
+:ResearchRoleRequirementsPrompt a :Prompt ;
+    :promptInstruction """Based on the hiring manager's needs: {hiring_needs}, identify the key skills, experiences, and qualities the ideal candidate should possess for the role. Consider the company's current projects, its competitive landscape, and industry trends. Prepare a list of recommended job requirements and qualifications that align with the company's needs and values.""" ;
+    :promptOutputIndicator """A list of recommended skills, experiences, and qualities for the ideal candidate, aligned with the company's culture, ongoing projects, and the specific role's requirements.""" .
+
+:DraftJobPostingTask a :Task ;
+    dcterms:title "draft_job_posting_task" ;
+    :performedByAgent :WriterAgent ;
+    :taskPrompt :DraftJobPostingPrompt .
+
+:DraftJobPostingPrompt a :Prompt ;
+    :promptInstruction """Draft a job posting for the role described by the hiring manager: {hiring_needs}. Use the insights on {company_description} to start with a compelling introduction, followed by a detailed role description, responsibilities, and required skills and qualifications. Ensure the tone aligns with the company's culture and incorporate any unique benefits or opportunities offered by the company. Specific benefits: {specific_benefits}.""" ;
+    :promptOutputIndicator """A detailed, engaging job posting that includes an introduction, role description, responsibilities, requirements, and unique company benefits. The tone should resonate with the company's culture and values, aimed at attracting the right candidates.""" .
+
+:ReviewAndEditJobPostingTask a :Task ;
+    dcterms:title "review_and_edit_job_posting_task" ;
+    :performedByAgent :ReviewAgent ;
+    :taskPrompt :ReviewAndEditJobPostingPrompt .
+
+:ReviewAndEditJobPostingPrompt a :Prompt ;
+    :promptInstruction """Review the draft job posting for the role {hiring_needs}. Check for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values. Edit and refine the content, ensuring it speaks directly to the desired candidates and accurately reflects the role's unique benefits and opportunities. Provide feedback for any necessary revisions.""" ;
+    :promptOutputIndicator """A polished, error-free job posting that is clear, engaging, and perfectly aligned with the company's culture and values. Feedback on potential improvements and final approval for publishing. Formatted in markdown.""" .
+
+:IndustryAnalysisTask a :Task ;
+    dcterms:title "industry_analysis_task" ;
+    :performedByAgent :ResearchAgent ;
+    :taskPrompt :IndustryAnalysisPrompt .
+
+:IndustryAnalysisPrompt a :Prompt ;
+    :promptInstruction """Conduct an in-depth analysis of the industry related to the company's domain {company_domain}. Investigate current trends, challenges, and opportunities within the industry, utilizing market reports, recent developments, and expert opinions. Assess how these factors could impact the role being hired for and the overall attractiveness of the position to potential candidates.""" ;
+    :promptOutputIndicator """A detailed analysis report that identifies major industry trends, challenges, and opportunities relevant to the company's domain and the specific job role. This report should provide strategic insights on positioning the job role and the company as an attractive choice for potential candidates.""" .
+
+####################
+# Workflow Pattern and Steps (Process.sequential -> "Sequential")
+####################
+:JobPostingWorkflow a :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :Step1 , :Step2 , :Step3 , :Step4 , :Step5 .
+
+:Step1 a :StartStep , :WorkflowStep ;
+    dcterms:title "research_company_culture_step" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :ResearchCompanyCultureTask ;
+    :nextStep :Step2 .
+
+:Step2 a :WorkflowStep ;
+    dcterms:title "research_role_requirements_step" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :ResearchRoleRequirementsTask ;
+    :nextStep :Step3 .
+
+:Step3 a :WorkflowStep ;
+    dcterms:title "draft_job_posting_step" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :DraftJobPostingTask ;
+    :nextStep :Step4 .
+
+:Step4 a :WorkflowStep ;
+    dcterms:title "review_and_edit_job_posting_step" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :ReviewAndEditJobPostingTask ;
+    :nextStep :Step5 .
+
+:Step5 a :EndStep , :WorkflowStep ;
+    dcterms:title "industry_analysis_step" ;
+    :stepOrder "5"^^xsd:integer ;
+    :hasAssociatedTask :IndustryAnalysisTask .
+
+####################
+# Team / Crew and Team Configs / Team Goal
+####################
+:JobPostingCrew a :Team ;
+    dcterms:description "CrewAI crew that orchestrates agents to create job postings" ;
+    :hasAgentMember :ResearchAgent , :WriterAgent , :ReviewAgent ;
+    :hasWorkflowPattern :JobPostingWorkflow ;
+    :hasSystemConfig :CrewInputCompanyDomainConfig , :CrewInputCompanyDescriptionConfig , :CrewInputHiringNeedsConfig , :CrewInputSpecificBenefitsConfig ;
+    :hasTeamGoal :JobPostingGoal .
+
+:CrewInputCompanyDomainConfig a :Config ;
+    :configKey "company_domain" ;
+    :configValue "careers.wbd.com" .
+
+:CrewInputCompanyDescriptionConfig a :Config ;
+    :configKey "company_description" ;
+    :configValue "Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world’s most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We're home to the world’s best storytellers, creating world-class products for consumers" .
+
+:CrewInputHiringNeedsConfig a :Config ;
+    :configKey "hiring_needs" ;
+    :configValue "Production Assistant, for a TV production set in Los Angeles in June 2025" .
+
+:CrewInputSpecificBenefitsConfig a :Config ;
+    :configKey "specific_benefits" ;
+    :configValue "Weekly Pay, Employee Meals, healthcare" .
+
+:JobPostingGoal a :Goal ;
+    dcterms:description "Automate the creation of job postings using CrewAI to analyze company information and produce polished job descriptions and analyses." .

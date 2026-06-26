@@ -1,0 +1,99 @@
+# Execution time: 40.41 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: LangGraph
+
+# Issues / Assumptions:
+# - Assumed a single LLM-backed agent represents the ChatAnthropic model usage in both nodes.
+# - Tool calls are simulated in code via ToolMessage; created two Tool individuals (:FindPizzaTool, :PlaceOrderTool) to represent external service calls.
+# - Used dcterms:title "StateGraph" for the WorkflowPattern per LangGraph mapping and placed the actual graph name in dcterms:description.
+# - No configuration (API keys, memory, or external tool configs) found in source; therefore no :Config individuals were created.
+# - No multi-agent interaction detected; no :interactsWith triples created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:OrderPizzaGoal rdf:type :Goal ;
+    dcterms:title "Order Pizza" ;
+    dcterms:description "High-level goal to find a pizza shop and place an order for the user." .
+
+:PizzaOrderTeam rdf:type :Team ;
+    dcterms:title "Order Pizza Graph Team" ;
+    dcterms:description "Team representing the StateGraph workflow for ordering pizza." ;
+    :hasWorkflowPattern :OrderPizza_StateGraph ;
+    :hasAgentMember :AnthropicAgent ;
+    :hasTeamGoal :OrderPizzaGoal .
+
+:OrderPizza_StateGraph rdf:type :WorkflowPattern ;
+    dcterms:title "StateGraph" ;
+    dcterms:description "Order Pizza Graph" ;
+    :hasWorkflowStep :findStoreStep , :orderPizzaStep .
+
+:findStoreStep rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "findStore" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :findStore_Task ;
+    :nextStep :orderPizzaStep .
+
+:orderPizzaStep rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "orderPizza" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :orderPizza_Task .
+
+:findStore_Task rdf:type :Task ;
+    dcterms:title "findStore" ;
+    :performedByAgent :AnthropicAgent ;
+    :taskPrompt :findStorePrompt .
+
+:findStorePrompt rdf:type :Prompt ;
+    :promptInstruction "You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them." ;
+    :promptOutputIndicator "Structured output: { location: string, pizza_company: string (optional) }" ;
+    dcterms:description "Schema: location (string), pizza_company (optional string)." .
+
+:orderPizza_Task rdf:type :Task ;
+    dcterms:title "orderPizza" ;
+    :performedByAgent :AnthropicAgent ;
+    :taskPrompt :orderPizzaPrompt .
+
+:orderPizzaPrompt rdf:type :Prompt ;
+    :promptInstruction "You are a helpful AI assistant, tasked with placing an order for a pizza for the user." ;
+    :promptOutputIndicator "Structured output: { address: string, phone_number: string, order: string }" ;
+    dcterms:description "Schema: address (string), phone_number (string), order (string)." .
+
+:AnthropicAgent rdf:type :LLMAgent ;
+    dcterms:title "LangGraph ChatAnthropic Agent" ;
+    :agentID "langgraph_anthropic_agent" ;
+    :agentRole "assistant" ;
+    :agentPrompt :AnthropicAgentPrompt ;
+    :useLanguageModel :ClaudeModel ;
+    :agentToolUsage :FindPizzaTool , :PlaceOrderTool .
+
+:AnthropicAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "You are a helpful AI assistant." ;
+    dcterms:description "Generic assistant instruction (agent-level)." .
+
+:ClaudeModel rdf:type :LanguageModel ;
+    dcterms:title "claude-3-5-sonnet-latest" ;
+    dcterms:description "ChatAnthropic model used in the code (ChatAnthropic with model=claude-3-5-sonnet-latest)." .
+
+:FindPizzaTool rdf:type :Tool ;
+    dcterms:title "find_pizza_shop_tool" ;
+    dcterms:description "Tool invoked to search for a pizza shop and return address and phone number." ;
+    :hasCapability :FindShopCapability .
+
+:FindShopCapability rdf:type :Capability ;
+    dcterms:description "Find nearby pizza shop and return contact details (address, phone)." .
+
+:PlaceOrderTool rdf:type :Tool ;
+    dcterms:title "place_pizza_order_tool" ;
+    dcterms:description "Tool invoked to place a pizza order and confirm success." ;
+    :hasCapability :PlaceOrderCapability .
+
+:PlaceOrderCapability rdf:type :Capability ;
+    dcterms:description "Place an order at the specified pizza shop and return order confirmation." .

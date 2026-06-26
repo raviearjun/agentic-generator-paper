@@ -1,0 +1,262 @@
+# Execution time: 62.36 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Assumed default language model "gpt-4o" based on README; created one :LanguageModel individual and linked it to all agents.
+# - Created Config entries for tools with placeholder keys/values (SERPERDEV_API_KEY, SCRAPE_TOOL_CONFIG, LINKEDIN_COOKIE) since API keys / env values are referenced but not provided.
+# - Assumed the crew-level goal as "Automate the recruitment process" based on README description.
+# - Inferred full agent prompts from agents.yaml backstory fields; used task descriptions/expected_output from tasks.yaml.
+# - Added bidirectional :interactsWith between all agents because crew coordinates multi-agent collaboration.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" .
+
+### Capabilities
+:cap_web_search rdf:type :Capability ;
+    dcterms:title "Web search and information retrieval" ;
+    dcterms:description "Capability to query search APIs and return structured search results." .
+
+:cap_scrape_website rdf:type :Capability ;
+    dcterms:title "Website scraping" ;
+    dcterms:description "Capability to extract information from web pages using DOM parsing." .
+
+:cap_linkedin_retrieve rdf:type :Capability ;
+    dcterms:title "Retrieve LinkedIn profiles" ;
+    dcterms:description "Capability to query LinkedIn search results and format profile summaries." .
+
+### Tools
+:tool_serperdev rdf:type :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "Search API tool for retrieving web search results." ;
+    :hasCapability :cap_web_search ;
+    :hasToolConfig :config_serperdev_api_key .
+
+:config_serperdev_api_key rdf:type :Config ;
+    :configKey "SERPERDEV_API_KEY" ;
+    :configValue "REPLACE_WITH_SERPERDEV_KEY" .
+
+:tool_scrape_website rdf:type :Tool ;
+    dcterms:title "ScrapeWebsiteTool" ;
+    dcterms:description "Tool for scraping and extracting structured information from websites." ;
+    :hasCapability :cap_scrape_website ;
+    :hasToolConfig :config_scrape_tool .
+
+:config_scrape_tool rdf:type :Config ;
+    :configKey "SCRAPE_TOOL_CONFIG" ;
+    :configValue "default" .
+
+:tool_linkedin rdf:type :Tool ;
+    dcterms:title "Retrieve LinkedIn profiles" ;
+    dcterms:description "Custom LinkedIn retrieval tool that uses an authenticated browser session to find candidate profiles." ;
+    :hasCapability :cap_linkedin_retrieve ;
+    :hasToolConfig :config_linkedin_cookie .
+
+:config_linkedin_cookie rdf:type :Config ;
+    :configKey "LINKEDIN_COOKIE" ;
+    :configValue "env:LINKEDIN_COOKIE (set in environment)" .
+
+### Agents (from config/agents.yaml)
+:agent_researcher rdf:type :LLMAgent ;
+    :agentID "researcher" ;
+    :agentRole "Job Candidate Researcher" ;
+    :agentPrompt :prompt_agent_researcher ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_serperdev , :tool_scrape_website , :tool_linkedin ;
+    :hasAgentConfig :config_researcher_verbose , :config_researcher_allow_delegation ;
+    :hasAgentGoal :goal_researcher .
+
+:prompt_agent_researcher rdf:type :Prompt ;
+    :promptInstruction "You are adept at finding the right candidates by exploring various online resources. Your skill in identifying suitable candidates ensures the best match for job positions." .
+
+:config_researcher_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_researcher_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:goal_researcher rdf:type :Goal ;
+    dcterms:title "Find potential candidates for the job" ;
+    dcterms:description "Agent goal: find potential candidates matching provided job requirements." .
+
+:agent_matcher rdf:type :LLMAgent ;
+    :agentID "matcher" ;
+    :agentRole "Candidate Matcher and Scorer" ;
+    :agentPrompt :prompt_agent_matcher ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_serperdev , :tool_scrape_website ;
+    :hasAgentConfig :config_matcher_verbose , :config_matcher_allow_delegation ;
+    :hasAgentGoal :goal_matcher .
+
+:prompt_agent_matcher rdf:type :Prompt ;
+    :promptInstruction "You have a knack for matching the right candidates to the right job positions using advanced algorithms and scoring techniques. Your scores help prioritize the best candidates for outreach." .
+
+:config_matcher_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_matcher_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:goal_matcher rdf:type :Goal ;
+    dcterms:title "Match the candidates to the best jobs and score them" ;
+    dcterms:description "Agent goal: evaluate and rank candidates against job requirements." .
+
+:agent_communicator rdf:type :LLMAgent ;
+    :agentID "communicator" ;
+    :agentRole "Candidate Outreach Strategist" ;
+    :agentPrompt :prompt_agent_communicator ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_serperdev , :tool_scrape_website ;
+    :hasAgentConfig :config_communicator_verbose , :config_communicator_allow_delegation ;
+    :hasAgentGoal :goal_communicator .
+
+:prompt_agent_communicator rdf:type :Prompt ;
+    :promptInstruction "You are skilled at creating effective outreach strategies and templates to engage candidates. Your communication tactics ensure high response rates from potential candidates." .
+
+:config_communicator_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_communicator_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:goal_communicator rdf:type :Goal ;
+    dcterms:title "Develop outreach strategies for the selected candidates" ;
+    dcterms:description "Agent goal: create outreach templates and communication plans." .
+
+:agent_reporter rdf:type :LLMAgent ;
+    :agentID "reporter" ;
+    :agentRole "Candidate Reporting Specialist" ;
+    :agentPrompt :prompt_agent_reporter ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentConfig :config_reporter_verbose , :config_reporter_allow_delegation ;
+    :hasAgentGoal :goal_reporter .
+
+:prompt_agent_reporter rdf:type :Prompt ;
+    :promptInstruction "You are proficient at compiling and presenting detailed reports for recruiters. Your reports provide clear insights into the best candidates to pursue." .
+
+:config_reporter_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_reporter_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:goal_reporter rdf:type :Goal ;
+    dcterms:title "Report the best candidates to the recruiters" ;
+    dcterms:description "Agent goal: compile findings and recommend top candidates." .
+
+### Team / Crew
+:team_recruitment rdf:type :Team ;
+    dcterms:title "Recruitment Crew" ;
+    dcterms:description "CrewAI-based team coordinating agents to automate recruitment tasks." ;
+    :hasAgentMember :agent_researcher , :agent_matcher , :agent_communicator , :agent_reporter ;
+    :hasWorkflowPattern :workflow_recruitment ;
+    :hasSystemConfig :config_team_kickoff , :config_team_process ;
+    :hasTeamGoal :goal_team .
+
+:goal_team rdf:type :Goal ;
+    dcterms:title "Automate the recruitment process" ;
+    dcterms:description "Team-level objective to orchestrate agent collaboration for recruitment." .
+
+:config_team_kickoff rdf:type :Config ;
+    :configKey "kickoff_inputs.job_requirements" ;
+    :configValue "Ruby on Rails and React Engineer job requirements (provided at kickoff)" .
+
+:config_team_process rdf:type :Config ;
+    :configKey "process" ;
+    :configValue "sequential" .
+
+### Workflow Pattern (Process.sequential)
+:workflow_recruitment rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    dcterms:description "Workflow pattern representing Crew.process=Process.sequential" ;
+    :hasWorkflowStep :step_research_candidates , :step_match_and_score_candidates , :step_outreach_strategy , :step_report_candidates .
+
+### Tasks and associated Prompts (from config/tasks.yaml)
+:task_research_candidates rdf:type :Task ;
+    dcterms:title "research_candidates_task" ;
+    dcterms:description "Conduct thorough research to find potential candidates for the specified job. Utilize various online resources and databases to gather a comprehensive list of potential candidates. Ensure that the candidates meet the job requirements provided." ;
+    :performedByAgent :agent_researcher ;
+    :taskPrompt :prompt_task_research_candidates .
+
+:prompt_task_research_candidates rdf:type :Prompt ;
+    :promptInstruction "Conduct thorough research to find potential candidates for the specified job. Utilize various online resources and databases to gather a comprehensive list of potential candidates. Ensure that the candidates meet the job requirements provided.\n\nJob Requirements: {job_requirements}" ;
+    :promptOutputIndicator "A list of 10 potential candidates with their contact information and brief profiles highlighting their suitability." .
+
+:task_match_and_score_candidates rdf:type :Task ;
+    dcterms:title "match_and_score_candidates_task" ;
+    dcterms:description "Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements, ensuring a fair and transparent assessment process." ;
+    :performedByAgent :agent_matcher ;
+    :taskPrompt :prompt_task_match_and_score_candidates .
+
+:prompt_task_match_and_score_candidates rdf:type :Prompt ;
+    :promptInstruction "Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements. Don't try to scrape people's linkedin, since you don't have access to it.\n\nJob Requirements: {job_requirements}" ;
+    :promptOutputIndicator "A ranked list of candidates with detailed scores and justifications for each job position." .
+
+:task_outreach_strategy rdf:type :Task ;
+    dcterms:title "outreach_strategy_task" ;
+    dcterms:description "Develop a comprehensive strategy to reach out to the selected candidates. Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity." ;
+    :performedByAgent :agent_communicator ;
+    :taskPrompt :prompt_task_outreach_strategy .
+
+:prompt_task_outreach_strategy rdf:type :Prompt ;
+    :promptInstruction "Develop a comprehensive strategy to reach out to the selected candidates. Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.\n\nJob Requirements: {job_requirements}" ;
+    :promptOutputIndicator "A detailed list of outreach methods and templates ready for implementation, including communication strategies and engagement tactics." .
+
+:task_report_candidates rdf:type :Task ;
+    dcterms:title "report_candidates_task" ;
+    dcterms:description "Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements." ;
+    :performedByAgent :agent_reporter ;
+    :taskPrompt :prompt_task_report_candidates .
+
+:prompt_task_report_candidates rdf:type :Prompt ;
+    :promptInstruction "Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements." ;
+    :promptOutputIndicator "A detailed report with the best candidates to pursue, including profiles, scores, and outreach strategies." .
+
+### Workflow Steps (ordered)
+:step_research_candidates rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    dcterms:title "Research Candidates" ;
+    :hasAssociatedTask :task_research_candidates ;
+    :nextStep :step_match_and_score_candidates .
+
+:step_match_and_score_candidates rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    dcterms:title "Match and Score Candidates" ;
+    :hasAssociatedTask :task_match_and_score_candidates ;
+    :nextStep :step_outreach_strategy .
+
+:step_outreach_strategy rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    dcterms:title "Outreach Strategy" ;
+    :hasAssociatedTask :task_outreach_strategy ;
+    :nextStep :step_report_candidates .
+
+:step_report_candidates rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 4 ;
+    dcterms:title "Report Candidates" ;
+    :hasAssociatedTask :task_report_candidates .
+
+### Agent interactions (bidirectional, crew coordination)
+:agent_researcher :interactsWith :agent_matcher , :agent_communicator , :agent_reporter .
+:agent_matcher :interactsWith :agent_researcher , :agent_communicator , :agent_reporter .
+:agent_communicator :interactsWith :agent_researcher , :agent_matcher , :agent_reporter .
+:agent_reporter :interactsWith :agent_researcher , :agent_matcher , :agent_communicator .

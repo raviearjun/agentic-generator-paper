@@ -1,0 +1,312 @@
+# Execution time: 74.17 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - No external tools or registered functions detected in the source; therefore no :Tool individuals created.
+# - Single language model used across agents (llm_config = {"model": "gpt-3.5-turbo"}); created one :LanguageModel individual and linked to all agents.
+# - Where lambda/config behaviour is present (e.g., is_termination_msg), represented as :Config with a textual summary.
+# - Workflow modeled as a linear "Nested" pattern reflecting writer generation -> critic -> sequential reviewers -> meta reviewer -> finalisation.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:LM_gpt_3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "Language model configured via llm_config = {\"model\": \"gpt-3.5-turbo\"}." .
+
+### Agents (AutoGen AssistantAgent instances)
+
+:agent_Writer rdf:type :LLMAgent ;
+    :agentID "写手" ;
+    :agentRole "Writer" ;
+    :agentPrompt :prompt_writer_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_writer_model .
+
+:agent_Critic rdf:type :LLMAgent ;
+    :agentID "评论家" ;
+    :agentRole "Critic" ;
+    :agentPrompt :prompt_critic_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_critic_model ,
+                     :config_critic_is_termination_msg .
+
+:agent_SEO rdf:type :LLMAgent ;
+    :agentID "搜索引擎优化审核员" ;
+    :agentRole "SEO Reviewer" ;
+    :agentPrompt :prompt_seo_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_seo_model .
+
+:agent_Legal rdf:type :LLMAgent ;
+    :agentID "法律审核员" ;
+    :agentRole "Legal Reviewer" ;
+    :agentPrompt :prompt_legal_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_legal_model .
+
+:agent_Ethics rdf:type :LLMAgent ;
+    :agentID "道德审查员" ;
+    :agentRole "Ethics Reviewer" ;
+    :agentPrompt :prompt_ethics_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_ethics_model .
+
+:agent_Meta rdf:type :LLMAgent ;
+    :agentID "审核员主管" ;
+    :agentRole "Meta Reviewer" ;
+    :agentPrompt :prompt_meta_system ;
+    :useLanguageModel :LM_gpt_3_5_turbo ;
+    :hasAgentConfig :config_meta_model .
+
+### Agent-level Configs (llm_config and critic specifics)
+:config_writer_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" ;
+    dcterms:description "LLM config extracted from llm_config variable." .
+
+:config_critic_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_seo_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_legal_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_ethics_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_meta_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" .
+
+:config_critic_is_termination_msg rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "lambda that checks if message.content contains 'TERMINATE' (used to detect termination signals)" ;
+    dcterms:description "Representation of the is_termination_msg lambda passed to Critic." .
+
+### Prompts (system messages and task prompts)
+
+:prompt_writer_system rdf:type :Prompt ;
+    :promptInstruction """你是一位作家。你写的文章（带标题）引人入胜，言简意赅。你必须根据收到的反馈意见润色你的文章，并给出一个优化后的完善的版本。 只 return 你的最终作品,不要添加其他的自主内容。""" ;
+    dcterms:description "System message / role prompt for the Writer agent." .
+
+:prompt_critic_system rdf:type :Prompt ;
+    :promptInstruction """你是一名著名的评论家。你将会对写手的作品进行点评，并提供建设性意见来帮助他提高文章的质量""" ;
+    dcterms:description "System message / role prompt for the Critic agent." .
+
+:prompt_seo_system rdf:type :Prompt ;
+    :promptInstruction """您是一名搜索引擎优化审核员.
+        你以善于为搜索引擎优化内容、确保内容排名靠前、吸引有机流量而闻名。
+        请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+        评论开始时，请说明你的角色。""" ;
+    dcterms:description "System message / role prompt for the SEO Reviewer agent." .
+
+:prompt_legal_system rdf:type :Prompt ;
+    :promptInstruction """您是一名法律审核员。
+      你以有能力确保内容符合法律规定、不存在任何潜在法律问题而闻名。
+      请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+      审查开始时，请说明你的角色。""" ;
+    dcterms:description "System message / role prompt for the Legal Reviewer agent." .
+
+:prompt_ethics_system rdf:type :Prompt ;
+    :promptInstruction """您是一名道德审查员。
+        你以有能力确保内容符合道德规范且不存在任何潜在道德问题而闻名。
+        请确保你的建议简明扼要（不超过 3 个要点）、具体且切中要害。
+        审查开始时，请说明你的职责。""" ;
+    dcterms:description "System message / role prompt for the Ethics Reviewer agent." .
+
+:prompt_meta_system rdf:type :Prompt ;
+    :promptInstruction "您是审核员主管，你对其他审核员的作品进行升级和审阅，并对内容提出最终建议。" ;
+    dcterms:description "System message / role prompt for the Meta Reviewer agent." .
+
+:prompt_task_write_blog rdf:type :Prompt ;
+    :promptInstruction """撰写一篇简洁但引人入胜的博客，内容涉及
+       DeepLearning.AI. 确保博客100 字以内。""" ;
+    dcterms:description "User task prompt specifying writing a concise blog about DeepLearning.AI within 100 words." .
+
+:prompt_seo_summary_prompt rdf:type :Prompt ;
+    :promptInstruction "仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. 这里的 审查员 应该是你自己的角色" ;
+    dcterms:description "Summary prompt (summary_args.summary_prompt) passed to SEO reviewer." .
+
+:prompt_legal_summary_prompt rdf:type :Prompt ;
+    :promptInstruction "仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}." ;
+    dcterms:description "Summary prompt (summary_args.summary_prompt) passed to Legal reviewer." .
+
+:prompt_ethics_summary_prompt rdf:type :Prompt ;
+    :promptInstruction "仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}" ;
+    dcterms:description "Summary prompt (summary_args.summary_prompt) passed to Ethics reviewer." .
+
+:prompt_meta_message rdf:type :Prompt ;
+    :promptInstruction "对所有审查员的反馈意见进行汇总，并对写作提出最终建议。" ;
+    dcterms:description "Task prompt instructing the Meta Reviewer to aggregate reviewer feedback and give final suggestions." .
+
+### Tasks (conversations / operations)
+
+:task_write_blog rdf:type :Task ;
+    :performedByAgent :agent_Writer ;
+    :taskPrompt :prompt_task_write_blog ;
+    dcterms:description "Writer generates a concise blogpost about DeepLearning.AI." .
+
+:task_critic_initiate_1 rdf:type :Task ;
+    :performedByAgent :agent_Critic ;
+    :taskPrompt :prompt_task_write_blog ;
+    :hasConfig :config_task_critic_max_turns_3 ;
+    dcterms:description "Critic initiates chat with Writer (first initiate_chat call, max_turns=3)." .
+
+:config_task_critic_max_turns_3 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "3" ;
+    dcterms:description "max_turns parameter for critic.initiate_chat (first call)." .
+
+:task_nested_seo_review rdf:type :Task ;
+    :performedByAgent :agent_SEO ;
+    :taskPrompt :prompt_seo_summary_prompt ;
+    :hasConfig :config_task_seo_max_turns_1 ;
+    dcterms:description "SEO reviewer performs one-turn review using reflection_with_llm summary_prompt." .
+
+:config_task_seo_max_turns_1 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "1" .
+
+:task_nested_legal_review rdf:type :Task ;
+    :performedByAgent :agent_Legal ;
+    :taskPrompt :prompt_legal_summary_prompt ;
+    :hasConfig :config_task_legal_max_turns_1 ;
+    dcterms:description "Legal reviewer performs one-turn review using reflection_with_llm summary_prompt." .
+
+:config_task_legal_max_turns_1 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "1" .
+
+:task_nested_ethics_review rdf:type :Task ;
+    :performedByAgent :agent_Ethics ;
+    :taskPrompt :prompt_ethics_summary_prompt ;
+    :hasConfig :config_task_ethics_max_turns_1 ;
+    dcterms:description "Ethics reviewer performs one-turn review using reflection_with_llm summary_prompt." .
+
+:config_task_ethics_max_turns_1 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "1" .
+
+:task_meta_aggregate rdf:type :Task ;
+    :performedByAgent :agent_Meta ;
+    :taskPrompt :prompt_meta_message ;
+    :hasConfig :config_task_meta_max_turns_1 ;
+    dcterms:description "Meta reviewer aggregates feedback and provides final suggestion." .
+
+:config_task_meta_max_turns_1 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "1" .
+
+:task_critic_initiate_2 rdf:type :Task ;
+    :performedByAgent :agent_Critic ;
+    :taskPrompt :prompt_task_write_blog ;
+    :hasConfig :config_task_critic_max_turns_2 ;
+    dcterms:description "Critic initiates chat with Writer (second initiate_chat call, max_turns=2) which triggers nested reviews." .
+
+:config_task_critic_max_turns_2 rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "2" .
+
+### Workflow Pattern and Steps (Nested pattern representing the flow)
+
+:pattern_nested rdf:type :WorkflowPattern ;
+    dcterms:title "Nested" ;
+    dcterms:description "Workflow pattern representing writer generation, critic initiation, sequential reviewers, and meta aggregation." ;
+    :hasWorkflowStep :step1_writer_generate ,
+                     :step2_critic_initiate_1 ,
+                     :step3_seo_review ,
+                     :step4_legal_review ,
+                     :step5_ethics_review ,
+                     :step6_meta_review ,
+                     :step7_final_end .
+
+:step1_writer_generate rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_write_blog ;
+    dcterms:title "Writer generates blog" .
+
+:step2_critic_initiate_1 rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_critic_initiate_1 ;
+    dcterms:title "Critic initiates chat (first)" .
+
+:step3_seo_review rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_nested_seo_review ;
+    dcterms:title "SEO reviewer reviews" .
+
+:step4_legal_review rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_nested_legal_review ;
+    dcterms:title "Legal reviewer reviews" .
+
+:step5_ethics_review rdf:type :WorkflowStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_nested_ethics_review ;
+    dcterms:title "Ethics reviewer reviews" .
+
+:step6_meta_review rdf:type :WorkflowStep ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :task_meta_aggregate ;
+    dcterms:title "Meta reviewer aggregates feedback" .
+
+:step7_final_end rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 7 ;
+    :hasAssociatedTask :task_critic_initiate_2 ;
+    dcterms:title "Final critic summarisation / end" .
+
+### nextStep sequencing
+:step1_writer_generate :nextStep :step2_critic_initiate_1 .
+:step2_critic_initiate_1 :nextStep :step3_seo_review .
+:step3_seo_review :nextStep :step4_legal_review .
+:step4_legal_review :nextStep :step5_ethics_review .
+:step5_ethics_review :nextStep :step6_meta_review .
+:step6_meta_review :nextStep :step7_final_end .
+
+### hasAssociatedTask linking (redundant with above but explicit)
+:step1_writer_generate :hasAssociatedTask :task_write_blog .
+:step2_critic_initiate_1 :hasAssociatedTask :task_critic_initiate_1 .
+:step3_seo_review :hasAssociatedTask :task_nested_seo_review .
+:step4_legal_review :hasAssociatedTask :task_nested_legal_review .
+:step5_ethics_review :hasAssociatedTask :task_nested_ethics_review .
+:step6_meta_review :hasAssociatedTask :task_meta_aggregate .
+:step7_final_end :hasAssociatedTask :task_critic_initiate_2 .
+
+### Agent interactions (initiations and nested chats)
+:agent_Critic :interactsWith :agent_Writer .
+:agent_Writer :interactsWith :agent_Critic .
+
+:agent_SEO :interactsWith :agent_Writer .
+:agent_Writer :interactsWith :agent_SEO .
+
+:agent_Legal :interactsWith :agent_Writer .
+:agent_Writer :interactsWith :agent_Legal .
+
+:agent_Ethics :interactsWith :agent_Writer .
+:agent_Writer :interactsWith :agent_Ethics .
+
+:agent_Meta :interactsWith :agent_SEO , :agent_Legal , :agent_Ethics .
+:agent_SEO :interactsWith :agent_Meta .
+:agent_Legal :interactsWith :agent_Meta .
+:agent_Ethics :interactsWith :agent_Meta .
+
+### Notes (non-ontological descriptive triples)
+:task_write_blog dcterms:description "Initial user task provided to writer.generate_reply (user message content)." .
+:task_critic_initiate_1 dcterms:description "Critic starts a chat with the writer to provide feedback; triggers nested review registration." .
+:task_critic_initiate_2 dcterms:description "Second critic initiation that runs the nested review sequence and yields a summary printed as res.summary." .

@@ -1,0 +1,185 @@
+# Execution time: 40.95 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - The agent "job_opportunities_parser" is defined in config/agents.yaml but is not instantiated in src/match_to_proposal/crew.py; it is omitted from the extracted individuals.
+# - Default LLM is assumed to be "gpt-4o" as stated in README; created a LanguageModel individual accordingly.
+# - Team-level goal is inferred from README ("Match CVs to Job Proposals") since no explicit team goal is present in code.
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Default language model used by the project as stated in README." .
+
+### Capabilities
+:cap_file_read rdf:type :Capability ;
+    dcterms:description "Capability to read file contents from disk." .
+
+:cap_csv_search rdf:type :Capability ;
+    dcterms:description "Capability to search and query CSV-formatted job listings." .
+
+### Tools
+:tool_file_read rdf:type :Tool ;
+    dcterms:title "FileReadTool" ;
+    dcterms:description "Tool to read file contents (used to read CV and other files)." ;
+    :hasCapability :cap_file_read .
+
+:tool_csv_search rdf:type :Tool ;
+    dcterms:title "CSVSearchTool" ;
+    dcterms:description "Tool to search and query CSV files for matching job opportunities." ;
+    :hasCapability :cap_csv_search .
+
+### Agents
+
+:agent_cv_reader rdf:type :LLMAgent ;
+    :agentID "cv_reader" ;
+    :agentRole "CV Reader" ;
+    :agentPrompt :prompt_cv_reader ;
+    :hasAgentGoal :goal_cv_reader ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_file_read ;
+    :hasAgentConfig :config_cv_reader_verbose , :config_cv_reader_allow_delegation ;
+    dcterms:title "cv_reader" .
+
+:agent_matcher rdf:type :LLMAgent ;
+    :agentID "matcher" ;
+    :agentRole "Matcher" ;
+    :agentPrompt :prompt_matcher ;
+    :hasAgentGoal :goal_matcher ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_file_read , :tool_csv_search ;
+    :hasAgentConfig :config_matcher_verbose , :config_matcher_allow_delegation ;
+    dcterms:title "matcher" .
+
+### Agent Prompts and Goals
+
+:prompt_cv_reader rdf:type :Prompt ;
+    :promptInstruction """With years of experience in HR, you excel at quickly identifying key qualifications in resumes.
+Role: CV Reader
+Goal: Extract relevant information from the CV, such as skills, experience, and education.""" ;
+    dcterms:description "Agent backstory and goal combined into a prompt for the CV Reader." .
+
+:goal_cv_reader rdf:type :Goal ;
+    dcterms:title "Extract relevant information from CV" ;
+    dcterms:description "Extract relevant information from the CV, such as skills, experience, and education." .
+
+:prompt_matcher rdf:type :Prompt ;
+    :promptInstruction """A seasoned recruiter, you specialize in finding the perfect fit between candidates and job roles.
+Role: Matcher
+Goal: Match the CV to the job opportunities based on skills and experience.""" ;
+    dcterms:description "Agent backstory and goal combined into a prompt for the Matcher." .
+
+:goal_matcher rdf:type :Goal ;
+    dcterms:title "Match CV to job opportunities" ;
+    dcterms:description "Match the CV to the job opportunities based on skills, experience, and key achievements." .
+
+### Agent Configs (extracted from Agent constructor args)
+:config_cv_reader_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_cv_reader_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:config_matcher_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_matcher_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+### Tasks and Prompts
+
+:task_read_cv rdf:type :Task ;
+    :performedByAgent :agent_cv_reader ;
+    :taskPrompt :prompt_task_read_cv ;
+    dcterms:title "read_cv_task" ;
+    dcterms:description "Extract relevant information from the given CV: professional summary, technical skills, work history, education, key achievements." .
+
+:prompt_task_read_cv rdf:type :Prompt ;
+    :promptInstruction """Extract relevant information from the given CV. Focus on skills, experience, education, and key achievements.
+Ensure to capture the candidate's professional summary, technical skills, work history, and educational background.
+
+CV file: {path_to_cv}""" ;
+    :promptOutputIndicator """A structured summary of the CV, including:
+- Professional Summary
+- Technical Skills
+- Work History
+- Education
+- Key Achievements""" ;
+    :promptInputData "CV file: {path_to_cv}" ;
+    dcterms:description "Task description and expected structured output for reading CV." .
+
+:task_match_cv rdf:type :Task ;
+    :performedByAgent :agent_matcher ;
+    :taskPrompt :prompt_task_match_cv ;
+    dcterms:title "match_cv_task" ;
+    dcterms:description "Match the CV to the job opportunities based on skills, experience, and key achievements; produce a ranked list." .
+
+:prompt_task_match_cv rdf:type :Prompt ;
+    :promptInstruction """Match the CV to the job opportunities based on skills, experience, and key achievements.
+Evaluate how well the candidate's profile fits each job description, focusing on the alignment of skills, work history, and key achievements with the job requirements.
+
+Jobs CSV file: {path_to_jobs_csv}
+
+CV file: {path_to_cv}""" ;
+    :promptOutputIndicator """A ranked list of job opportunities that best match the CV, including:
+- Job Title
+- Match Score (based on skills and experience)
+- Key Matching Points""" ;
+    :promptInputData "Jobs CSV file: {path_to_jobs_csv}; CV file: {path_to_cv}" ;
+    dcterms:description "Task description and expected structured output for matching CV to jobs." .
+
+### Workflow Pattern (Process.sequential)
+:workflow_sequential rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :step_read_cv , :step_match_cv ;
+    dcterms:description "Sequential workflow pattern corresponding to Crew Process.sequential with two steps: read CV then match CV." .
+
+:step_read_cv rdf:type :StartStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_read_cv ;
+    dcterms:title "Start - Read CV" ;
+    dcterms:description "Initial workflow step that triggers CV reading." .
+
+:step_match_cv rdf:type :EndStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_match_cv ;
+    dcterms:title "End - Match CV" ;
+    dcterms:description "Final workflow step that performs matching of CV to job opportunities." .
+
+:step_read_cv :nextStep :step_match_cv .
+
+### Team / Crew
+:team_match_to_proposal rdf:type :Team ;
+    dcterms:title "MatchToProposalCrew" ;
+    dcterms:description "CrewAI Team that coordinates cv_reader and matcher agents to match CVs to job proposals." ;
+    :hasAgentMember :agent_cv_reader , :agent_matcher ;
+    :hasWorkflowPattern :workflow_sequential ;
+    :hasSystemConfig :config_input_jobs_csv , :config_input_cv ;
+    :hasTeamGoal :goal_team_match .
+
+:goal_team_match rdf:type :Goal ;
+    dcterms:title "Match CVs to Job Proposals" ;
+    dcterms:description "Overall objective for the crew: automate the matching of candidate CVs to job proposals." .
+
+### Team / System Config (kickoff inputs from main.run)
+:config_input_jobs_csv rdf:type :Config ;
+    :configKey "path_to_jobs_csv" ;
+    :configValue "./src/match_to_proposal/data/jobs.csv" .
+
+:config_input_cv rdf:type :Config ;
+    :configKey "path_to_cv" ;
+    :configValue "./src/match_to_proposal/data/cv.md" .

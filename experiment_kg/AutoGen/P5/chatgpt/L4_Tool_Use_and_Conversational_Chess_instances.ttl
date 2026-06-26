@@ -1,0 +1,279 @@
+# Execution time: 63.42 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - Assumed final agent system_message values are those from the last re-definitions in the notebook.
+# - board_proxy created with llm_config=False is still represented as :LLMAgent per AutoGen mapping; its language model is set to a default LM ("default") as required.
+# - register_function-created functions (get_legal_moves, make_move) are modelled as :Tool individuals. The executor (board_proxy) is modelled as the executing agent; tasks that invoke tools link to the Tool via :performedBy.
+# - Nested chat behavior is modelled as a single WorkflowPattern "NestedChatPattern" with sequential steps approximating the chat -> summary -> tool calls -> termination flow.
+# - Some optional configs (summary_method, silent) are captured as :Config on agents.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Models
+#################################################################
+:lm_gpt4_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-4-turbo" ;
+    dcterms:description "Language model specified in llm_config." .
+
+:lm_default rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default language model created because some agents had llm_config=False or unspecified model." .
+
+#################################################################
+# Agents
+#################################################################
+:agent_player_white rdf:type :LLMAgent ;
+    :agentID "player_white" ;
+    :agentRole "Chess Player (White)" ;
+    :agentPrompt :prompt_player_white_system ;
+    :useLanguageModel :lm_gpt4_turbo ;
+    :hasAgentConfig :cfg_player_white_model , :cfg_player_white_nested_summary_method ;
+    dcterms:title "执白棋者 (Player White)" .
+
+:agent_player_black rdf:type :LLMAgent ;
+    :agentID "player_black" ;
+    :agentRole "Chess Player (Black)" ;
+    :agentPrompt :prompt_player_black_system ;
+    :useLanguageModel :lm_gpt4_turbo ;
+    :hasAgentConfig :cfg_player_black_model , :cfg_player_black_max_turns ;
+    dcterms:title "执黑棋者 (Player Black)" .
+
+:agent_board_proxy rdf:type :LLMAgent ;
+    :agentID "board_proxy" ;
+    :agentRole "Board Proxy / Referee" ;
+    :agentPrompt :prompt_board_proxy_default_reply ;
+    :useLanguageModel :lm_default ;
+    :hasAgentConfig :cfg_board_proxy_is_termination_msg ;
+    dcterms:title "棋盘裁判代理 (Board Proxy)" .
+
+#################################################################
+# Agent Prompts
+#################################################################
+:prompt_player_white_system rdf:type :Prompt ;
+    :promptInstruction """你是一个围棋高手，你执白棋。
+1，首先调用 get_legal_moves() 获取一个合法棋步（moves）的列表；
+2，在列表中选择一个合法棋布（move）后调用  make_move(move) 走一步棋;
+3, 走完一步棋后，嘲讽对手增加游戏乐趣""" ;
+    dcterms:description "System message / instructions for the white player." .
+
+:prompt_player_black_system rdf:type :Prompt ;
+    :promptInstruction """你是一个围棋高手，你执黑棋。
+1，首先调用 get_legal_moves() 获取一个合法棋步（moves）的列表；
+2，在列表中选择一个合法棋布（move）后调用  make_move(move) 走一步棋;
+3, 走完一步棋后，嘲讽对手增加游戏乐趣""" ;
+    dcterms:description "System message / instructions for the black player." .
+
+:prompt_board_proxy_default_reply rdf:type :Prompt ;
+    :promptInstruction "请走一步棋（move）:" ;
+    dcterms:description "Default automatic reply sent by the board proxy when prompting a player to act." .
+
+#################################################################
+# Configs
+#################################################################
+:cfg_player_white_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-4-turbo" ;
+    dcterms:description "LLM model configured for player_white." .
+
+:cfg_player_black_model rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-4-turbo" ;
+    dcterms:description "LLM model configured for player_black." .
+
+:cfg_board_proxy_is_termination_msg rdf:type :Config ;
+    :configKey "is_termination_msg" ;
+    :configValue "check_made_move" ;
+    dcterms:description "Termination callback function used by board_proxy to detect when a move has been made." .
+
+:cfg_player_black_max_turns rdf:type :Config ;
+    :configKey "max_turns" ;
+    :configValue "2" ;
+    dcterms:description "max_turns parameter used when player_black initiates the chat." .
+
+:cfg_player_white_nested_summary_method rdf:type :Config ;
+    :configKey "nested_summary_method" ;
+    :configValue "last_msg" ;
+    dcterms:description "Summary method used in nested chats for player_white." .
+
+#################################################################
+# Tools and Capabilities
+#################################################################
+:tool_get_legal_moves rdf:type :Tool ;
+    dcterms:title "get_legal_moves" ;
+    dcterms:description "Returns a list of legal moves in UCI format for the current chess board state." ;
+    :hasCapability :cap_get_legal_moves .
+
+:cap_get_legal_moves rdf:type :Capability ;
+    dcterms:description "Provides legal moves for the current chess position." ;
+    dcterms:title "Provide legal chess moves" .
+
+:tool_make_move rdf:type :Tool ;
+    dcterms:title "make_move" ;
+    dcterms:description "Executes a move on the chess board in UCI format and returns a human-readable result string." ;
+    :hasCapability :cap_make_move .
+
+:cap_make_move rdf:type :Capability ;
+    dcterms:description "Apply a move to the board and update board state; produce descriptive move result." ;
+    dcterms:title "Execute chess move" .
+
+# Link agents to tools they can call
+:agent_player_white :agentToolUsage :tool_get_legal_moves , :tool_make_move .
+:agent_player_black :agentToolUsage :tool_get_legal_moves , :tool_make_move .
+
+#################################################################
+# Tasks (conversations / function calls)
+#################################################################
+:task_initiate_chat rdf:type :Task ;
+    :performedByAgent :agent_player_black ;
+    :taskPrompt :prompt_initiate_chat ;
+    dcterms:description "player_black initiates the game chat to start a move sequence." .
+
+:prompt_initiate_chat rdf:type :Prompt ;
+    :promptInstruction "让我们下棋吧，该你走了！" ;
+    :promptOutputIndicator "Agent should start by calling get_legal_moves() or propose a move." ;
+    dcterms:description "Initial chat message sent by the initiating agent." .
+
+:task_get_legal_moves rdf:type :Task ;
+    :performedByAgent :agent_player_white ;
+    :performedBy :tool_get_legal_moves ;
+    :taskPrompt :prompt_get_legal_moves ;
+    dcterms:description "Player requests the list of legal moves for selection." .
+
+:prompt_get_legal_moves rdf:type :Prompt ;
+    :promptInstruction "调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。" ;
+    :promptOutputIndicator "List of UCI moves (comma-separated) e.g., e2e4,g1f3,..." ;
+    dcterms:description "Prompt instructing the agent to obtain legal moves." .
+
+:task_make_move rdf:type :Task ;
+    :performedByAgent :agent_player_white ;
+    :performedBy :tool_make_move ;
+    :taskPrompt :prompt_make_move ;
+    dcterms:description "Player makes a selected move by calling make_move(move)." .
+
+:prompt_make_move rdf:type :Prompt ;
+    :promptInstruction "选择一个合法走法并调用 make_move(move) 来执行该步棋。" ;
+    :promptOutputIndicator "Confirmation string describing the move and piece moved." ;
+    dcterms:description "Prompt instructing the agent to execute the chosen move." .
+
+#################################################################
+# Workflow Pattern and Steps (Nested chat + tool invocation flow)
+#################################################################
+:wp_chess_nested rdf:type :WorkflowPattern ;
+    dcterms:title "NestedChatPattern" ;
+    dcterms:description "Workflow capturing a turn sequence: initiation -> nested board summary -> get legal moves -> make move -> check termination." ;
+    :hasWorkflowStep :step1_start , :step2_board_proxy_summary_to_white , :step3_get_legal_moves , :step4_make_move , :step5_check_made_move , :step6_end .
+
+# Step 1: Start - player_black initiates chat
+:step1_start rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    dcterms:title "Start: black initiates chat" ;
+    :hasAssociatedTask :task_initiate_chat ;
+    :nextStep :step2_board_proxy_summary_to_white .
+
+# Step 2: Board proxy sends nested summary to white
+:step2_board_proxy_summary_to_white rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    dcterms:title "BoardProxy summary to White (nested chat)" ;
+    :hasAssociatedTask :task_board_proxy_summary_to_white ;
+    :nextStep :step3_get_legal_moves .
+
+:task_board_proxy_summary_to_white rdf:type :Task ;
+    :performedByAgent :agent_board_proxy ;
+    :taskPrompt :prompt_board_proxy_summary_to_white ;
+    dcterms:description "Board proxy provides last message summary to the white player before the player's turn." .
+
+:prompt_board_proxy_summary_to_white rdf:type :Prompt ;
+    :promptInstruction "Summary of last board state and last move (provided by board proxy)." ;
+    :promptOutputIndicator "A short summary that helps the player decide the next move." ;
+    dcterms:description "Nested chat message sent by board proxy to the active player." .
+
+# Step 3: Player gets legal moves (calls tool)
+:step3_get_legal_moves rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    dcterms:title "Player requests legal moves" ;
+    :hasAssociatedTask :task_get_legal_moves ;
+    :nextStep :step4_make_move .
+
+# Step 4: Player makes move (calls tool)
+:step4_make_move rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    dcterms:title "Player executes chosen move" ;
+    :hasAssociatedTask :task_make_move ;
+    :nextStep :step5_check_made_move .
+
+# Step 5: Board proxy checks made_move flag (termination trigger)
+:step5_check_made_move rdf:type :WorkflowStep ;
+    :stepOrder 5 ;
+    dcterms:title "Board proxy checks if a move was made (termination check)" ;
+    :hasAssociatedTask :task_check_made_move ;
+    :nextStep :step6_end .
+
+:task_check_made_move rdf:type :Task ;
+    :performedByAgent :agent_board_proxy ;
+    :taskPrompt :prompt_check_made_move ;
+    dcterms:description "Board proxy evaluates the made_move flag to determine if the nested chat should terminate." .
+
+:prompt_check_made_move rdf:type :Prompt ;
+    :promptInstruction "Call check_made_move(msg) to determine if a move has been executed; if true, end nested chat iteration." ;
+    :promptOutputIndicator "Boolean-like indicator (True when a move was made) in code; used as termination condition." ;
+    dcterms:description "Termination check instruction for board proxy." .
+
+# Step 6: End step
+:step6_end rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 6 ;
+    dcterms:title "End of turn sequence" ;
+    dcterms:description "End step after the move has been executed and acknowledged." .
+
+#################################################################
+# Team / Group representing the game
+#################################################################
+:team_chess_game rdf:type :Team ;
+    dcterms:title "Conversational Chess Team" ;
+    :hasAgentMember :agent_player_white , :agent_player_black , :agent_board_proxy ;
+    :hasWorkflowPattern :wp_chess_nested ;
+    :hasTeamGoal :goal_play_chess ;
+    :hasSystemConfig :cfg_team_game_mode ;
+    dcterms:description "A small team consisting of two player agents and a board proxy orchestrating the game." .
+
+:cfg_team_game_mode rdf:type :Config ;
+    :configKey "game_mode" ;
+    :configValue "conversational_chess" ;
+    dcterms:description "Describes the team/game mode." .
+
+:goal_play_chess rdf:type :Goal ;
+    dcterms:title "Play a game of chess" ;
+    dcterms:description "Team-level goal: have the agents play a game of chess via conversational tool calls." .
+
+#################################################################
+# Agent Interactions
+#################################################################
+# player_black initiates chat with player_white -> add interactsWith both directions
+:agent_player_black :interactsWith :agent_player_white .
+:agent_player_white :interactsWith :agent_player_black .
+
+# board_proxy interacts with both players (executes tool calls, sends summaries)
+:agent_board_proxy :interactsWith :agent_player_white , :agent_player_black .
+
+#################################################################
+# Additional metadata linking tasks/tools
+#################################################################
+# Tools are executed by board_proxy in the code (executor=board_proxy).
+# Link board_proxy as the executor via hasAgentCapability (board proxy can execute tool-related capability).
+:agent_board_proxy :hasAgentCapability :cap_get_legal_moves , :cap_make_move .
+
+# Tasks produce resources or outputs (informally modelled as dcterms:description in prompts)
+:task_get_legal_moves :producedResource beam:Instance .
+:task_make_move :producedResource beam:Instance .
+
+# End of instance data.

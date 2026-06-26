@@ -1,0 +1,173 @@
+# Execution time: 52.31 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: AutoGen
+
+# Issues / Assumptions:
+# - Assumed two distinct chat tasks (initial Chinese instruction and later English "Today is ..." chat) represent two sequential Tasks.
+# - Ambiguity in stock symbol: source uses both "TLSA" and "TSLA" in different places; preserved as "NVDA" and "TSLA" in prompts but noted in task prompts.
+# - Full AssistantAgent system_message text is not printed verbatim in source; included a summarized/systematic prompt describing its role plus the appended function signatures.
+# - code_writer_agent was later re-created as ConversableAgent with updated system_message; treat it as a single agent individual with the effective system prompt.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agents
+:agent_code_writer rdf:type :LLMAgent ;
+    :agentID "code_writer_agent" ;
+    :agentRole "Assistant / Code Writer" ;
+    :agentPrompt :prompt_system_code_writer ;
+    :useLanguageModel :lm_gpt4turbo ;
+    :hasAgentConfig :config_llm_model_gpt4turbo .
+
+:agent_code_executor rdf:type :LLMAgent ;
+    :agentID "code_executor_agent" ;
+    :agentRole "Code Executor" ;
+    :agentPrompt :prompt_system_code_executor ;
+    :useLanguageModel :lm_default ;
+    :hasAgentConfig :config_executor_human_input_mode ,
+                    :config_executor_default_auto_reply .
+
+### Language Models
+:lm_gpt4turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-4-turbo" ;
+    dcterms:description "LLM specified in llm_config = {\"model\": \"gpt-4-turbo\"}." .
+
+:lm_default rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default/implicit language model (created per extraction checklist)." .
+
+### Prompts
+:prompt_system_code_writer rdf:type :Prompt ;
+    :promptInstruction "Assistant agent system message: default assistant behavior for writing code, providing suggested code snippets, and explaining reasoning. Functions available appended: get_stock_prices(stock_symbols, start_date, end_date) -> returns close prices; plot_stock_prices(stock_prices, filename) -> plots and saves figure. Instruction: produce code in markdown code blocks when requested and ensure plots are saved to specified filenames." .
+
+:prompt_system_code_executor rdf:type :Prompt ;
+    :promptInstruction "Conversable executor agent default auto-reply: Please continue. If everything is done, reply 'TERMINATE'." .
+
+:prompt_task_create_plot_v1 rdf:type :Prompt ;
+    :promptInstruction "今天是 {today}. 创建图表，显示 NVDA 和 TLSA 的股票收益。确保代码位于标记代码块中，并将图表保存到文件 ytd_stock_gains.png。" ;
+    :promptInputData "stock_symbols: [NVDA, TLSA]; date_range: year-to-date" ;
+    :promptOutputIndicator "A python script in a markdown code block that downloads prices and saves ytd_stock_gains.png" .
+
+:prompt_task_create_plot_v2 rdf:type :Prompt ;
+    :promptInstruction "Today is {today}. Download the stock prices YTD for NVDA and TSLA and create a plot. Make sure the code is in markdown code block and save the figure to a file stock_prices_YTD_plot.png." ;
+    :promptInputData "stock_symbols: [NVDA, TSLA]; date_range: year-to-date" ;
+    :promptOutputIndicator "A python script in a markdown code block that downloads prices and saves stock_prices_YTD_plot.png" .
+
+### Tasks
+:task_plot_ytd_v1 rdf:type :Task ;
+    :taskPrompt :prompt_task_create_plot_v1 ;
+    :performedByAgent :agent_code_executor ;
+    dcterms:description "Initiated by code_executor_agent to request code from code_writer_agent (Chinese message)." .
+
+:task_plot_ytd_v2 rdf:type :Task ;
+    :taskPrompt :prompt_task_create_plot_v2 ;
+    :performedByAgent :agent_code_executor ;
+    dcterms:description "Initiated by code_executor_agent to request code from code_writer_agent (English message about downloading and plotting YTD stock prices)." .
+
+### Tools and Capabilities
+:tool_local_cli_executor rdf:type :Tool ;
+    dcterms:title "LocalCommandLineCodeExecutor" ;
+    dcterms:description "Executor used to run code locally with a working directory and timeout; can register functions to be callable during execution." ;
+    :hasCapability :capability_execute_code ;
+    :hasToolConfig :config_executor_timeout ,
+                   :config_executor_work_dir ,
+                   :config_executor_functions .
+
+:tool_get_stock_prices rdf:type :Tool ;
+    dcterms:title "get_stock_prices" ;
+    dcterms:description "Function that downloads stock prices using yfinance and returns closing prices for given symbols between start and end dates." ;
+    :hasCapability :capability_get_stock_prices .
+
+:tool_plot_stock_prices rdf:type :Tool ;
+    dcterms:title "plot_stock_prices" ;
+    dcterms:description "Function that plots provided stock prices dataframe and saves the figure to a specified filename using matplotlib." ;
+    :hasCapability :capability_plot_stock .
+
+:capability_execute_code rdf:type :Capability ;
+    dcterms:title "execute_code" ;
+    dcterms:description "Ability to execute arbitrary code snippets in a sandboxed local environment." .
+
+:capability_get_stock_prices rdf:type :Capability ;
+    dcterms:title "get_stock_prices" ;
+    dcterms:description "Download historical stock close prices for given symbols and date range." .
+
+:capability_plot_stock rdf:type :Capability ;
+    dcterms:title "plot_stock_prices" ;
+    dcterms:description "Render time series plots for stock price data and save to image files." .
+
+### Tool Configs
+:config_executor_timeout rdf:type :Config ;
+    :configKey "timeout" ;
+    :configValue "60" .
+
+:config_executor_work_dir rdf:type :Config ;
+    :configKey "work_dir" ;
+    :configValue "coding" .
+
+:config_executor_functions rdf:type :Config ;
+    :configKey "functions" ;
+    :configValue "get_stock_prices, plot_stock_prices" .
+
+### Agent Configs
+:config_llm_model_gpt4turbo rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-4-turbo" .
+
+:config_executor_human_input_mode rdf:type :Config ;
+    :configKey "human_input_mode" ;
+    :configValue "ALWAYS" .
+
+:config_executor_default_auto_reply rdf:type :Config ;
+    :configKey "default_auto_reply" ;
+    :configValue "Please continue. If everything is done, reply 'TERMINATE'." .
+
+### Agent - Tool usage
+:agent_code_executor :agentToolUsage :tool_local_cli_executor , :tool_get_stock_prices , :tool_plot_stock_prices .
+
+### Workflow (Team and Steps)
+:workflow_L5_Coding_and_Financial_Analysis rdf:type :WorkflowPattern ;
+    dcterms:title "L5_Coding_and_Financial_Analysis" ;
+    dcterms:description "Workflow representing the conversational code-writing and execution loop for producing YTD stock plots." ;
+    :hasWorkflowStep :step1 , :step2 .
+
+:step1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_plot_ytd_v1 ;
+    :nextStep :step2 ;
+    dcterms:title "Initiate chat (Chinese instruction)" .
+
+:step2 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_plot_ytd_v2 ;
+    dcterms:title "Initiate chat (English instruction & final plotting request)" .
+
+### Team
+:team_coding rdf:type :Team ;
+    dcterms:title "Coding and Financial Analysis Crew" ;
+    dcterms:description "Team comprising a code writer and a code executor that collaborate to generate and run plotting code." ;
+    :hasAgentMember :agent_code_writer , :agent_code_executor ;
+    :hasWorkflowPattern :workflow_L5_Coding_and_Financial_Analysis ;
+    :hasTeamGoal :goal_create_ytd_plot ;
+    :hasSystemConfig :config_executor_work_dir .
+
+:goal_create_ytd_plot rdf:type :Goal ;
+    dcterms:title "Create YTD stock price plots for specified tickers" ;
+    dcterms:description "Produce and save plots (e.g., ytd_stock_gains.png, stock_prices_YTD_plot.png) showing year-to-date gains for requested tickers (NVDA and TSLA/TLSA)." .
+
+### Interactions
+:agent_code_executor :interactsWith :agent_code_writer .
+:agent_code_writer :interactsWith :agent_code_executor .
+
+### Other links
+:task_plot_ytd_v1 :producedResource :tool_local_cli_executor .
+:task_plot_ytd_v2 :producedResource :tool_local_cli_executor .
+
+### Completeness assertions (configs and prompts)
+# All Prompts above include :promptInstruction; all Configs have :configKey and :configValue; there is one StartStep and one EndStep; agents have :useLanguageModel and :agentID and :agentRole and :agentPrompt; tools have dcterms:title and dcterms:description and capabilities.

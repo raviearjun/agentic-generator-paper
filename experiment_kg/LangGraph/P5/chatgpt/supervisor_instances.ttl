@@ -1,0 +1,411 @@
+# Execution time: 60.79 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: LangGraph
+
+# Issues / Assumptions:
+# - Assumed each node (including imported subgraphs) corresponds to an LLM-backed agent if not otherwise specified.
+# - Created a supervisor agent to own START/END tasks because the top-level StateGraph orchestrates routing.
+# - Created LanguageModel "default" for agents without an explicit model.
+# - Created Tool individuals for both the externally described tools and the internal "router" tool used with bindTools.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Team / Workflow
+:generative_ui_team rdf:type :Team ;
+    dcterms:title "Generative UI Agent" ;
+    :hasWorkflowPattern :stategraph_workflow ;
+    :hasAgentMember :supervisor_agent,
+                     :router_agent,
+                     :generalInput_agent,
+                     :stockbroker_agent,
+                     :tripPlanner_agent,
+                     :openCode_agent,
+                     :orderPizza_agent,
+                     :writerAgent_agent ;
+    .
+
+:stategraph_workflow rdf:type :WorkflowPattern ;
+    dcterms:title "StateGraph - Generative UI Agent" ;
+    :hasWorkflowStep :START,
+                     :router,
+                     :stockbroker,
+                     :tripPlanner,
+                     :openCode,
+                     :orderPizza,
+                     :generalInput,
+                     :writerAgent,
+                     :END ;
+    .
+
+### Workflow Steps (Start / Router / Tools / End)
+:START rdf:type :StartStep, :WorkflowStep ;
+    dcterms:title "START" ;
+    :stepOrder 0 ;
+    :hasAssociatedTask :task_start ;
+    :nextStep :router ;
+    .
+
+:router rdf:type :WorkflowStep ;
+    dcterms:title "router" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_router ;
+    :nextStep :stockbroker,
+              :tripPlanner,
+              :openCode,
+              :orderPizza,
+              :generalInput,
+              :writerAgent ;
+    .
+
+:stockbroker rdf:type :WorkflowStep ;
+    dcterms:title "stockbroker" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_stockbroker ;
+    :nextStep :END ;
+    .
+
+:tripPlanner rdf:type :WorkflowStep ;
+    dcterms:title "tripPlanner" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_tripPlanner ;
+    :nextStep :END ;
+    .
+
+:openCode rdf:type :WorkflowStep ;
+    dcterms:title "openCode" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_openCode ;
+    :nextStep :END ;
+    .
+
+:orderPizza rdf:type :WorkflowStep ;
+    dcterms:title "orderPizza" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_orderPizza ;
+    :nextStep :END ;
+    .
+
+:generalInput rdf:type :WorkflowStep ;
+    dcterms:title "generalInput" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_generalInput ;
+    :nextStep :END ;
+    .
+
+:writerAgent rdf:type :WorkflowStep ;
+    dcterms:title "writerAgent" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_writerAgent ;
+    :nextStep :END ;
+    .
+
+:END rdf:type :EndStep, :WorkflowStep ;
+    dcterms:title "END" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_end ;
+    .
+
+### Tasks and Prompts
+
+# Router task & prompt
+:task_router rdf:type :Task ;
+    :performedByAgent :router_agent ;
+    :taskPrompt :router_prompt ;
+    .
+
+:router_prompt rdf:type :Prompt ;
+    :promptInstruction """The route to take based on the user's input.
+- stockbroker: can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio
+- tripPlanner: helps the user plan their trip. it can suggest restaurants, and places to stay in any given location.
+- openCode: can write a React TODO app for the user. Only call this tool if they request a TODO app.
+- orderPizza: can order a pizza for the user
+- writerAgent: can write a text document for the user. Only call this tool if they request a text document.
+- generalInput: handles all other cases where the above tools don't apply
+
+You're a highly helpful AI assistant, tasked with routing the user's query to the appropriate tool.
+You should analyze the user's input, and choose the appropriate tool to use.
+
+The expected output is a single route name: one of {stockbroker, tripPlanner, openCode, orderPizza, generalInput, writerAgent}.""" ;
+    :promptOutputIndicator "Selected route name (one of stockbroker|tripPlanner|openCode|orderPizza|generalInput|writerAgent)" ;
+    .
+
+# General input task & prompt
+:task_generalInput rdf:type :Task ;
+    :performedByAgent :generalInput_agent ;
+    :taskPrompt :generalInput_prompt ;
+    .
+
+:generalInput_prompt rdf:type :Prompt ;
+    :promptInstruction """You are an AI assistant.
+If the user asks what you can do, describe these tools.
+- stockbroker: can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio
+- tripPlanner: helps the user plan their trip. it can suggest restaurants, and places to stay in any given location.
+- openCode: can write a React TODO app for the user. Only call this tool if they request a TODO app.
+- orderPizza: can order a pizza for the user
+- writerAgent: can write a text document for the user. Only call this tool if they request a text document.
+
+If the last message is a tool result, describe what the action was, congratulate the user, or send a friendly followup in response to the tool action. Ensure this is a clear and concise message.
+
+Otherwise, just answer as normal.""" ;
+    :promptOutputIndicator "Assistant chat response or follow-up after tool result" ;
+    .
+
+# Stockbroker task & prompt
+:task_stockbroker rdf:type :Task ;
+    :performedByAgent :stockbroker_agent ;
+    :taskPrompt :stockbroker_prompt ;
+    .
+
+:stockbroker_prompt rdf:type :Prompt ;
+    :promptInstruction "Tool: stockbroker — can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio." ;
+    :promptOutputIndicator "Result of stockbroker action (price, portfolio, or confirmation of trade)" ;
+    .
+
+# Trip planner task & prompt
+:task_tripPlanner rdf:type :Task ;
+    :performedByAgent :tripPlanner_agent ;
+    :taskPrompt :tripPlanner_prompt ;
+    .
+
+:tripPlanner_prompt rdf:type :Prompt ;
+    :promptInstruction "Tool: tripPlanner — helps the user plan their trip; can suggest restaurants and places to stay for a given location." ;
+    :promptOutputIndicator "Trip suggestions (places, restaurants, accommodations)" ;
+    .
+
+# Open code (React TODO) task & prompt
+:task_openCode rdf:type :Task ;
+    :performedByAgent :openCode_agent ;
+    :taskPrompt :openCode_prompt ;
+    .
+
+:openCode_prompt rdf:type :Prompt ;
+    :promptInstruction "Tool: openCode — can write a React TODO app for the user. Only call this tool if they request a TODO app." ;
+    :promptOutputIndicator "Code files / instructions for a React TODO app" ;
+    .
+
+# Order Pizza task & prompt
+:task_orderPizza rdf:type :Task ;
+    :performedByAgent :orderPizza_agent ;
+    :taskPrompt :orderPizza_prompt ;
+    .
+
+:orderPizza_prompt rdf:type :Prompt ;
+    :promptInstruction "Tool: orderPizza — can order a pizza for the user." ;
+    :promptOutputIndicator "Order confirmation and details" ;
+    .
+
+# Writer Agent task & prompt
+:task_writerAgent rdf:type :Task ;
+    :performedByAgent :writerAgent_agent ;
+    :taskPrompt :writerAgent_prompt ;
+    .
+
+:writerAgent_prompt rdf:type :Prompt ;
+    :promptInstruction "Tool: writerAgent — can write a text document for the user. Only call this tool if they request a text document." ;
+    :promptOutputIndicator "Generated text document or writing deliverable" ;
+    .
+
+# START/END supervisor tasks
+:task_start rdf:type :Task ;
+    :performedByAgent :supervisor_agent ;
+    :taskPrompt :supervisor_start_prompt ;
+    .
+
+:supervisor_start_prompt rdf:type :Prompt ;
+    :promptInstruction "Start step for the supervisor StateGraph that initializes routing to the 'router' step." ;
+    :promptOutputIndicator "Routing initiation" ;
+    .
+
+:task_end rdf:type :Task ;
+    :performedByAgent :supervisor_agent ;
+    :taskPrompt :supervisor_end_prompt ;
+    .
+
+:supervisor_end_prompt rdf:type :Prompt ;
+    :promptInstruction "End step for the supervisor StateGraph indicating the workflow is complete." ;
+    :promptOutputIndicator "Workflow completion indicator" ;
+    .
+
+### Agents (LLMAgents) and Language Models
+
+# Supervisor agent (top-level orchestrator)
+:supervisor_agent rdf:type :LLMAgent ;
+    :agentID "supervisor" ;
+    :agentRole "supervisor" ;
+    :agentPrompt :supervisor_agent_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_stockbroker,
+                     :tool_tripPlanner,
+                     :tool_openCode,
+                     :tool_orderPizza,
+                     :tool_writerAgent,
+                     :tool_router ;
+    .
+
+:supervisor_agent_prompt rdf:type :Prompt ;
+    :promptInstruction "Supervisor StateGraph managing routing between nodes and delegating to specific tool agents." ;
+    .
+
+# Router agent (calls Gemini model)
+:router_agent rdf:type :LLMAgent ;
+    :agentID "router" ;
+    :agentRole "router" ;
+    :agentPrompt :router_prompt ;
+    :useLanguageModel :lm_gemini2 ;
+    :agentToolUsage :tool_router ;
+    .
+
+# General input agent (calls ChatOpenAI model)
+:generalInput_agent rdf:type :LLMAgent ;
+    :agentID "generalInput" ;
+    :agentRole "general_input_handler" ;
+    :agentPrompt :generalInput_prompt ;
+    :useLanguageModel :lm_gpt4o_mini ;
+    :agentToolUsage :tool_stockbroker,
+                     :tool_tripPlanner,
+                     :tool_openCode,
+                     :tool_orderPizza,
+                     :tool_writerAgent ;
+    .
+
+# Agents for each tool-node (created as LLMAgents to satisfy Task performedByAgent requirement)
+:stockbroker_agent rdf:type :LLMAgent ;
+    :agentID "stockbroker" ;
+    :agentRole "stockbroker_tool_agent" ;
+    :agentPrompt :stockbroker_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_stockbroker ;
+    .
+
+:tripPlanner_agent rdf:type :LLMAgent ;
+    :agentID "tripPlanner" ;
+    :agentRole "trip_planner_tool_agent" ;
+    :agentPrompt :tripPlanner_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_tripPlanner ;
+    .
+
+:openCode_agent rdf:type :LLMAgent ;
+    :agentID "openCode" ;
+    :agentRole "open_code_tool_agent" ;
+    :agentPrompt :openCode_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_openCode ;
+    .
+
+:orderPizza_agent rdf:type :LLMAgent ;
+    :agentID "orderPizza" ;
+    :agentRole "order_pizza_tool_agent" ;
+    :agentPrompt :orderPizza_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_orderPizza ;
+    .
+
+:writerAgent_agent rdf:type :LLMAgent ;
+    :agentID "writerAgent" ;
+    :agentRole "writer_agent_tool" ;
+    :agentPrompt :writerAgent_prompt ;
+    :useLanguageModel :lm_default ;
+    :agentToolUsage :tool_writerAgent ;
+    .
+
+### Language Models
+:lm_gemini2 rdf:type :LanguageModel ;
+    dcterms:title "gemini-2.0-flash" ;
+    dcterms:description "Model used by router (ChatGoogleGenerativeAI { model: \"gemini-2.0-flash\" })." ;
+    .
+
+:lm_gpt4o_mini rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o-mini" ;
+    dcterms:description "Model used by generalInput (ChatOpenAI { model: \"gpt-4o-mini\" })." ;
+    .
+
+:lm_default rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default/unknown language model for agents without explicit model configuration." ;
+    .
+
+### Tools and Capabilities
+
+# External tools described in ALL_TOOL_DESCRIPTIONS
+:tool_stockbroker rdf:type :Tool ;
+    dcterms:title "stockbroker" ;
+    dcterms:description "can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio" ;
+    :hasCapability :cap_stockbroker ;
+    .
+
+:cap_stockbroker rdf:type :Capability ;
+    dcterms:description "Fetch price, buy/sell tickers, retrieve user portfolio." ;
+    .
+
+:tool_tripPlanner rdf:type :Tool ;
+    dcterms:title "tripPlanner" ;
+    dcterms:description "helps the user plan their trip; can suggest restaurants and places to stay in any given location." ;
+    :hasCapability :cap_tripPlanner ;
+    .
+
+:cap_tripPlanner rdf:type :Capability ;
+    dcterms:description "Suggest restaurants, hotels, and itineraries for locations." ;
+    .
+
+:tool_openCode rdf:type :Tool ;
+    dcterms:title "openCode" ;
+    dcterms:description "can write a React TODO app for the user. Only call this tool if they request a TODO app." ;
+    :hasCapability :cap_openCode ;
+    .
+
+:cap_openCode rdf:type :Capability ;
+    dcterms:description "Generate project code (React TODO app) and related files." ;
+    .
+
+:tool_orderPizza rdf:type :Tool ;
+    dcterms:title "orderPizza" ;
+    dcterms:description "can order a pizza for the user" ;
+    :hasCapability :cap_orderPizza ;
+    .
+
+:cap_orderPizza rdf:type :Capability ;
+    dcterms:description "Place pizza orders and return confirmation details." ;
+    .
+
+:tool_writerAgent rdf:type :Tool ;
+    dcterms:title "writerAgent" ;
+    dcterms:description "can write a text document for the user. Only call this tool if they request a text document." ;
+    :hasCapability :cap_writerAgent ;
+    .
+
+:cap_writerAgent rdf:type :Capability ;
+    dcterms:description "Generate long-form text documents or writing deliverables." ;
+    .
+
+# Internal router tool (the model-bound tool used for tool choice)
+:tool_router rdf:type :Tool ;
+    dcterms:title "router" ;
+    dcterms:description "A tool to route the user's query to the appropriate tool. (Used as a tool schema bound to the routing model)" ;
+    :hasCapability :cap_router ;
+    .
+
+:cap_router rdf:type :Capability ;
+    dcterms:description "Select the appropriate target route/tool based on user input." ;
+    .
+
+### Linking workflow steps to tasks (already set above using :hasAssociatedTask)
+
+# (Redundant explicit links to satisfy ontology property presence)
+:router :hasAssociatedTask :task_router .
+:generalInput :hasAssociatedTask :task_generalInput .
+:stockbroker :hasAssociatedTask :task_stockbroker .
+:tripPlanner :hasAssociatedTask :task_tripPlanner .
+:openCode :hasAssociatedTask :task_openCode .
+:orderPizza :hasAssociatedTask :task_orderPizza .
+:writerAgent :hasAssociatedTask :task_writerAgent .
+:START :hasAssociatedTask :task_start .
+:END :hasAssociatedTask :task_end .

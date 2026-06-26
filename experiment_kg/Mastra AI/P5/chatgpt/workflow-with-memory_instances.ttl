@@ -1,0 +1,460 @@
+# Execution time: 63.69 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No issues detected
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+########################
+# Agent
+########################
+
+:catOneAgent rdf:type :LLMAgent ;
+    :agentID "cat-one" ;
+    :agentRole "feline-expert" ;
+    :agentPrompt :prompt_catOne_instructions ;
+    :useLanguageModel :lm_gpt4o ;
+    :agentToolUsage :tool_GetCatFacts ;
+    :hasAgentConfig :agentConfig_catOne ;
+    :hasKnowledge :pgMemory_instance ;
+    dcterms:description "Agent defined in src/mastra/agents/index.ts" .
+
+:prompt_catOne_instructions rdf:type :Prompt ;
+    :promptInstruction "You are a feline expert with comprehensive knowledge of all cat species, from domestic breeds to wild big cats. As a lifelong cat specialist, you understand their behavior, biology, social structures, and evolutionary history in great depth." .
+
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Language model configured for cat-one (provider OPEN_AI, name gpt-4o)." .
+
+:agentConfig_catOne rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "OPEN_AI" ;
+    dcterms:description "Agent model provider" .
+
+:agentConfig_catOne_2 rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "gpt-4o" .
+
+:agentConfig_catOne_3 rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" .
+
+# link multiple agent configs to agent
+:catOneAgent :hasAgentConfig :agentConfig_catOne , :agentConfig_catOne_2 , :agentConfig_catOne_3 .
+
+########################
+# Tool
+########################
+
+:tool_GetCatFacts rdf:type :Tool ;
+    dcterms:title "Get cat facts" ;
+    dcterms:description "Fetches cat facts" ;
+    :hasCapability :cap_GetCatFacts ;
+    :hasToolConfig :toolConfig_GetCatFacts .
+
+:cap_GetCatFacts rdf:type :Capability ;
+    dcterms:title "Fetch cat facts" ;
+    dcterms:description "Returns a cat fact string from an external API (catfact.ninja)." .
+
+:toolConfig_GetCatFacts rdf:type :Config ;
+    :configKey "id" ;
+    :configValue "Get cat facts" ;
+    dcterms:description "Tool identifier as provided in createTool call." .
+
+########################
+# Memory
+########################
+
+:pgMemory_instance rdf:type :Memory ;
+    dcterms:title "PgMemory" ;
+    dcterms:description "Postgres-backed memory instance (PgMemory) provided to Mastra via environment variable POSTGRES_URL)." .
+
+########################
+# Team (Mastra instance)
+########################
+
+:mastraTeam rdf:type :Team ;
+    dcterms:title "mastra-instance" ;
+    :hasAgentMember :catOneAgent ;
+    :hasWorkflowPattern :wf_sequential , :wf_parallel , :wf_branched , :wf_cyclical ;
+    :hasSystemConfig :syscfg_logger_name , :syscfg_logger_level , :syscfg_memory_conn ;
+    dcterms:description "Mastra instance configured in src/mastra/index.ts with one agent and four workflows." .
+
+:syscfg_logger_name rdf:type :Config ;
+    :configKey "logger.name" ;
+    :configValue "Mastra" .
+
+:syscfg_logger_level rdf:type :Config ;
+    :configKey "logger.level" ;
+    :configValue "debug" .
+
+:syscfg_memory_conn rdf:type :Config ;
+    :configKey "memory.connectionString" ;
+    :configValue "env:POSTGRES_URL" ;
+    dcterms:description "Connection string provided via environment variable POSTGRES_URL" .
+
+########################
+# Workflows - sequentialWorkflow
+########################
+
+:wf_sequential rdf:type :WorkflowPattern ;
+    dcterms:title "sequential-workflow" ;
+    dcterms:description "Workflow defined in src/mastra/workflows/index.ts (sequential)" ;
+    :hasWorkflowStep :seq_stepOne_start , :seq_stepTwo , :seq_stepThree , :seq_stepFour , :seq_stepFive_end .
+
+:seq_stepOne_start rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepOne" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_stepOne ;
+    :nextStep :seq_stepTwo .
+
+:seq_stepTwo rdf:type :WorkflowStep ;
+    dcterms:title "stepTwo" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_stepTwo ;
+    :nextStep :seq_stepThree .
+
+:seq_stepThree rdf:type :WorkflowStep ;
+    dcterms:title "stepThree" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_stepThree ;
+    :nextStep :seq_stepFour .
+
+:seq_stepFour rdf:type :WorkflowStep ;
+    dcterms:title "stepFour" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_stepFour ;
+    :nextStep :seq_stepFive_end .
+
+:seq_stepFive_end rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepFive" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_stepFive .
+
+########################
+# Tasks and Prompts for sequential workflow steps
+########################
+
+:task_stepOne rdf:type :Task ;
+    dcterms:title "task_stepOne" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_task_stepOne ;
+    dcterms:description "Doubles the input value" .
+
+:prompt_task_stepOne rdf:type :Prompt ;
+    :promptInstruction "Doubles the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "doubledValue" .
+
+:task_stepTwo rdf:type :Task ;
+    dcterms:title "task_stepTwo" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_task_stepTwo ;
+    dcterms:description "Adds 1 to the input value" .
+
+:prompt_task_stepTwo rdf:type :Prompt ;
+    :promptInstruction "Adds 1 to the input value" ;
+    :promptInputData "valueToIncrement: number" ;
+    :promptOutputIndicator "incrementedValue" .
+
+:task_stepThree rdf:type :Task ;
+    dcterms:title "task_stepThree" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_task_stepThree ;
+    dcterms:description "Squares the input value" .
+
+:prompt_task_stepThree rdf:type :Prompt ;
+    :promptInstruction "Squares the input value" ;
+    :promptInputData "valueToSquare: number" ;
+    :promptOutputIndicator "squaredValue" .
+
+:task_stepFour rdf:type :Task ;
+    dcterms:title "task_stepFour" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_task_stepFour ;
+    dcterms:description "Gives the square root of the input value" .
+
+:prompt_task_stepFour rdf:type :Prompt ;
+    :promptInstruction "Gives the square root of the input value" ;
+    :promptInputData "valueToRoot: number" ;
+    :promptOutputIndicator "rootValue" .
+
+:task_stepFive rdf:type :Task ;
+    dcterms:title "task_stepFive" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_task_stepFive ;
+    dcterms:description "Triples the input value" .
+
+:prompt_task_stepFive rdf:type :Prompt ;
+    :promptInstruction "Triples the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "tripledValue" .
+
+########################
+# Workflows - parallelWorkflow
+########################
+
+:wf_parallel rdf:type :WorkflowPattern ;
+    dcterms:title "parallel-workflow" ;
+    dcterms:description "Workflow defined in src/mastra/workflows/index.ts (parallel branches)" ;
+    :hasWorkflowStep :par_stepOne_start , :par_stepSix , :par_stepTwo , :par_stepThree_end .
+
+:par_stepOne_start rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepOne" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_par_stepOne ;
+    :nextStep :par_stepSix , :par_stepTwo , :par_stepThree .
+
+:par_stepSix rdf:type :WorkflowStep ;
+    dcterms:title "stepSix" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_par_stepSix ;
+    dcterms:description "Logs the input value" .
+
+:par_stepTwo rdf:type :WorkflowStep ;
+    dcterms:title "stepTwo" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_par_stepTwo .
+
+:par_stepThree_end rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepThree" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_par_stepThree .
+
+########################
+# Tasks and Prompts for parallel workflow
+########################
+
+:task_par_stepOne rdf:type :Task ;
+    dcterms:title "task_par_stepOne" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_par_stepOne ;
+    dcterms:description "Doubles the input value (parallel workflow start)" .
+
+:prompt_par_stepOne rdf:type :Prompt ;
+    :promptInstruction "Doubles the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "doubledValue" .
+
+:task_par_stepSix rdf:type :Task ;
+    dcterms:title "task_par_stepSix" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_par_stepSix ;
+    dcterms:description "Logs the input value and returns rawText" .
+
+:prompt_par_stepSix rdf:type :Prompt ;
+    :promptInstruction "Logs the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "rawText" .
+
+:task_par_stepTwo rdf:type :Task ;
+    dcterms:title "task_par_stepTwo" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_par_stepTwo ;
+    dcterms:description "Adds 1 to the input value (parallel branch)" .
+
+:prompt_par_stepTwo rdf:type :Prompt ;
+    :promptInstruction "Adds 1 to the input value" ;
+    :promptInputData "valueToIncrement: number" ;
+    :promptOutputIndicator "incrementedValue" .
+
+:task_par_stepThree rdf:type :Task ;
+    dcterms:title "task_par_stepThree" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_par_stepThree ;
+    dcterms:description "Squares the input value (parallel branch end)" .
+
+:prompt_par_stepThree rdf:type :Prompt ;
+    :promptInstruction "Squares the input value" ;
+    :promptInputData "valueToSquare: number" ;
+    :promptOutputIndicator "squaredValue" .
+
+########################
+# Workflows - branchedWorkflow
+########################
+
+:wf_branched rdf:type :WorkflowPattern ;
+    dcterms:title "branched-workflow" ;
+    dcterms:description "Workflow with branching (after and parallel branch) defined in src/mastra/workflows/index.ts" ;
+    :hasWorkflowStep :br_stepOne_start , :br_stepTwo , :br_stepFour , :br_stepThree , :br_stepFive_end .
+
+:br_stepOne_start rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepOne" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_br_stepOne ;
+    :nextStep :br_stepTwo , :br_stepThree .
+
+:br_stepTwo rdf:type :WorkflowStep ;
+    dcterms:title "stepTwo" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_br_stepTwo ;
+    :nextStep :br_stepFour .
+
+:br_stepFour rdf:type :WorkflowStep ;
+    dcterms:title "stepFour" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_br_stepFour .
+
+:br_stepThree rdf:type :WorkflowStep ;
+    dcterms:title "stepThree" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_br_stepThree ;
+    :nextStep :br_stepFive_end .
+
+:br_stepFive_end rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepFive" ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_br_stepFive .
+
+########################
+# Tasks and Prompts for branched workflow
+########################
+
+:task_br_stepOne rdf:type :Task ;
+    dcterms:title "task_br_stepOne" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_br_stepOne ;
+    dcterms:description "Doubles the input value (branched workflow start)" .
+
+:prompt_br_stepOne rdf:type :Prompt ;
+    :promptInstruction "Doubles the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "doubledValue" .
+
+:task_br_stepTwo rdf:type :Task ;
+    dcterms:title "task_br_stepTwo" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_br_stepTwo ;
+    dcterms:description "Adds 1 to the input value" .
+
+:prompt_br_stepTwo rdf:type :Prompt ;
+    :promptInstruction "Adds 1 to the input value" ;
+    :promptInputData "valueToIncrement: number" ;
+    :promptOutputIndicator "incrementedValue" .
+
+:task_br_stepFour rdf:type :Task ;
+    dcterms:title "task_br_stepFour" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_br_stepFour ;
+    dcterms:description "Gives the square root of the input value" .
+
+:prompt_br_stepFour rdf:type :Prompt ;
+    :promptInstruction "Gives the square root of the input value" ;
+    :promptInputData "valueToRoot: number" ;
+    :promptOutputIndicator "rootValue" .
+
+:task_br_stepThree rdf:type :Task ;
+    dcterms:title "task_br_stepThree" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_br_stepThree ;
+    dcterms:description "Squares the input value (parallel branch)" .
+
+:prompt_br_stepThree rdf:type :Prompt ;
+    :promptInstruction "Squares the input value" ;
+    :promptInputData "valueToSquare: number" ;
+    :promptOutputIndicator "squaredValue" .
+
+:task_br_stepFive rdf:type :Task ;
+    dcterms:title "task_br_stepFive" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_br_stepFive ;
+    dcterms:description "Triples the input value (branch join)" .
+
+:prompt_br_stepFive rdf:type :Prompt ;
+    :promptInstruction "Triples the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "tripledValue" .
+
+########################
+# Workflows - cyclicalWorkflow
+########################
+
+:wf_cyclical rdf:type :WorkflowPattern ;
+    dcterms:title "cyclical-workflow" ;
+    dcterms:description "Workflow with conditional and cyclical step references defined in src/mastra/workflows/index.ts" ;
+    :hasWorkflowStep :cyc_stepOne_start , :cyc_stepTwo , :cyc_stepThree , :cyc_stepOne_loop_end .
+
+:cyc_stepOne_start rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "stepOne" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_cyc_stepOne ;
+    :nextStep :cyc_stepTwo .
+
+:cyc_stepTwo rdf:type :WorkflowStep ;
+    dcterms:title "stepTwo" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_cyc_stepTwo ;
+    :nextStep :cyc_stepThree .
+
+:cyc_stepThree rdf:type :WorkflowStep ;
+    dcterms:title "stepThree" ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_cyc_stepThree ;
+    :nextStep :cyc_stepOne_loop_end ;
+    dcterms:description "Conditional step executed when stepOne.doubledValue == 10" .
+
+:cyc_stepOne_loop_end rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "stepOne_loop" ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_cyc_stepOne_loop ;
+    dcterms:description "Cyclical stepOne invocation conditioned on previous outputs (when doubledValue == 12)" .
+
+########################
+# Tasks and Prompts for cyclical workflow
+########################
+
+:task_cyc_stepOne rdf:type :Task ;
+    dcterms:title "task_cyc_stepOne" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_cyc_stepOne ;
+    dcterms:description "Doubles the input value (cyclical workflow start)" .
+
+:prompt_cyc_stepOne rdf:type :Prompt ;
+    :promptInstruction "Doubles the input value" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "doubledValue" .
+
+:task_cyc_stepTwo rdf:type :Task ;
+    dcterms:title "task_cyc_stepTwo" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_cyc_stepTwo ;
+    dcterms:description "Adds 1 to the input value (cyclical workflow)" .
+
+:prompt_cyc_stepTwo rdf:type :Prompt ;
+    :promptInstruction "Adds 1 to the input value" ;
+    :promptInputData "valueToIncrement: number" ;
+    :promptOutputIndicator "incrementedValue" .
+
+:task_cyc_stepThree rdf:type :Task ;
+    dcterms:title "task_cyc_stepThree" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_cyc_stepThree ;
+    dcterms:description "Squares the input value when condition met (doubledValue == 10)" .
+
+:prompt_cyc_stepThree rdf:type :Prompt ;
+    :promptInstruction "Squares the input value" ;
+    :promptInputData "valueToSquare: number" ;
+    :promptOutputIndicator "squaredValue" ;
+    dcterms:description "This step has a when condition referencing stepOne.doubledValue == 10" .
+
+:task_cyc_stepOne_loop rdf:type :Task ;
+    dcterms:title "task_cyc_stepOne_loop" ;
+    :performedByAgent :catOneAgent ;
+    :taskPrompt :prompt_cyc_stepOne_loop ;
+    dcterms:description "Re-invocation of stepOne under condition (doubledValue == 12)" .
+
+:prompt_cyc_stepOne_loop rdf:type :Prompt ;
+    :promptInstruction "Doubles the input value (loop invocation)" ;
+    :promptInputData "inputValue: number" ;
+    :promptOutputIndicator "doubledValue" ;
+    dcterms:description "This step represents a cyclical re-run of stepOne when a condition is met." .

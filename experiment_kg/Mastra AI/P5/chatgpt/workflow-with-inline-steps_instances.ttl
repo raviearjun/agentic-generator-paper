@@ -1,0 +1,85 @@
+# Execution time: 25.44 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No agents declared in source; created a default :LLMAgent :mastra_default_agent to represent the workflow executor.
+# - No explicit language model specified; created a default :LanguageModel :default_language_model and linked it to the agent.
+# - No tools or external APIs are present in the source; therefore no :Tool individuals were created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# Team representing the Mastra runtime/instance that registered the workflow
+:mastra_system a :Team ;
+    dcterms:title "mastra runtime" ;
+    dcterms:description "Mastra instance created in src/mastra/index.ts with registered workflows." ;
+    :hasWorkflowPattern :my-workflow .
+
+# WorkflowPattern extracted from src/mastra/workflows/index.ts
+:my-workflow a :WorkflowPattern ;
+    dcterms:title "my-workflow" ;
+    dcterms:description "Workflow with triggerSchema { inputValue: number } and two sequential inline steps (stepOne -> stepTwo)." ;
+    :hasWorkflowStep :stepOneWorkflowStep, :stepTwoWorkflowStep .
+
+# Workflow Steps
+:stepOneWorkflowStep a :StartStep, :WorkflowStep ;
+    dcterms:title "stepOne" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task-stepOne ;
+    :nextStep :stepTwoWorkflowStep ;
+    dcterms:description "First step: doubles the trigger input value." .
+
+:stepTwoWorkflowStep a :EndStep, :WorkflowStep ;
+    dcterms:title "stepTwo" ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task-stepTwo ;
+    dcterms:description "Second step: increments the doubled value if previous step succeeded; otherwise returns 0." .
+
+# Tasks associated with the workflow steps
+:task-stepOne a :Task ;
+    dcterms:title "task-stepOne" ;
+    dcterms:description "Compute doubledValue from triggerData.inputValue." ;
+    :performedByAgent :mastra_default_agent ;
+    :taskPrompt :prompt-stepOne .
+
+:task-stepTwo a :Task ;
+    dcterms:title "task-stepTwo" ;
+    dcterms:description "If stepOne succeeded, compute incrementedValue = doubledValue + 1; else return 0." ;
+    :performedByAgent :mastra_default_agent ;
+    :taskPrompt :prompt-stepTwo .
+
+# Prompts for each task (ensure every Prompt has promptInstruction)
+:prompt-stepOne a :Prompt ;
+    :promptInstruction "Execute: doubledValue = context.machineContext.triggerData.inputValue * 2" ;
+    :promptOutputIndicator "doubledValue: number" ;
+    dcterms:description "Inline execution logic from stepOne in src/mastra/workflows/index.ts." .
+
+:prompt-stepTwo a :Prompt ;
+    :promptInstruction "If context.machineContext.stepResults.stepOne.status == 'success' then incrementedValue = context.machineContext.stepResults.stepOne.payload.doubledValue + 1 else incrementedValue = 0" ;
+    :promptOutputIndicator "incrementedValue: number" ;
+    dcterms:description "Inline execution logic from stepTwo in src/mastra/workflows/index.ts." .
+
+# Default agent created because no explicit Agent() or new Agent was declared in the source
+:mastra_default_agent a :LLMAgent ;
+    :agentID "mastra_default_agent" ;
+    :agentRole "workflow-executor" ;
+    :agentPrompt :prompt-mastra-default ;
+    :useLanguageModel :default_language_model ;
+    dcterms:description "Synthetic default agent representing the Mastra workflow executor; created because no explicit agents were defined in source." .
+
+:prompt-mastra-default a :Prompt ;
+    :promptInstruction "Default agent used to execute inline workflow steps defined in my-workflow." ;
+    dcterms:description "Placeholder prompt for the synthetic default agent." .
+
+# Default language model (created because every agent must have a LanguageModel)
+:default_language_model a :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default placeholder LanguageModel (no explicit model configured in source)." .

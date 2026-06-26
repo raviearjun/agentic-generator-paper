@@ -1,0 +1,436 @@
+# Execution time: 66.69 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Assumed default LanguageModel dcterms:title "gpt-4" for all agents since no explicit model parameter was set in crew definitions.
+# - Treated two definitions of `senior_react_engineer_agent` (in different Crew classes) as a single agent instance `:agent_senior_react_engineer`.
+# - Created Config entries for environment API keys referenced in code (SERPER_API_KEY, BROWSERLESS_API_KEY) and for agent flags (allow_delegation, verbose) per-mandatory checklist.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Models
+#################################################################
+
+:lm_gpt4 rdf:type :LanguageModel ;
+    dcterms:title "gpt-4" ;
+    dcterms:description "Default/fallback language model assumed for agents when not explicitly provided in code." .
+
+#################################################################
+# Capabilities (for tools)
+#################################################################
+
+:cap_search_internet rdf:type :Capability ;
+    dcterms:description "Perform web search queries and return structured results." .
+
+:cap_scrape_and_summarize rdf:type :Capability ;
+    dcterms:description "Scrape website HTML and summarize content into concise summaries." .
+
+:cap_learn_templates rdf:type :Capability ;
+    dcterms:description "Inspect available landing page templates and surface options." .
+
+:cap_copy_template rdf:type :Capability ;
+    dcterms:description "Copy a landing page template folder into the working project directory." .
+
+:cap_write_file rdf:type :Capability ;
+    dcterms:description "Write files to the workdir with validation and allowed extensions." .
+
+:cap_read_file rdf:type :Capability ;
+    dcterms:description "Read files from the workdir." .
+
+:cap_list_directory rdf:type :Capability ;
+    dcterms:description "List directory contents under the workdir." .
+
+#################################################################
+# Tools & Tool Configs
+#################################################################
+
+:tool_search_internet rdf:type :Tool ;
+    dcterms:title "SearchTools.search_internet" ;
+    dcterms:description "Search the internet using Serper Dev API and return organic results." ;
+    :hasCapability :cap_search_internet ;
+    :hasToolConfig :config_serper_api_key .
+
+:config_serper_api_key rdf:type :Config ;
+    :configKey "SERPER_API_KEY" ;
+    :configValue "env" ;
+    dcterms:description "API key expected in environment variable for Serper.dev" .
+
+:tool_scrape_and_summarize_website rdf:type :Tool ;
+    dcterms:title "BrowserTools.scrape_and_summarize_website" ;
+    dcterms:description "Scrape website content via Browserless and summarize chunks using internal agent tasks." ;
+    :hasCapability :cap_scrape_and_summarize ;
+    :hasToolConfig :config_browserless_api_key .
+
+:config_browserless_api_key rdf:type :Config ;
+    :configKey "BROWSERLESS_API_KEY" ;
+    :configValue "env" ;
+    dcterms:description "API key expected in environment variable for Browserless service" .
+
+:tool_learn_landing_page_options rdf:type :Tool ;
+    dcterms:title "TemplateTools.learn_landing_page_options" ;
+    dcterms:description "Read templates configuration and surface available landing page templates." ;
+    :hasCapability :cap_learn_templates ;
+    :hasToolConfig :config_templates_path .
+
+:tool_copy_landing_page_template rdf:type :Tool ;
+    dcterms:title "TemplateTools.copy_landing_page_template_to_project_folder" ;
+    dcterms:description "Copy a selected landing page template folder from templates/ into workdir/." ;
+    :hasCapability :cap_copy_template .
+
+:config_templates_path rdf:type :Config ;
+    :configKey "templates_config" ;
+    :configValue "config/templates.json" ;
+    dcterms:description "Path to templates configuration file used by TemplateTools" .
+
+:tool_write_file rdf:type :Tool ;
+    dcterms:title "FileTools.write_file" ;
+    dcterms:description "Validated write file tool that writes React component and other files into workdir." ;
+    :hasCapability :cap_write_file .
+
+:tool_read_file rdf:type :Tool ;
+    dcterms:title "FileManagementToolkit.read_file" ;
+    dcterms:description "Read file from the toolkit root_dir (workdir)." ;
+    :hasCapability :cap_read_file .
+
+:tool_list_directory rdf:type :Tool ;
+    dcterms:title "FileManagementToolkit.list_directory" ;
+    dcterms:description "List directory contents from the toolkit root_dir (workdir)." ;
+    :hasCapability :cap_list_directory .
+
+#################################################################
+# Goals (agent-specific)
+#################################################################
+
+:goal_senior_idea_analyst rdf:type :Goal ;
+    dcterms:description "Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from." .
+
+:goal_senior_strategist rdf:type :Goal ;
+    dcterms:description "Craft compelling stories using the Golden Circle method to captivate and engage people around an idea." .
+
+:goal_senior_react_engineer rdf:type :Goal ;
+    dcterms:description "Build an intuitive, aesthetically pleasing, and high-converting landing page." .
+
+:goal_senior_content_editor rdf:type :Goal ;
+    dcterms:description "Ensure the landing page content is clear, concise, and captivating." .
+
+#################################################################
+# Agents
+#################################################################
+
+:agent_senior_idea_analyst rdf:type :LLMAgent ;
+    :agentID "senior_idea_analyst" ;
+    :agentRole "Senior Idea Analyst" ;
+    :agentPrompt :prompt_agent_senior_idea_analyst ;
+    :useLanguageModel :lm_gpt4 ;
+    :hasAgentGoal :goal_senior_idea_analyst ;
+    :agentToolUsage :tool_search_internet , :tool_scrape_and_summarize_website ;
+    :hasAgentConfig :config_agent_senior_idea_analyst_allow_delegation , :config_agent_senior_idea_analyst_verbose .
+
+:prompt_agent_senior_idea_analyst rdf:type :Prompt ;
+    :promptInstruction """Recognized as a thought leader, I thrive on refining concepts into campaigns that resonate with audiences.
+Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from.""" .
+
+:config_agent_senior_idea_analyst_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:config_agent_senior_idea_analyst_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:agent_senior_strategist rdf:type :LLMAgent ;
+    :agentID "senior_strategist" ;
+    :agentRole "Senior Communications Strategist" ;
+    :agentPrompt :prompt_agent_senior_strategist ;
+    :useLanguageModel :lm_gpt4 ;
+    :hasAgentGoal :goal_senior_strategist ;
+    :agentToolUsage :tool_search_internet , :tool_scrape_and_summarize_website ;
+    :hasAgentConfig :config_agent_senior_strategist_allow_delegation , :config_agent_senior_strategist_verbose .
+
+:prompt_agent_senior_strategist rdf:type :Prompt ;
+    :promptInstruction """A narrative craftsman for top-tier launches, I reveal the 'why' behind projects, aligning with visions and speaking to audiences.
+Craft compelling stories using the Golden Circle method to captivate and engage people around an idea.""" .
+
+:config_agent_senior_strategist_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:config_agent_senior_strategist_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:agent_senior_react_engineer rdf:type :LLMAgent ;
+    :agentID "senior_react_engineer" ;
+    :agentRole "Senior React Engineer" ;
+    :agentPrompt :prompt_agent_senior_react_engineer ;
+    :useLanguageModel :lm_gpt4 ;
+    :hasAgentGoal :goal_senior_react_engineer ;
+    :agentToolUsage :tool_search_internet , :tool_scrape_and_summarize_website , :tool_learn_landing_page_options , :tool_copy_landing_page_template , :tool_write_file , :tool_read_file , :tool_list_directory ;
+    :hasAgentConfig :config_agent_senior_react_engineer_allow_delegation , :config_agent_senior_react_engineer_verbose .
+
+:prompt_agent_senior_react_engineer rdf:type :Prompt ;
+    :promptInstruction """A coding virtuoso and design enthusiast, expert in Tailwind, you're known for crafting beautiful websites that provide seamless user experiences.
+Build an intuitive, aesthetically pleasing, and high-converting landing page.""" .
+
+:config_agent_senior_react_engineer_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:config_agent_senior_react_engineer_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:agent_senior_content_editor rdf:type :LLMAgent ;
+    :agentID "senior_content_editor" ;
+    :agentRole "Senior Content Editor" ;
+    :agentPrompt :prompt_agent_senior_content_editor ;
+    :useLanguageModel :lm_gpt4 ;
+    :hasAgentGoal :goal_senior_content_editor ;
+    :agentToolUsage :tool_write_file ;
+    :hasAgentConfig :config_agent_senior_content_editor_allow_delegation , :config_agent_senior_content_editor_verbose .
+
+:prompt_agent_senior_content_editor rdf:type :Prompt ;
+    :promptInstruction """With a keen eye for detail and a passion for storytelling, you have refined content for leading brands, turning bland text into engaging stories.
+Ensure the landing page content is clear, concise, and captivating.""" .
+
+:config_agent_senior_content_editor_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:config_agent_senior_content_editor_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+#################################################################
+# Tasks and Task Prompts
+#################################################################
+
+:task_expand_idea rdf:type :Task ;
+    :performedByAgent :agent_senior_idea_analyst ;
+    :taskPrompt :prompt_task_expand_idea .
+
+:prompt_task_expand_idea rdf:type :Prompt ;
+    :promptInstruction """THIS IS A GREAT IDEA! Analyze and expand it by conducting a comprehensive research.
+
+Final answer MUST be a comprehensive idea report detailing why this is a great idea, the value proposition, unique selling points, why people should care about it and distinguishing features.
+
+IDEA:
+----------
+{idea}""" ;
+    :promptOutputIndicator "A comprehensive idea report describing value proposition, USPs, and why people should care." .
+
+:task_refine_idea rdf:type :Task ;
+    :performedByAgent :agent_senior_strategist ;
+    :taskPrompt :prompt_task_refine_idea .
+
+:prompt_task_refine_idea rdf:type :Prompt ;
+    :promptInstruction """Expand idea report with a Why, How, and What messaging strategy using the Golden Circle Communication technique, based on the idea report.
+
+Your final answer MUST be the updated complete comprehensive idea report with WHY, HOW, WHAT, a core message, key features and supporting arguments.
+
+YOU MUST RETURN THE COMPLETE IDEA REPORT AND THE DETAILS, You'll get a $100 tip if you do your best work!""" ;
+    :promptOutputIndicator "Updated complete idea report including WHY/HOW/WHAT, core message and features." .
+
+:task_choose_template rdf:type :Task ;
+    :performedByAgent :agent_senior_react_engineer ;
+    :taskPrompt :prompt_task_choose_template .
+
+:prompt_task_choose_template rdf:type :Prompt ;
+    :promptInstruction """Learn the templates options choose and copy the one that suits the idea below the best, YOU MUST COPY, and then YOU MUST read the src/component in the directory you just copied, to decide what component files should be updated to make the landing page about the idea below.
+
+- YOU MUST READ THE DIRECTORY BEFORE CHOOSING THE FILES.
+- YOU MUST NOT UPDATE any Pricing components.
+- YOU MUST UPDATE ONLY the 4 most important components.
+
+Your final answer MUST be ONLY a JSON array of components full file paths that need to be updated.
+
+IDEA
+----------
+{idea}""" ;
+    :promptOutputIndicator "A JSON array of full file paths for the components to update." .
+
+:task_update_page rdf:type :Task ;
+    :performedByAgent :agent_senior_react_engineer ;
+    :taskPrompt :prompt_task_update_page .
+
+:prompt_task_update_page rdf:type :Prompt ;
+    :promptInstruction """READ the ./[chosen_template]/src/app/page.jsx OR ./[chosen_template]/src/app/(main)/page.jsx to learn its content and then write an updated version to the filesystem that removes any section related components that are not in our list from the returns. Keep the imports.
+
+Final answer MUST BE ONLY a valid json list with the full path of each of the components we will be using, the same way you got them.
+
+RULES
+-----
+- NEVER ADD A FINAL DOT to the file content.
+- NEVER WRITE \\n (newlines as string) on the file, just the code.
+- NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+- NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+- ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+- Save the file as with `.jsx` extension.
+- Return the same valid JSON list of the components your got.
+
+You'll get a $100 tip if you follow all the rules!
+
+Also update any necessary text to reflect this landing page is about the idea below.
+
+IDEA
+----------
+{idea}""" ;
+    :promptOutputIndicator "A JSON list of components used in the updated page and confirmation of saved file(s)." .
+
+:task_component_content rdf:type :Task ;
+    :performedByAgent :agent_senior_content_editor ;
+    :taskPrompt :prompt_task_component_content .
+
+:prompt_task_component_content rdf:type :Prompt ;
+    :promptInstruction """A engineer will update the {component} (code below), return a list of good options of texts to replace EACH INDIVIDUAL existing text on the component, the suggestion MUST be based on the idea below, and also MUST be similar in length with the original text, we need to replace ALL TEXT.
+
+NEVER USE Apostrophes for contraction! You'll get a $100 tip if you do your best work!
+
+IDEA
+-----
+{expanded_idea}
+
+REACT COMPONENT CONTENT
+-----
+{file_content}""" ;
+    :promptOutputIndicator "A list of suggested replacement texts for each text occurrence in the component, length-matched." .
+
+:task_update_component rdf:type :Task ;
+    :performedByAgent :agent_senior_content_editor ;
+    :taskPrompt :prompt_task_update_component .
+
+:prompt_task_update_component rdf:type :Prompt ;
+    :promptInstruction """YOU MUST USE the tool to write an updated version of the react component to the file system in the following path: {component} replacing the text content with the suggestions provided.
+
+You only modify the text content, you don't add or remove any components.
+
+RULES
+-----
+- Remove all the links, this should be single page landing page.
+- Don't make up images, videos, gifs, icons, logos, etc.
+- keep the same style and tailwind classes.
+- MUST HAVE 'use client' at the be beginning of the code.
+- href in buttons, links, NavLinks, and navigations should be `#`.
+- NEVER WRITE \\n (newlines as string) on the file, just the code.
+- NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+- Keep the same component imports and don't use new components.
+- NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+- ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+- Save the file as with `.jsx` extension.
+
+If you follow the rules I'll give you a $100 tip!!! MY LIFE DEPEND ON YOU FOLLOWING IT!
+
+CONTENT TO BE UPDATED
+-----
+{file_content}""" ;
+    :promptOutputIndicator "The updated component file content (saved to specified path) followed by the same component content as the final answer." .
+
+:task_qa_component rdf:type :Task ;
+    :performedByAgent :agent_senior_content_editor ;
+    :taskPrompt :prompt_task_qa_component .
+
+:prompt_task_qa_component rdf:type :Prompt ;
+    :promptInstruction """Check the React component code to make sure it's valid and abide by the rules below, if it doesn't then write the correct version to the file system using the write file tool into the following path: {component}.
+
+Your final answer should be a confirmation that the component is valid and abides by the rules and if you had to write an updated version to the file system.
+
+RULES
+-----
+- NEVER USE Apostrophes for contraction!
+- ALL COMPONENTS USED SHOULD BE IMPORTED.
+- MUST HAVE 'use client' at the be beginning of the code.
+- href in buttons, links, NavLinks, and navigations should be `#`.
+- NEVER WRITE \\n (newlines as string) on the file, just the code.
+- NEVER FORGET TO CLOSE THE FINAL BRACKET (}}) in the file.
+- NEVER USE COMPONENTS THAT ARE NOT IMPORTED.
+- ALL COMPONENTS USED SHOULD BE IMPORTED, don't make up components.
+- Always use `export function` for the component class.
+
+You'll get a $100 tip if you follow all the rules!""" ;
+    :promptOutputIndicator "Confirmation of component validity and any corrected content written to file system." .
+
+#################################################################
+# Workflows (per Crew) and WorkflowSteps
+#################################################################
+
+# ExpandIdeaCrew workflow (sequential; two steps)
+:pattern_expand_idea rdf:type :WorkflowPattern ;
+    dcterms:title "ExpandIdeaCrew - Sequential" ;
+    :hasWorkflowStep :step_expand_idea , :step_refine_idea .
+
+:step_expand_idea rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_expand_idea ;
+    :nextStep :step_refine_idea .
+
+:step_refine_idea rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_refine_idea .
+
+:team_expand_idea rdf:type :Team ;
+    :hasAgentMember :agent_senior_idea_analyst , :agent_senior_strategist ;
+    :hasWorkflowPattern :pattern_expand_idea .
+
+# ChooseTemplateCrew workflow (sequential; two steps)
+:pattern_choose_template rdf:type :WorkflowPattern ;
+    dcterms:title "ChooseTemplateCrew - Sequential" ;
+    :hasWorkflowStep :step_choose_template , :step_update_page .
+
+:step_choose_template rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_choose_template ;
+    :nextStep :step_update_page .
+
+:step_update_page rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_update_page .
+
+:team_choose_template rdf:type :Team ;
+    :hasAgentMember :agent_senior_react_engineer ;
+    :hasWorkflowPattern :pattern_choose_template .
+
+# CreateContentCrew workflow (sequential; three steps)
+:pattern_create_content rdf:type :WorkflowPattern ;
+    dcterms:title "CreateContentCrew - Sequential" ;
+    :hasWorkflowStep :step_create_content , :step_update_component , :step_qa_component .
+
+:step_create_content rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_component_content ;
+    :nextStep :step_update_component .
+
+:step_update_component rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_update_component ;
+    :nextStep :step_qa_component .
+
+:step_qa_component rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_qa_component .
+
+:team_create_content rdf:type :Team ;
+    :hasAgentMember :agent_senior_content_editor , :agent_senior_react_engineer ;
+    :hasWorkflowPattern :pattern_create_content .
+
+#################################################################
+# Produced resources / notes (minimal)
+#################################################################
+
+# No explicit producedResource objects in code; workflows produce filesystem content under ./workdir (implicit).
+
+#################################################################
+# Post-generation completeness check notes encoded as triples (not required by ontology but kept as descriptive dcterms)
+#################################################################
+
+:note_extraction rdf:type beam:Instance ;
+    dcterms:description "Extraction created LLMAgent, Tool, Task, WorkflowPattern, WorkflowStep, Prompt, Goal, Config, and LanguageModel individuals per CrewAI mapping. Assumed default model 'gpt-4'." .

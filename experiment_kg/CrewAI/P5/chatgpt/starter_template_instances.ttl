@@ -1,0 +1,195 @@
+# Execution time: 44.94 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Tool DuckDuckGoSearchRun is instantiated in main.py but not explicitly assigned to any agent; assumed available to both agents and linked via :agentToolUsage to satisfy the mandatory tool linkage.
+# - Agent identifiers were not provided in source; used :Agent_1 and :Agent_2 as stable IDs derived from the factory functions.
+# - Team-level goal not stated in source; no :hasTeamGoal created.
+# - Crew input variables (var1, var2) are runtime values; represented as system config entries with placeholder value "user_provided".
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Models
+:LM_gpt3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "ChatOpenAI instance model_name=gpt-3.5-turbo, temperature=0.7" .
+
+:LM_gpt4 rdf:type :LanguageModel ;
+    dcterms:title "gpt-4" ;
+    dcterms:description "ChatOpenAI instance model_name=gpt-4, temperature=0.7" .
+
+:LM_ollama_openhermes rdf:type :LanguageModel ;
+    dcterms:title "openhermes" ;
+    dcterms:description "Ollama model 'openhermes'" .
+
+### Agents
+:Agent_1 rdf:type :LLMAgent ;
+    :agentID "agent_1_name" ;
+    :agentRole "Define agent 1 role here" ;
+    :useLanguageModel :LM_gpt3_5_turbo ;
+    :hasAgentGoal :Goal_Agent_1 ;
+    :agentPrompt :Prompt_Agent_1_Backstory_Goal ;
+    :hasAgentConfig :Agent1_Config_allow_delegation , :Agent1_Config_verbose , :Agent1_Config_llm_temperature ;
+    :agentToolUsage :Tool_DuckDuckGoSearchRun ;
+    dcterms:description "Agent created by CustomAgents.agent_1_name()" .
+
+:Agent_2 rdf:type :LLMAgent ;
+    :agentID "agent_2_name" ;
+    :agentRole "Define agent 2 role here" ;
+    :useLanguageModel :LM_gpt3_5_turbo ;
+    :hasAgentGoal :Goal_Agent_2 ;
+    :agentPrompt :Prompt_Agent_2_Backstory_Goal ;
+    :hasAgentConfig :Agent2_Config_allow_delegation , :Agent2_Config_verbose , :Agent2_Config_llm_temperature ;
+    :agentToolUsage :Tool_DuckDuckGoSearchRun ;
+    dcterms:description "Agent created by CustomAgents.agent_2_name()" .
+
+### Agent Goals
+:Goal_Agent_1 rdf:type :Goal ;
+    dcterms:description "Define agent 1 goal here" ;
+    dcterms:title "Agent 1 Goal" .
+
+:Goal_Agent_2 rdf:type :Goal ;
+    dcterms:description "Define agent 2 goal here" ;
+    dcterms:title "Agent 2 Goal" .
+
+### Agent Prompts (backstory + goal consolidated)
+:Prompt_Agent_1_Backstory_Goal rdf:type :Prompt ;
+    :promptInstruction "Define agent 1 backstory here
+
+Define agent 1 goal here" .
+
+:Prompt_Agent_2_Backstory_Goal rdf:type :Prompt ;
+    :promptInstruction "Define agent 2 backstory here
+
+Define agent 2 goal here" .
+
+### Tools
+:Tool_DuckDuckGoSearchRun rdf:type :Tool ;
+    dcterms:title "DuckDuckGoSearchRun" ;
+    dcterms:description "LangChain DuckDuckGo search tool used for web search" ;
+    :hasCapability :Capability_web_search ;
+    :hasToolConfig :Tool_DuckDuckGo_Config_api_placeholder .
+
+:Tool_DuckDuckGo_Config_api_placeholder rdf:type :Config ;
+    :configKey "api" ;
+    :configValue "not_specified" .
+
+:Capability_web_search rdf:type :Capability ;
+    dcterms:description "Performs web searches and returns results" ;
+    dcterms:title "Web Search Capability" .
+
+### Tasks
+:Task_1 rdf:type :Task ;
+    dcterms:description "Do something as part of task 1
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to use the most recent data as possible.
+
+Use this variable: {var1}
+And also this variable: {var2}" ;
+    :taskPrompt :Prompt_Task_1 ;
+    :performedByAgent :Agent_1 .
+
+:Prompt_Task_1 rdf:type :Prompt ;
+    :promptInstruction "Do something as part of task 1
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to use the most recent data as possible.
+
+Use this variable: {var1}
+And also this variable: {var2}" ;
+    :promptOutputIndicator "The expected output of the task" .
+
+:Task_2 rdf:type :Task ;
+    dcterms:description "Take the input from task 1 and do something with it.
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to do something else." ;
+    :taskPrompt :Prompt_Task_2 ;
+    :performedByAgent :Agent_2 .
+
+:Prompt_Task_2 rdf:type :Prompt ;
+    :promptInstruction "Take the input from task 1 and do something with it.
+
+If you do your BEST WORK, I'll give you a $10,000 commission!
+
+Make sure to do something else." ;
+    :promptOutputIndicator "The expected output of the task" .
+
+### Workflow Pattern and Steps
+:Workflow_CustomCrew rdf:type :WorkflowPattern ;
+    dcterms:title "CustomCrew Workflow" ;
+    :hasWorkflowStep :Step_1_Start , :Step_2_End ;
+    dcterms:description "Workflow inferred from Crew(..., tasks=[task_1_name, task_2_name]) ordering." .
+
+:Step_1_Start rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :Task_1 ;
+    :nextStep :Step_2_End ;
+    dcterms:title "Step 1 (Task 1)" .
+
+:Step_2_End rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :Task_2 ;
+    dcterms:title "Step 2 (Task 2)" .
+
+### Team / Crew
+:Team_CustomCrew rdf:type :Team ;
+    dcterms:title "CustomCrew" ;
+    :hasAgentMember :Agent_1 , :Agent_2 ;
+    :hasWorkflowPattern :Workflow_CustomCrew ;
+    :hasSystemConfig :Team_Config_var1 , :Team_Config_var2 ;
+    dcterms:description "Crew created in main.CustomCrew with agents [custom_agent_1, custom_agent_2] and tasks [custom_task_1, custom_task_2]." .
+
+:Team_Config_var1 rdf:type :Config ;
+    :configKey "var1" ;
+    :configValue "user_provided" .
+
+:Team_Config_var2 rdf:type :Config ;
+    :configKey "var2" ;
+    :configValue "user_provided" .
+
+### Agent Configs (allow_delegation, verbose, llm_temperature)
+:Agent1_Config_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:Agent1_Config_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Agent1_Config_llm_temperature rdf:type :Config ;
+    :configKey "llm_temperature" ;
+    :configValue "0.7" .
+
+:Agent2_Config_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:Agent2_Config_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:Agent2_Config_llm_temperature rdf:type :Config ;
+    :configKey "llm_temperature" ;
+    :configValue "0.7" .
+
+### Link agents to language models (explicit usage)
+:Agent_1 :useLanguageModel :LM_gpt3_5_turbo .
+:Agent_2 :useLanguageModel :LM_gpt3_5_turbo .
+
+### Ensure tool usage links (assumed available to both agents)
+:Agent_1 :agentToolUsage :Tool_DuckDuckGoSearchRun .
+:Agent_2 :agentToolUsage :Tool_DuckDuckGoSearchRun .

@@ -1,0 +1,143 @@
+# Execution time: 29.72 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: LangGraph
+
+# Issues / Assumptions:
+# - No explicit StateGraph or explicit agent definitions found; inferred a single LLM-backed agent ("trip-planner-agent") that drives UI tool calls.
+# - Tool "book-accommodation" inferred from thread.submit tool message; endpoint / API details not present so a minimal Config is added with runtime placeholder.
+# - Workflow and steps derived from UI flows in accommodations/restaurants components (view -> select -> confirm/book -> booked).
+# - Default LanguageModel created as required with dcterms:title "default".
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:TripPlannerTeam rdf:type :Team ;
+    dcterms:title "Trip Planner App Team" ;
+    dcterms:description "Team representing the LangGraph-backed trip planner UI and backend flows." ;
+    :hasAgentMember :TripPlannerAgent ;
+    :hasWorkflowPattern :TripPlannerWorkflow .
+
+:TripPlannerAgent rdf:type :LLMAgent ;
+    :agentID "trip-planner-agent" ;
+    :agentRole "assistant" ;
+    :agentPrompt :TripPlannerAgentPrompt ;
+    :useLanguageModel :LangGraphDefaultModel ;
+    :agentToolUsage :BookAccommodationTool ;
+    dcterms:description "Inferred LLM-backed agent that handles user interactions and invokes booking tool calls from the UI." .
+
+:TripPlannerAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "System assistant for the trip planner UI: recommend accommodations and restaurants, collect booking details from UI interactions, and invoke the booking tool with structured order details. Ensure confirmation messages are human-readable and include trip and guest summary." ;
+    :promptContext "Used by the trip planner LLM to format messages and construct tool calls for bookings." .
+
+:LangGraphDefaultModel rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default/unspecified language model used by the LangGraph-backed agent (created because a LanguageModel must be present)." .
+
+:BookAccommodationTool rdf:type :Tool ;
+    dcterms:title "book-accommodation" ;
+    dcterms:description "Tool invoked to create an accommodation booking using provided order details (accommodation, tripDetails). Tool call originates from LangGraph thread.submit messages in the UI." ;
+    :hasCapability :BookAccommodationCapability ;
+    :hasToolConfig :BookAccommodationToolConfig .
+
+:BookAccommodationCapability rdf:type :Capability ;
+    dcterms:description "Creates and confirms accommodation bookings (receives accommodation and trip details, returns booking confirmation and details)." .
+
+:BookAccommodationToolConfig rdf:type :Config ;
+    :configKey "tool_call_id" ;
+    :configValue "runtime_parameter" ;
+    dcterms:description "Placeholder indicating the tool is invoked via a runtime tool_call_id passed by the UI (toolCallId component prop)." .
+
+###############################################################################
+# Workflow: Trip Planner UI Flow (inferred from components)
+###############################################################################
+
+:TripPlannerWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Trip Planner UI Flow" ;
+    dcterms:description "Inferred workflow representing the user flow in the accommodations and restaurants UI: view list -> select item -> confirm/book -> show booked confirmation." ;
+    :hasWorkflowStep :StartViewListStep , :SelectAccommodationStep , :ConfirmBookingStep , :EndBookedStep .
+
+:StartViewListStep rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "View List" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :ViewAccommodationsTask ;
+    dcterms:description "Initial UI state where user views accommodations or restaurants list. In the code this corresponds to the list/carousel components." ;
+    :nextStep :SelectAccommodationStep .
+
+:SelectAccommodationStep rdf:type :WorkflowStep ;
+    dcterms:title "Select Accommodation" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :SelectAccommodationTask ;
+    dcterms:description "User selects an accommodation card; selection populates details view (SelectedAccommodation component)." ;
+    :nextStep :ConfirmBookingStep .
+
+:ConfirmBookingStep rdf:type :WorkflowStep ;
+    dcterms:title "Confirm Booking / Invoke Tool" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :ConfirmBookingTask ;
+    dcterms:description "User confirms booking which triggers a tool_call message (type 'tool', name 'book-accommodation') via the LangGraph thread.submit call." ;
+    :nextStep :EndBookedStep .
+
+:EndBookedStep rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "Booked / Confirmation" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :BookedConfirmationTask ;
+    dcterms:description "Final state showing booked accommodation details or a success message." .
+
+###############################################################################
+# Tasks and Prompts
+###############################################################################
+
+:ViewAccommodationsTask rdf:type :Task ;
+    dcterms:description "Display available accommodations or restaurants to the user and allow selection." ;
+    :performedByAgent :TripPlannerAgent ;
+    :taskPrompt :ViewAccommodationsPrompt .
+
+:ViewAccommodationsPrompt rdf:type :Prompt ;
+    :promptInstruction "List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation." ;
+    :promptOutputIndicator "A list of accommodation summary items suitable for a UI carousel/list." .
+
+:SelectAccommodationTask rdf:type :Task ;
+    dcterms:description "Handle user selection of an accommodation and present detailed view including price breakdown and booking option." ;
+    :performedByAgent :TripPlannerAgent ;
+    :taskPrompt :SelectAccommodationPrompt .
+
+:SelectAccommodationPrompt rdf:type :Prompt ;
+    :promptInstruction "When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger." ;
+    :promptOutputIndicator "Selected accommodation details and a ready-to-send booking payload." .
+
+:ConfirmBookingTask rdf:type :Task ;
+    dcterms:description "Prepare order details and invoke the booking tool using the 'book-accommodation' tool call." ;
+    :performedByAgent :TripPlannerAgent ;
+    :taskPrompt :ConfirmBookingPrompt .
+
+:ConfirmBookingPrompt rdf:type :Prompt ;
+    :promptInstruction "Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary." ;
+    :promptOutputIndicator "Tool call with serialized booking order; subsequent human confirmation message." ;
+    :promptInputData "accommodation object, tripDetails object (startDate, endDate, numberOfGuests, location)" .
+
+:BookedConfirmationTask rdf:type :Task ;
+    dcterms:description "Display booking confirmation details returned by the booking tool or show success message if no details returned." ;
+    :performedByAgent :TripPlannerAgent ;
+    :taskPrompt :BookedConfirmationPrompt .
+
+:BookedConfirmationPrompt rdf:type :Prompt ;
+    :promptInstruction "Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it." ;
+    :promptOutputIndicator "A confirmation view or message; optionally a booking reference." .
+
+###############################################################################
+# Linkages: team -> workflow, steps -> tasks, agent -> tools / language model
+###############################################################################
+
+:TripPlannerWorkflow :hasAssociatedTask :ViewAccommodationsTask .
+
+# (explicit linking already provided above: :TripPlannerTeam :hasWorkflowPattern :TripPlannerWorkflow)
+# All tasks are linked to the TripPlannerAgent via :performedByAgent and prompts defined above.
+
+# End of generated instances.

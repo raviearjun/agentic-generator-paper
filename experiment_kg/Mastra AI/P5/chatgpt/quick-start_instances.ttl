@@ -1,0 +1,159 @@
+# Execution time: 46.37 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Created default :Goal individuals for agents because no explicit goals were specified in the source.
+# - The workflow step's execute function is implemented by the runtime (non-LLM). Represented as a :Tool (:mastraRuntime) and the step's task uses :performedBy → :mastraRuntime.
+# - No explicit external Tools were defined in source; only a runtime tool was added to represent workflow execution.
+# - Agent roles inferred from instructions or set to a generic label when not explicit.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+# Agents
+:catOneAgent rdf:type :LLMAgent ;
+    :agentID "cat-one" ;
+    :agentRole "feline expert" ;
+    :agentPrompt :promptCatOne ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentConfig :catOneConfig_provider , :catOneConfig_name , :catOneConfig_toolChoice ;
+    :hasAgentGoal :goal_catOne ;
+    dcterms:title "cat-one agent" .
+
+:agentTwoAgent rdf:type :LLMAgent ;
+    :agentID "Agent Two" ;
+    :agentRole "assistant" ;
+    :agentPrompt :promptAgentTwo ;
+    :useLanguageModel :lm_llama3 ;
+    :hasAgentConfig :agentTwoConfig_provider , :agentTwoConfig_name , :agentTwoConfig_toolChoice ;
+    :hasAgentGoal :goal_agentTwo ;
+    dcterms:title "Agent Two" .
+
+# Agent Prompts
+:promptCatOne rdf:type :Prompt ;
+    :promptInstruction "You are a feline expert with comprehensive knowledge of all cat species, from domestic breeds to wild big cats. As a lifelong cat specialist, you understand their behavior, biology, social structures, and evolutionary history in great depth. If you are asked for a specie name, do not return a paragraph, a succint two or three letter name of the species will suffice." .
+
+:promptAgentTwo rdf:type :Prompt ;
+    :promptInstruction "Do this" .
+
+# Language Models (always created)
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" .
+
+:lm_llama3 rdf:type :LanguageModel ;
+    dcterms:title "llama3-groq-70b-8192-tool-use-preview" .
+
+# Agent Configs (each :Config has key and value)
+:catOneConfig_provider rdf:type :Config ;
+    :configKey "provider" ;
+    :configValue "OPEN_AI" .
+
+:catOneConfig_name rdf:type :Config ;
+    :configKey "name" ;
+    :configValue "gpt-4o" .
+
+:catOneConfig_toolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" .
+
+:agentTwoConfig_provider rdf:type :Config ;
+    :configKey "provider" ;
+    :configValue "GROQ" .
+
+:agentTwoConfig_name rdf:type :Config ;
+    :configKey "name" ;
+    :configValue "llama3-groq-70b-8192-tool-use-preview" .
+
+:agentTwoConfig_toolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "auto" .
+
+# Default Goals (created because none specified)
+:goal_catOne rdf:type :Goal ;
+    dcterms:title "default agent goal (cat-one)" ;
+    dcterms:description "No explicit goal provided in source; placeholder goal." .
+
+:goal_agentTwo rdf:type :Goal ;
+    dcterms:title "default agent goal (Agent Two)" ;
+    dcterms:description "No explicit goal provided in source; placeholder goal." .
+
+# Team / Mastra instance
+:mastraTeam rdf:type :Team ;
+    dcterms:title "mastra-instance" ;
+    :hasAgentMember :catOneAgent , :agentTwoAgent ;
+    :hasWorkflowPattern :logCatWorkflow ;
+    :hasSystemConfig :mastraTeamConfig .
+
+:mastraTeamConfig rdf:type :Config ;
+    :configKey "agents" ;
+    :configValue "catOne,agentTwo" .
+
+# WorkflowPattern and Steps
+:logCatWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "log-cat-workflow" ;
+    :hasWorkflowStep :logCatNameStep .
+
+:logCatNameStep rdf:type :WorkflowStep , :StartStep , :EndStep ;
+    dcterms:title "logCatName" ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :taskLogCatName .
+
+# Tasks and Prompts
+
+# Task: agent.generate('What is the most popular cat species?', ...)
+:taskGenerateSpecies rdf:type :Task ;
+    dcterms:title "generateSpecies" ;
+    :taskPrompt :promptGenerateSpecies ;
+    :performedByAgent :catOneAgent ;
+    :producedResource :speciesOutputResource .
+
+:promptGenerateSpecies rdf:type :Prompt ;
+    :promptInstruction "What is the most popular cat species?" ;
+    :promptOutputIndicator "expects object with property 'species' (string)" .
+
+:speciesOutputResource rdf:type beam:Instance ;
+    dcterms:title "species-output" ;
+    dcterms:description "Schema-constrained output object with property 'species'." .
+
+# Task: workflow step that logs the cat name (execute function)
+:taskLogCatName rdf:type :Task ;
+    dcterms:title "logCatNameTask" ;
+    :taskPrompt :promptLogCatName ;
+    :performedBy :mastraRuntime ;
+    :producedResource :logCatRawTextResource .
+
+:promptLogCatName rdf:type :Prompt ;
+    :promptInstruction "Log the cat name provided in the trigger: console.log(`Hello, ${name} 🐈`)" ;
+    :promptOutputIndicator "rawText: Hello {name}" .
+
+:logCatRawTextResource rdf:type beam:Instance ;
+    dcterms:title "logCatRawText" ;
+    dcterms:description "Output of logCatName step (rawText value)." .
+
+# Runtime Tool representing workflow execution engine
+:mastraRuntime rdf:type :Tool ;
+    dcterms:title "mastra-runtime" ;
+    dcterms:description "Runtime engine that executes workflow step code (non-LLM execution)." ;
+    :hasCapability :capability_execute_step ;
+    :hasToolConfig :mastraRuntimeConfig .
+
+:capability_execute_step rdf:type :Capability ;
+    dcterms:title "execute_workflow_step" ;
+    dcterms:description "Execute workflow step code and perform system actions (e.g., logging)." .
+
+:mastraRuntimeConfig rdf:type :Config ;
+    :configKey "engine" ;
+    :configValue "mastra" .
+
+# Interactions
+# - No multi-agent conversations detected in source; no :interactsWith triples added.
+
+# End of instance data.

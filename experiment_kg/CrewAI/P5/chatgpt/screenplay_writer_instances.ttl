@@ -1,0 +1,271 @@
+# Execution time: 42.21 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - No explicit external "Tool" classes/functions were imported in the Python source; assumptions made to model the mentioned non-local endpoints (Official Mistral, Together.ai, Anyscale) as Tools.
+# - A single shared LanguageModel individual (:defaultLM) is created and linked to all agents because the code selects endpoints via env vars and does not hardcode per-agent models.
+# - Agents' prompts combine role, goal and backstory into the :promptInstruction for completeness.
+# - Crew (Team) goal inferred from README: "Create a screenplay from a newsgroup post".
+# - Bidirectional :interactsWith asserted among the three Crew members (analyst, scriptwriter, formatter) to reflect cooperative workflow.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model (shared default)
+:defaultLM rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default language model placeholder used when model selection is external or via environment variables." .
+
+### Capabilities for Tools
+:cap_mistral rdf:type :Capability ;
+    dcterms:description "Access and call Mistral LLM endpoint." .
+
+:cap_together rdf:type :Capability ;
+    dcterms:description "Access and call Together.ai LLM endpoint." .
+
+:cap_anyscale rdf:type :Capability ;
+    dcterms:description "Access and call Anyscale LLM endpoint." .
+
+### Tools (external endpoints mentioned in README)
+:mistral_tool rdf:type :Tool ;
+    dcterms:title "Official Mistral API" ;
+    dcterms:description "Official Mistral LLM API endpoint (optional selection in script)." ;
+    :hasCapability :cap_mistral ;
+    :hasToolConfig :mistral_conf_api_key .
+
+:mistral_conf_api_key rdf:type :Config ;
+    :configKey "api_key" ;
+    :configValue "env:MISTRAL_API_KEY" .
+
+:together_tool rdf:type :Tool ;
+    dcterms:title "Together.ai API" ;
+    dcterms:description "Together.ai models endpoint (optional selection in script)." ;
+    :hasCapability :cap_together ;
+    :hasToolConfig :together_conf_api_key .
+
+:together_conf_api_key rdf:type :Config ;
+    :configKey "api_key" ;
+    :configValue "env:TOGETHER_API_KEY" .
+
+:anyscale_tool rdf:type :Tool ;
+    dcterms:title "Anyscale API" ;
+    dcterms:description "Anyscale models endpoint (optional selection in script)." ;
+    :hasCapability :cap_anyscale ;
+    :hasToolConfig :anyscale_conf_api_key .
+
+:anyscale_conf_api_key rdf:type :Config ;
+    :configKey "api_key" ;
+    :configValue "env:ANYSCALE_API_KEY" .
+
+### Agents (from config/agents.yaml)
+:spamfilter_agent rdf:type :LLMAgent ;
+    :agentID "spamfilter" ;
+    :agentRole "spamfilter" ;
+    :agentPrompt :spamfilter_prompt ;
+    :useLanguageModel :defaultLM ;
+    :agentToolUsage :mistral_tool , :together_tool , :anyscale_tool ;
+    :hasAgentConfig :spamfilter_conf_allow_delegation , :spamfilter_conf_verbose .
+
+:spamfilter_prompt rdf:type :Prompt ;
+    :promptInstruction "Role: spamfilter. Goal: Decide whether a text is spam or not. Backstory: You are an expert spam filter with years of experience. You DETEST advertisements, newsletters and vulgar language." .
+
+:spamfilter_conf_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:spamfilter_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:analyst_agent rdf:type :LLMAgent ;
+    :agentID "analyst" ;
+    :agentRole "analyse" ;
+    :agentPrompt :analyst_prompt ;
+    :useLanguageModel :defaultLM ;
+    :agentToolUsage :mistral_tool , :together_tool , :anyscale_tool ;
+    :hasAgentConfig :analyst_conf_allow_delegation , :analyst_conf_verbose .
+
+:analyst_prompt rdf:type :Prompt ;
+    :promptInstruction "Role: analyse. Goal: You will distill all arguments from all discussion members. Identify who said what. You can reword what they said as long as the main discussion points remain. Backstory: You are an expert discussion analyst." .
+
+:analyst_conf_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:analyst_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:scriptwriter_agent rdf:type :LLMAgent ;
+    :agentID "scriptwriter" ;
+    :agentRole "scriptwriter" ;
+    :agentPrompt :scriptwriter_prompt ;
+    :useLanguageModel :defaultLM ;
+    :agentToolUsage :mistral_tool , :together_tool , :anyscale_tool ;
+    :hasAgentConfig :scriptwriter_conf_allow_delegation , :scriptwriter_conf_verbose .
+
+:scriptwriter_prompt rdf:type :Prompt ;
+    :promptInstruction "Role: scriptwriter. Goal: Turn a conversation into a movie script. Only write the dialogue parts. Do not start the sentence with an action. Do not specify situational descriptions. Do not write parentheticals. Backstory: You are an expert on writing natural sounding movie script dialogues. You only focus on the text part and you HATE directional notes." .
+
+:scriptwriter_conf_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:scriptwriter_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:formatter_agent rdf:type :LLMAgent ;
+    :agentID "formatter" ;
+    :agentRole "formatter" ;
+    :agentPrompt :formatter_prompt ;
+    :useLanguageModel :defaultLM ;
+    :agentToolUsage :mistral_tool , :together_tool , :anyscale_tool ;
+    :hasAgentConfig :formatter_conf_allow_delegation , :formatter_conf_verbose .
+
+:formatter_prompt rdf:type :Prompt ;
+    :promptInstruction "Role: formatter. Goal: Format the text as asked. Leave out actions from discussion members that happen between brackets, eg (smiling). Backstory: You are an expert text formatter." .
+
+:formatter_conf_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:formatter_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+:scorer_agent rdf:type :LLMAgent ;
+    :agentID "scorer" ;
+    :agentRole "scorer" ;
+    :agentPrompt :scorer_prompt ;
+    :useLanguageModel :defaultLM ;
+    :agentToolUsage :mistral_tool , :together_tool , :anyscale_tool ;
+    :hasAgentConfig :scorer_conf_allow_delegation , :scorer_conf_verbose .
+
+:scorer_prompt rdf:type :Prompt ;
+    :promptInstruction "Role: scorer. Goal: You score a dialogue assessing various aspects of the exchange between the participants using a 1-10 scale. Backstory: You are an expert at scoring conversations on a scale of 1 to 10. You have a keen eye for detail and can identify the strengths and weaknesses of any dialogue." .
+
+:scorer_conf_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "false" .
+
+:scorer_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "true" .
+
+### Agent interactions among Crew members (bidirectional)
+:analyst_agent :interactsWith :scriptwriter_agent , :formatter_agent .
+:scriptwriter_agent :interactsWith :analyst_agent , :formatter_agent .
+:formatter_agent :interactsWith :analyst_agent , :scriptwriter_agent .
+
+### Tasks (from config/tasks.yaml) and mappings to agents
+:task0 rdf:type :Task ;
+    dcterms:description "Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP. ### NEWGROUP POST: {{discussion}}" ;
+    :taskPrompt :task0_prompt ;
+    :performedByAgent :spamfilter_agent .
+
+:task0_prompt rdf:type :Prompt ;
+    :promptInstruction "Read the following newsgroup post. If this contains vulgar language reply with STOP . If this is spam reply with STOP. ### NEWGROUP POST: {{discussion}}" ;
+    :promptOutputIndicator "Either \"STOP\" if the post contains vulgar language or is spam, or no response if it does not." .
+
+:task1 rdf:type :Task ;
+    dcterms:description "Analyse in much detail the following discussion: ### DISCUSSION: {{discussion}}" ;
+    :taskPrompt :task1_prompt ;
+    :performedByAgent :analyst_agent .
+
+:task1_prompt rdf:type :Prompt ;
+    :promptInstruction "Analyse in much detail the following discussion: ### DISCUSSION: {{discussion}}" ;
+    :promptOutputIndicator "A detailed analysis of the discussion, identifying who said what and rewording if necessary while maintaining the main discussion points." .
+
+:task2 rdf:type :Task ;
+    dcterms:description "Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes." ;
+    :taskPrompt :task2_prompt ;
+    :performedByAgent :scriptwriter_agent .
+
+:task2_prompt rdf:type :Prompt ;
+    :promptInstruction "Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes." ;
+    :promptOutputIndicator "A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes." .
+
+:task3 rdf:type :Task ;
+    dcterms:description "Format the script exactly like this:   ## (person 1): (first text line from person 1) ... " ;
+    :taskPrompt :task3_prompt ;
+    :performedByAgent :formatter_agent .
+
+:task3_prompt rdf:type :Prompt ;
+    :promptInstruction "Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ..." ;
+    :promptOutputIndicator "A formatted script with the specified structure, ensuring each line is formatted according to the provided template." .
+
+:task4 rdf:type :Task ;
+    dcterms:description "Score the following script: ### SCRIPT: {{script}}" ;
+    :taskPrompt :task4_prompt ;
+    :performedByAgent :scorer_agent .
+
+:task4_prompt rdf:type :Prompt ;
+    :promptInstruction "Score the following script: ### SCRIPT: {{script}}" ;
+    :promptOutputIndicator "A score from 1 to 10, indicating how well the script is." .
+
+### Team / Crew and Workflow (Crew(agents=[analyst, scriptwriter, formatter], tasks=[task1, task2, task3], process=Process.sequential))
+:ai_crew_team rdf:type :Team ;
+    dcterms:title "AI Crew for screenwriting" ;
+    dcterms:description "Crew.ai based crew that analyses a discussion, turns it into screenplay dialogue and formats it." ;
+    :hasAgentMember :analyst_agent , :scriptwriter_agent , :formatter_agent ;
+    :hasWorkflowPattern :crew_sequential_workflow ;
+    :hasTeamGoal :crew_goal ;
+    :hasSystemConfig :crew_conf_process , :crew_conf_verbose .
+
+:crew_goal rdf:type :Goal ;
+    dcterms:description "Create a screenplay from a newsgroup post." .
+
+:crew_conf_process rdf:type :Config ;
+    :configKey "process" ;
+    :configValue "sequential" .
+
+:crew_conf_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "2" .
+
+:crew_sequential_workflow rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    dcterms:description "Sequential process executing tasks in order: analysis -> scriptwriting -> formatting." ;
+    :hasWorkflowStep :crew_step_1 , :crew_step_2 , :crew_step_3 .
+
+### Workflow Steps (each linked to their Task)
+:crew_step_1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task1 ;
+    :nextStep :crew_step_2 ;
+    dcterms:description "Start step: analysis of discussion." .
+
+:crew_step_2 rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task2 ;
+    :nextStep :crew_step_3 ;
+    dcterms:description "Second step: create screenplay dialogue." .
+
+:crew_step_3 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :task3 ;
+    dcterms:description "Final step: format the screenplay." .
+
+### Additional links: tasks produced/consumed in crew flow
+:crew_step_1 :hasAssociatedTask :task1 .
+:crew_step_2 :hasAssociatedTask :task2 .
+:crew_step_3 :hasAssociatedTask :task3 .
+
+### Notes about produced resource / final output (optional)
+:final_script_resource rdf:type beam:Instance ;
+    dcterms:title "Screenplay Dialogue" ;
+    dcterms:description "Resulting formatted screenplay dialogue produced by the Crew." .
+
+:task3 :producedResource :final_script_resource .
+
+### Ensure every Task/Prompt/Config created has required fields (completeness)
+# (All :Prompt instances above include :promptInstruction; all :Config instances include :configKey and :configValue.)

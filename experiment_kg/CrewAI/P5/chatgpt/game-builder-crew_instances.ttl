@@ -1,0 +1,250 @@
+# Execution time: 66.17 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - No explicit model parameter was set on Agent instances in the code; README states "uses GPT-4o by default" so a single LanguageModel individual dcterms:title "gpt-4o" is created and linked to all agents.
+# - Tools (Serper, OpenAI) were inferred from README and environment/config instructions; specific tool classes are not present in the repository, so tool descriptions and configs are approximated.
+# - Agent tool usage is assumed for all agents to include OpenAI and Serper (common in CrewAI examples); if some agents do not actually call these tools at runtime, these links may be over-approximations.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Model
+#################################################################
+
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Default model used by CrewAI as stated in README." .
+
+#################################################################
+# Capabilities
+#################################################################
+
+:cap_web_search rdf:type :Capability ;
+    dcterms:description "Web search and retrieval capability (e.g., Serper)." .
+
+:cap_openai_api rdf:type :Capability ;
+    dcterms:description "Access to OpenAI language model API." .
+
+#################################################################
+# Tools (inferred from README / env)
+#################################################################
+
+:tool_serper rdf:type :Tool ;
+    dcterms:title "Serper" ;
+    dcterms:description "Serper search API used for web search (mentioned in README)." ;
+    :hasCapability :cap_web_search ;
+    :hasToolConfig :config_serper_api_key .
+
+:config_serper_api_key rdf:type :Config ;
+    :configKey "SERPER_API_KEY" ;
+    :configValue "env (set via environment variable if available)" .
+
+:tool_openai_api rdf:type :Tool ;
+    dcterms:title "OpenAI API" ;
+    dcterms:description "OpenAI API access used by CrewAI to call LLMs (configured via environment variables)." ;
+    :hasCapability :cap_openai_api ;
+    :hasToolConfig :config_openai_api_key .
+
+:config_openai_api_key rdf:type :Config ;
+    :configKey "OPENAI_API_KEY" ;
+    :configValue "env (set via environment variable)" .
+
+#################################################################
+# Agents
+#################################################################
+
+:agent_senior_engineer rdf:type :LLMAgent ;
+    :agentID "senior_engineer_agent" ;
+    :agentRole "Senior Software Engineer" ;
+    :agentPrompt :prompt_senior_engineer ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentConfig :config_senior_allow_delegation , :config_senior_verbose ;
+    :hasAgentGoal :goal_senior_engineer ;
+    :agentToolUsage :tool_openai_api , :tool_serper ;
+    dcterms:description "Senior Software Engineer agent as defined in config/agents.yaml" .
+
+:prompt_senior_engineer rdf:type :Prompt ;
+    :promptInstruction """You are a Senior Software Engineer at a leading tech think tank.
+Your expertise in programming in python. and do your best to produce perfect code""" .
+
+:goal_senior_engineer rdf:type :Goal ;
+    dcterms:description "Create software as needed" .
+
+:config_senior_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:config_senior_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+-----------------------------------------------------------------
+
+:agent_qa_engineer rdf:type :LLMAgent ;
+    :agentID "qa_engineer_agent" ;
+    :agentRole "Software Quality Control Engineer" ;
+    :agentPrompt :prompt_qa_engineer ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentConfig :config_qa_allow_delegation , :config_qa_verbose ;
+    :hasAgentGoal :goal_qa_engineer ;
+    :agentToolUsage :tool_openai_api , :tool_serper ;
+    dcterms:description "QA Engineer agent as defined in config/agents.yaml" .
+
+:prompt_qa_engineer rdf:type :Prompt ;
+    :promptInstruction """You are a software engineer that specializes in checking code
+for errors. You have an eye for detail and a knack for finding
+hidden bugs.
+You check for missing imports, variable declarations, mismatched
+brackets and syntax errors.
+You also check for security vulnerabilities, and logic errors""" .
+
+:goal_qa_engineer rdf:type :Goal ;
+    dcterms:description "Create Perfect code, by analyzing the code that is given for errors" .
+
+:config_qa_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "False" .
+
+:config_qa_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+-----------------------------------------------------------------
+
+:agent_chief_qa_engineer rdf:type :LLMAgent ;
+    :agentID "chief_qa_engineer_agent" ;
+    :agentRole "Chief Software Quality Control Engineer" ;
+    :agentPrompt :prompt_chief_qa_engineer ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentConfig :config_chief_allow_delegation , :config_chief_verbose ;
+    :hasAgentGoal :goal_chief_qa_engineer ;
+    :agentToolUsage :tool_openai_api , :tool_serper ;
+    dcterms:description "Chief QA Engineer agent as defined in config/agents.yaml" .
+
+:prompt_chief_qa_engineer rdf:type :Prompt ;
+    :promptInstruction """You feel that programmers always do only half the job, so you are
+super dedicate to make high quality code.""" .
+
+:goal_chief_qa_engineer rdf:type :Goal ;
+    dcterms:description "Ensure that the code does the job that it is supposed to do" .
+
+:config_chief_allow_delegation rdf:type :Config ;
+    :configKey "allow_delegation" ;
+    :configValue "True" .
+
+:config_chief_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+#################################################################
+# Agent Interactions (crew collaboration - bidirectional)
+#################################################################
+
+:agent_senior_engineer :interactsWith :agent_qa_engineer , :agent_chief_qa_engineer .
+:agent_qa_engineer :interactsWith :agent_senior_engineer , :agent_chief_qa_engineer .
+:agent_chief_qa_engineer :interactsWith :agent_senior_engineer , :agent_qa_engineer .
+
+#################################################################
+# Tasks and Prompts (from config/tasks.yaml)
+#################################################################
+
+:task_code rdf:type :Task ;
+    :performedByAgent :agent_senior_engineer ;
+    :taskPrompt :prompt_task_code ;
+    dcterms:description "code_task from config/tasks.yaml" .
+
+:prompt_task_code rdf:type :Prompt ;
+    :promptInstruction """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." .
+
+:task_review rdf:type :Task ;
+    :performedByAgent :agent_qa_engineer ;
+    :taskPrompt :prompt_task_review ;
+    dcterms:description "review_task from config/tasks.yaml" .
+
+:prompt_task_review rdf:type :Prompt ;
+    :promptInstruction """You will create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+Using the code you got, check for errors. Check for logic errors,
+syntax errors, missing imports, variable declarations, mismatched brackets,
+and security vulnerabilities.""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." .
+
+:task_evaluate rdf:type :Task ;
+    :performedByAgent :agent_chief_qa_engineer ;
+    :taskPrompt :prompt_task_evaluate ;
+    dcterms:description "evaluate_task from config/tasks.yaml" .
+
+:prompt_task_evaluate rdf:type :Prompt ;
+    :promptInstruction """You are helping create a game using python, these are the instructions:
+
+Instructions
+------------
+{game}
+
+You will look over the code to insure that it is complete and
+does the job that it is supposed to do.""" ;
+    :promptOutputIndicator "Your Final answer must be the full python code, only the python code and nothing else." .
+
+#################################################################
+# Workflow Pattern and Steps (Process.sequential => Sequential)
+#################################################################
+
+:wp_sequential rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :step1 , :step2 , :step3 ;
+    dcterms:description "Sequential Crew process as configured in crew.Crew(process=Process.sequential)" .
+
+:step1 rdf:type :StartStep ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task_code ;
+    :nextStep :step2 ;
+    dcterms:title "Code Task Step" .
+
+:step2 rdf:type :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task_review ;
+    :nextStep :step3 ;
+    dcterms:title "Review Task Step" .
+
+:step3 rdf:type :EndStep ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :task_evaluate ;
+    dcterms:title "Evaluate Task Step" .
+
+#################################################################
+# Team / Crew
+#################################################################
+
+:team_game_builder rdf:type :Team ;
+    dcterms:title "GameBuilderCrew" ;
+    dcterms:description "CrewAI crew defined in GameBuilderCrew class (src/game_builder_crew/crew.py)" ;
+    :hasAgentMember :agent_senior_engineer , :agent_qa_engineer , :agent_chief_qa_engineer ;
+    :hasWorkflowPattern :wp_sequential ;
+    :hasSystemConfig :config_team_input ;
+    :hasTeamGoal :goal_team .
+
+:config_team_input rdf:type :Config ;
+    :configKey "game" ;
+    :configValue "example3_snake (Snake Game Description from src/game_builder_crew/config/gamedesign.yaml)" .
+
+:goal_team rdf:type :Goal ;
+    dcterms:description "Automate the creation of a Python-based game using autonomous agents orchestrated by the CrewAI framework." .

@@ -1,0 +1,246 @@
+# Execution time: 42.12 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Assumed default language model "gpt-4o" (README states GPT-4o by default) and linked it to all agents.
+# - Only agents instantiated in crew.py were extracted (lead_market_analyst, chief_marketing_strategist, creative_content_creator). chief_creative_director is present in agents.yaml but not instantiated in code, so it was not included as an agent individual.
+# - Task descriptions/expectations retain template placeholders (e.g., {customer_domain}) as found in tasks.yaml.
+# - Team-level goal derived from project purpose described in README/main.py inputs.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Team (Crew)
+:team_MarketingPostsCrew rdf:type :Team ;
+    dcterms:title "MarketingPostsCrew" ;
+    :hasAgentMember :agent_lead_market_analyst ,
+                    :agent_chief_marketing_strategist ,
+                    :agent_creative_content_creator ;
+    :hasWorkflowPattern :wp_sequential ;
+    :hasSystemConfig :config_customer_domain ,
+                     :config_project_description ;
+    :hasTeamGoal :goal_team_create_marketing_strategy .
+
+### Team Goal
+:goal_team_create_marketing_strategy rdf:type :Goal ;
+    dcterms:description "Create a comprehensive marketing strategy to showcase CrewAI's AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities, targeting enterprise decision-makers." .
+
+### Language Model (default inferred)
+:lm_gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Default language model referenced in README (used by CrewAI execution)." .
+
+#################################################################
+# Agents
+#################################################################
+
+### Lead Market Analyst agent
+:agent_lead_market_analyst rdf:type :LLMAgent ;
+    :agentID "lead_market_analyst" ;
+    :agentRole "Lead Market Analyst" ;
+    :agentPrompt :prompt_agent_lead_market_analyst ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentGoal :goal_agent_lead_market_analyst ;
+    :agentToolUsage :tool_SerperDevTool , :tool_ScrapeWebsiteTool ;
+    :hasAgentConfig :config_lma_verbose , :config_lma_memory .
+
+:goal_agent_lead_market_analyst rdf:type :Goal ;
+    dcterms:description "Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies." .
+
+:prompt_agent_lead_market_analyst rdf:type :Prompt ;
+    :promptInstruction """As the Lead Market Analyst at a premier digital marketing firm, you specialize in dissecting online business landscapes.
+Goal: Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.""" .
+
+:config_lma_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_lma_memory rdf:type :Config ;
+    :configKey "memory" ;
+    :configValue "False" .
+
+### Chief Marketing Strategist agent
+:agent_chief_marketing_strategist rdf:type :LLMAgent ;
+    :agentID "chief_marketing_strategist" ;
+    :agentRole "Chief Marketing Strategist" ;
+    :agentPrompt :prompt_agent_chief_marketing_strategist ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentGoal :goal_agent_chief_marketing_strategist ;
+    :agentToolUsage :tool_SerperDevTool , :tool_ScrapeWebsiteTool ;
+    :hasAgentConfig :config_cms_verbose , :config_cms_memory .
+
+:goal_agent_chief_marketing_strategist rdf:type :Goal ;
+    dcterms:description "Synthesize amazing insights from product analysis to formulate incredible marketing strategies." .
+
+:prompt_agent_chief_marketing_strategist rdf:type :Prompt ;
+    :promptInstruction """You are the Chief Marketing Strategist at a leading digital marketing agency, known for crafting bespoke strategies that drive success.
+Goal: Synthesize amazing insights from product analysis to formulate incredible marketing strategies.""" .
+
+:config_cms_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_cms_memory rdf:type :Config ;
+    :configKey "memory" ;
+    :configValue "False" .
+
+### Creative Content Creator agent
+:agent_creative_content_creator rdf:type :LLMAgent ;
+    :agentID "creative_content_creator" ;
+    :agentRole "Creative Content Creator" ;
+    :agentPrompt :prompt_agent_creative_content_creator ;
+    :useLanguageModel :lm_gpt4o ;
+    :hasAgentGoal :goal_agent_creative_content_creator ;
+    :hasAgentConfig :config_ccc_verbose , :config_ccc_memory .
+
+:goal_agent_creative_content_creator rdf:type :Goal ;
+    dcterms:description "Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies." .
+
+:prompt_agent_creative_content_creator rdf:type :Prompt ;
+    :promptInstruction """As a Creative Content Creator at a top-tier digital marketing agency, you excel in crafting narratives that resonate with audiences. Your expertise lies in turning marketing strategies into engaging stories and visual content that capture attention and inspire action.
+Goal: Develop compelling and innovative content for social media campaigns, with a focus on creating high-impact ad copies.""" .
+
+:config_ccc_verbose rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" .
+
+:config_ccc_memory rdf:type :Config ;
+    :configKey "memory" ;
+    :configValue "False" .
+
+#################################################################
+# Tools
+#################################################################
+
+:tool_SerperDevTool rdf:type :Tool ;
+    dcterms:title "SerperDevTool" ;
+    dcterms:description "Tool for performing web/search queries via Serper.dev (used to find up-to-date information)." ;
+    :hasCapability :capability_web_search .
+
+:tool_ScrapeWebsiteTool rdf:type :Tool ;
+    dcterms:title "ScrapeWebsiteTool" ;
+    dcterms:description "Tool to scrape website content for extracting information about customers and competitors." ;
+    :hasCapability :capability_web_scraping .
+
+:capability_web_search rdf:type :Capability ;
+    dcterms:description "Perform web search queries and return relevant search results." .
+
+:capability_web_scraping rdf:type :Capability ;
+    dcterms:description "Retrieve and parse website content for analysis." .
+
+#################################################################
+# Tasks and Prompts (from tasks.yaml and crew.py)
+#################################################################
+
+### Research Task
+:task_research rdf:type :Task ;
+    :performedByAgent :agent_lead_market_analyst ;
+    :taskPrompt :prompt_task_research .
+
+:prompt_task_research rdf:type :Prompt ;
+    :promptInstruction """Conduct a thorough research about the customer and competitors in the context of {customer_domain}.
+Make sure you find any interesting and relevant information given the current year is 2024.
+We are working with them on the following project: {project_description}.""" ;
+    :promptOutputIndicator """A complete report on the customer and their customers and competitors, including their demographics, preferences, market positioning and audience engagement.""" .
+
+### Project Understanding Task
+:task_project_understanding rdf:type :Task ;
+    :performedByAgent :agent_chief_marketing_strategist ;
+    :taskPrompt :prompt_task_project_understanding .
+
+:prompt_task_project_understanding rdf:type :Prompt ;
+    :promptInstruction """Understand the project details and the target audience for {project_description}.
+Review any provided materials and gather additional information as needed.""" ;
+    :promptOutputIndicator """A detailed summary of the project and a profile of the target audience.""" .
+
+### Marketing Strategy Task
+:task_marketing_strategy rdf:type :Task ;
+    :performedByAgent :agent_chief_marketing_strategist ;
+    :taskPrompt :prompt_task_marketing_strategy .
+
+:prompt_task_marketing_strategy rdf:type :Prompt ;
+    :promptInstruction """Formulate a comprehensive marketing strategy for the project {project_description} of the customer {customer_domain}.
+Use the insights from the research task and the project understanding task to create a high-quality strategy.""" ;
+    :promptOutputIndicator """A detailed marketing strategy document that outlines the goals, target audience, key messages, and proposed tactics, make sure to have name, tatics, channels and KPIs""" .
+
+### Campaign Idea Task
+:task_campaign_idea rdf:type :Task ;
+    :performedByAgent :agent_creative_content_creator ;
+    :taskPrompt :prompt_task_campaign_idea .
+
+:prompt_task_campaign_idea rdf:type :Prompt ;
+    :promptInstruction """Develop creative marketing campaign ideas for {project_description}.
+Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy.""" ;
+    :promptOutputIndicator """A list of 5 campaign ideas, each with a brief description and expected impact.""" .
+
+### Copy Creation Task
+:task_copy_creation rdf:type :Task ;
+    :performedByAgent :agent_creative_content_creator ;
+    :taskPrompt :prompt_task_copy_creation .
+
+:prompt_task_copy_creation rdf:type :Prompt ;
+    :promptInstruction """Create marketing copies based on the approved campaign ideas for {project_description}.
+Ensure the copies are compelling, clear, and tailored to the target audience.""" ;
+    :promptOutputIndicator """Marketing copies for each campaign idea.""" .
+
+#################################################################
+# Workflow Pattern (Crew Process.sequential)
+#################################################################
+
+:wp_sequential rdf:type :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :step_1_research ,
+                     :step_2_project_understanding ,
+                     :step_3_marketing_strategy ,
+                     :step_4_campaign_idea ,
+                     :step_5_copy_creation .
+
+### Steps (ordered as declared by crew.py tasks)
+:step_1_research rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_research ;
+    :nextStep :step_2_project_understanding .
+
+:step_2_project_understanding rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_project_understanding ;
+    :nextStep :step_3_marketing_strategy .
+
+:step_3_marketing_strategy rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_marketing_strategy ;
+    :nextStep :step_4_campaign_idea .
+
+:step_4_campaign_idea rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_campaign_idea ;
+    :nextStep :step_5_copy_creation .
+
+:step_5_copy_creation rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_copy_creation .
+
+#################################################################
+# System / Team Config (kickoff inputs in main.py)
+#################################################################
+
+:config_customer_domain rdf:type :Config ;
+    :configKey "customer_domain" ;
+    :configValue "crewai.com" .
+
+:config_project_description rdf:type :Config ;
+    :configKey "project_description" ;
+    :configValue """CrewAI, a leading provider of multi-agent systems, aims to revolutionize marketing automation for its enterprise clients. This project involves developing an innovative marketing strategy to showcase CrewAI's advanced AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities. The campaign will target tech-savvy decision-makers in medium to large enterprises, highlighting success stories and the transformative potential of CrewAI's platform.
+
+Customer Domain: AI and Automation Solutions
+Project Overview: Creating a comprehensive marketing campaign to boost awareness and adoption of CrewAI's services among enterprise clients.""" .
+
+### End of instance data.

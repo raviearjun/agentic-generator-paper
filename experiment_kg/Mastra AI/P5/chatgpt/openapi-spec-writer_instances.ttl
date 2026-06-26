@@ -1,0 +1,180 @@
+# Execution time: 55.17 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit agentRole provided in source; inferred agentRole as "openapi-spec-writer".
+# - Environment secrets (FIRECRAWL_API_KEY, GITHUB_API_KEY, DB_URL) are referenced but values are unknown; represented as env:... in Config values.
+# - Tools are created via createTool and observed to be invoked by the workflow and/or agent; linked to the single agent found.
+# - Some prompts are dynamically constructed in code (e.g., per-page markdown); represented as generic prompt templates extracted from code comments/strings.
+# - The Mastra instance is modeled as a Team with the serviceName "mastra-vnext" (from telemetry).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Agents
+#################################################################
+
+:openapi_spec_gen_agent rdf:type :LLMAgent ;
+    :agentID "openapi-spec-gen-agent" ;
+    :agentRole "openapi-spec-writer" ;
+    :agentPrompt :prompt_openapi_spec_gen_agent ;
+    :useLanguageModel :lm_gpt_3_5_turbo ;
+    :hasAgentConfig :config_agent_model_name ;
+    :agentToolUsage :tool_site_crawl, :tool_generate_spec, :tool_add_to_github ;
+    dcterms:title "openapi-spec-gen-agent" ;
+    dcterms:description "Agent defined in src/mastra/agents/index.ts - expert Open API spec writer." .
+
+:prompt_openapi_spec_gen_agent rdf:type :Prompt ;
+    :promptInstruction "You are an expert Open API spec writer. You can take markdown documentation and extract all the information you can to generate an amazing Open API spec. You are also able to merge multiple fragmented Open API specs from the same source into a single compliant spec." .
+
+:lm_gpt_3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "Language model configured for the agent (provider: OPEN_AI, name: gpt-3.5-turbo)." .
+
+:config_agent_model_name rdf:type :Config ;
+    :configKey "model" ;
+    :configValue "gpt-3.5-turbo" ;
+    dcterms:description "Agent model configuration extracted from agent definition." .
+
+#################################################################
+# Tools + Capabilities + Tool Configs
+#################################################################
+
+:tool_site_crawl rdf:type :Tool ;
+    dcterms:title "site-crawl" ;
+    dcterms:description "Crawl a website and extract the markdown content" ;
+    :hasCapability :capability_site_crawl ;
+    :hasToolConfig :config_firecrawl_api_key .
+
+:capability_site_crawl rdf:type :Capability ;
+    dcterms:description "Crawls a website and extracts markdown content for downstream processing." .
+
+:config_firecrawl_api_key rdf:type :Config ;
+    :configKey "API_KEY" ;
+    :configValue "env:FIRECRAWL_API_KEY" ;
+    dcterms:description "Firecrawl integration API key (provided via environment)." .
+
+:tool_generate_spec rdf:type :Tool ;
+    dcterms:title "generate-spec" ;
+    dcterms:description "Generate a spec from a website" ;
+    :hasCapability :capability_generate_spec .
+
+:capability_generate_spec rdf:type :Capability ;
+    dcterms:description "Generates OpenAPI specification fragments from documentation pages and merges them." .
+
+:tool_add_to_github rdf:type :Tool ;
+    dcterms:title "add-to-github" ;
+    dcterms:description "Commit the spec to GitHub and create a PR" ;
+    :hasCapability :capability_add_to_github ;
+    :hasToolConfig :config_github_pat .
+
+:capability_add_to_github rdf:type :Capability ;
+    dcterms:description "Formats YAML, creates branch, commits files and opens a pull request on GitHub." .
+
+:config_github_pat rdf:type :Config ;
+    :configKey "PERSONAL_ACCESS_TOKEN" ;
+    :configValue "env:GITHUB_API_KEY" ;
+    dcterms:description "GitHub personal access token used by the GitHub integration (provided via environment)." .
+
+#################################################################
+# Workflow: openApiSpecGenWorkflow
+#################################################################
+
+:wp_openApiSpecGenWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "openApiSpecGenWorkflow" ;
+    dcterms:description "Workflow to crawl a site, generate OpenAPI fragments per page, then merge into a single spec." ;
+    :hasWorkflowStep :step_site_crawl_sync, :step_generate_spec .
+
+:step_site_crawl_sync rdf:type :StartStep, :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    dcterms:title "site-crawl-sync-step" ;
+    dcterms:description "Crawl a website and sync extracted markdown to the database (sync step)." ;
+    :hasAssociatedTask :task_site_crawl_sync ;
+    :nextStep :step_generate_spec .
+
+:task_site_crawl_sync rdf:type :Task ;
+    dcterms:title "site-crawl-sync" ;
+    dcterms:description "Crawl a website and extract the markdown content and sync it to the database." ;
+    :taskPrompt :prompt_site_crawl_sync ;
+    :performedBy :tool_site_crawl .
+
+:prompt_site_crawl_sync rdf:type :Prompt ;
+    :promptInstruction "Crawl the provided URL, extract main content as markdown, include sourceURL in metadata. Use provided pathRegex and limit. Exclude nav/header/footer and unrelated tags; return markdown blocks and metadata." ;
+    dcterms:description "Instruction used by site-crawl tool to extract documentation pages." .
+
+:step_generate_spec rdf:type :EndStep, :WorkflowStep ;
+    :stepOrder "2"^^xsd:integer ;
+    dcterms:title "generate-spec-step" ;
+    dcterms:description "Generate OpenAPI spec fragments from crawled pages and merge them into a single spec." ;
+    :hasAssociatedTask :task_generate_spec .
+
+:task_generate_spec rdf:type :Task ;
+    dcterms:title "generate-spec" ;
+    dcterms:description "For each crawled markdown page, ask the agent to turn it into an OpenAPI spec fragment; then ask the agent to merge fragments into a single spec." ;
+    :taskPrompt :prompt_generate_spec_fragment, :prompt_merge_specs ;
+    :performedByAgent :openapi_spec_gen_agent ;
+    :performedBy :tool_generate_spec .
+
+:prompt_generate_spec_fragment rdf:type :Prompt ;
+    :promptInstruction "I wrote another page of docs, turn this into an Open API spec: <page markdown>" ;
+    :promptOutputIndicator "OpenAPI spec fragment (YAML) for the provided documentation page." ;
+    dcterms:description "Template prompt used when generating a spec fragment from a single page." .
+
+:prompt_merge_specs rdf:type :Prompt ;
+    :promptInstruction "I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates." ;
+    :promptOutputIndicator "Merged OpenAPI YAML spec" ;
+    dcterms:description "Prompt used to instruct the agent to merge multiple spec fragments into one coherent OpenAPI YAML." .
+
+#################################################################
+# Workflow: makePRToMastra
+#################################################################
+
+:wp_makePRToMastra rdf:type :WorkflowPattern ;
+    dcterms:title "makePRToMastra" ;
+    dcterms:description "Workflow to format YAML, add files to GitHub and create a PR for the integration." ;
+    :hasWorkflowStep :step_add_to_github .
+
+:step_add_to_github rdf:type :StartStep, :EndStep, :WorkflowStep ;
+    :stepOrder "1"^^xsd:integer ;
+    dcterms:title "add-to-github-step" ;
+    dcterms:description "Format YAML, create branch and PR on GitHub." ;
+    :hasAssociatedTask :task_add_to_github .
+
+:task_add_to_github rdf:type :Task ;
+    dcterms:title "add-to-github" ;
+    dcterms:description "Take a YAML blob, ask the agent to format it, then create branch, commit files and open a PR via the GitHub client." ;
+    :taskPrompt :prompt_format_yaml_for_github ;
+    :performedBy :tool_add_to_github ;
+    :performedByAgent :openapi_spec_gen_agent .
+
+:prompt_format_yaml_for_github rdf:type :Prompt ;
+    :promptInstruction "Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences." ;
+    :promptOutputIndicator "Properly formatted OpenAPI YAML ready for commit" .
+
+#################################################################
+# Team / Mastra Instance
+#################################################################
+
+:team_mastra_vnext rdf:type :Team ;
+    dcterms:title "mastra-vnext" ;
+    dcterms:description "Mastra instance configured in src/mastra/index.ts (serviceName: mastra-vnext)." ;
+    :hasAgentMember :openapi_spec_gen_agent ;
+    :hasWorkflowPattern :wp_openApiSpecGenWorkflow, :wp_makePRToMastra .
+
+#################################################################
+# Misc / Completeness checks (configs referenced)
+#################################################################
+
+# Note: DB_URL is referenced in src/mastra/index.ts (PostgresEngine) but value is not exposed here;
+# we represent only tool/integration credentials used directly by tools.
+
+# End of generated instance data.

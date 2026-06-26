@@ -1,0 +1,282 @@
+# Execution time: 42.88 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Assumed default language model "gpt-4" based on README statement that the project uses GPT-4 by default.
+# - Environment API keys (SERPER_API_KEY, BROWSERLESS_API_KEY) are represented as Config individuals with placeholder values.
+# - No explicit direct inter-agent message calls were found in the code; no :interactsWith triples were added.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Model
+#################################################################
+
+:LM_gpt4 rdf:type :LanguageModel ;
+         dcterms:title "gpt-4" ;
+         dcterms:description "Default language model assumed from README (project uses GPT-4 by default)." .
+
+#################################################################
+# Capabilities
+#################################################################
+
+:capability_search rdf:type :Capability ;
+                   dcterms:description "Search the internet for relevant results using Serper API." .
+
+:capability_scrape rdf:type :Capability ;
+                   dcterms:description "Scrape and summarize website content using browserless and HTML partitioning." .
+
+:capability_calculate rdf:type :Capability ;
+                      dcterms:description "Perform safe mathematical calculations." .
+
+:capability_city_selection rdf:type :Capability ;
+                           dcterms:description "Analyze travel data to select an optimal city based on weather, season, and prices." .
+
+:capability_local_expert rdf:type :Capability ;
+                         dcterms:description "Provide deep local insights, attractions, cultural context, and practical tips." .
+
+:capability_concierge rdf:type :Capability ;
+                      dcterms:description "Create detailed itineraries, budgets, packing suggestions, and logistics." .
+
+#################################################################
+# Tools and Tool Configs
+#################################################################
+
+:tool_search rdf:type :Tool ;
+             dcterms:title "SearchTools.search_internet" ;
+             dcterms:description "Search the internet using Serper (google.serper.dev) and return top results." ;
+             :hasCapability :capability_search ;
+             :hasToolConfig :config_serper_api_key .
+
+:config_serper_api_key rdf:type :Config ;
+                      :configKey "SERPER_API_KEY" ;
+                      :configValue "${SERPER_API_KEY}" ;
+                      dcterms:description "API key for Serper (used by SearchTools.search_internet)." .
+
+:tool_browser rdf:type :Tool ;
+              dcterms:title "BrowserTools.scrape_and_summarize_website" ;
+              dcterms:description "Scrape website content via browserless and summarize chunks using an internal Agent/Task." ;
+              :hasCapability :capability_scrape ;
+              :hasToolConfig :config_browserless_api_key .
+
+:config_browserless_api_key rdf:type :Config ;
+                           :configKey "BROWSERLESS_API_KEY" ;
+                           :configValue "${BROWSERLESS_API_KEY}" ;
+                           dcterms:description "API key for Browserless (used by BrowserTools.scrape_and_summarize_website)." .
+
+:tool_calculator rdf:type :Tool ;
+                 dcterms:title "CalculatorTools.calculate" ;
+                 dcterms:description "Safe mathematical expression evaluator implemented with ast and restricted operators." ;
+                 :hasCapability :capability_calculate .
+
+#################################################################
+# Agents (LLM Agents)
+#################################################################
+
+:agent_city_selection rdf:type :LLMAgent ;
+                      :agentID "city_selection_agent" ;
+                      :agentRole "City Selection Expert" ;
+                      :agentPrompt :prompt_agent_city_selection ;
+                      :hasAgentGoal :goal_city_selection ;
+                      :useLanguageModel :LM_gpt4 ;
+                      :agentToolUsage :tool_search , :tool_browser ;
+                      :hasAgentCapability :capability_city_selection ;
+                      :hasAgentConfig :config_agent_city_selection_verbose ;
+                      dcterms:description "Agent responsible for selecting the best city based on weather, season, and prices." .
+
+:prompt_agent_city_selection rdf:type :Prompt ;
+                            :promptInstruction """An expert in analyzing travel data to pick ideal destinations""" .
+
+:config_agent_city_selection_verbose rdf:type :Config ;
+                                    :configKey "verbose" ;
+                                    :configValue "true" ;
+                                    dcterms:description "Agent runtime configuration (verbose mode)" .
+
+:goal_city_selection rdf:type :Goal ;
+                     dcterms:title "Select best city" ;
+                     dcterms:description "Select the best city based on weather, season, and prices" .
+
+:agent_local_expert rdf:type :LLMAgent ;
+                    :agentID "local_expert_agent" ;
+                    :agentRole "Local Expert at this city" ;
+                    :agentPrompt :prompt_agent_local_expert ;
+                    :hasAgentGoal :goal_local_expert ;
+                    :useLanguageModel :LM_gpt4 ;
+                    :agentToolUsage :tool_search , :tool_browser ;
+                    :hasAgentCapability :capability_local_expert ;
+                    :hasAgentConfig :config_agent_local_expert_verbose ;
+                    dcterms:description "Agent that provides in-depth local city guides, hidden gems, and cultural insights." .
+
+:prompt_agent_local_expert rdf:type :Prompt ;
+                          :promptInstruction """A knowledgeable local guide with extensive information about the city, its attractions and customs""" .
+
+:config_agent_local_expert_verbose rdf:type :Config ;
+                                  :configKey "verbose" ;
+                                  :configValue "true" ;
+                                  dcterms:description "Agent runtime configuration (verbose mode)" .
+
+:goal_local_expert rdf:type :Goal ;
+                   dcterms:title "Provide local insights" ;
+                   dcterms:description "Provide the BEST insights about the selected city" .
+
+:agent_travel_concierge rdf:type :LLMAgent ;
+                       :agentID "travel_concierge_agent" ;
+                       :agentRole "Amazing Travel Concierge" ;
+                       :agentPrompt :prompt_agent_travel_concierge ;
+                       :hasAgentGoal :goal_travel_concierge ;
+                       :useLanguageModel :LM_gpt4 ;
+                       :agentToolUsage :tool_search , :tool_browser , :tool_calculator ;
+                       :hasAgentCapability :capability_concierge ;
+                       :hasAgentConfig :config_agent_travel_concierge_verbose ;
+                       dcterms:description "Agent that creates detailed travel itineraries including budget and packing suggestions." .
+
+:prompt_agent_travel_concierge rdf:type :Prompt ;
+                              :promptInstruction """Specialist in travel planning and logistics with decades of experience""" .
+
+:config_agent_travel_concierge_verbose rdf:type :Config ;
+                                      :configKey "verbose" ;
+                                      :configValue "true" ;
+                                      dcterms:description "Agent runtime configuration (verbose mode)" .
+
+:goal_travel_concierge rdf:type :Goal ;
+                       dcterms:title "Create itinerary" ;
+                       dcterms:description "Create the most amazing travel itineraries with budget and packing suggestions for the city" .
+
+#################################################################
+# Tasks and Task Prompts
+#################################################################
+
+:task_identify_city rdf:type :Task ;
+                    :performedByAgent :agent_city_selection ;
+                    :taskPrompt :prompt_task_identify_city ;
+                    dcterms:description "Task to analyze and select the best city for the trip based on weather, seasonal events, and travel costs." .
+
+:prompt_task_identify_city rdf:type :Prompt ;
+                          :promptInstruction """Analyze and select the best city for the trip based
+on specific criteria such as weather patterns, seasonal
+events, and travel costs. This task involves comparing
+multiple cities, considering factors like current weather
+conditions, upcoming cultural or seasonal events, and
+overall travel expenses.
+
+Your final answer must be a detailed
+report on the chosen city, and everything you found out
+about it, including the actual flight costs, weather
+forecast and attractions.
+If you do your BEST WORK, I'll tip you $100!
+
+Traveling from: {origin}
+City Options: {cities}
+Trip Date: {range}
+Traveler Interests: {interests}
+""" ;
+                          :promptOutputIndicator "Detailed report on the chosen city including flight costs, weather forecast, and attractions" .
+
+:task_gather_city_info rdf:type :Task ;
+                       :performedByAgent :agent_local_expert ;
+                       :taskPrompt :prompt_task_gather_city_info ;
+                       dcterms:description "Task for local expert to compile an in-depth city guide including attractions, customs, events, and costs." .
+
+:prompt_task_gather_city_info rdf:type :Prompt ;
+                             :promptInstruction """As a local expert on this city you must compile an
+in-depth guide for someone traveling there and wanting
+to have THE BEST trip ever!
+Gather information about key attractions, local customs,
+special events, and daily activity recommendations.
+Find the best spots to go to, the kind of place only a
+local would know.
+This guide should provide a thorough overview of what
+the city has to offer, including hidden gems, cultural
+hotspots, must-visit landmarks, weather forecasts, and
+high level costs.
+
+The final answer must be a comprehensive city guide,
+rich in cultural insights and practical tips,
+tailored to enhance the travel experience.
+If you do your BEST WORK, I'll tip you $100!
+
+Trip Date: {range}
+Traveling from: {origin}
+Traveler Interests: {interests}
+""" ;
+                             :promptOutputIndicator "Comprehensive city guide including hidden gems, cultural hotspots, and practical travel tips" .
+
+:task_plan_itinerary rdf:type :Task ;
+                     :performedByAgent :agent_travel_concierge ;
+                     :taskPrompt :prompt_task_plan_itinerary ;
+                     dcterms:description "Task to expand the city guide into a full 7-day itinerary with daily plans, weather, packing suggestions, and budget." .
+
+:prompt_task_plan_itinerary rdf:type :Prompt ;
+                           :promptInstruction """Expand this guide into a full 7-day travel
+itinerary with detailed per-day plans, including
+weather forecasts, places to eat, packing suggestions,
+and a budget breakdown.
+
+You MUST suggest actual places to visit, actual hotels
+to stay and actual restaurants to go to.
+
+This itinerary should cover all aspects of the trip,
+from arrival to departure, integrating the city guide
+information with practical travel logistics.
+
+Your final answer MUST be a complete expanded travel plan,
+formatted as markdown, encompassing a daily schedule,
+anticipated weather conditions, recommended clothing and
+items to pack, and a detailed budget, ensuring THE BEST
+TRIP EVER. Be specific and give it a reason why you picked
+each place, what makes them special! If you do your BEST WORK, I'll tip you $100!
+
+Trip Date: {range}
+Traveling from: {origin}
+Traveler Interests: {interests}
+""" ;
+                           :promptOutputIndicator "Complete expanded travel plan with daily schedule, weather conditions, packing suggestions, and budget breakdown" .
+
+#################################################################
+# Workflow Pattern and Steps
+#################################################################
+
+:pattern_trip_planning rdf:type :WorkflowPattern ;
+                       dcterms:title "Trip Planning Sequential" ;
+                       :hasWorkflowStep :step_identify , :step_gather , :step_plan .
+
+:step_identify rdf:type :StartStep , :WorkflowStep ;
+               dcterms:title "Identify Best City" ;
+               :stepOrder "1"^^xsd:integer ;
+               :hasAssociatedTask :task_identify_city ;
+               :nextStep :step_gather .
+
+:step_gather rdf:type :WorkflowStep ;
+             dcterms:title "Gather City Guide" ;
+             :stepOrder "2"^^xsd:integer ;
+             :hasAssociatedTask :task_gather_city_info ;
+             :nextStep :step_plan .
+
+:step_plan rdf:type :EndStep , :WorkflowStep ;
+           dcterms:title "Plan Itinerary" ;
+           :stepOrder "3"^^xsd:integer ;
+           :hasAssociatedTask :task_plan_itinerary .
+
+#################################################################
+# Team (Crew) and Team Goal
+#################################################################
+
+:team_trip_planner rdf:type :Team ;
+                   dcterms:title "Trip Planner Crew" ;
+                   dcterms:description "CrewAI-based team that coordinates city selection, local research, and itinerary planning." ;
+                   :hasAgentMember :agent_city_selection , :agent_local_expert , :agent_travel_concierge ;
+                   :hasWorkflowPattern :pattern_trip_planning ;
+                   :hasTeamGoal :goal_team_trip_planning .
+
+:goal_team_trip_planning rdf:type :Goal ;
+                         dcterms:title "Automate trip planning" ;
+                         dcterms:description "Automate the process of choosing among city options and producing a full trip itinerary based on traveler preferences." .

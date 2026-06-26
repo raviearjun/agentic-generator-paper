@@ -1,0 +1,55 @@
+# Execution time: 44.36 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Assumed primary Mastra agent named "cryptoAgent" (from mastra/agents/index.ts).
+# - Assumed a single Team representing the Mastra instance ("MastraSystem").
+# - Created a conversational workflow with three steps (receive input → call tools → stream response) inferred from usage of mastra.getAgent(...).stream(...) and presence of tools.
+# - COINGECKO_API_KEY found in tool code; stored as Config with value "env:COINGECKO_API_KEY" (placeholder).
+# - Also created a LanguageModel for the title-generation helper (gpt-3.5-turbo) referenced in app/(chat)/actions.ts.
+# - No explicit multi-agent interactions found (only one Mastra agent); therefore no :interactsWith triples created.
+# - Where exact textual prompts exist, they are included verbatim from ai/prompts.ts and mastra agent instructions.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+#################################################################
+# Language Models
+#################################################################
+
+:gpt_4o_mini rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o-mini" ;
+    dcterms:description "Model used by Mastra default agent (from mastra/index.ts)" .
+
+:gpt_3_5_turbo rdf:type :LanguageModel ;
+    dcterms:title "gpt-3.5-turbo" ;
+    dcterms:description "Model used for generating titles in app/(chat)/actions.ts (generateTitleFromUserMessage)" .
+
+#################################################################
+# Agent (Mastra)
+#################################################################
+
+:cryptoAgent rdf:type :LLMAgent ;
+    :agentID "cryptoAgent" ;
+    :agentRole "cryptocurrency analyst and assistant" ;
+    :agentPrompt :cryptoAgentSystemPrompt ;
+    :useLanguageModel :gpt_4o_mini ;
+    :hasAgentConfig :cryptoAgentConfig_toolChoice , :cryptoAgentConfig_modelProvider ;
+    :agentToolUsage :tool_searchCryptoCoins , :tool_getCryptoPrice , :tool_getHistoricalCryptoPrices ;
+    :hasAgentCapability :cap_searchCoins , :cap_getPrice , :cap_getHistoricalPrices ;
+    :hasKnowledge :mastraMemory ;
+    dcterms:description "Mastra-created agent defined in mastra/agents (createCryptoAgent)." .
+
+:cryptoAgentSystemPrompt rdf:type :Prompt ;
+    :promptInstruction """
+You are a cryptocurrency analyst and assistant! Your goal is to provide current crypto investing information. Keep your responses concise and helpful.
+
+This is a guide for using the available crypto tools: `searchCryptoCoins`, `getCryptoPrice`, and `getHistoricalCryptoPrices`.

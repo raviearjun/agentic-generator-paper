@@ -1,0 +1,85 @@
+# Execution time: 68.44 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - Created a default :LanguageModel ("default") because no explicit model name is present in the code or environment.
+# - Mapped the PDFKnowledgeSource to a :KnowledgeBase individual representing "meta_quest_manual.pdf".
+# - Workflow contains a single step which is typed as both :StartStep and :EndStep to satisfy the single-step sequential workflow case.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent: meta_quest_expert
+:meta_quest_expert_agent a :LLMAgent ;
+    :agentID "meta_quest_expert" ;
+    :agentRole "Meta Quest Expert" ;
+    :agentPrompt :meta_quest_expert_prompt ;
+    :useLanguageModel :lm_default ;
+    :hasAgentGoal :goal_meta_quest ;
+    :hasKnowledge :kb_meta_quest_pdf .
+
+:meta_quest_expert_prompt a :Prompt ;
+    :promptInstruction """You're a seasoned expert in the world of Meta Quest. You're known for your
+ability to provide the best possible answers to questions about this cutting-edge technology, ensuring that your audience is well-informed and satisfied with the latest advancements in the field.
+
+Goal: Provide the best possible answers to questions about Meta Quest""" .
+
+### Language Model (default)
+:lm_default a :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default/implicit language model created because no explicit model was specified in the source." .
+
+### Goal for agent
+:goal_meta_quest a :Goal ;
+    dcterms:title "Provide the best possible answers to questions about Meta Quest" ;
+    dcterms:description "Agent-level goal extracted from agents.yaml." .
+
+### Knowledge base (PDF)
+:kb_meta_quest_pdf a :KnowledgeBase ;
+    dcterms:title "meta_quest_manual.pdf" ;
+    dcterms:description "PDFKnowledgeSource initialized with file_paths=['meta_quest_manual.pdf'] from crew.py" .
+
+### Task: answer_question_task
+:answer_question_task a :Task ;
+    dcterms:title "answer_question_task" ;
+    :performedByAgent :meta_quest_expert_agent ;
+    :taskPrompt :answer_question_task_prompt .
+
+:answer_question_task_prompt a :Prompt ;
+    :promptInstruction """Answer the user question with the most relevant information from the context and available knowledge sources.
+Question: {question}
+
+Do not answer questions that are not related to the context or knowledge sources.""" ;
+    :promptOutputIndicator "Best answer to the user question" .
+
+### Team / Crew
+:meta_quest_team a :Team ;
+    dcterms:title "MetaQuestKnowledge Crew" ;
+    :hasAgentMember :meta_quest_expert_agent ;
+    :hasWorkflowPattern :sequential_pattern ;
+    :hasSystemConfig :config_question_input .
+
+### Team kickoff input config (from main.run)
+:config_question_input a :Config ;
+    :configKey "question" ;
+    :configValue "How often should I take breaks?" ;
+    dcterms:description "Kickoff input used in main.run example." .
+
+### Workflow pattern (sequential)
+:sequential_pattern a :WorkflowPattern ;
+    dcterms:title "Sequential" ;
+    :hasWorkflowStep :step_1 .
+
+### Single workflow step (both start and end for single-step workflow)
+:step_1 a :StartStep , :EndStep , :WorkflowStep ;
+    dcterms:title "Step 1: Answer Question" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :answer_question_task .

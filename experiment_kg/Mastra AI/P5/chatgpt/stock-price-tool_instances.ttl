@@ -1,0 +1,120 @@
+# Execution time: 39.70 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit workflow was defined in the source; created a minimal 4-step workflow (Start -> Generate query -> Tool call -> End) to represent the observed sequence.
+# - The agent role is inferred as "assistant" from the instructions string.
+# - The tool has no explicit API key/config; no :hasToolConfig was created.
+# - The tool invocation task links both to the agent (requesting the call) and the tool (performer) to capture the agent-triggered tool execution.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:stockAgent rdf:type :LLMAgent ;
+    dcterms:title "Stock Agent" ;
+    :agentID "Stock Agent" ;
+    :agentRole "assistant" ;
+    :agentPrompt :stockAgentPrompt ;
+    :useLanguageModel :gpt4oModel ;
+    :agentToolUsage :stockPricesTool ;
+    :hasAgentConfig :stockAgentConfig_provider, :stockAgentConfig_toolChoice .
+
+:stockAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "You are a helpful assistant that provides current stock prices. When asked about a stock, use the stock price tool to fetch the stock price." .
+
+:gpt4oModel rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "provider: OPEN_AI" .
+
+:stockAgentConfig_provider rdf:type :Config ;
+    :configKey "provider" ;
+    :configValue "OPEN_AI" .
+
+:stockAgentConfig_toolChoice rdf:type :Config ;
+    :configKey "toolChoice" ;
+    :configValue "required" .
+
+:stockPricesTool rdf:type :Tool ;
+    dcterms:title "Get Stock Price" ;
+    dcterms:description "Fetches the last day's closing stock price for a given symbol" ;
+    :hasCapability :stockPriceCapability .
+
+:stockPriceCapability rdf:type :Capability ;
+    dcterms:description "Fetch last day's closing stock price for a given symbol" .
+
+:promptToolCall rdf:type :Prompt ;
+    :promptInstruction "Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price." ;
+    :promptInputData "symbol: AAPL" ;
+    :promptOutputIndicator "currentPrice" .
+
+:promptQuery rdf:type :Prompt ;
+    :promptInstruction "What is the current stock price of Apple (AAPL)?" ;
+    :promptInputData "symbol: AAPL" ;
+    :promptOutputIndicator "currentPrice" .
+
+:promptInit rdf:type :Prompt ;
+    :promptInstruction "Initialize the Stock Agent before handling requests." .
+
+:promptEnd rdf:type :Prompt ;
+    :promptInstruction "Return the formatted current price to the user." .
+
+:taskInit rdf:type :Task ;
+    dcterms:title "Initialize Stock Agent" ;
+    :performedByAgent :stockAgent ;
+    :taskPrompt :promptInit .
+
+:taskQuery rdf:type :Task ;
+    dcterms:title "Query Stock Price" ;
+    :performedByAgent :stockAgent ;
+    :taskPrompt :promptQuery .
+
+:taskToolCall rdf:type :Task ;
+    dcterms:title "Invoke stockPrices Tool" ;
+    :performedByAgent :stockAgent ;
+    :performedBy :stockPricesTool ;
+    :taskPrompt :promptToolCall .
+
+:taskEnd rdf:type :Task ;
+    dcterms:title "Finalize Response" ;
+    :performedByAgent :stockAgent ;
+    :taskPrompt :promptEnd .
+
+:stockWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Stock price retrieval workflow" ;
+    :hasWorkflowStep :startStep, :genStep, :toolStep, :endStep .
+
+:startStep rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "Start" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :taskInit ;
+    :nextStep :genStep .
+
+:genStep rdf:type :WorkflowStep ;
+    dcterms:title "GenerateQuery" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :taskQuery ;
+    :nextStep :toolStep .
+
+:toolStep rdf:type :WorkflowStep ;
+    dcterms:title "ToolExecution" ;
+    :stepOrder "3"^^xsd:integer ;
+    :hasAssociatedTask :taskToolCall ;
+    :nextStep :endStep .
+
+:endStep rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "End" ;
+    :stepOrder "4"^^xsd:integer ;
+    :hasAssociatedTask :taskEnd .
+
+:mastraTeam rdf:type :Team ;
+    dcterms:title "mastra instance" ;
+    :hasAgentMember :stockAgent ;
+    :hasWorkflowPattern :stockWorkflow .

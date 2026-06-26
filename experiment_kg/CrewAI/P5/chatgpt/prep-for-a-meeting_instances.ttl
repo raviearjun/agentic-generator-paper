@@ -1,0 +1,233 @@
+# Execution time: 47.32 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: CrewAI
+
+# Issues / Assumptions:
+# - No explicit language model configuration detected in code; a default :LanguageModel ("default") was created and linked to all agents.
+# - The Crew does not specify a team-level goal explicitly; no :hasTeamGoal was created.
+# - No explicit inter-agent messaging/calls detected in code (agents are assigned tasks and tasks reference other tasks via context), so no :interactsWith triples were added.
+# - All agents share the same external Exa API key (EXA_API_KEY) referenced in tools; a single :Config for the API key is attached to each tool.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Language Model
+:DefaultLanguageModel rdf:type :LanguageModel ;
+    dcterms:title "default" .
+
+### Capabilities for Tools
+:Capability_ExaSearch rdf:type :Capability ;
+    dcterms:description "Performs web searches and returns search result identifiers." .
+
+:Capability_FindSimilar rdf:type :Capability ;
+    dcterms:description "Finds webpages similar to a given URL." .
+
+:Capability_GetContents rdf:type :Capability ;
+    dcterms:description "Retrieves and returns contents of webpages by IDs." .
+
+### Tool configuration (shared EXA API key referenced from environment)
+:Exa_API_Config rdf:type :Config ;
+    :configKey "EXA_API_KEY" ;
+    :configValue "env:EXA_API_KEY" ;
+    dcterms:description "Environment variable for Exa API key used by ExaSearchTool." .
+
+### Tools (from tools/ExaSearchTool.py)
+:ExaSearchTool_search rdf:type :Tool ;
+    dcterms:title "ExaSearchTool.search" ;
+    dcterms:description "Search for a webpage based on the query (returns a list of result IDs)." ;
+    :hasCapability :Capability_ExaSearch ;
+    :hasToolConfig :Exa_API_Config .
+
+:ExaSearchTool_find_similar rdf:type :Tool ;
+    dcterms:title "ExaSearchTool.find_similar" ;
+    dcterms:description "Search for webpages similar to a given URL." ;
+    :hasCapability :Capability_FindSimilar ;
+    :hasToolConfig :Exa_API_Config .
+
+:ExaSearchTool_get_contents rdf:type :Tool ;
+    dcterms:title "ExaSearchTool.get_contents" ;
+    dcterms:description "Get the contents of webpages given a list of IDs." ;
+    :hasCapability :Capability_GetContents ;
+    :hasToolConfig :Exa_API_Config .
+
+### Agents and their configs, prompts, and goals
+
+:ResearchAgent rdf:type :LLMAgent ;
+    :agentID "researcher_agent" ;
+    :agentRole "Research Specialist" ;
+    :agentPrompt :ResearchAgentPrompt ;
+    :hasAgentGoal :ResearchAgentGoal ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentToolUsage :ExaSearchTool_search , :ExaSearchTool_find_similar , :ExaSearchTool_get_contents ;
+    :hasAgentConfig :ResearchAgentConfig .
+
+:ResearchAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "As a Research Specialist, your mission is to uncover detailed information\nabout the individuals and entities participating in the meeting. Your insights\nwill lay the groundwork for strategic meeting preparation." .
+
+:ResearchAgentGoal rdf:type :Goal ;
+    dcterms:description "Conduct thorough research on people and companies involved in the meeting." .
+
+:ResearchAgentConfig rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" ;
+    dcterms:description "Agent instantiated with verbose=True." .
+
+:IndustryAnalystAgent rdf:type :LLMAgent ;
+    :agentID "industry_analyst_agent" ;
+    :agentRole "Industry Analyst" ;
+    :agentPrompt :IndustryAnalystPrompt ;
+    :hasAgentGoal :IndustryAnalystGoal ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentToolUsage :ExaSearchTool_search , :ExaSearchTool_find_similar , :ExaSearchTool_get_contents ;
+    :hasAgentConfig :IndustryAnalystAgentConfig .
+
+:IndustryAnalystPrompt rdf:type :Prompt ;
+    :promptInstruction "As an Industry Analyst, your analysis will identify key trends,\nchallenges facing the industry, and potential opportunities that\ncould be leveraged during the meeting for strategic advantage." .
+
+:IndustryAnalystGoal rdf:type :Goal ;
+    dcterms:description "Analyze the current industry trends, challenges, and opportunities." .
+
+:IndustryAnalystAgentConfig rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" ;
+    dcterms:description "Agent instantiated with verbose=True." .
+
+:MeetingStrategyAgent rdf:type :LLMAgent ;
+    :agentID "meeting_strategy_agent" ;
+    :agentRole "Meeting Strategy Advisor" ;
+    :agentPrompt :MeetingStrategyAgentPrompt ;
+    :hasAgentGoal :MeetingStrategyAgentGoal ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentToolUsage :ExaSearchTool_search , :ExaSearchTool_find_similar , :ExaSearchTool_get_contents ;
+    :hasAgentConfig :MeetingStrategyAgentConfig .
+
+:MeetingStrategyAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "As a Strategy Advisor, your expertise will guide the development of\ntalking points, insightful questions, and strategic angles\nto ensure the meeting's objectives are achieved." .
+
+:MeetingStrategyAgentGoal rdf:type :Goal ;
+    dcterms:description "Develop talking points, questions, and strategic angles for the meeting." .
+
+:MeetingStrategyAgentConfig rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" ;
+    dcterms:description "Agent instantiated with verbose=True." .
+
+:BriefingCoordinatorAgent rdf:type :LLMAgent ;
+    :agentID "summary_and_briefing_agent" ;
+    :agentRole "Briefing Coordinator" ;
+    :agentPrompt :BriefingCoordinatorAgentPrompt ;
+    :hasAgentGoal :BriefingCoordinatorGoal ;
+    :useLanguageModel :DefaultLanguageModel ;
+    :agentToolUsage :ExaSearchTool_search , :ExaSearchTool_find_similar , :ExaSearchTool_get_contents ;
+    :hasAgentConfig :BriefingCoordinatorAgentConfig .
+
+:BriefingCoordinatorAgentPrompt rdf:type :Prompt ;
+    :promptInstruction "As the Briefing Coordinator, your role is to consolidate the research,\nanalysis, and strategic insights." .
+
+:BriefingCoordinatorGoal rdf:type :Goal ;
+    dcterms:description "Compile all gathered information into a concise, informative briefing document." .
+
+:BriefingCoordinatorAgentConfig rdf:type :Config ;
+    :configKey "verbose" ;
+    :configValue "True" ;
+    dcterms:description "Agent instantiated with verbose=True." .
+
+### Tasks and their prompts
+
+:ResearchTask rdf:type :Task ;
+    :performedByAgent :ResearchAgent ;
+    :taskPrompt :ResearchTaskPrompt .
+
+:ResearchTaskPrompt rdf:type :Prompt ;
+    :promptInstruction """Conduct comprehensive research on each of the individuals and companies
+involved in the upcoming meeting. Gather information on recent
+news, achievements, professional background, and any relevant
+business activities.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+    :promptOutputIndicator "A detailed report summarizing key findings about each participant and company, highlighting information that could be relevant for the meeting." .
+
+:IndustryAnalysisTask rdf:type :Task ;
+    :performedByAgent :IndustryAnalystAgent ;
+    :taskPrompt :IndustryAnalysisTaskPrompt .
+
+:IndustryAnalysisTaskPrompt rdf:type :Prompt ;
+    :promptInstruction """Analyze the current industry trends, challenges, and opportunities
+relevant to the meeting's context. Consider market reports, recent
+developments, and expert opinions to provide a comprehensive
+overview of the industry landscape.
+
+Participants: {participants}
+Meeting Context: {context}""" ;
+    :promptOutputIndicator "An insightful analysis that identifies major trends, potential challenges, and strategic opportunities." .
+
+:MeetingStrategyTask rdf:type :Task ;
+    :performedByAgent :MeetingStrategyAgent ;
+    :taskPrompt :MeetingStrategyTaskPrompt .
+
+:MeetingStrategyTaskPrompt rdf:type :Prompt ;
+    :promptInstruction """Develop strategic talking points, questions, and discussion angles
+for the meeting based on the research and industry analysis conducted
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+    :promptOutputIndicator "Complete report with a list of key talking points, strategic questions to ask to help achieve the meeting's objective during the meeting." .
+
+:SummaryAndBriefingTask rdf:type :Task ;
+    :performedByAgent :BriefingCoordinatorAgent ;
+    :taskPrompt :SummaryAndBriefingTaskPrompt .
+
+:SummaryAndBriefingTaskPrompt rdf:type :Prompt ;
+    :promptInstruction """Compile all the research findings, industry analysis, and strategic
+talking points into a concise, comprehensive briefing document for
+the meeting.
+Ensure the briefing is easy to digest and equips the meeting
+participants with all necessary information and strategies.
+
+Meeting Context: {context}
+Meeting Objective: {objective}""" ;
+    :promptOutputIndicator "A well-structured briefing document that includes sections for participant bios, industry overview, talking points, and strategic recommendations." .
+
+### Workflow Pattern and Steps (ordered according to tasks list in Crew(...))
+:MeetingPreparationPattern rdf:type :WorkflowPattern ;
+    dcterms:title "Meeting Preparation Sequential" ;
+    :hasWorkflowStep :Step_1_Research , :Step_2_IndustryAnalysis , :Step_3_MeetingStrategy , :Step_4_SummaryAndBriefing .
+
+:Step_1_Research rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    dcterms:title "Research" ;
+    :hasAssociatedTask :ResearchTask ;
+    :nextStep :Step_2_IndustryAnalysis .
+
+:Step_2_IndustryAnalysis rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    dcterms:title "Industry Analysis" ;
+    :hasAssociatedTask :IndustryAnalysisTask ;
+    :nextStep :Step_3_MeetingStrategy .
+
+:Step_3_MeetingStrategy rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    dcterms:title "Meeting Strategy" ;
+    :hasAssociatedTask :MeetingStrategyTask ;
+    :nextStep :Step_4_SummaryAndBriefing .
+
+:Step_4_SummaryAndBriefing rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 4 ;
+    dcterms:title "Summary and Briefing" ;
+    :hasAssociatedTask :SummaryAndBriefingTask .
+
+### Team / Crew
+:MeetingPrepCrew rdf:type :Team ;
+    dcterms:title "Meeting Preparation Crew" ;
+    :hasAgentMember :ResearchAgent , :IndustryAnalystAgent , :MeetingStrategyAgent , :BriefingCoordinatorAgent ;
+    :hasWorkflowPattern :MeetingPreparationPattern .
+
+# End of data triples.

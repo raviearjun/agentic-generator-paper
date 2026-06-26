@@ -1,0 +1,109 @@
+# Execution time: 37.95 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No explicit LLMAgent definitions were present in source; created a default :LLMAgent (:mastraAgent) to represent the workflow executor so tasks have :performedByAgent and to satisfy mandatory checklist.
+# - The workflow chaining in the source forms two parallel branches: (stepOne -> stepTwo) and (stepThree -> stepFour). Modeled as two StartStep/EndStep pairs accordingly.
+# - No external tools or memory constructs detected in the code; no :Tool or :Memory individuals created.
+# - Trigger schema captured as a simple Config on the Team (key/value string).
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:mastraTeam rdf:type :Team ;
+  dcterms:title "mastra-instance" ;
+  :hasAgentMember :mastraAgent ;
+  :hasWorkflowPattern :myWorkflowPattern ;
+  :hasSystemConfig :cfgTriggerSchema .
+
+:cfgTriggerSchema rdf:type :Config ;
+  :configKey "triggerSchema" ;
+  :configValue "inputValue:number" .
+
+:myWorkflowPattern rdf:type :WorkflowPattern ;
+  dcterms:title "my-workflow" ;
+  :hasWorkflowStep :stepOne, :stepTwo, :stepThree, :stepFour .
+
+:stepOne rdf:type :StartStep , :WorkflowStep ;
+  dcterms:title "stepOne" ;
+  :stepOrder "1"^^xsd:integer ;
+  :hasAssociatedTask :taskStepOne ;
+  :nextStep :stepTwo .
+
+:stepTwo rdf:type :EndStep , :WorkflowStep ;
+  dcterms:title "stepTwo" ;
+  :stepOrder "2"^^xsd:integer ;
+  :hasAssociatedTask :taskStepTwo .
+
+:stepThree rdf:type :StartStep , :WorkflowStep ;
+  dcterms:title "stepThree" ;
+  :stepOrder "1"^^xsd:integer ;
+  :hasAssociatedTask :taskStepThree ;
+  :nextStep :stepFour .
+
+:stepFour rdf:type :EndStep , :WorkflowStep ;
+  dcterms:title "stepFour" ;
+  :stepOrder "2"^^xsd:integer ;
+  :hasAssociatedTask :taskStepFour .
+
+:taskStepOne rdf:type :Task ;
+  dcterms:title "task-stepOne" ;
+  :taskPrompt :promptTaskOne ;
+  :performedByAgent :mastraAgent .
+
+:taskStepTwo rdf:type :Task ;
+  dcterms:title "task-stepTwo" ;
+  :taskPrompt :promptTaskTwo ;
+  :performedByAgent :mastraAgent .
+
+:taskStepThree rdf:type :Task ;
+  dcterms:title "task-stepThree" ;
+  :taskPrompt :promptTaskThree ;
+  :performedByAgent :mastraAgent .
+
+:taskStepFour rdf:type :Task ;
+  dcterms:title "task-stepFour" ;
+  :taskPrompt :promptTaskFour ;
+  :performedByAgent :mastraAgent .
+
+:promptTaskOne rdf:type :Prompt ;
+  :promptInstruction "Doubles triggerData.inputValue and returns an object with { doubledValue }." ;
+  :promptInputData "triggerData.inputValue" ;
+  :promptOutputIndicator "doubledValue" .
+
+:promptTaskTwo rdf:type :Prompt ;
+  :promptInstruction "Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1." ;
+  :promptOutputIndicator "incrementedValue" .
+
+:promptTaskThree rdf:type :Prompt ;
+  :promptInstruction "Triples triggerData.inputValue and returns an object with { tripledValue }." ;
+  :promptInputData "triggerData.inputValue" ;
+  :promptOutputIndicator "tripledValue" .
+
+:promptTaskFour rdf:type :Prompt ;
+  :promptInstruction "Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even." ;
+  :promptOutputIndicator "isEven" .
+
+:mastraAgent rdf:type :LLMAgent ;
+  :agentID "mastra-agent" ;
+  :agentRole "workflow-executor" ;
+  :agentPrompt :promptMastraAgent ;
+  :useLanguageModel :LM_default ;
+  :hasAgentCapability :capExecuteWorkflowStep .
+
+:promptMastraAgent rdf:type :Prompt ;
+  :promptInstruction "Executes and orchestrates workflow steps defined in the Mastra workflow; responsible for invoking step logic and managing step transitions." .
+
+:LM_default rdf:type :LanguageModel ;
+  dcterms:title "default" .
+
+:capExecuteWorkflowStep rdf:type :Capability ;
+  dcterms:title "execute-workflow-step" .
