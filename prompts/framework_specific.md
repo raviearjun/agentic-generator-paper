@@ -63,6 +63,7 @@ Map every CrewAI construct as follows:
 | Task execution order (position in `tasks=[t1, t2, ...]`) | `:WorkflowStep` individuals with `:stepOrder`, linked as `:StartStep` (first), `:EndStep` (last), chained via `:nextStep` |
 | `Crew.kickoff_inputs` / input variables | `:Config` on team with key/value |
 | `max_iter`, `max_rpm`, `verbose`, `memory` on Agent | `:Config` individuals on `:LLMAgent` via `:hasAgentConfig` |
+| `config/agents.yaml` or any agent config file (if present) | For each key in the agent's config block (e.g., `max_iter`, `verbose`, `allow_delegation`, `cache`): one `:Config` individual per key with `:configKey` and `:configValue`; link to the agent via `:hasAgentConfig` |
 
 ### LangGraph Rules
 
@@ -102,6 +103,7 @@ Map every AutoGen construct as follows:
 | `GroupChatManager(groupchat=..., llm_config=...)` | `:LLMAgent` as manager with `:agentRole "GroupChatManager"` |
 | Nested chat / `register_nested_chats` | `:WorkflowPattern` with `dcterms:title "Nested"` + `:WorkflowStep` individuals |
 | `is_termination_msg`, `max_consecutive_auto_reply` | `:Config` on the relevant `:LLMAgent` |
+| Any external config dict / JSON file passed to an agent (e.g., `llm_config`, `code_execution_config`) | Extract each key-value pair as a `:Config` individual linked via `:hasAgentConfig` |
 
 ### Mastra AI Rules
 
@@ -121,6 +123,7 @@ Map every Mastra AI construct as follows:
 | `new Memory({...})` / `Memory` stores | `:Memory` individual; `:hasKnowledge → :Memory` on the agent |
 | Multi-agent: `mastra.getAgent(name)` calls within a step | `:interactsWith` triples between the calling agent and the called agent |
 | `new Mastra({ agents: {...} })` | `:Team` with `:hasAgentMember` for all agents |
+| Any config object passed to `new Agent({...})` beyond name/instructions/model/tools (e.g., `maxSteps`, `telemetry`) | One `:Config` individual per key; link via `:hasAgentConfig` |
 
 ---
 
@@ -208,6 +211,7 @@ Work through this checklist for every entity in the source code.
 - [ ] `:agentPrompt → :Prompt` with `:promptInstruction` containing the full system message / backstory
 - [ ] `:useLanguageModel → :LanguageModel` — **always create a `:LanguageModel` individual**, even when the model is set via an environment variable (use `dcterms:title "default"` if unknown)
 - [ ] `:agentToolUsage → :Tool` for every tool the agent can call
+- [ ] **If a config file or config dict for the agent exists** (e.g., `agents.yaml`, `llm_config`, constructor kwargs): create one `:Config` individual per key-value pair and link each via `:hasAgentConfig`
 
 **Tools** — for each tool, API, or registered function create:
 - [ ] `:Tool` individual with `dcterms:title` and `dcterms:description`
