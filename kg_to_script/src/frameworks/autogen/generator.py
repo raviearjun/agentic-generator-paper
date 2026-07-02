@@ -128,7 +128,6 @@ def _build_main_context(project: AutoGenProject) -> Dict[str, Any]:
     return {
         "project": project,
         "name": project.name,
-        "input_variables": project.input_variables,
         "human_agents": project.human_agents,
         "resolved_steps": resolved_steps,
     }

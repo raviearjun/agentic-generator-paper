@@ -14,7 +14,6 @@ from .metrics.oec import calculate_oec
 from .metrics.wgi import calculate_wgi
 from .metrics.compilation import compile_project
 from .metrics.dry_run import dry_run_project
-from .metrics.ast_similarity import calculate_ast_similarity, load_gt_code, get_combined_source
 from .pairing import pair_projects
 from .reports.markdown_report import render_markdown
 
@@ -89,16 +88,6 @@ def _evaluate_framework(key: str, config) -> Dict[str, object]:
             run_status = run_res["status"]
             run_output = run_res["output"]
 
-            # 3. Ground Truth & AST Similarity check
-            gt_found, gt_code = load_gt_code(config.gt_dir, project_name, key)
-            ast_sim = None
-            if gt_found:
-                gen_code = get_combined_source(project_dir, config.ext)
-                if gen_code and gt_code:
-                    ast_sim = calculate_ast_similarity(gen_code, gt_code, key)
-                else:
-                    ast_sim = 0.0
-
             projects.append(
                 {
                     "project": project_name,
@@ -112,8 +101,6 @@ def _evaluate_framework(key: str, config) -> Dict[str, object]:
                     "syntax_ok": syntax_ok,
                     "run_status": run_status,
                     "run_output": run_output,
-                    "gt_found": gt_found,
-                    "ast_sim": ast_sim,
                 }
             )
         except Exception as exc:
@@ -140,9 +127,7 @@ def _evaluate_framework(key: str, config) -> Dict[str, object]:
 def _summary(projects: List[Dict[str, object]]) -> Dict[str, object]:
     ok_projects = [project for project in projects if project.get("status") == "ok"]
     errors = len(projects) - len(ok_projects)
-    
-    ast_sims = [project["ast_sim"] for project in ok_projects if project.get("ast_sim") is not None]
-    
+
     return {
         "projects": len(projects),
         "evaluated": len(ok_projects),
@@ -151,7 +136,6 @@ def _summary(projects: List[Dict[str, object]]) -> Dict[str, object]:
         "avg_oec_important": _avg(project["oec"]["important_subset"]["score"] for project in ok_projects),
         "avg_wgi": _avg(project["wgi"]["score"] for project in ok_projects),
         "avg_edge_f1": _avg(project["wgi"]["edge_f1"] for project in ok_projects),
-        "avg_ast_sim": _avg(ast_sims) if ast_sims else None,
         "syntax_success_rate": _avg(1.0 if project.get("syntax_ok") else 0.0 for project in ok_projects),
         "run_success_rate": _avg(
             1.0 if project.get("run_status") == "SUCCESS_DUMMY" or (project.get("run_status") == "N/A" and project.get("syntax_ok")) else 0.0

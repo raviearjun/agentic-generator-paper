@@ -67,7 +67,6 @@ def adapt(project: AgenticProject) -> AutoGenProject:
         workflows=project.workflows,
         tools=project.tools,
         ordered_tasks=_build_ordered_tasks(project),
-        input_variables=project.input_variables,
         env_vars=project.env_vars,
         human_agents=project.human_agents,
         goals=project.goals,

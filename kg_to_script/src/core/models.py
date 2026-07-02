@@ -251,21 +251,6 @@ class MemoryModel(BaseModel):
 
 
 # ──────────────────────────────────────────────
-# Input Variable Model
-# ──────────────────────────────────────────────
-
-class InputVariableModel(BaseModel):
-    """A template placeholder variable extracted from prompts or KickoffInputBundle."""
-    name: str = Field(..., description="Variable name (e.g. 'company_domain')")
-    default_value: str = Field("", description="Default value if asserted in KG")
-    has_default: bool = Field(False, description="True if the KG provides a concrete default value")
-    alternative_values: List[str] = Field(
-        default_factory=list,
-        description="Other example values from non-default KickoffInputBundle entries",
-    )
-
-
-# ──────────────────────────────────────────────
 # Top-level Project Model
 # ──────────────────────────────────────────────
 
@@ -304,6 +289,5 @@ class AgenticProject(BaseModel):
     constraints: List[ConstraintModel] = Field(default_factory=list)
 
     # Runtime configuration
-    input_variables: List[InputVariableModel] = Field(default_factory=list)
     env_vars: List[ConfigModel] = Field(default_factory=list)
     system_configs: Dict[str, str] = Field(default_factory=dict)

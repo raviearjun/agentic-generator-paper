@@ -10,7 +10,6 @@ from ...core.models import (
     EnvironmentModel,
     GoalModel,
     HumanAgentModel,
-    InputVariableModel,
     ObjectiveModel,
     ResourceModel,
     TaskModel,
@@ -79,10 +78,6 @@ class LangGraphProject(BaseModel):
     routes: List[LangGraphRouteModel] = Field(default_factory=list)
     router_node_name: str = Field("", description="Router node ts_name for supervisor graphs")
     start_node_name: str = Field("", description="Start node ts_name")
-    input_variables: List[InputVariableModel] = Field(
-        default_factory=list,
-        description="Runtime input variables (from agento-ext:KickoffInputBundle)",
-    )
     workflow_names: List[str] = Field(
         default_factory=list,
         description="Original workflow identifiers from the KG (used in generated code comments for OEC matching)",

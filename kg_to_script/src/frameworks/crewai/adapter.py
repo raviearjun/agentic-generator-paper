@@ -217,7 +217,6 @@ def adapt(project: AgenticProject) -> CrewProject:
         agent_verbose=agent_verbose,
         agent_tool_var_names=agent_tool_var_names,
         tool_class_names=tool_class_names,
-        input_variables=project.input_variables,
         language_models=project.language_models,
         env_vars=project.env_vars,
         human_agents=project.human_agents,

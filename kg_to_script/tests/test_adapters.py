@@ -6,7 +6,6 @@ from src.core.models import (
     AgenticProject,
     AgentModel,
     ConfigModel,
-    InputVariableModel,
     LanguageModelModel,
     MemoryModel,
     TaskModel,
@@ -120,9 +119,6 @@ def _make_project(**overrides) -> AgenticProject:
             ),
         ],
         language_models=[llm_model],
-        input_variables=[
-            InputVariableModel(name="topic", default_value="AI", has_default=True),
-        ],
         env_vars=[ConfigModel(key="OPENAI_API_KEY", value="sk-test")],
         system_configs={"process": "sequential"},
     )

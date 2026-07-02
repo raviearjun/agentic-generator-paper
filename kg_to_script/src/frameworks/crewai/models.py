@@ -19,7 +19,6 @@ from ...core.models import (
     EnvironmentModel,
     GoalModel,
     HumanAgentModel,
-    InputVariableModel,
     LanguageModelModel,
     ObjectiveModel,
     ResourceModel,
@@ -68,10 +67,6 @@ class CrewProject(BaseModel):
         description="CamelCase class name per tool (label → CamelCase, used by generator)",
     )
 
-    input_variables: List[InputVariableModel] = Field(
-        default_factory=list,
-        description="Template variables for crew.kickoff(inputs={...})",
-    )
     language_models: List[LanguageModelModel] = Field(default_factory=list)
     env_vars: List[ConfigModel] = Field(
         default_factory=list,

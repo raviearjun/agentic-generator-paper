@@ -244,7 +244,6 @@ def adapt(project: AgenticProject) -> LangGraphProject:
         routes=routes,
         router_node_name=router_node_name,
         start_node_name=start_node_name,
-        input_variables=project.input_variables,
         workflow_names=workflow_names,
         tasks=list(project.tasks),
         human_agents=project.human_agents,

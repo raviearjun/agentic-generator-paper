@@ -12,7 +12,6 @@ from ...core.models import (
     EnvironmentModel,
     GoalModel,
     HumanAgentModel,
-    InputVariableModel,
     ObjectiveModel,
     ResourceModel,
     TaskModel,
@@ -33,7 +32,6 @@ class AutoGenProject(BaseModel):
     workflows: List[WorkflowPatternModel] = Field(default_factory=list)
     tools: List[ToolModel] = Field(default_factory=list)
     ordered_tasks: List[TaskModel] = Field(default_factory=list)
-    input_variables: List[InputVariableModel] = Field(default_factory=list)
     env_vars: List[ConfigModel] = Field(default_factory=list)
 
     human_agents: List[HumanAgentModel] = Field(default_factory=list)

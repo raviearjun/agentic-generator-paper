@@ -28,7 +28,6 @@ from .models import (
     EnvironmentModel,
     GoalModel,
     HumanAgentModel,
-    InputVariableModel,
     LanguageModelModel,
     MemoryModel,
     ObjectiveModel,
@@ -53,7 +52,6 @@ from .queries import (
     CAPABILITIES_QUERY,
     CONSTRAINT_CONFIGS_QUERY,
     CONSTRAINTS_QUERY,
-    DEFAULT_INPUTS_QUERY,
     ENV_CONFIG_QUERY,
     ENVIRONMENT_CONFIGS_QUERY,
     ENVIRONMENT_CONTAINS_QUERY,
@@ -61,12 +59,10 @@ from .queries import (
     GOALS_QUERY,
     HUMAN_AGENTS_QUERY,
     HUMAN_PARTICIPATED_QUERY,
-    KICKOFF_INPUTS_QUERY,
     LLM_QUERY,
     MEMORY_CONFIG_QUERY,
     MEMORY_QUERY,
     OBJECTIVES_QUERY,
-    PROMPT_INPUT_DATA_QUERY,
     RESOURCES_QUERY,
     STEP_EDGES_QUERY,
     SYSTEM_CONFIG_QUERY,
@@ -530,91 +526,6 @@ def _extract_system_configs(g: Graph) -> Dict[str, str]:
     return configs
 
 
-def _extract_input_variables(
-    g: Graph,
-    tasks_map: Dict[str, TaskModel],
-    agents_map: Dict[str, AgentModel],
-) -> List[InputVariableModel]:
-    """Extract template placeholder variables from prompts and KickoffInputBundle.
-
-    Strategy:
-      1. PRIMARY: agento-ext:KickoffInputBundle triples (authoritative, explicit).
-         If found, return these exclusively.
-      2. FALLBACK (legacy): placeholder scanning of task descriptions +
-         promptInputData + Context/Resource descriptions.
-         A warning is logged when this path is taken.
-    """
-    # Strategy 1: agento-ext:KickoffInputBundle (primary)
-    kickoff_results = list(g.query(KICKOFF_INPUTS_QUERY))
-    if kickoff_results:
-        key_data: Dict[str, dict] = {}
-        for row in kickoff_results:
-            key = s(row.key)
-            value = s(row.value)
-            is_default_str = s(row.isDefault).lower()
-            is_default = is_default_str in ("true", "1", "yes")
-
-            if key not in key_data:
-                key_data[key] = {"default": "", "is_default": False, "alternatives": []}
-
-            if is_default and not key_data[key]["is_default"]:
-                key_data[key]["default"] = value
-                key_data[key]["is_default"] = True
-            elif value:
-                key_data[key]["alternatives"].append(value)
-
-        return [
-            InputVariableModel(
-                name=key,
-                default_value=data["default"],
-                has_default=data["is_default"] and bool(data["default"]),
-                alternative_values=data["alternatives"],
-            )
-            for key, data in key_data.items()
-        ]
-
-    # Strategy 2: Legacy fallback
-    logger.warning(
-        "No agento-ext:KickoffInputBundle found in graph. "
-        "Falling back to legacy placeholder scanning. "
-        "Consider migrating TTL files to use KickoffInputBundle for reliable input extraction."
-    )
-
-    all_vars: Dict[str, str] = {}
-
-    # From task descriptions
-    for task in tasks_map.values():
-        for var_name in extract_placeholders(task.description):
-            if var_name not in all_vars:
-                all_vars[var_name] = ""
-
-    # From prompt input data
-    for row in g.query(PROMPT_INPUT_DATA_QUERY):
-        text = s(row.inputData)
-        for var_name in extract_placeholders(text):
-            if var_name not in all_vars:
-                all_vars[var_name] = ""
-
-    # Attempt default value extraction from :Context / beam:Resource descriptions.
-    # Only accepts structured lines of the form "key = value" or "key: value".
-    # Lines that look like prose (no word-boundary key match) are skipped.
-    for row in g.query(DEFAULT_INPUTS_QUERY):
-        desc = s(row.desc)
-        for line in desc.split("\n"):
-            line = line.strip().lstrip("-").strip()
-            m = re.match(r"^(\w+)\s*[:=]\s*(\S.*)$", line)
-            if m:
-                key = m.group(1).strip()
-                val = m.group(2).strip().strip("'\"")
-                if key in all_vars:
-                    all_vars[key] = val
-
-    return [
-        InputVariableModel(name=name, default_value=default, has_default=bool(default))
-        for name, default in all_vars.items()
-    ]
-
-
 def _extract_env_vars(g: Graph) -> List[ConfigModel]:
     """Extract environment variable configs (API keys, etc.)."""
     env_vars: List[ConfigModel] = []
@@ -994,7 +905,6 @@ def extract_project(file_path: str) -> AgenticProject:
         workflows=workflows,
         memories=list(memories_map.values()),
         language_models=list(lm_map.values()),
-        input_variables=_extract_input_variables(g, tasks_map, agents_map),
         env_vars=_extract_env_vars(g),
         system_configs=system_configs,
         goals=list(goals_map.values()),

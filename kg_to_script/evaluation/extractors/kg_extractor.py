@@ -71,9 +71,6 @@ def extract_kg(kg_path: Path) -> ExtractionResult:
     for env_var in project.env_vars:
         elements.append(_config_element("env", project.var_name or project.name, env_var.key, env_var.value))
 
-    for variable in project.input_variables:
-        elements.append(_element("input_variable", variable.name, variable.default_value, important=False))
-
     for agent in project.agents:
         elements.append(_element("agent", agent.var_name, agent.agent_id, agent.role, local_name(agent.iri), important=True))
         if agent.goal_iri:

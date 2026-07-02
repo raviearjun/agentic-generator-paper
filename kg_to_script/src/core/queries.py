@@ -260,48 +260,6 @@ WHERE {
 }
 """
 
-# ── Input Variables (from prompt input data) ──
-
-PROMPT_INPUT_DATA_QUERY = PREFIXES + """
-SELECT DISTINCT ?inputData
-WHERE {
-    ?prompt a :Prompt ;
-            :promptInputData ?inputData .
-}
-"""
-
-# ── Default inputs (from :Context / beam:Resource) — LEGACY fallback ──
-
-DEFAULT_INPUTS_QUERY = PREFIXES + """
-SELECT ?resource ?desc
-WHERE {
-    {
-        ?resource a beam:Resource .
-        ?resource dcterms:description ?desc .
-        FILTER(CONTAINS(LCASE(STR(?desc)), "input"))
-    }
-    UNION
-    {
-        ?resource a :Context .
-        ?resource dcterms:description ?desc .
-        FILTER(CONTAINS(LCASE(STR(?desc)), "input"))
-    }
-}
-"""
-
-# ── Uniform inputs (agento-ext:KickoffInputBundle) — PRIMARY ──
-
-KICKOFF_INPUTS_QUERY = PREFIXES + """
-PREFIX agento_ext: <http://www.w3id.org/agentic-ai/ext#>
-SELECT ?key ?value ?isDefault
-WHERE {
-    ?bundle a agento_ext:KickoffInputBundle ;
-            agento_ext:inputKey ?key ;
-            agento_ext:inputValue ?value ;
-            agento_ext:isDefaultValue ?isDefault .
-}
-"""
-
 # ── Environment config (API keys) ──
 
 ENV_CONFIG_QUERY = PREFIXES + """
