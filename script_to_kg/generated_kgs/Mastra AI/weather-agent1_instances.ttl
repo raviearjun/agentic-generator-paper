@@ -1,0 +1,78 @@
+# Execution time: 34.05 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Assumed agentRole "Weather Assistant" based on the agent's instructions text.
+# - The implementation of weatherTool was not provided; created a :Tool individual with an inferred description and capability "fetch current weather data".
+# - No explicit workflow was defined in the source; created a simple default WorkflowPattern (StartStep -> EndStep) with a single Task representing the agent's primary function.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+:weather-agent rdf:type :LLMAgent ;
+    dcterms:title "Weather Agent" ;
+    :agentID "weather-agent" ;
+    :agentRole "Weather Assistant" ;
+    :agentPrompt :weather-agent-prompt ;
+    :useLanguageModel :lm-gpt-4o-mini ;
+    :agentToolUsage :tool-weatherTool .
+
+:weather-agent-prompt rdf:type :Prompt ;
+    :promptInstruction """
+You are a helpful weather assistant that provides accurate weather information and can help planning activities based on the weather.
+
+Your primary function is to help users get weather details for specific locations. When responding:
+- Always ask for a location if none is provided
+- If the location name isn't in English, please translate it
+- If giving a location with multiple parts (e.g. "New York, NY"), use the most relevant part (e.g. "New York")
+- Include relevant details like humidity, wind conditions, and precipitation
+- Keep responses concise but informative
+- If the user asks for activities and provides the weather forecast, suggest activities based on the weather forecast.
+- If the user asks for activities, respond in the format they request.
+
+Use the weatherTool to fetch current weather data.
+""" .
+
+:lm-gpt-4o-mini rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o-mini" .
+
+:tool-weatherTool rdf:type :Tool ;
+    dcterms:title "weatherTool" ;
+    dcterms:description "Tool to fetch current weather data for a specified location (current conditions: temperature, humidity, wind, precipitation)." ;
+    :hasCapability :capability-fetch-weather .
+
+:capability-fetch-weather rdf:type :Capability ;
+    dcterms:description "Fetch current weather (temperature, humidity, wind, precipitation) for a given location." .
+
+:task-fetch-current-weather rdf:type :Task ;
+    dcterms:title "Fetch Current Weather" ;
+    :performedByAgent :weather-agent ;
+    :taskPrompt :prompt-fetch-weather .
+
+:prompt-fetch-weather rdf:type :Prompt ;
+    :promptInstruction """
+Fetch current weather data for the specified location using the weatherTool. If no location is provided, ask the user to supply one. Translate non-English location names to English before querying. Return concise but informative output including temperature, humidity, wind conditions, and precipitation. If asked for activity suggestions and forecast is available, include activity recommendations appropriate to the forecast.
+""" .
+
+:workflow-weather-agent rdf:type :WorkflowPattern ;
+    dcterms:title "Default Weather Agent Workflow" ;
+    :hasWorkflowStep :step-1, :step-2 .
+
+:step-1 rdf:type :StartStep , :WorkflowStep ;
+    dcterms:title "Start Step" ;
+    :stepOrder "1"^^xsd:integer ;
+    :hasAssociatedTask :task-fetch-current-weather ;
+    :nextStep :step-2 .
+
+:step-2 rdf:type :EndStep , :WorkflowStep ;
+    dcterms:title "End Step" ;
+    :stepOrder "2"^^xsd:integer ;
+    :hasAssociatedTask :task-fetch-current-weather .

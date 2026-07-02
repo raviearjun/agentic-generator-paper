@@ -12,7 +12,7 @@ Arguments:
     --model         LLM backend or 'all' (chatgpt | gemini | claude | all)
     --source-dir    Optional: path to a specific source folder to process a single example
     --dry-run       Print what would be run without calling the API
-    --output-root   Root folder for outputs (default: ./generated_kgs)
+    --output-root   Root folder for outputs (default: ../experiment_kg)
     --ontology      Path to ontology file (default: ../agentO.ttl)
     --skip-existing Skip if output file already exists (default: True)
 
@@ -22,7 +22,7 @@ Environment variables required:
     ANTHROPIC_API_KEY  — for Claude models
 
 Output structure:
-    generated_kgs/
+    experiment_kg/
         <framework>/
             <prompt_id>/
                 <model>/
@@ -42,7 +42,6 @@ from pathlib import Path
 # ─────────────────────────────────────────────
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
-WORKSPACE_ROOT = REPO_ROOT.parent.resolve()
 
 PROMPT_FILES = {
     "P0": REPO_ROOT / "prompts" / "baseline.md",
@@ -57,10 +56,10 @@ PROMPT_FILES = {
 # Each value points to the folder containing the actual framework source code.
 # AutoGen examples are Jupyter notebooks (.ipynb); CrewAI/LangGraph are project dirs.
 FRAMEWORK_SOURCES = {
-    "CrewAI":    REPO_ROOT / "ground_truth_scripts" / "CrewAI",
-    "LangGraph": REPO_ROOT / "ground_truth_scripts" / "LangGraph",
-    "AutoGen":   REPO_ROOT / "ground_truth_scripts" / "AutoGen",
-    "Mastra AI": REPO_ROOT / "ground_truth_scripts" / "Mastra AI",
+    "CrewAI":    REPO_ROOT / "GT_scripts" / "CrewAI",
+    "LangGraph": REPO_ROOT / "GT_scripts" / "LangGraph",
+    "AutoGen":   REPO_ROOT / "GT_scripts" / "AutoGen",
+    "Mastra AI": REPO_ROOT / "GT_scripts" / "Mastra AI",
 }
 
 MODEL_CONFIGS = {
@@ -81,8 +80,8 @@ MODEL_CONFIGS = {
     },
 }
 
-DEFAULT_ONTOLOGY = REPO_ROOT / ".." / "agentO.ttl"
-DEFAULT_OUTPUT_ROOT = REPO_ROOT / "generated_kgs"
+DEFAULT_ONTOLOGY = REPO_ROOT / "agentO.ttl"
+DEFAULT_OUTPUT_ROOT = REPO_ROOT / "experiment_kg"
 
 
 # ─────────────────────────────────────────────
@@ -97,7 +96,7 @@ def load_text(path: Path) -> str:
 SOURCE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx", ".md", ".yaml", ".yml", ".toml", ".env.example", ".ipynb"}
 EXCLUDED_DIRS    = {".git", ".github", "venv", "__pycache__", "node_modules",
                     "dist", "build", "docs", "examples", "tests", "test",
-                    "generated_kgs", "generated_kg", ".mypy_cache", ".ruff_cache"}
+                    "experiment_kg", "generated_kg", ".mypy_cache", ".ruff_cache"}
 
 # Top-level subdirs to skip when enumerating examples per framework
 FRAMEWORK_EXCLUDED_EXAMPLE_DIRS = {
@@ -439,17 +438,16 @@ def main():
             # If source has sub-projects (like CrewAI), enumerate them
             excluded = FRAMEWORK_EXCLUDED_EXAMPLE_DIRS.get(framework, set())
             subdirs = [d for d in sorted(fw_dir.iterdir()) if d.is_dir() and d.name not in excluded]
+            loose_files = sorted(
+                p for p in fw_dir.iterdir()
+                if p.is_file() and p.suffix.lower() in SOURCE_EXTENSIONS
+            )
             if subdirs:
-                source_dirs = subdirs
+                # Mixed layout: include sub-project dirs AND any loose source files at the top level
+                source_dirs = subdirs + loose_files
             else:
                 # Flat layout: each notebook/file is its own example (e.g. AutoGen .ipynb)
-                # Wrap each file in a temporary single-file "dir" by storing the file path;
-                # read_source_files already handles .ipynb via rglob so we pass the parent
-                # but disambiguate output names using the stem.
-                source_dirs = sorted(
-                    p for p in fw_dir.iterdir()
-                    if p.is_file() and p.suffix.lower() in SOURCE_EXTENSIONS
-                )
+                source_dirs = loose_files
 
         if args.max_examples is not None:
             source_dirs = source_dirs[:args.max_examples]
