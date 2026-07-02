@@ -39,7 +39,7 @@ for FRAMEWORK in "${FRAMEWORKS[@]}"; do
             echo "========================================="
             echo "Framework: $FRAMEWORK  Prompt: $PROMPT  Model: $MODEL"
             echo "========================================="
-            python3 script/run_experiment.py \
+            python3 Script/run_experiment.py \
                 --framework    "$FRAMEWORK" \
                 --prompt       "$PROMPT" \
                 --model        "$MODEL" \
@@ -51,4 +51,4 @@ done
 
 echo ""
 echo "All experiments complete."
-echo "Run evaluation with: python3 evaluation/evaluate_kgs.py"
+echo "Run evaluation with: python3 Script/evaluate_kg.py"

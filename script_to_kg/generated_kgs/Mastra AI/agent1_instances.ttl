@@ -1,0 +1,148 @@
+# Execution time: 47.66 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - No concrete `new Agent({...})` instantiation found in the file; created a representative agent individual (:MastraAgent1) to model the Agent class behavior in the source.
+# - Tools are inferred from API endpoints and clientTools usage (voice provider + generic clientTools). API keys and some values not present in source -> set to "unknown".
+# - Language model is not explicitly specified in the code -> created a default :LanguageModel with dcterms:title "default".
+# - Workflow steps approximate the high-level streaming/tool-execution flow observed in the code.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent (representative for Mastra Agent client wrapper)
+:MastraAgent1 rdf:type :LLMAgent ;
+  :agentID "MastraAgentClient" ;
+  :agentRole "client-wrapper" ;
+  :agentPrompt :Prompt_MastraAgentDescription ;
+  :useLanguageModel :LM_default ;
+  :agentToolUsage :VoiceProviderTool , :ClientToolsTool ;
+  :hasAgentConfig :Config_version , :Config_signalRuntimeOptionsTTL ;
+  :hasAgentGoal :MastraAgentGoal ;
+  :hasAgentCapability :Cap_ToolExecution , :Cap_TTS , :Cap_STT .
+
+:Prompt_MastraAgentDescription rdf:type :Prompt ;
+  :promptInstruction "Representative prompt describing the Mastra Agent client wrapper implemented in agent1.ts. The client exposes streaming, tool execution, signal runtime options management, and voice provider endpoints (speak/listen)." .
+
+:LM_default rdf:type :LanguageModel ;
+  dcterms:title "default" ;
+  dcterms:description "Default/unspecified language model placeholder created because no explicit model instantiation was found in the source." .
+
+:MastraAgentGoal rdf:type :Goal ;
+  dcterms:title "Provide streaming agent API and client-side tool execution" ;
+  dcterms:description "Goal for the Mastra agent client: handle streaming responses, orchestrate client tool execution, and expose voice and observation endpoints." .
+
+### Tools
+:VoiceProviderTool rdf:type :Tool ;
+  dcterms:title "VoiceProvider" ;
+  dcterms:description "Voice provider used by the agent for text-to-speech (speak) and speech-to-text (listen) operations via agent.voice endpoints." ;
+  :hasCapability :Cap_TTS , :Cap_STT ;
+  :hasToolConfig :Config_VoiceProviderApiKey .
+
+:ClientToolsTool rdf:type :Tool ;
+  dcterms:title "ClientTools" ;
+  dcterms:description "Abstract representation of the `clientTools` map supplied to the Mastra agent client; client-provided tools executed via `clientTool.execute`." ;
+  :hasCapability :Cap_ToolExecution ;
+  :hasToolConfig :Config_ClientToolsPlaceholder .
+
+### Tool Capabilities
+:Cap_TTS rdf:type :Capability ;
+  dcterms:title "Text-to-Speech" ;
+  dcterms:description "Capability to synthesize audio from text." .
+
+:Cap_STT rdf:type :Capability ;
+  dcterms:title "Speech-to-Text" ;
+  dcterms:description "Capability to transcribe audio to text." .
+
+:Cap_ToolExecution rdf:type :Capability ;
+  dcterms:title "Execute external client tool" ;
+  dcterms:description "Capability to execute a client-supplied tool via `clientTool.execute` and return results to the agent stream." .
+
+### Tool Configs
+:Config_VoiceProviderApiKey rdf:type :Config ;
+  :configKey "voiceProviderApiKey" ;
+  :configValue "unknown" .
+
+:Config_ClientToolsPlaceholder rdf:type :Config ;
+  :configKey "clientTools" ;
+  :configValue "map (client-provided) - values not present in source" .
+
+### Agent Configs (inferred from constructor/options/constants)
+:Config_version rdf:type :Config ;
+  :configKey "version" ;
+  :configValue "unknown" .
+
+:Config_signalRuntimeOptionsTTL rdf:type :Config ;
+  :configKey "signalRuntimeOptionsTTL" ;
+  :configValue "300000" .
+
+### Workflow Pattern (high-level streaming & tool-execution flow)
+:MastraAgentWorkflow rdf:type :WorkflowPattern ;
+  dcterms:title "Mastra Agent Stream Handling" ;
+  dcterms:description "High-level workflow modeling the stream processing, client-tool execution, and continuation/recursion behavior implemented in agent1.ts." ;
+  :hasWorkflowStep :MastraStep_ReceiveRequest , :MastraStep_ExecuteClientTool , :MastraStep_ReturnResponse .
+
+:MastraStep_ReceiveRequest rdf:type :StartStep , :WorkflowStep ;
+  :stepOrder 1 ;
+  :hasAssociatedTask :Task_ProcessRequest .
+
+:MastraStep_ExecuteClientTool rdf:type :WorkflowStep ;
+  :stepOrder 2 ;
+  :hasAssociatedTask :Task_ExecuteClientTool .
+
+:MastraStep_ReturnResponse rdf:type :EndStep , :WorkflowStep ;
+  :stepOrder 3 ;
+  :hasAssociatedTask :Task_ReturnResponse .
+
+:MastraStep_ReceiveRequest :nextStep :MastraStep_ExecuteClientTool .
+:MastraStep_ExecuteClientTool :nextStep :MastraStep_ReturnResponse .
+
+### Tasks
+:Task_ProcessRequest rdf:type :Task ;
+  :performedByAgent :MastraAgent1 ;
+  :taskPrompt :Prompt_Task_ProcessRequest .
+
+:Prompt_Task_ProcessRequest rdf:type :Prompt ;
+  :promptInstruction "Process incoming generate/stream request: validate params, prepare requestContext and clientTools, and forward to server endpoints (/agents/{agentId}/generate or /agents/{agentId}/stream)." ;
+  :promptOutputIndicator "A streaming response or immediate FullOutput depending on route." .
+
+:Task_ExecuteClientTool rdf:type :Task ;
+  :performedByAgent :MastraAgent1 ;
+  :taskPrompt :Prompt_Task_ExecuteClientTool .
+
+:Prompt_Task_ExecuteClientTool rdf:type :Prompt ;
+  :promptInstruction "Handle tool-call finish reason: locate pending client tool calls, execute `clientTool.execute`, attach observability data, synthesize tool-result chunks, and continue the stream/recursion as needed." ;
+  :promptOutputIndicator "Tool result messages and possible recursive stream invocations." .
+
+:Task_ReturnResponse rdf:type :Task ;
+  :performedByAgent :MastraAgent1 ;
+  :taskPrompt :Prompt_Task_ReturnResponse .
+
+:Prompt_Task_ReturnResponse rdf:type :Prompt ;
+  :promptInstruction "Finalize and return the response stream to the client; close controller when no client-tool continuation is required, or recursively continue the stream if client-tools were executed." ;
+  :promptOutputIndicator "SSE/stream events for the client; final response close or recursion handled." .
+
+### Team / System representation
+:MastraSystem rdf:type :Team ;
+  dcterms:title "Mastra Client System" ;
+  dcterms:description "Represents the system/module that provides the Mastra agent client API implemented in agent1.ts." ;
+  :hasAgentMember :MastraAgent1 ;
+  :hasWorkflowPattern :MastraAgentWorkflow ;
+  :hasTeamGoal :MastraSystemGoal ;
+  :hasSystemConfig :Config_system_baseUrl .
+
+:MastraSystemGoal rdf:type :Goal ;
+  dcterms:title "Expose Mastra agent client functionality" ;
+  dcterms:description "Provide stable streaming, tool execution continuation, and observability integration for agent runs." .
+
+:Config_system_baseUrl rdf:type :Config ;
+  :configKey "baseUrl" ;
+  :configValue "unknown" .
