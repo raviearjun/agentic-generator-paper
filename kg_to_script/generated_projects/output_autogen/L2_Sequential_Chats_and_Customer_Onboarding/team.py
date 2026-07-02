@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: OnboardingTeam
 Goals:
   - : Gather customer's name and location.
   - : Collect customer's preferences on news topics.

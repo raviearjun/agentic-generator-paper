@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "stock_analysis"
 version = "0.1.0"
 description = "CrewAI-based team coordinating multiple analyst agents to produce stock analysis"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+stock_analysis = "main:run"
 train      = "main:train"
 
 [tool.uv]

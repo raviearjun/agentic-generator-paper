@@ -1,6 +1,6 @@
-# UnnamedProject
+# MastraA2AClient
 
-A small two-agent system instantiated in the example code demonstrating agent-to-agent (A2A) communication: one agent performs research and another transforms research into content. The Mastra client baseUrl default (http://localhost:4111) is recorded in the system config.
+Represents the client-side component that orchestrates A2A interactions with a remote agent.
 
 **Auto-generated from AgentO Knowledge Graph**  
 Pipeline: KG (.ttl) → SPARQL → Pydantic IR → TypeScript
@@ -34,16 +34,17 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MastraA2AClient/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations
 │       ├── agents/            # Agent definitions
-│       │   └── myAgent.ts
-│       │   └── contentCreatorAgent.ts
+│       │   └── agentIdConstructorParameter.ts
 │       ├── tools/             # Tool definitions
+│       │   └── toolA2AApi.ts
+│       │   └── toolProcessA2AStream.ts
 │       └── workflows/         # Workflow definitions
-│           └── a2AExamplePattern.ts
+│           └── a2AClientWorkflow.ts
 ├── package.json
 ├── tsconfig.json
 └── .env.example
@@ -53,38 +54,51 @@ UnnamedProject/
 
 ## 🤖 Agents
 
-### LLM Agent
+### A2A remote agent
 
-- **ID:** `my-agent`
-- **Model:** `openai/gpt-4o`
+- **ID:** `agentId (constructor parameter)`
+- **Model:** `openai/gpt-4o-mini`
+- **Tools:** toolA2AApi, toolProcessA2AStream
 
-You are LLM Agent....
-
-### LLM Agent
-
-- **ID:** `content-creator-agent`
-- **Model:** `openai/gpt-4o`
-
-You are LLM Agent....
+You are A2A remote agent....
 
 
 ---
 
 ## 🔧 Tools
 
-No tools defined in this project.
+### toolA2AApi
+
+A2A JSON-RPC HTTP API endpoints used to interact with remote agents (agent-card, message/send, message/stream, tasks/*, pushNotificationConfig/*)....
+
+**Status:** ⚠️ Implementation required (see TODO in `src/mastra/tools/toolA2AApi.ts`)
+
+### toolProcessA2AStream
+
+Utility to parse and yield typed A2A stream events (SSE -> typed Message/Task/TaskStatusUpdateEvent/TaskArtifactUpdateEvent)....
+
+**Status:** ⚠️ Implementation required (see TODO in `src/mastra/tools/toolProcessA2AStream.ts`)
+
 
 ---
 
 ## 🔄 Workflows
 
-### a2_a_example_pattern
+### a2_a_client_workflow
 
-Two-step pattern: (1) research by a first agent; (2) transformation of research into content by a second agent. Matches the sequential steps in src/index.ts demonstrating A2A interactions.
+Representative sequence of A2A client interactions exposed by the A2A class.
 
-**Steps:** 2
-1. research_task
-2. content_task
+**Steps:** 10
+1. task_get_agent_card
+2. task_send_message
+3. task_send_message_stream
+4. task_get_task
+5. task_cancel_task
+6. task_resubscribe_task
+7. task_set_push_notification_config
+8. task_get_push_notification_config
+9. task_list_push_notification_config
+10. task_delete_push_notification_config
 
 
 ---

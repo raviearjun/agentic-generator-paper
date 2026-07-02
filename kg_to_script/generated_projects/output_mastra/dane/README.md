@@ -1,4 +1,4 @@
-# UnnamedProject
+# MastraDaneprojectinstance
 
 Mastra instance bundling agents, tools, memory and workflows for the Dane assistant CLI project.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MastraDaneprojectinstance/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

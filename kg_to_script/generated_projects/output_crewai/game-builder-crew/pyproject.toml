@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "game_builder"
 version = "0.1.0"
 description = "CrewAI crew defined in GameBuilderCrew class (src/game_builder_crew/crew.py)"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+game_builder = "main:run"
 train      = "main:train"
 
 [tool.uv]

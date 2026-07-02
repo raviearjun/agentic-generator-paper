@@ -10,13 +10,12 @@
         "projects": 16,
         "evaluated": 16,
         "errors": 0,
-        "avg_oec_all": 0.6445523727619409,
-        "avg_oec_important": 0.9495509497453359,
+        "avg_oec_all": 0.6299478722576812,
+        "avg_oec_important": 0.949550949745336,
         "avg_wgi": 0.9125631313131313,
         "avg_edge_f1": 0.8805555555555555,
-        "avg_ast_sim": 0.6021303805642652,
         "syntax_success_rate": 1.0,
-        "run_success_rate": 1.0
+        "run_success_rate": 0.0
       },
       "projects": [
         {
@@ -34,34 +33,34 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_serper_api_key",
+                  "name": "env_game_builder_crew_serper_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_serper_api_key",
+                    "env_game_builder_crew_serper_api_key",
                     "serper_api_key",
                     "env_set_via_environment_variable_if_available",
                     "serper_api_key_env_set_via_environment_variable_if_available"
                   ],
                   "details": {
                     "key": "serper_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "game_builder_crew",
                     "owner_category": "env",
                     "value": "env (set via environment variable if available)"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_openai_api_key",
+                  "name": "env_game_builder_crew_openai_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_openai_api_key",
+                    "env_game_builder_crew_openai_api_key",
                     "openai_api_key",
                     "env_set_via_environment_variable",
                     "openai_api_key_env_set_via_environment_variable"
                   ],
                   "details": {
                     "key": "openai_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "game_builder_crew",
                     "owner_category": "env",
                     "value": "env (set via environment variable)"
                   }
@@ -490,54 +489,52 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6585365853658537
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/game-builder-crew/main.py\", line 18, in <module>\n    from crew import GameBuilderCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/game-builder-crew/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "industry-agents",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/industry-agents_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/industry-agents",
           "status": "ok",
-          "kg_element_count": 51,
+          "kg_element_count": 50,
           "code_element_count": 13,
           "oec": {
             "all_extracted": {
-              "score": 0.5882352941176471,
-              "matched": 30,
-              "total": 51,
+              "score": 0.58,
+              "matched": 29,
+              "total": 50,
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_weaviate_api_key",
+                  "name": "env_blogcrew_weaviate_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_weaviate_api_key",
+                    "env_blogcrew_weaviate_api_key",
                     "weaviate_api_key",
                     "env_wcd_cluster_key",
                     "weaviate_api_key_env_wcd_cluster_key"
                   ],
                   "details": {
                     "key": "weaviate_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "blogcrew",
                     "owner_category": "env",
                     "value": "env:WCD_CLUSTER_KEY"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_api_key",
+                  "name": "env_blogcrew_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_api_key",
+                    "env_blogcrew_api_key",
                     "api_key",
                     "env_serper_api_key",
                     "api_key_env_serper_api_key"
                   ],
                   "details": {
                     "key": "api_key",
-                    "owner": "unnamed_project",
+                    "owner": "blogcrew",
                     "owner_category": "env",
                     "value": "env:SERPER_API_KEY"
                   }
@@ -822,11 +819,6 @@
                   "matched": 0,
                   "total": 3
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
-                  "total": 1
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -986,10 +978,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.0
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/industry-agents/main.py\", line 18, in <module>\n    from crew import blogcrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/industry-agents/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "instagram_post",
@@ -1006,34 +996,34 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_browserless_api_key",
+                  "name": "env_copy_crewagentsforcopygeneration_browserless_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_browserless_api_key",
+                    "env_copy_crewagentsforcopygeneration_browserless_api_key",
                     "browserless_api_key",
                     "env_browserless_api_key",
                     "browserless_api_key_env_browserless_api_key"
                   ],
                   "details": {
                     "key": "browserless_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "copy_crewagentsforcopygeneration",
                     "owner_category": "env",
                     "value": "env:BROWSERLESS_API_KEY"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_serper_api_key",
+                  "name": "env_copy_crewagentsforcopygeneration_serper_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_serper_api_key",
+                    "env_copy_crewagentsforcopygeneration_serper_api_key",
                     "serper_api_key",
                     "env_serper_api_key",
                     "serper_api_key_env_serper_api_key"
                   ],
                   "details": {
                     "key": "serper_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "copy_crewagentsforcopygeneration",
                     "owner_category": "env",
                     "value": "env:SERPER_API_KEY"
                   }
@@ -1649,23 +1639,21 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/instagram_post/main.py\", line 18, in <module>\n    from crew import CopyCrewagentsforcopygeneration\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/instagram_post/crew.py\", line 20, in <module>\n    from crewai import Agent, Crew, Process, Task, LLM\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "job-posting",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/job-posting_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/job-posting",
           "status": "ok",
-          "kg_element_count": 68,
+          "kg_element_count": 64,
           "code_element_count": 15,
           "oec": {
             "all_extracted": {
-              "score": 0.7352941176470589,
-              "matched": 50,
-              "total": 68,
+              "score": 0.71875,
+              "matched": 46,
+              "total": 64,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -1911,11 +1899,6 @@
                   "matched": 0,
                   "total": 4
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 4,
-                  "total": 4
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -2095,23 +2078,21 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6190476190476191
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/job-posting/main.py\", line 18, in <module>\n    from crew import UnnamedProject\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/job-posting/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "landing_page_generator",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/landing_page_generator_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/landing_page_generator",
           "status": "ok",
-          "kg_element_count": 100,
+          "kg_element_count": 96,
           "code_element_count": 27,
           "oec": {
             "all_extracted": {
-              "score": 0.68,
-              "matched": 68,
-              "total": 100,
+              "score": 0.6666666666666666,
+              "matched": 64,
+              "total": 96,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -2260,8 +2241,8 @@
                   "aliases": [
                     "tool_tool_learn_landing_page_options_templates_config",
                     "templates_config",
-                    "config_templates_json",
                     "templates_json",
+                    "config_templates_json",
                     "templates_config_config_templates_json"
                   ],
                   "details": {
@@ -2522,11 +2503,6 @@
                   "matched": 0,
                   "total": 4
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 4,
-                  "total": 4
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -2775,37 +2751,35 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.7254901960784313
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/landing_page_generator/main.py\", line 18, in <module>\n    from crew import UnnamedProject\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/landing_page_generator/crew.py\", line 23, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "markdown_validator",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/markdown_validator_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/markdown_validator",
           "status": "ok",
-          "kg_element_count": 22,
+          "kg_element_count": 21,
           "code_element_count": 6,
           "oec": {
             "all_extracted": {
-              "score": 0.6363636363636364,
-              "matched": 14,
-              "total": 22,
+              "score": 0.6190476190476191,
+              "matched": 13,
+              "total": 21,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_query",
+                  "name": "system_mark_down_validator_crew_query",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_query",
+                    "system_mark_down_validator_crew_query",
                     "query",
                     "please_provide_the_markdown_file_to_analyze",
                     "query_please_provide_the_markdown_file_to_analyze"
                   ],
                   "details": {
                     "key": "query",
-                    "owner": "unnamed_project",
+                    "owner": "mark_down_validator_crew",
                     "owner_category": "system",
                     "value": "Please provide the markdown file to analyze:"
                   }
@@ -2923,11 +2897,6 @@
                 "goal": {
                   "score": 0.0,
                   "matched": 0,
-                  "total": 1
-                },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
                   "total": 1
                 },
                 "language_model": {
@@ -3067,23 +3036,21 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.7857142857142857
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/markdown_validator/main.py\", line 18, in <module>\n    from crew import MarkDownValidatorCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/markdown_validator/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "marketing_strategy",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/marketing_strategy_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/marketing_strategy",
           "status": "ok",
-          "kg_element_count": 56,
+          "kg_element_count": 54,
           "code_element_count": 17,
           "oec": {
             "all_extracted": {
-              "score": 0.6607142857142857,
-              "matched": 37,
-              "total": 56,
+              "score": 0.6481481481481481,
+              "matched": 35,
+              "total": 54,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -3357,11 +3324,6 @@
                   "matched": 0,
                   "total": 4
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 2,
-                  "total": 2
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -3592,24 +3554,58 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6190476190476191
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/marketing_strategy/main.py\", line 18, in <module>\n    from crew import MarketingPostsCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/marketing_strategy/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "match_profile_to_positions",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/match_profile_to_positions_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/match_profile_to_positions",
           "status": "ok",
-          "kg_element_count": 37,
+          "kg_element_count": 35,
           "code_element_count": 10,
           "oec": {
             "all_extracted": {
-              "score": 0.6486486486486487,
-              "matched": 24,
-              "total": 37,
+              "score": 0.5714285714285714,
+              "matched": 20,
+              "total": 35,
               "missing": [
+                {
+                  "category": "config",
+                  "name": "system_match_to_proposal_crew_path_to_jobs_csv",
+                  "important": false,
+                  "aliases": [
+                    "system_match_to_proposal_crew_path_to_jobs_csv",
+                    "path_to_jobs_csv",
+                    "src_match_to_proposal_data_jobs_csv",
+                    "jobs_csv",
+                    "path_to_jobs_csv_src_match_to_proposal_data_jobs_csv"
+                  ],
+                  "details": {
+                    "key": "path_to_jobs_csv",
+                    "owner": "match_to_proposal_crew",
+                    "owner_category": "system",
+                    "value": "./src/match_to_proposal/data/jobs.csv"
+                  }
+                },
+                {
+                  "category": "config",
+                  "name": "system_match_to_proposal_crew_path_to_cv",
+                  "important": false,
+                  "aliases": [
+                    "system_match_to_proposal_crew_path_to_cv",
+                    "path_to_cv",
+                    "src_match_to_proposal_data_cv_md",
+                    "cv_md",
+                    "path_to_cv_src_match_to_proposal_data_cv_md"
+                  ],
+                  "details": {
+                    "key": "path_to_cv",
+                    "owner": "match_to_proposal_crew",
+                    "owner_category": "system",
+                    "value": "./src/match_to_proposal/data/cv.md"
+                  }
+                },
                 {
                   "category": "agent_goal",
                   "name": "cv_reader_goal_cv_reader",
@@ -3785,19 +3781,14 @@
                   "total": 2
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 6,
+                  "score": 0.6666666666666666,
+                  "matched": 4,
                   "total": 6
                 },
                 "goal": {
                   "score": 0.0,
                   "matched": 0,
                   "total": 3
-                },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 2,
-                  "total": 2
                 },
                 "language_model": {
                   "score": 0.0,
@@ -3948,23 +3939,21 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/match_profile_to_positions/main.py\", line 18, in <module>\n    from crew import MatchToProposalCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/match_profile_to_positions/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "meta_quest_knowledge",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/meta_quest_knowledge_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/meta_quest_knowledge",
           "status": "ok",
-          "kg_element_count": 13,
+          "kg_element_count": 12,
           "code_element_count": 5,
           "oec": {
             "all_extracted": {
-              "score": 0.6153846153846154,
-              "matched": 8,
-              "total": 13,
+              "score": 0.5833333333333334,
+              "matched": 7,
+              "total": 12,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -4046,11 +4035,6 @@
                 "goal": {
                   "score": 0.0,
                   "matched": 0,
-                  "total": 1
-                },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
                   "total": 1
                 },
                 "language_model": {
@@ -4165,37 +4149,35 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6097560975609756
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/meta_quest_knowledge/main.py\", line 18, in <module>\n    from crew import MetaQuestKnowledgeCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/meta_quest_knowledge/crew.py\", line 10, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "prep-for-a-meeting",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/prep-for-a-meeting_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/prep-for-a-meeting",
           "status": "ok",
-          "kg_element_count": 67,
+          "kg_element_count": 64,
           "code_element_count": 17,
           "oec": {
             "all_extracted": {
-              "score": 0.6716417910447762,
-              "matched": 45,
-              "total": 67,
+              "score": 0.65625,
+              "matched": 42,
+              "total": 64,
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_exa_api_key",
+                  "name": "env_meeting_preparation_crew_exa_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_exa_api_key",
+                    "env_meeting_preparation_crew_exa_api_key",
                     "exa_api_key",
                     "env_exa_api_key",
                     "exa_api_key_env_exa_api_key"
                   ],
                   "details": {
                     "key": "exa_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "meeting_preparation_crew",
                     "owner_category": "env",
                     "value": "env:EXA_API_KEY"
                   }
@@ -4505,11 +4487,6 @@
                   "matched": 2,
                   "total": 4
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 3,
-                  "total": 3
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -4679,10 +4656,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6444444444444445
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/prep-for-a-meeting/main.py\", line 18, in <module>\n    from crew import MeetingPreparationCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/prep-for-a-meeting/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "recruitment",
@@ -4699,34 +4674,34 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_kickoff_inputs_job_requirements",
+                  "name": "system_recruitment_crew_kickoff_inputs_job_requirements",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_kickoff_inputs_job_requirements",
+                    "system_recruitment_crew_kickoff_inputs_job_requirements",
                     "kickoff_inputs_job_requirements",
                     "ruby_on_rails_and_react_engineer_job_requirements_provided_at_kickoff",
                     "kickoff_inputs_job_requirements_ruby_on_rails_and_react_engineer_job_requirements_provided_at_kickoff"
                   ],
                   "details": {
                     "key": "kickoff_inputs_job_requirements",
-                    "owner": "unnamed_project",
+                    "owner": "recruitment_crew",
                     "owner_category": "system",
                     "value": "Ruby on Rails and React Engineer job requirements (provided at kickoff)"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_serperdev_api_key",
+                  "name": "env_recruitment_crew_serperdev_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_serperdev_api_key",
+                    "env_recruitment_crew_serperdev_api_key",
                     "serperdev_api_key",
                     "replace_with_serperdev_key",
                     "serperdev_api_key_replace_with_serperdev_key"
                   ],
                   "details": {
                     "key": "serperdev_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "recruitment_crew",
                     "owner_category": "env",
                     "value": "REPLACE_WITH_SERPERDEV_KEY"
                   }
@@ -5242,37 +5217,35 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6222222222222222
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/recruitment/main.py\", line 18, in <module>\n    from crew import RecruitmentCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/recruitment/crew.py\", line 18, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "screenplay_writer",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/screenplay_writer_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/screenplay_writer",
           "status": "ok",
-          "kg_element_count": 80,
+          "kg_element_count": 78,
           "code_element_count": 20,
           "oec": {
             "all_extracted": {
-              "score": 0.75,
-              "matched": 60,
-              "total": 80,
+              "score": 0.7435897435897436,
+              "matched": 58,
+              "total": 78,
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_api_key",
+                  "name": "env_ai_crewforscreenwriting_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_api_key",
+                    "env_ai_crewforscreenwriting_api_key",
                     "api_key",
                     "env_mistral_api_key",
                     "api_key_env_mistral_api_key"
                   ],
                   "details": {
                     "key": "api_key",
-                    "owner": "unnamed_project",
+                    "owner": "ai_crewforscreenwriting",
                     "owner_category": "env",
                     "value": "env:MISTRAL_API_KEY"
                   }
@@ -5554,11 +5527,6 @@
                   "matched": 0,
                   "total": 1
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 2,
-                  "total": 2
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -5755,23 +5723,21 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5476190476190477
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/screenplay_writer/main.py\", line 18, in <module>\n    from crew import AICrewforscreenwriting\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/screenplay_writer/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "starter_template",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/starter_template_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/starter_template",
           "status": "ok",
-          "kg_element_count": 37,
+          "kg_element_count": 35,
           "code_element_count": 9,
           "oec": {
             "all_extracted": {
-              "score": 0.5945945945945946,
-              "matched": 22,
-              "total": 37,
+              "score": 0.5714285714285714,
+              "matched": 20,
+              "total": 35,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -5994,11 +5960,6 @@
                   "matched": 0,
                   "total": 2
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 2,
-                  "total": 2
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -6148,54 +6109,52 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6097560975609756
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/starter_template/main.py\", line 18, in <module>\n    from crew import CustomCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/starter_template/crew.py\", line 13, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "stock_analysis",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/stock_analysis_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/stock_analysis",
           "status": "ok",
-          "kg_element_count": 86,
+          "kg_element_count": 85,
           "code_element_count": 22,
           "oec": {
             "all_extracted": {
-              "score": 0.686046511627907,
-              "matched": 59,
-              "total": 86,
+              "score": 0.6823529411764706,
+              "matched": 58,
+              "total": 85,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_query",
+                  "name": "system_stock_analysis_crew_query",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_query",
+                    "system_stock_analysis_crew_query",
                     "query",
                     "what_is_the_company_you_want_to_analyze",
                     "query_what_is_the_company_you_want_to_analyze"
                   ],
                   "details": {
                     "key": "query",
-                    "owner": "unnamed_project",
+                    "owner": "stock_analysis_crew",
                     "owner_category": "system",
                     "value": "What is the company you want to analyze?"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_sec_api_api_key",
+                  "name": "env_stock_analysis_crew_sec_api_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_sec_api_api_key",
+                    "env_stock_analysis_crew_sec_api_api_key",
                     "sec_api_api_key",
                     "env_sec_api_api_key",
                     "sec_api_api_key_env_sec_api_api_key"
                   ],
                   "details": {
                     "key": "sec_api_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "stock_analysis_crew",
                     "owner_category": "env",
                     "value": "env:SEC_API_API_KEY"
                   }
@@ -6554,11 +6513,6 @@
                   "matched": 0,
                   "total": 1
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
-                  "total": 1
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -6733,105 +6687,103 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.75
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/stock_analysis/main.py\", line 18, in <module>\n    from crew import StockAnalysisCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/stock_analysis/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task, LLM\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "surprise_trip",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/CrewAI/surprise_trip_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/surprise_trip",
           "status": "ok",
-          "kg_element_count": 55,
+          "kg_element_count": 54,
           "code_element_count": 13,
           "oec": {
             "all_extracted": {
-              "score": 0.5818181818181818,
-              "matched": 32,
-              "total": 55,
+              "score": 0.5740740740740741,
+              "matched": 31,
+              "total": 54,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_origin",
+                  "name": "system_surprise_travel_crew_origin",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_origin",
+                    "system_surprise_travel_crew_origin",
                     "origin",
                     "s_o_paulo_gru",
                     "origin_s_o_paulo_gru"
                   ],
                   "details": {
                     "key": "origin",
-                    "owner": "unnamed_project",
+                    "owner": "surprise_travel_crew",
                     "owner_category": "system",
                     "value": "S\u00e3o Paulo, GRU"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_hotel_location",
+                  "name": "system_surprise_travel_crew_hotel_location",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_hotel_location",
+                    "system_surprise_travel_crew_hotel_location",
                     "hotel_location",
                     "brooklyn",
                     "hotel_location_brooklyn"
                   ],
                   "details": {
                     "key": "hotel_location",
-                    "owner": "unnamed_project",
+                    "owner": "surprise_travel_crew",
                     "owner_category": "system",
                     "value": "Brooklyn"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_flight_information",
+                  "name": "system_surprise_travel_crew_flight_information",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_flight_information",
+                    "system_surprise_travel_crew_flight_information",
                     "flight_information",
                     "gol_1234_leaving_at_june_30_th_2024_10_00",
                     "flight_information_gol_1234_leaving_at_june_30_th_2024_10_00"
                   ],
                   "details": {
                     "key": "flight_information",
-                    "owner": "unnamed_project",
+                    "owner": "surprise_travel_crew",
                     "owner_category": "system",
                     "value": "GOL 1234, leaving at June 30th, 2024, 10:00"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_trip_duration",
+                  "name": "system_surprise_travel_crew_trip_duration",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_trip_duration",
+                    "system_surprise_travel_crew_trip_duration",
                     "trip_duration",
                     "14_days",
                     "trip_duration_14_days"
                   ],
                   "details": {
                     "key": "trip_duration",
-                    "owner": "unnamed_project",
+                    "owner": "surprise_travel_crew",
                     "owner_category": "system",
                     "value": "14 days"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_api_key",
+                  "name": "env_surprise_travel_crew_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_api_key",
+                    "env_surprise_travel_crew_api_key",
                     "api_key",
                     "from_env",
                     "api_key_from_env"
                   ],
                   "details": {
                     "key": "api_key",
-                    "owner": "unnamed_project",
+                    "owner": "surprise_travel_crew",
                     "owner_category": "env",
                     "value": "from_env"
                   }
@@ -7091,11 +7043,6 @@
                   "matched": 0,
                   "total": 1
                 },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
-                  "total": 1
-                },
                 "language_model": {
                   "score": 0.0,
                   "matched": 0,
@@ -7255,10 +7202,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6190476190476191
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/surprise_trip/main.py\", line 18, in <module>\n    from crew import SurpriseTravelCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/surprise_trip/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         },
         {
           "project": "trip_planner",
@@ -7275,32 +7220,32 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_serper_api_key",
+                  "name": "env_trip_planner_crew_serper_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_serper_api_key",
+                    "env_trip_planner_crew_serper_api_key",
                     "serper_api_key",
                     "serper_api_key_serper_api_key"
                   ],
                   "details": {
                     "key": "serper_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "trip_planner_crew",
                     "owner_category": "env",
                     "value": "${SERPER_API_KEY}"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_browserless_api_key",
+                  "name": "env_trip_planner_crew_browserless_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_browserless_api_key",
+                    "env_trip_planner_crew_browserless_api_key",
                     "browserless_api_key",
                     "browserless_api_key_browserless_api_key"
                   ],
                   "details": {
                     "key": "browserless_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "trip_planner_crew",
                     "owner_category": "env",
                     "value": "${BROWSERLESS_API_KEY}"
                   }
@@ -7814,10 +7759,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.723404255319149
+          "run_status": "IMPORT_ERROR",
+          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/trip_planner/main.py\", line 18, in <module>\n    from crew import TripPlannerCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/trip_planner/crew.py\", line 20, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
         }
       ]
     }

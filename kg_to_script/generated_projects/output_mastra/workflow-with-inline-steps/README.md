@@ -1,4 +1,4 @@
-# UnnamedProject
+# Mastraruntime
 
 Mastra instance created in src/mastra/index.ts with registered workflows.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Mastraruntime/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

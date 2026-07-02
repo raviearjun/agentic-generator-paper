@@ -1,4 +1,4 @@
-# UnnamedProject
+# MastraInstancelocal
 
 Mastra instance created in src/mastra/index.ts containing Chef Agent
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MastraInstancelocal/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

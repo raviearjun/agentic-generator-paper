@@ -183,5 +183,5 @@ const builder = new StateGraph(SupervisorAnnotation)
 ;
 
 export const graph = builder.compile();
-graph.name = "UnnamedProject";
+graph.name = "GenerativeUIAgent";
 // Workflow: stategraph_workflow

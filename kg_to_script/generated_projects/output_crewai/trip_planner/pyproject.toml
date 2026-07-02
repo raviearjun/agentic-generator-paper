@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "trip_planner"
 version = "0.1.0"
 description = "CrewAI-based team that coordinates city selection, local research, and itinerary"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+trip_planner = "main:run"
 train      = "main:train"
 
 [tool.uv]

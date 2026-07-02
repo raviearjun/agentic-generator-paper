@@ -149,6 +149,11 @@ def _extract_team(g: Graph, system_configs: Dict[str, str]) -> Tuple[str, str, s
         label = s(row.label)
         if label:
             project_name = re.sub(r"[^a-zA-Z0-9]", "", label) or "UnnamedProject"
+        else:
+            # Fallback: extract local name from team IRI (e.g., "#JobPostingCrew" → "JobPostingCrew")
+            local_name = team_iri.split("/")[-1].split("#")[-1]
+            if local_name:
+                project_name = re.sub(r"[^a-zA-Z0-9]", "", local_name) or "UnnamedProject"
         description = s(row.desc)
 
     process_value = system_configs.get(ORCHESTRATION_CONFIG_KEY, "").strip().lower()

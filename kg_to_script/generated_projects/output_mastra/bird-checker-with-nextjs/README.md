@@ -1,4 +1,4 @@
-# UnnamedProject
+# BirdCheckerSystem
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+BirdCheckerSystem/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

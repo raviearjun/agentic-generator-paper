@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "meeting_preparation"
 version = "0.1.0"
 description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+meeting_preparation = "main:run"
 train      = "main:train"
 
 [tool.uv]

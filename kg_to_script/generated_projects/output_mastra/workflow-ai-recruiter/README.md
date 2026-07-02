@@ -1,4 +1,4 @@
-# UnnamedProject
+# Mastrainstanceworkflowairecruiter
 
 Mastra instance hosting the candidate-workflow
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Mastrainstanceworkflowairecruiter/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

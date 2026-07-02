@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "ai_crewforscreenwriting"
 version = "0.1.0"
 description = "Crew.ai based crew that analyses a discussion, turns it into screenplay dialogue"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+ai_crewforscreenwriting = "main:run"
 train      = "main:train"
 
 [tool.uv]

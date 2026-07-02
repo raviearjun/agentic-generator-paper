@@ -1,2 +1,1 @@
-export { myAgent } from './myAgent'
-export { contentCreatorAgent } from './contentCreatorAgent'
+export { agentIdConstructorParameter } from './agentIdConstructorParameter'

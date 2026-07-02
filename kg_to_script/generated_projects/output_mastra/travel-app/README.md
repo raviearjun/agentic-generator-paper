@@ -1,4 +1,4 @@
-# UnnamedProject
+# MastraInstance
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MastraInstance/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

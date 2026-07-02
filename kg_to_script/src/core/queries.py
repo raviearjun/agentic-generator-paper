@@ -26,7 +26,9 @@ SELECT ?team ?label ?desc
 WHERE {
     ?team a :Team .
     OPTIONAL { ?team rdfs:label ?label }
+    OPTIONAL { ?team dcterms:title ?title }
     OPTIONAL { ?team dcterms:description ?desc }
+    BIND(COALESCE(?label, ?title) AS ?label)
 }
 """
 
