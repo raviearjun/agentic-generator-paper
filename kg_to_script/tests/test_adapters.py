@@ -9,7 +9,6 @@ from src.core.models import (
     InputVariableModel,
     LanguageModelModel,
     MemoryModel,
-    ProcessType,
     TaskModel,
     ToolConfigModel,
     ToolModel,
@@ -17,6 +16,7 @@ from src.core.models import (
     WorkflowStepModel,
     WorkflowType,
 )
+from src.frameworks.crewai.models import ProcessType
 
 
 def _make_project(**overrides) -> AgenticProject:
@@ -88,7 +88,7 @@ def _make_project(**overrides) -> AgenticProject:
                 class_name="SerperDevTool",
                 description="A search tool",
                 configs=[ToolConfigModel(key="api_key", value="test-key")],
-                capabilities=["search"],
+                capability_iris=["search"],
             ),
         ],
         workflows=[
@@ -134,7 +134,7 @@ def _make_project(**overrides) -> AgenticProject:
 
 class TestCrewAIAdapter:
     def test_adapt_basic(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         crew = adapt(project)
@@ -148,7 +148,7 @@ class TestCrewAIAdapter:
         assert len(crew.workflow_steps) == 2
 
     def test_adapt_agent_fields(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         crew = adapt(project)
@@ -157,12 +157,12 @@ class TestCrewAIAdapter:
         assert agent.role == "Researcher"
         assert agent.goal == "Find information"
         assert agent.backstory == "You are a researcher."
-        assert agent.tool_var_names == ["search_tool"]
-        assert agent.allow_delegation is True
-        assert agent.verbose is True
+        assert crew.agent_tool_var_names[agent.var_name] == ["search_tool"]
+        assert crew.agent_allow_delegation[agent.var_name] is True
+        assert crew.agent_verbose[agent.var_name] is True
 
     def test_adapt_task_fields(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         crew = adapt(project)
@@ -174,7 +174,7 @@ class TestCrewAIAdapter:
         assert task.context_task_var_names == []
 
     def test_adapt_task_context(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         crew = adapt(project)
@@ -183,7 +183,7 @@ class TestCrewAIAdapter:
         assert task.context_task_var_names == ["research_task"]
 
     def test_adapt_workflow_steps_ordered(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         crew = adapt(project)
@@ -195,7 +195,7 @@ class TestCrewAIAdapter:
         assert crew.workflow_steps[1].step_order == 2
 
     def test_adapt_fills_field_from_iri(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         for task in project.tasks:
@@ -206,7 +206,7 @@ class TestCrewAIAdapter:
         assert crew.tasks[1].agent_var_name == "writer"
 
     def test_adapt_empty_project(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         empty = AgenticProject(name="Empty", agents=[], tasks=[], tools=[])
         crew = adapt(empty)
@@ -216,7 +216,7 @@ class TestCrewAIAdapter:
         assert len(crew.tasks) == 0
 
     def test_adapt_fills_defaults(self):
-        from src.crewai.adapter import adapt
+        from src.frameworks.crewai.adapter import adapt
 
         project = _make_project()
         for task in project.tasks:
@@ -236,7 +236,7 @@ class TestCrewAIAdapter:
 
 class TestLangGraphAdapter:
     def test_adapt_basic(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         lg = adapt(project)
@@ -247,7 +247,7 @@ class TestLangGraphAdapter:
         assert len(lg.edges) == 1
 
     def test_adapt_agent_fields(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         lg = adapt(project)
@@ -259,14 +259,16 @@ class TestLangGraphAdapter:
         assert len(agent.tools_refs) == 1
 
     def test_adapt_pattern_detection(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         lg = adapt(project)
-        assert lg.pattern_type == "supervisor"
+        # No explicit router node -> classified as a general branching DAG,
+        # not "supervisor" (supervisor requires a named router + computed routes).
+        assert lg.pattern_type == "branching"
 
     def test_adapt_tool_fields(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         lg = adapt(project)
@@ -276,7 +278,7 @@ class TestLangGraphAdapter:
         assert tool.description == "A search tool"
 
     def test_adapt_nodes_and_edges(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         lg = adapt(project)
@@ -286,7 +288,7 @@ class TestLangGraphAdapter:
         assert lg.edges[0].source in (lg.nodes[0].iri, lg.nodes[1].iri)
 
     def test_adapt_empty_project(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         empty = AgenticProject(name="Empty", agents=[], tasks=[], tools=[])
         lg = adapt(empty)
@@ -295,12 +297,14 @@ class TestLangGraphAdapter:
         assert lg.pattern_type == "linear"
 
     def test_adapt_linear_pattern(self):
-        from src.langgraph.adapter import adapt
+        from src.frameworks.langgraph.adapter import adapt
 
         project = _make_project()
         project.agents = project.agents[:1]  # single agent
         lg = adapt(project)
-        assert lg.pattern_type in ("tool_calling", "linear")
+        # Workflow steps still define edges between the two tasks, so the
+        # graph is still "branching" (edges present) even with one agent.
+        assert lg.pattern_type == "branching"
 
 
 # ── AutoGen Adapter ──
@@ -308,7 +312,7 @@ class TestLangGraphAdapter:
 
 class TestAutoGenAdapter:
     def test_adapt_basic(self):
-        from src.autogen.adapter import adapt
+        from src.frameworks.autogen.adapter import adapt
 
         project = _make_project()
         result = adapt(project)
@@ -321,7 +325,7 @@ class TestAutoGenAdapter:
         assert len(result.ordered_tasks) == 2
 
     def test_adapt_ordered_tasks(self):
-        from src.autogen.adapter import adapt
+        from src.frameworks.autogen.adapter import adapt
 
         project = _make_project()
         result = adapt(project)
@@ -331,7 +335,7 @@ class TestAutoGenAdapter:
         ]
 
     def test_adapt_model_fallback(self):
-        from src.autogen.adapter import adapt
+        from src.frameworks.autogen.adapter import adapt
 
         project = _make_project()
         project.language_models = []
@@ -340,7 +344,7 @@ class TestAutoGenAdapter:
         assert result.model_name == "gpt-4o-mini"
 
     def test_adapt_empty_project(self):
-        from src.autogen.adapter import adapt
+        from src.frameworks.autogen.adapter import adapt
 
         empty = AgenticProject(name="Empty", agents=[], tasks=[], tools=[])
         result = adapt(empty)

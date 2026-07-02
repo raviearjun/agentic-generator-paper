@@ -4,14 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import sys
 from pathlib import Path
 from typing import Dict, Iterable, List
-
-# Add src path to sys.path so evaluation tools can resolve modules from src/
-src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
-sys.path.insert(0, src_path)
 
 from .config import framework_configs
 from .extractors.code_extractor import extract_code

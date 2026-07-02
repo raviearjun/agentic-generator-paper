@@ -1,18 +1,24 @@
 # OEC/WGI Evaluation
 
-Run from the repository root:
+Run from `kg_to_script/`:
 
 ```bash
-python -m src.evaluation.run
+python -m evaluation.run
+```
+
+Or from the repository root:
+
+```bash
+python -m kg_to_script.evaluation.run
 ```
 
 Optional framework filter:
 
 ```bash
-python -m src.evaluation.run --framework crewai
-python -m src.evaluation.run --framework autogen
-python -m src.evaluation.run --framework langgraph
-python -m src.evaluation.run --framework mastra
+python -m evaluation.run --framework crewai
+python -m evaluation.run --framework autogen
+python -m evaluation.run --framework langgraph
+python -m evaluation.run --framework mastra
 ```
 
 Outputs are written to `evaluation_results/` by default:

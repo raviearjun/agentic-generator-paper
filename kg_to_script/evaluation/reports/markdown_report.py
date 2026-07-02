@@ -19,16 +19,15 @@ def render_markdown(results: Dict[str, object]) -> str:
     lines.append("")
     lines.append("## Summary")
     lines.append("")
-    lines.append("| Framework | Projects | Errors | OEC All | OEC Important | WGI | Edge F1 | Syntax OK | Run OK | AST Sim |")
-    lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
+    lines.append("| Framework | Projects | Errors | OEC Important | WGI | Edge F1 | Syntax OK | Run OK | AST Sim |")
+    lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
     for framework in results.get("frameworks", []):
         summary = framework.get("summary", {})
         lines.append(
-            "| {name} | {projects} | {errors} | {oec_all} | {oec_important} | {wgi} | {edge_f1} | {syntax} | {run} | {ast_sim} |".format(
+            "| {name} | {projects} | {errors} | {oec_important} | {wgi} | {edge_f1} | {syntax} | {run} | {ast_sim} |".format(
                 name=framework.get("name", ""),
                 projects=summary.get("projects", 0),
                 errors=summary.get("errors", 0),
-                oec_all=_pct(summary.get("avg_oec_all")),
                 oec_important=_pct(summary.get("avg_oec_important")),
                 wgi=_pct(summary.get("avg_wgi")),
                 edge_f1=_pct(summary.get("avg_edge_f1")),
@@ -44,12 +43,12 @@ def render_markdown(results: Dict[str, object]) -> str:
         lines.append("")
         lines.append(f"### {framework.get('name', '')}")
         lines.append("")
-        lines.append("| Project | Status | OEC All | OEC Important | Missing Important | WGI | Missing Edges | Extra Edges | Syntax | Run Status | AST Sim |")
-        lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
+        lines.append("| Project | Status | OEC Important | Missing Important | WGI | Missing Edges | Extra Edges | Syntax | Run Status | AST Sim |")
+        lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
         for project in framework.get("projects", []):
             if project.get("status") != "ok":
                 lines.append(
-                    f"| `{project.get('project', '')}` | error | - | - | - | - | - | - | - | - | - |"
+                    f"| `{project.get('project', '')}` | error | - | - | - | - | - | - | - | - |"
                 )
                 continue
             oec = project["oec"]
@@ -58,9 +57,8 @@ def render_markdown(results: Dict[str, object]) -> str:
             run_status = project.get("run_status", "N/A")
             run_str = "✅ SUCCESS_DUMMY" if run_status == "SUCCESS_DUMMY" else (f"❌ {run_status}" if run_status != "N/A" else "➖ N/A")
             lines.append(
-                "| `{project}` | ok | {oec_all} | {oec_important} | {missing_important} | {wgi} | {missing_edges} | {extra_edges} | {syntax} | {run} | {ast_sim} |".format(
+                "| `{project}` | ok | {oec_important} | {missing_important} | {wgi} | {missing_edges} | {extra_edges} | {syntax} | {run} | {ast_sim} |".format(
                     project=project.get("project", ""),
-                    oec_all=_pct(oec["all_extracted"]["score"]),
                     oec_important=_pct(oec["important_subset"]["score"]),
                     missing_important=len(oec["important_subset"].get("missing", [])),
                     wgi=_pct(wgi["score"]),

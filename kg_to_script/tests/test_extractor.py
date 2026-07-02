@@ -318,7 +318,6 @@ def test_tool_relations():
 
     t = tools[f"{P}search_tool"]
     assert t.capability_iris == [f"{P}cap_search"]
-    assert t.capabilities == [f"{P}cap_search"]
     assert t.resource_usage_iris == [f"{P}web_resource"]
     assert t.tool_usage_iris == [f"{P}parse_tool"]
 
@@ -341,12 +340,10 @@ TTL_WORKFLOW_RELATIONS = """
 
 
 def test_workflow_pattern_relations():
-    from src.core.models import ProcessType, WorkflowType
-
     g = _graph(TTL_WORKFLOW_RELATIONS)
     tasks_map: dict = {}
     steps = _extract_workflow(g, tasks_map)
-    patterns = _extract_workflow_patterns(g, steps, ProcessType.SEQUENTIAL)
+    patterns = _extract_workflow_patterns(g, steps, "sequential")
     _link_workflow_relations(g, patterns)
 
     wp = [p for p in patterns if p.iri == f"{P}wp_main"][0]
@@ -469,7 +466,7 @@ def test_integration_full_coverage():
     from src.core.extractor import load_graph
 
     # Use the graph directly to mimic extract_project
-    project_name, description, process, team_iri = _extract_team(g)
+    project_name, description, process, team_iri = _extract_team(g, {})
     tools_map = _extract_tools(g)
     agents_map = _extract_agents(g, tools_map, {})
     tasks_map = _extract_tasks(g, agents_map)
