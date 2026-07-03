@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const BlogcrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_serper_dev_tool = tool(
  * Node: taskBiomedicalResearch
  * Agent: biomedical_marketing_agent
  */
-async function taskBiomedicalResearch(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBiomedicalResearch(state: typeof BlogcrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskBiomedicalResearch(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskHealthcareResearch
  * Agent: healthcare_marketing_agent
  */
-async function taskHealthcareResearch(state: typeof UnnamedProjectAnnotation.State) {
+async function taskHealthcareResearch(state: typeof BlogcrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskHealthcareResearch(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskFinancialResearch
  * Agent: financial_marketing_agent
  */
-async function taskFinancialResearch(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFinancialResearch(state: typeof BlogcrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -89,7 +89,7 @@ async function taskFinancialResearch(state: typeof UnnamedProjectAnnotation.Stat
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(BlogcrewAnnotation)
   .addNode("taskBiomedicalResearch", taskBiomedicalResearch)
   .addNode("taskHealthcareResearch", taskHealthcareResearch)
   .addNode("taskFinancialResearch", taskFinancialResearch)
@@ -100,5 +100,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "blogcrew";
 // Workflow: workflow_blog_crew

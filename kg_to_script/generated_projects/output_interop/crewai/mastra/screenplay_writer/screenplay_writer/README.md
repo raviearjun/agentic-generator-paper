@@ -1,4 +1,4 @@
-# UnnamedProject
+# AiCrewforscreenwriting
 
 Crew.ai based crew that analyses a discussion, turns it into screenplay dialogue and formats it.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+AiCrewforscreenwriting/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

@@ -11,14 +11,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "path_to_cv":
-        "",
-
-
-    "path_to_jobs_csv":
-        "",
-
 }
 
 

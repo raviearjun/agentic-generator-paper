@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: StandupDuo
 Goals:
   - : Deliver a short comedic routine for the audience.
 Capabilities:

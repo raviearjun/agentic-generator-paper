@@ -1,4 +1,4 @@
-# UnnamedProject
+# EmailAssistantTeamStateGraphsystem
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+EmailAssistantTeamStateGraphsystem/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

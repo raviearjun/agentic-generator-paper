@@ -1,4 +1,4 @@
-# UnnamedProject
+# RecruitmentCrew
 
 CrewAI-based team coordinating agents to automate recruitment tasks.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+RecruitmentCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

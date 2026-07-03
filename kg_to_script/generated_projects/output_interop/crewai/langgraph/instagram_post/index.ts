@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const CopyCrewagentsforcopygenerationAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const tool_search_instagram = tool(
  * Node: taskProductAnalysis
  * Agent: product_competitor_agent
  */
-async function taskProductAnalysis(state: typeof UnnamedProjectAnnotation.State) {
+async function taskProductAnalysis(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function taskProductAnalysis(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskCompetitorAnalysis
  * Agent: product_competitor_agent
  */
-async function taskCompetitorAnalysis(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCompetitorAnalysis(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function taskCompetitorAnalysis(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskCampaignDevelopment
  * Agent: strategy_planner_agent
  */
-async function taskCampaignDevelopment(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCampaignDevelopment(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -104,7 +104,7 @@ async function taskCampaignDevelopment(state: typeof UnnamedProjectAnnotation.St
  * Node: taskInstagramAdCopy
  * Agent: creative_content_creator_agent
  */
-async function taskInstagramAdCopy(state: typeof UnnamedProjectAnnotation.State) {
+async function taskInstagramAdCopy(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -122,7 +122,7 @@ async function taskInstagramAdCopy(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskTakePhotograph
  * Agent: senior_photographer_agent
  */
-async function taskTakePhotograph(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTakePhotograph(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -140,7 +140,7 @@ async function taskTakePhotograph(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskReviewPhoto
  * Agent: chief_creative_diretor_agent
  */
-async function taskReviewPhoto(state: typeof UnnamedProjectAnnotation.State) {
+async function taskReviewPhoto(state: typeof CopyCrewagentsforcopygenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -154,7 +154,7 @@ async function taskReviewPhoto(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(CopyCrewagentsforcopygenerationAnnotation)
   .addNode("taskProductAnalysis", taskProductAnalysis)
   .addNode("taskCompetitorAnalysis", taskCompetitorAnalysis)
   .addNode("taskCampaignDevelopment", taskCampaignDevelopment)
@@ -171,6 +171,6 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "CopyCrewagentsforcopygeneration";
 // Workflow: workflow_copy_crew
 // Workflow: workflow_image_crew

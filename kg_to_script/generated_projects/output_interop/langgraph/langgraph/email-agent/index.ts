@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const EmailAssistantTeamStateGraphsystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,25 +28,7 @@ const tool_write_email = tool(
  * Node: taskWriteEmail
  * Agent: email_assistant_agent
  */
-async function taskWriteEmail(state: typeof UnnamedProjectAnnotation.State) {
-  const model = new ChatOpenAI({ model: "gpt-4o" });
-  const response = await model.invoke([
-    {
-      role: "system",
-      content:
-        "You are a Email Assistant." +
-        "\nNode: taskWriteEmail",
-    },
-    ...state.messages,
-  ]);
-  return { messages: [response] };
-}
-
-/**
- * Node: taskWriteEmail
- * Agent: email_assistant_agent
- */
-async function taskWriteEmail(state: typeof UnnamedProjectAnnotation.State) {
+async function taskWriteEmail(state: typeof EmailAssistantTeamStateGraphsystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -64,7 +46,7 @@ async function taskWriteEmail(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskInterrupt
  * Agent: email_assistant_agent
  */
-async function taskInterrupt(state: typeof UnnamedProjectAnnotation.State) {
+async function taskInterrupt(state: typeof EmailAssistantTeamStateGraphsystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -82,7 +64,7 @@ async function taskInterrupt(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskRewriteEmail
  * Agent: email_assistant_agent
  */
-async function taskRewriteEmail(state: typeof UnnamedProjectAnnotation.State) {
+async function taskRewriteEmail(state: typeof EmailAssistantTeamStateGraphsystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -100,7 +82,7 @@ async function taskRewriteEmail(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskSendEmail
  * Agent: email_assistant_agent
  */
-async function taskSendEmail(state: typeof UnnamedProjectAnnotation.State) {
+async function taskSendEmail(state: typeof EmailAssistantTeamStateGraphsystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -114,8 +96,7 @@ async function taskSendEmail(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
-  .addNode("taskWriteEmail", taskWriteEmail)
+const workflow = new StateGraph(EmailAssistantTeamStateGraphsystemAnnotation)
   .addNode("taskWriteEmail", taskWriteEmail)
   .addNode("taskInterrupt", taskInterrupt)
   .addNode("taskRewriteEmail", taskRewriteEmail)
@@ -129,5 +110,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "EmailAssistantTeamStateGraphsystem";
 // Workflow: email_agent_state_graph

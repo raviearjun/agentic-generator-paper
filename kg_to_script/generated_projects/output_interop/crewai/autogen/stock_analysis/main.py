@@ -13,10 +13,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "company_stock":
-        "",
-
 }
 
 

@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: ProposedChangeUITeam
 Goals:
   - : Facilitate safe review and application of code changes via an agent-mediated user workflow.
 Human Agents:

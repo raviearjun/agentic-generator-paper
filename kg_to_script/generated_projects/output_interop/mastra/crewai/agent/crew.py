@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Crew: UnnamedProject
+Auto-generated CrewAI Crew: MastraInstancelocal
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -26,8 +26,8 @@ def my_tool(*args, **kwargs) -> str:
 
 
 @CrewBase
-class UnnamedProject:
-    """UnnamedProject crew"""
+class MastraInstancelocal:
+    """MastraInstancelocal crew"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
@@ -110,7 +110,7 @@ class UnnamedProject:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the UnnamedProject"""
+        """Creates the MastraInstancelocal"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,

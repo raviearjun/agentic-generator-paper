@@ -1,4 +1,4 @@
-# UnnamedProject
+# Mastrainstance
 
 Mastra instance configured in src/mastra/index.ts with one agent and four workflows.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Mastrainstance/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

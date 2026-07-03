@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const GroupChatTeamforBlogGenerationAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -15,7 +15,7 @@ const UnnamedProjectAnnotation = Annotation.Root({
  * Node: taskInitiateWriteBlog
  * Agent: admin
  */
-async function taskInitiateWriteBlog(state: typeof UnnamedProjectAnnotation.State) {
+async function taskInitiateWriteBlog(state: typeof GroupChatTeamforBlogGenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -33,7 +33,7 @@ async function taskInitiateWriteBlog(state: typeof UnnamedProjectAnnotation.Stat
  * Node: taskPlannerPlan
  * Agent: planner
  */
-async function taskPlannerPlan(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPlannerPlan(state: typeof GroupChatTeamforBlogGenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -51,7 +51,7 @@ async function taskPlannerPlan(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskEngineerWriteCode
  * Agent: engineer
  */
-async function taskEngineerWriteCode(state: typeof UnnamedProjectAnnotation.State) {
+async function taskEngineerWriteCode(state: typeof GroupChatTeamforBlogGenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -69,7 +69,7 @@ async function taskEngineerWriteCode(state: typeof UnnamedProjectAnnotation.Stat
  * Node: taskExecutorRunCode
  * Agent: executor
  */
-async function taskExecutorRunCode(state: typeof UnnamedProjectAnnotation.State) {
+async function taskExecutorRunCode(state: typeof GroupChatTeamforBlogGenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -87,7 +87,7 @@ async function taskExecutorRunCode(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskWriterProduceBlog
  * Agent: writer
  */
-async function taskWriterProduceBlog(state: typeof UnnamedProjectAnnotation.State) {
+async function taskWriterProduceBlog(state: typeof GroupChatTeamforBlogGenerationAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -101,7 +101,7 @@ async function taskWriterProduceBlog(state: typeof UnnamedProjectAnnotation.Stat
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(GroupChatTeamforBlogGenerationAnnotation)
   .addNode("taskInitiateWriteBlog", taskInitiateWriteBlog)
   .addNode("taskPlannerPlan", taskPlannerPlan)
   .addNode("taskEngineerWriteCode", taskEngineerWriteCode)
@@ -115,5 +115,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "GroupChatTeamforBlogGeneration";
 // Workflow: wp_group_chat1

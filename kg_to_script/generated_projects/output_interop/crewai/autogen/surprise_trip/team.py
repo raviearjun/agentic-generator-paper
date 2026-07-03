@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: SurpriseTravelCrew
 Goals:
   - : Create a comprehensive surprise travel plan for the traveler covering activities, restaurants, and a day-by-day itinerary.
 Capabilities:

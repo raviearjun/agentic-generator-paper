@@ -19,11 +19,11 @@ export const toolCsvSearch = createTool({
   description: `Tool to search and query CSV files for matching job opportunities.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool to search and query CSV files for matching job opportunities.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

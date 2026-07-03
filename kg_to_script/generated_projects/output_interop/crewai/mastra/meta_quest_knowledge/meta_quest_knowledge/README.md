@@ -1,4 +1,4 @@
-# UnnamedProject
+# MetaQuestKnowledgeCrew
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MetaQuestKnowledgeCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

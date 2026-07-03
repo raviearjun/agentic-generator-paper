@@ -32,7 +32,7 @@ const selectAccommodationTask = createStep({
   id: 'select_accommodation_task',
   description: `Handle user selection of an accommodation and present detailed view including price breakdown and booking option.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Selected_accommodation_details_and_a_ready_to: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.
     // This step uses agent: tripPlannerAgent
@@ -79,7 +79,7 @@ const bookedConfirmationTask = createStep({
  */
 export const tripPlannerWorkflow = createWorkflow({
   id: 'trip_planner_workflow',
-  inputSchema: z.object({Inferred_workflow_representing_the_user_flow_in_the_accommodations_and_restaurants_UI: z.array(z.string())}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [viewAccommodationsTask, selectAccommodationTask, confirmBookingTask, bookedConfirmationTask],
 })

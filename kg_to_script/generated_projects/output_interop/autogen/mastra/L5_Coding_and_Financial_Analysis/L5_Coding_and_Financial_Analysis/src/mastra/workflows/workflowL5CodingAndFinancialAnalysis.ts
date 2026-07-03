@@ -18,7 +18,7 @@ const taskPlotYtdV1 = createStep({
   id: 'task_plot_ytd_v1',
   description: `Initiated by code_executor_agent to request code from code_writer_agent (Chinese message).`,
   inputSchema: z.object({date_range: z.string()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({date_range: z.string()}),
   execute: async ({ inputData }) => {
     // 今天是 {today}. 创建图表，显示 NVDA 和 TLSA 的股票收益。确保代码位于标记代码块中，并将图表保存到文件 ytd_stock_gains.png。
     // This step uses agent: codeExecutorAgent
@@ -51,7 +51,7 @@ const taskPlotYtdV2 = createStep({
  */
 export const workflowL5CodingAndFinancialAnalysis = createWorkflow({
   id: 'workflow_l5_coding_and_financial_analysis',
-  inputSchema: z.object({Workflow_representing_the_conversational_code: z.string()}),
+  inputSchema: z.object({date_range: z.string()}),
   outputSchema: z.object({}),
   steps: [taskPlotYtdV1, taskPlotYtdV2],
 })

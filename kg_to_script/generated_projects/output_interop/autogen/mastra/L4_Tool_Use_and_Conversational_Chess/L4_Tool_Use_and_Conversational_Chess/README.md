@@ -1,4 +1,4 @@
-# UnnamedProject
+# ConversationalChessTeam
 
 A small team consisting of two player agents and a board proxy orchestrating the game.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+ConversationalChessTeam/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

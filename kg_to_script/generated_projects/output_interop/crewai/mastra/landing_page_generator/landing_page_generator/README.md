@@ -1,4 +1,4 @@
-# UnnamedProject
+# Teamexpandidea
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Teamexpandidea/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

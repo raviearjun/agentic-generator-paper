@@ -18,7 +18,7 @@ const findStoreTask = createStep({
   id: 'find_store_task',
   description: `You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({location: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them.
     // This step uses agent: langgraphAnthropicAgent

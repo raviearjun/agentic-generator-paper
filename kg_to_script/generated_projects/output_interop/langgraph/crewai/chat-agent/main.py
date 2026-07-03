@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Main: UnnamedProject
+Auto-generated CrewAI Main: StateGraphTeam
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 _HERE = Path(__file__).parent
 load_dotenv(_HERE / ".env")
 
-from crew import UnnamedProject
+from crew import StateGraphTeam
 
 
 def _load_inputs() -> dict:
@@ -43,16 +43,16 @@ def _load_inputs() -> dict:
 
 
 def run():
-    """Run the UnnamedProject."""
+    """Run the StateGraphTeam."""
     inputs = _load_inputs()
-    UnnamedProject().crew().kickoff(inputs=inputs)
+    StateGraphTeam().crew().kickoff(inputs=inputs)
 
 
 def train():
-    """Train the UnnamedProject for a given number of iterations."""
+    """Train the StateGraphTeam for a given number of iterations."""
     inputs = _load_inputs()
     try:
-        UnnamedProject().crew().train(
+        StateGraphTeam().crew().train(
             n_iterations=int(sys.argv[1]),
             inputs=inputs,
         )

@@ -1,4 +1,4 @@
-# UnnamedProject
+# ProposedChangeUiTeam
 
 Team representing the UI/system where a language agent presents proposed changes to a human and may call tools to apply accepted changes.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+ProposedChangeUiTeam/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

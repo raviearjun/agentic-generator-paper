@@ -40,11 +40,11 @@ UnnamedProject/
 │       ├── index.ts           # Mastra instance + registrations
 │       ├── agents/            # Agent definitions
 │       │   └── unnamed.ts
-│       │   └── unnamed.ts
-│       │   └── unnamed.ts
-│       │   └── unnamed.ts
-│       │   └── unnamed.ts
-│       │   └── unnamed.ts
+│       │   └── unnamed2.ts
+│       │   └── unnamed3.ts
+│       │   └── unnamed4.ts
+│       │   └── unnamed5.ts
+│       │   └── unnamed6.ts
 │       ├── tools/             # Tool definitions
 │       └── workflows/         # Workflow definitions
 │           └── patternNested.ts

@@ -1,4 +1,4 @@
-# UnnamedProject
+# OrderPizzaGraphTeam
 
 Team representing the StateGraph workflow for ordering pizza.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+OrderPizzaGraphTeam/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

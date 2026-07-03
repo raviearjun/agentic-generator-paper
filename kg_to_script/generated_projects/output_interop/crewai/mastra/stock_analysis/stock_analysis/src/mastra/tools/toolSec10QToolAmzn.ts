@@ -19,14 +19,14 @@ export const toolSec10QToolAmzn = createTool({
   description: `SEC10QTool initialized with stock_name=AMZN to pre-load AMZN latest 10-Q content.`,
   inputSchema: z.object({SEC10QTool_initialized_with_stock_name: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: SEC10QTool initialized with stock_name=AMZN to pre-load AMZN latest 10-Q content.
     // Configurations:
     //   - SEC_API_API_KEY: env:SEC_API_API_KEY
     //   - stock_name: AMZN
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

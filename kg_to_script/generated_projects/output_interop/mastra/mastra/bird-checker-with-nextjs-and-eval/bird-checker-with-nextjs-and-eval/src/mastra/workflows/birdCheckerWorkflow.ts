@@ -53,7 +53,7 @@ const classifyImageTask = createStep({
  */
 export const birdCheckerWorkflow = createWorkflow({
   id: 'bird_checker_workflow',
-  inputSchema: z.object({Inferred_two_step_workflow: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({Object_with_fields: z.string()}),
   steps: [getImageTask, classifyImageTask],
 })

@@ -1,4 +1,4 @@
-# UnnamedProject
+# MastraInstanceycagent
 
 Mastra instance constructed in src/mastra/index.ts with a single agent 'ycAgent' and logger configuration.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MastraInstanceycagent/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

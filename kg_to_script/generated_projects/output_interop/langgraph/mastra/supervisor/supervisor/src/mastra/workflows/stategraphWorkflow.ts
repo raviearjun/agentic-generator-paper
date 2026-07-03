@@ -100,7 +100,7 @@ const taskGeneralInput = createStep({
   id: 'task_general_input',
   description: `You are an AI assistant.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Assistant_chat_response_or_follow: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // You are an AI assistant.
     // This step uses agent: generalInput

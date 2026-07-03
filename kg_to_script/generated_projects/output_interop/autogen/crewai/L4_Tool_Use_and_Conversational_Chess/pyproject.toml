@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "conversational_chess_team"
 version = "0.1.0"
 description = "A small team consisting of two player agents and a board proxy orchestrating the"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+conversational_chess_team = "main:run"
 train      = "main:train"
 
 [tool.uv]

@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const StandupDuoAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_get_openai_api_key = tool(
  * Node: taskGuodegangInitiateChat1
  * Agent: unnamed
  */
-async function taskGuodegangInitiateChat1(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGuodegangInitiateChat1(state: typeof StandupDuoAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskGuodegangInitiateChat1(state: typeof UnnamedProjectAnnotation
  * Node: taskGuodegangInitiateChat2
  * Agent: unnamed
  */
-async function taskGuodegangInitiateChat2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGuodegangInitiateChat2(state: typeof StandupDuoAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskGuodegangInitiateChat2(state: typeof UnnamedProjectAnnotation
  * Node: taskGuodegangSendFollowup
  * Agent: unnamed
  */
-async function taskGuodegangSendFollowup(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGuodegangSendFollowup(state: typeof StandupDuoAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -89,7 +89,7 @@ async function taskGuodegangSendFollowup(state: typeof UnnamedProjectAnnotation.
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(StandupDuoAnnotation)
   .addNode("taskGuodegangInitiateChat1", taskGuodegangInitiateChat1)
   .addNode("taskGuodegangInitiateChat2", taskGuodegangInitiateChat2)
   .addNode("taskGuodegangSendFollowup", taskGuodegangSendFollowup)
@@ -100,5 +100,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "StandupDuo";
 // Workflow: workflow_xiangsheng

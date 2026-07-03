@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "codingand_financial_analysis"
 version = "0.1.0"
 description = "Team comprising a code writer and a code executor that collaborate to generate a"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+codingand_financial_analysis = "main:run"
 train      = "main:train"
 
 [tool.uv]

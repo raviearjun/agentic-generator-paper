@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const TeamexpandideaAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -94,7 +94,7 @@ const tool_list_directory = tool(
  * Node: taskExpandIdea
  * Agent: senior_idea_analyst
  */
-async function taskExpandIdea(state: typeof UnnamedProjectAnnotation.State) {
+async function taskExpandIdea(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -112,7 +112,7 @@ async function taskExpandIdea(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskRefineIdea
  * Agent: senior_strategist
  */
-async function taskRefineIdea(state: typeof UnnamedProjectAnnotation.State) {
+async function taskRefineIdea(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -130,7 +130,7 @@ async function taskRefineIdea(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskChooseTemplate
  * Agent: senior_react_engineer
  */
-async function taskChooseTemplate(state: typeof UnnamedProjectAnnotation.State) {
+async function taskChooseTemplate(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -148,7 +148,7 @@ async function taskChooseTemplate(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskUpdatePage
  * Agent: senior_react_engineer
  */
-async function taskUpdatePage(state: typeof UnnamedProjectAnnotation.State) {
+async function taskUpdatePage(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -166,7 +166,7 @@ async function taskUpdatePage(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskComponentContent
  * Agent: senior_content_editor
  */
-async function taskComponentContent(state: typeof UnnamedProjectAnnotation.State) {
+async function taskComponentContent(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -184,7 +184,7 @@ async function taskComponentContent(state: typeof UnnamedProjectAnnotation.State
  * Node: taskUpdateComponent
  * Agent: senior_content_editor
  */
-async function taskUpdateComponent(state: typeof UnnamedProjectAnnotation.State) {
+async function taskUpdateComponent(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -202,7 +202,7 @@ async function taskUpdateComponent(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskQaComponent
  * Agent: senior_content_editor
  */
-async function taskQaComponent(state: typeof UnnamedProjectAnnotation.State) {
+async function taskQaComponent(state: typeof TeamexpandideaAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -216,7 +216,7 @@ async function taskQaComponent(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(TeamexpandideaAnnotation)
   .addNode("taskExpandIdea", taskExpandIdea)
   .addNode("taskRefineIdea", taskRefineIdea)
   .addNode("taskChooseTemplate", taskChooseTemplate)
@@ -235,7 +235,7 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "teamexpandidea";
 // Workflow: pattern_expand_idea
 // Workflow: pattern_choose_template
 // Workflow: pattern_create_content

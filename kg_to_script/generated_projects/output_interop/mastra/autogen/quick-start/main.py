@@ -11,10 +11,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "name":
-        "",
-
 }
 
 

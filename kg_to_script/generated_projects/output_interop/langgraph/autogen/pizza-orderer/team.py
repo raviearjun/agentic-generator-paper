@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: OrderPizzaGraphTeam
 Goals:
   - : High-level goal to find a pizza shop and place an order for the user.
 Capabilities:

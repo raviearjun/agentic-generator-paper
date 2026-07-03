@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const TripPlannerCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const tool_calculator = tool(
  * Node: taskIdentifyCity
  * Agent: city_selection_agent
  */
-async function taskIdentifyCity(state: typeof UnnamedProjectAnnotation.State) {
+async function taskIdentifyCity(state: typeof TripPlannerCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function taskIdentifyCity(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGatherCityInfo
  * Agent: local_expert_agent
  */
-async function taskGatherCityInfo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGatherCityInfo(state: typeof TripPlannerCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function taskGatherCityInfo(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskPlanItinerary
  * Agent: travel_concierge_agent
  */
-async function taskPlanItinerary(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPlanItinerary(state: typeof TripPlannerCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4" });
   const response = await model.invoke([
     {
@@ -100,7 +100,7 @@ async function taskPlanItinerary(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(TripPlannerCrewAnnotation)
   .addNode("taskIdentifyCity", taskIdentifyCity)
   .addNode("taskGatherCityInfo", taskGatherCityInfo)
   .addNode("taskPlanItinerary", taskPlanItinerary)
@@ -111,5 +111,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "TripPlannerCrew";
 // Workflow: pattern_trip_planning

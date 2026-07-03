@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -15,7 +15,7 @@ const UnnamedProjectAnnotation = Annotation.Root({
  * Node: taskStepOne
  * Agent: mastra_agent
  */
-async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepOne(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -33,7 +33,7 @@ async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepThree
  * Agent: mastra_agent
  */
-async function taskStepThree(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepThree(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -51,7 +51,7 @@ async function taskStepThree(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepTwo
  * Agent: mastra_agent
  */
-async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepTwo(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -69,7 +69,7 @@ async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepFour
  * Agent: mastra_agent
  */
-async function taskStepFour(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepFour(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -83,7 +83,7 @@ async function taskStepFour(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceAnnotation)
   .addNode("taskStepOne", taskStepOne)
   .addNode("taskStepThree", taskStepThree)
   .addNode("taskStepTwo", taskStepTwo)
@@ -96,5 +96,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstance";
 // Workflow: my_workflow_pattern

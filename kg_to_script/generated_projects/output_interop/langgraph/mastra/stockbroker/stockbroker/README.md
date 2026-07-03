@@ -1,4 +1,4 @@
-# UnnamedProject
+# TradingSystem
 
 Frontend trading system that displays portfolio data and enables trade execution.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+TradingSystem/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

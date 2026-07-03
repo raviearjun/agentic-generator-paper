@@ -65,7 +65,7 @@ const task3 = createStep({
  */
 export const crewSequentialWorkflow = createWorkflow({
   id: 'crew_sequential_workflow',
-  inputSchema: z.object({Sequential_process_executing_tasks_in_order: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [task1, task2, task3],
 })

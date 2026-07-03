@@ -19,13 +19,13 @@ export const getRandomImageTool = createTool({
   description: `Gets a random image from unsplash based on the selected option`,
   inputSchema: z.object({query: z.string()}),
   outputSchema: z.object({Image_object_with_fields: z.string()}),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Gets a random image from unsplash based on the selected option
     // Configurations:
     //   - NEXT_PUBLIC_UNSPLASH_ACCESS_KEY: env:NEXT_PUBLIC_UNSPLASH_ACCESS_KEY
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

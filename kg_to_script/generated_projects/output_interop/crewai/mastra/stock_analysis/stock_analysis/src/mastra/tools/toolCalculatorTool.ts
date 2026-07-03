@@ -19,11 +19,11 @@ export const toolCalculatorTool = createTool({
   description: `Performs safe mathematical expression evaluation (add, sub, mul, div, pow, mod).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Performs safe mathematical expression evaluation (add, sub, mul, div, pow, mod).
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

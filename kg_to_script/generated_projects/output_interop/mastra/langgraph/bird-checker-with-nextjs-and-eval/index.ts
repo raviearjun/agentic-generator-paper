@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const BirdCheckerSystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const get_random_image_tool = tool(
  * Node: getImageTask
  * Agent: bird_agent
  */
-async function getImageTask(state: typeof UnnamedProjectAnnotation.State) {
+async function getImageTask(state: typeof BirdCheckerSystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function getImageTask(state: typeof UnnamedProjectAnnotation.State) {
  * Node: classifyImageTask
  * Agent: bird_agent
  */
-async function classifyImageTask(state: typeof UnnamedProjectAnnotation.State) {
+async function classifyImageTask(state: typeof BirdCheckerSystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -60,7 +60,7 @@ async function classifyImageTask(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(BirdCheckerSystemAnnotation)
   .addNode("getImageTask", getImageTask)
   .addNode("classifyImageTask", classifyImageTask)
   .addEdge(START, "getImageTask")
@@ -69,5 +69,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "BirdCheckerSystem";
 // Workflow: bird_checker_workflow

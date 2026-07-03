@@ -10,7 +10,7 @@ import { createWorkflow, createStep } from '@mastra/core/workflows'
 import { z } from 'zod'
 
 // Import agents used by workflow steps
-import { unnamed } from '../agents'
+import { unnamed, unnamed2, unnamed3, unnamed4, unnamed5, unnamed6 } from '../agents'
 
 // ── Workflow Steps ──
 
@@ -35,8 +35,8 @@ const taskCriticInitiate1 = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 撰写一篇简洁但引人入胜的博客，内容涉及
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed2
+    // const result = await unnamed2.generate('...')
     // TODO: Implement step logic
     throw new Error('task_critic_initiate_1 not implemented yet')
   },
@@ -49,8 +49,8 @@ const taskNestedSeoReview = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. 这里的 审查员 应该是你自己的角色
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed3
+    // const result = await unnamed3.generate('...')
     // TODO: Implement step logic
     throw new Error('task_nested_seo_review not implemented yet')
   },
@@ -63,8 +63,8 @@ const taskNestedLegalReview = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}.
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed4
+    // const result = await unnamed4.generate('...')
     // TODO: Implement step logic
     throw new Error('task_nested_legal_review not implemented yet')
   },
@@ -77,8 +77,8 @@ const taskNestedEthicsReview = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed5
+    // const result = await unnamed5.generate('...')
     // TODO: Implement step logic
     throw new Error('task_nested_ethics_review not implemented yet')
   },
@@ -91,8 +91,8 @@ const taskMetaAggregate = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 对所有审查员的反馈意见进行汇总，并对写作提出最终建议。
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed6
+    // const result = await unnamed6.generate('...')
     // TODO: Implement step logic
     throw new Error('task_meta_aggregate not implemented yet')
   },
@@ -105,8 +105,8 @@ const taskCriticInitiate2 = createStep({
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 撰写一篇简洁但引人入胜的博客，内容涉及
-    // This step uses agent: unnamed
-    // const result = await unnamed.generate('...')
+    // This step uses agent: unnamed2
+    // const result = await unnamed2.generate('...')
     // TODO: Implement step logic
     throw new Error('task_critic_initiate_2 not implemented yet')
   },

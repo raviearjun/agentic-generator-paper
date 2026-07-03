@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const mastra_runtime = tool(
  * Node: taskLogCatName
  * Agent: cat_one
  */
-async function taskLogCatName(state: typeof UnnamedProjectAnnotation.State) {
+async function taskLogCatName(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -42,12 +42,12 @@ async function taskLogCatName(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceAnnotation)
   .addNode("taskLogCatName", taskLogCatName)
   .addEdge(START, "taskLogCatName")
   .addEdge("taskLogCatName", END)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstance";
 // Workflow: log_cat_workflow

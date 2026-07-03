@@ -18,7 +18,7 @@ const taskStepOne = createStep({
   id: 'task_step_one',
   description: `Compute doubledValue from triggerData.inputValue.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({doubledValue: z.number()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Execute: doubledValue = context.machineContext.triggerData.inputValue * 2
     // This step uses agent: mastraDefaultAgent
@@ -51,7 +51,7 @@ const taskStepTwo = createStep({
  */
 export const myWorkflow = createWorkflow({
   id: 'my_workflow',
-  inputSchema: z.object({inputValue: z.number()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({incrementedValue: z.number()}),
   steps: [taskStepOne, taskStepTwo],
 })

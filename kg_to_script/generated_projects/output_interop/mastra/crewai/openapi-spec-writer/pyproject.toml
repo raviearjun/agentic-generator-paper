@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "mastravnext"
 version = "0.1.0"
 description = "Mastra instance configured in src/mastra/index.ts (serviceName: mastra-vnext)."
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastravnext = "main:run"
 train      = "main:train"
 
 [tool.uv]

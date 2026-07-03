@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: CustomCrew
 Goals:
   - : Define agent 1 goal here
   - : Define agent 2 goal here

@@ -36,8 +36,8 @@ from .reports.interop_report import render_interop_markdown
 FRAMEWORK_KEYS = ["crewai", "autogen", "langgraph", "mastra"]
 
 # CFCS default weights.
-_W_CSR = 0.2
-_W_DSR = 0.2
+_W_SCR = 0.2
+_W_ER = 0.2
 _W_OEC = 0.3
 _W_WGI = 0.3
 
@@ -119,7 +119,12 @@ def _translate_and_evaluate(
         if target_key == "mastra" and hasattr(target_project, "project_var_name"):
             target_project.project_var_name = project_name
 
-        gen_fn(target_project, str(output_dir))
+        # Some generators (e.g. mastra) nest the actual project one directory
+        # deeper than output_dir and return that path; others write flat into
+        # output_dir and return it unchanged. Always use the returned path for
+        # downstream evaluation so compilation/dry-run look in the right place.
+        generated_dir = Path(gen_fn(target_project, str(output_dir)))
+        result["output_dir"] = str(generated_dir)
     except Exception as exc:
         result["status"] = "generation_error"
         result["error"] = f"{type(exc).__name__}: {exc}"
@@ -129,12 +134,12 @@ def _translate_and_evaluate(
     # Step 3: evaluate the generated output
     try:
         kg_eval = extract_kg(kg_path)
-        code_eval = extract_code(output_dir, target_key)
+        code_eval = extract_code(generated_dir, target_key)
 
         oec = calculate_oec(kg_eval, code_eval)
         wgi = calculate_wgi(kg_eval, code_eval)
-        syntax_ok = compile_project(output_dir, target_key)
-        run_res = dry_run_project(output_dir, target_key)
+        syntax_ok = compile_project(generated_dir, target_key)
+        run_res = dry_run_project(generated_dir, target_key)
 
         result["status"] = "ok"
         result["oec"] = oec
@@ -214,37 +219,46 @@ def _pair_summary(projects: List[Dict[str, Any]]) -> Dict[str, Any]:
     eval_errors = [p for p in projects if p.get("status") == "evaluation_error"]
     extract_errors = [p for p in projects if p.get("status") == "extraction_error"]
 
-    # CSR: compilation success rate among successfully generated projects
+    # SCR: syntactic correctness rate among successfully generated projects
     generated = [p for p in projects if p.get("status") in ("ok", "evaluation_error")]
     syntax_ok_count = sum(1 for p in ok if p.get("syntax_ok"))
-    csr = syntax_ok_count / len(generated) if generated else 0.0
+    syntactic_correctness_rate = syntax_ok_count / len(generated) if generated else 0.0
 
-    # DSR: dry-run success rate
-    dsr_eligible = [
+    # ER: executability rate (dry-run success rate)
+    executability_eligible = [
         p for p in ok
         if p.get("run_status") not in (None, "N/A")
     ]
-    dsr_success = sum(
+    executability_success = sum(
         1 for p in ok
         if p.get("run_status") == "SUCCESS_DUMMY"
     )
-    dsr_na = all(p.get("run_status") in (None, "N/A") for p in ok) if ok else True
-    dsr = dsr_success / len(dsr_eligible) if dsr_eligible else (1.0 if dsr_na else 0.0)
+    executability_rate_na = all(p.get("run_status") in (None, "N/A") for p in ok) if ok else True
+    executability_rate = (
+        executability_success / len(executability_eligible)
+        if executability_eligible
+        else (1.0 if executability_rate_na else 0.0)
+    )
 
-    # X-OEC averages
-    avg_oec_all = _avg([p["oec"]["all_extracted"]["score"] for p in ok])
-    avg_oec_important = _avg([p["oec"]["important_subset"]["score"] for p in ok])
+    # OEC averages
+    oec_all = _avg([p["oec"]["all_extracted"]["score"] for p in ok])
+    concept_coverage_rate = _avg([p["oec"]["important_subset"]["score"] for p in ok])
 
-    # X-WGI average
+    # WGI average
     avg_wgi = _avg([p["wgi"]["score"] for p in ok])
     avg_edge_f1 = _avg([p["wgi"]["edge_f1"] for p in ok])
 
     # CFCS: composite score
-    if dsr_na:
-        # No dry-run data — redistribute DSR weight
-        cfcs = (_W_CSR + _W_DSR) * csr + _W_OEC * avg_oec_important + _W_WGI * avg_wgi
+    if executability_rate_na:
+        # No dry-run data — redistribute ER weight
+        cfcs = (_W_SCR + _W_ER) * syntactic_correctness_rate + _W_OEC * concept_coverage_rate + _W_WGI * avg_wgi
     else:
-        cfcs = _W_CSR * csr + _W_DSR * dsr + _W_OEC * avg_oec_important + _W_WGI * avg_wgi
+        cfcs = (
+            _W_SCR * syntactic_correctness_rate
+            + _W_ER * executability_rate
+            + _W_OEC * concept_coverage_rate
+            + _W_WGI * avg_wgi
+        )
 
     return {
         "total_kgs": total,
@@ -253,12 +267,12 @@ def _pair_summary(projects: List[Dict[str, Any]]) -> Dict[str, Any]:
         "generation_errors": len(gen_errors),
         "extraction_errors": len(extract_errors),
         "evaluation_errors": len(eval_errors),
-        "csr": csr,
-        "dsr": dsr,
-        "dsr_na": dsr_na,
-        "avg_xoec_all": avg_oec_all,
-        "avg_xoec_important": avg_oec_important,
-        "avg_xwgi": avg_wgi,
+        "syntactic_correctness_rate": syntactic_correctness_rate,
+        "executability_rate": executability_rate,
+        "executability_rate_na": executability_rate_na,
+        "oec_all": oec_all,
+        "concept_coverage_rate": concept_coverage_rate,
+        "avg_wgi": avg_wgi,
         "avg_edge_f1": avg_edge_f1,
         "cfcs": cfcs,
     }
@@ -310,10 +324,10 @@ def main() -> None:
 
             summary = pair_result.get("summary", {})
             if summary:
-                print(f"  CSR={_pct(summary.get('csr'))} "
-                      f"DSR={_pct(summary.get('dsr'))} "
-                      f"X-OEC={_pct(summary.get('avg_xoec_important'))} "
-                      f"X-WGI={_pct(summary.get('avg_xwgi'))} "
+                print(f"  SCR={_pct(summary.get('syntactic_correctness_rate'))} "
+                      f"ER={_pct(summary.get('executability_rate'))} "
+                      f"CCR={_pct(summary.get('concept_coverage_rate'))} "
+                      f"WGI={_pct(summary.get('avg_wgi'))} "
                       f"CFCS={_pct(summary.get('cfcs'))}")
 
     # Build full results payload
@@ -347,13 +361,13 @@ def _build_matrix(pairs: List[Dict[str, Any]]) -> Dict[str, Dict[str, Dict[str, 
             matrix[src] = {}
         matrix[src][tgt] = {
             "cfcs": summary.get("cfcs", 0.0),
-            "csr": summary.get("csr", 0.0),
-            "dsr": summary.get("dsr", 0.0),
-            "dsr_na": summary.get("dsr_na", True),
-            "xoec_all": summary.get("avg_xoec_all", 0.0),
-            "xoec_important": summary.get("avg_xoec_important", 0.0),
-            "xwgi": summary.get("avg_xwgi", 0.0),
-            "edge_f1": summary.get("avg_edge_f1", 0.0),
+            "syntactic_correctness_rate": summary.get("syntactic_correctness_rate", 0.0),
+            "executability_rate": summary.get("executability_rate", 0.0),
+            "executability_rate_na": summary.get("executability_rate_na", True),
+            "oec_all": summary.get("oec_all", 0.0),
+            "concept_coverage_rate": summary.get("concept_coverage_rate", 0.0),
+            "avg_wgi": summary.get("avg_wgi", 0.0),
+            "avg_edge_f1": summary.get("avg_edge_f1", 0.0),
             "total_kgs": summary.get("total_kgs", 0),
             "generated_ok": summary.get("generated_ok", 0),
             "generation_errors": summary.get("generation_errors", 0),

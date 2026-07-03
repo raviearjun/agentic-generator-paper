@@ -1,4 +1,4 @@
-# UnnamedProject
+# Blogcrew
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Blogcrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

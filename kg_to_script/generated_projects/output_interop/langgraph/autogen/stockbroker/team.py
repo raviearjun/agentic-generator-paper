@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: TradingSystem
 Goals:
   - : Provide portfolio overview and enable executing trades via the UI.
 Capabilities:

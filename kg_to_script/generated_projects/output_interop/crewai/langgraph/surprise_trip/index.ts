@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const SurpriseTravelCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_scrape_website_tool = tool(
  * Node: taskPersonalizedActivityPlanningTask
  * Agent: personalized_activity_planner
  */
-async function taskPersonalizedActivityPlanningTask(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPersonalizedActivityPlanningTask(state: typeof SurpriseTravelCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskPersonalizedActivityPlanningTask(state: typeof UnnamedProject
  * Node: taskRestaurantScenicLocationScoutTask
  * Agent: restaurant_scout
  */
-async function taskRestaurantScenicLocationScoutTask(state: typeof UnnamedProjectAnnotation.State) {
+async function taskRestaurantScenicLocationScoutTask(state: typeof SurpriseTravelCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskRestaurantScenicLocationScoutTask(state: typeof UnnamedProjec
  * Node: taskItineraryCompilationTask
  * Agent: itinerary_compiler
  */
-async function taskItineraryCompilationTask(state: typeof UnnamedProjectAnnotation.State) {
+async function taskItineraryCompilationTask(state: typeof SurpriseTravelCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -89,7 +89,7 @@ async function taskItineraryCompilationTask(state: typeof UnnamedProjectAnnotati
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(SurpriseTravelCrewAnnotation)
   .addNode("taskPersonalizedActivityPlanningTask", taskPersonalizedActivityPlanningTask)
   .addNode("taskRestaurantScenicLocationScoutTask", taskRestaurantScenicLocationScoutTask)
   .addNode("taskItineraryCompilationTask", taskItineraryCompilationTask)
@@ -100,5 +100,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "SurpriseTravelCrew";
 // Workflow: workflow_sequential

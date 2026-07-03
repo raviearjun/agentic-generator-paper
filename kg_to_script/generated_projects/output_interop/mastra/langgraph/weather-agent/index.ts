@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const tool_get_weather = tool(
  * Node: taskFetchWeather
  * Agent: weather_agent
  */
-async function taskFetchWeather(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFetchWeather(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskFetchWeather(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskPlanActivities
  * Agent: weather_agent
  */
-async function taskPlanActivities(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPlanActivities(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -60,7 +60,7 @@ async function taskPlanActivities(state: typeof UnnamedProjectAnnotation.State) 
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceAnnotation)
   .addNode("taskFetchWeather", taskFetchWeather)
   .addNode("taskPlanActivities", taskPlanActivities)
   .addEdge(START, "taskFetchWeather")
@@ -69,5 +69,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstance";
 // Workflow: workflow_weather_workflow

@@ -1,4 +1,4 @@
-# UnnamedProject
+# RegistryRegistryMcpServer
 
 An MCP server that provides a registry of MCP registries and exposes tools 'registryList' and 'registryServers'.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+RegistryRegistryMcpServer/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

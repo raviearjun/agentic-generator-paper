@@ -8,7 +8,7 @@
 import { Mastra } from '@mastra/core'
 
 // Import agents
-import { unnamed, unnamed, unnamed, unnamed, unnamed, unnamed } from './agents'
+import { unnamed, unnamed2, unnamed3, unnamed4, unnamed5, unnamed6 } from './agents'
 
 // Import workflows
 import { patternNested } from './workflows'
@@ -20,11 +20,11 @@ import { patternNested } from './workflows'
 export const mastra = new Mastra({
   agents: {
     unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
+    unnamed2,
+    unnamed3,
+    unnamed4,
+    unnamed5,
+    unnamed6,
   },
   workflows: {
     patternNested,

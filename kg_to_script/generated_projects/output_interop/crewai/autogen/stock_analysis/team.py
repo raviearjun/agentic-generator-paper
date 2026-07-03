@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: StockAnalysisCrew
 Goals:
   - : Automate the process of analyzing a stock to produce a detailed report and investment recommendation.
 Capabilities:

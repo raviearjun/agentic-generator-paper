@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: teamexpandidea
 Goals:
   - : Understand and expand upon the essence of ideas, make sure they are great and focus on real pain points others could benefit from.
   - : Craft compelling stories using the Golden Circle method to captivate and engage people around an idea.

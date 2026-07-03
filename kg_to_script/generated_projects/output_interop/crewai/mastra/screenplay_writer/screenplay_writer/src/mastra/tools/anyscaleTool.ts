@@ -19,13 +19,13 @@ export const anyscaleTool = createTool({
   description: `Anyscale models endpoint (optional selection in script).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Anyscale models endpoint (optional selection in script).
     // Configurations:
     //   - api_key: env:ANYSCALE_API_KEY
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

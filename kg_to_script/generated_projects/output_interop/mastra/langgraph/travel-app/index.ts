@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastraInstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -72,7 +72,7 @@ const tool_search_airbnb = tool(
  * Node: taskOutboundFlight
  * Agent: travel_analyzer
  */
-async function taskOutboundFlight(state: typeof UnnamedProjectAnnotation.State) {
+async function taskOutboundFlight(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -90,7 +90,7 @@ async function taskOutboundFlight(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskReturnFlight
  * Agent: travel_analyzer
  */
-async function taskReturnFlight(state: typeof UnnamedProjectAnnotation.State) {
+async function taskReturnFlight(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -108,7 +108,7 @@ async function taskReturnFlight(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskAccommodationHotels
  * Agent: travel_analyzer
  */
-async function taskAccommodationHotels(state: typeof UnnamedProjectAnnotation.State) {
+async function taskAccommodationHotels(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -126,7 +126,7 @@ async function taskAccommodationHotels(state: typeof UnnamedProjectAnnotation.St
  * Node: taskAttraction
  * Agent: travel_analyzer
  */
-async function taskAttraction(state: typeof UnnamedProjectAnnotation.State) {
+async function taskAttraction(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -144,7 +144,7 @@ async function taskAttraction(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskAirbnbLocation
  * Agent: travel_analyzer
  */
-async function taskAirbnbLocation(state: typeof UnnamedProjectAnnotation.State) {
+async function taskAirbnbLocation(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -162,7 +162,7 @@ async function taskAirbnbLocation(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskAccommodationAirbnb
  * Agent: travel_analyzer
  */
-async function taskAccommodationAirbnb(state: typeof UnnamedProjectAnnotation.State) {
+async function taskAccommodationAirbnb(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -180,7 +180,7 @@ async function taskAccommodationAirbnb(state: typeof UnnamedProjectAnnotation.St
  * Node: taskSyncCsvData
  * Agent: travel_analyzer
  */
-async function taskSyncCsvData(state: typeof UnnamedProjectAnnotation.State) {
+async function taskSyncCsvData(state: typeof MastraInstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -194,7 +194,7 @@ async function taskSyncCsvData(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastraInstanceAnnotation)
   .addNode("taskOutboundFlight", taskOutboundFlight)
   .addNode("taskReturnFlight", taskReturnFlight)
   .addNode("taskAccommodationHotels", taskAccommodationHotels)
@@ -213,6 +213,6 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MastraInstance";
 // Workflow: workflow_travel_submission
 // Workflow: workflow_sync_csv_data

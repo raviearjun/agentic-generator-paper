@@ -1,5 +1,5 @@
 /**
- * Mastra AI Instance - UnnamedProject
+ * Mastra AI Instance - StandupDuo
  * 
  * Auto-generated from AgentO Knowledge Graph
  * Pipeline: KG (.ttl) → SPARQL → Pydantic IR → TypeScript
@@ -10,7 +10,7 @@
 import { Mastra } from '@mastra/core'
 
 // Import agents
-import { chatbot, unnamed, unnamed } from './agents'
+import { chatbot, unnamed, unnamed2 } from './agents'
 
 // Import workflows
 import { workflowXiangsheng } from './workflows'
@@ -23,7 +23,7 @@ export const mastra = new Mastra({
   agents: {
     chatbot,
     unnamed,
-    unnamed,
+    unnamed2,
   },
   workflows: {
     workflowXiangsheng,

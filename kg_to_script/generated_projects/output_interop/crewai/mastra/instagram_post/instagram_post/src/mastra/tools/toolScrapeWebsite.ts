@@ -19,13 +19,13 @@ export const toolScrapeWebsite = createTool({
   description: `Scrapes a webpage via Browserless API and summarizes chunks using an LLM.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Scrapes a webpage via Browserless API and summarizes chunks using an LLM.
     // Configurations:
     //   - BROWSERLESS_API_KEY: env:BROWSERLESS_API_KEY
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

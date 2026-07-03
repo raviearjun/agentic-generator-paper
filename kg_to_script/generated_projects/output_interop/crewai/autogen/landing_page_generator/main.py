@@ -13,22 +13,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "idea":
-        "",
-
-
-    "component":
-        "",
-
-
-    "expanded_idea":
-        "",
-
-
-    "file_content":
-        "",
-
 }
 
 

@@ -1,4 +1,4 @@
-# UnnamedProject
+# StandupDuo
 
 
 
@@ -34,14 +34,14 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+StandupDuo/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations
 │       ├── agents/            # Agent definitions
 │       │   └── chatbot.ts
 │       │   └── unnamed.ts
-│       │   └── unnamed.ts
+│       │   └── unnamed2.ts
 │       ├── tools/             # Tool definitions
 │       │   └── toolOpenAiApi.ts
 │       │   └── toolGetOpenaiApiKey.ts

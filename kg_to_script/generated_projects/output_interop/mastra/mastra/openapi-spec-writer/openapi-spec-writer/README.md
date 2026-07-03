@@ -1,4 +1,4 @@
-# UnnamedProject
+# Mastravnext
 
 Mastra instance configured in src/mastra/index.ts (serviceName: mastra-vnext).
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+Mastravnext/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

@@ -132,12 +132,12 @@ def _summary(projects: List[Dict[str, object]]) -> Dict[str, object]:
         "projects": len(projects),
         "evaluated": len(ok_projects),
         "errors": errors,
-        "avg_oec_all": _avg(project["oec"]["all_extracted"]["score"] for project in ok_projects),
-        "avg_oec_important": _avg(project["oec"]["important_subset"]["score"] for project in ok_projects),
+        "oec_all": _avg(project["oec"]["all_extracted"]["score"] for project in ok_projects),
+        "concept_coverage_rate": _avg(project["oec"]["important_subset"]["score"] for project in ok_projects),
         "avg_wgi": _avg(project["wgi"]["score"] for project in ok_projects),
         "avg_edge_f1": _avg(project["wgi"]["edge_f1"] for project in ok_projects),
-        "syntax_success_rate": _avg(1.0 if project.get("syntax_ok") else 0.0 for project in ok_projects),
-        "run_success_rate": _avg(
+        "syntactic_correctness_rate": _avg(1.0 if project.get("syntax_ok") else 0.0 for project in ok_projects),
+        "executability_rate": _avg(
             1.0 if project.get("run_status") == "SUCCESS_DUMMY" or (project.get("run_status") == "N/A" and project.get("syntax_ok")) else 0.0
             for project in ok_projects
         ),

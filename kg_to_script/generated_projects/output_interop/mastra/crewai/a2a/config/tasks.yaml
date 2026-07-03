@@ -1,12 +1,31 @@
-research_task:
-  description: |
-    Task where the first agent gathers information. In code: researchTaskId = `research-${Date.now()}` and a message with the researchQuery is sent via a2aClient.sendMessage. The task returns a message/status object and the resulting textual research output is stored in the ResearchResult resource.
-  expected_output: 'Completed: research_task'
-content_task:
-  description: |
-    Task where the content-creator agent receives research output and transforms it into an engaging blog post introduction. In the code the prompt is constructed by embedding researchResult into a template and sending via secondA2aClient.sendMessage.
-  expected_output: 'Completed: content_task'
-initial_query_task:
-  description: |
-    Task created by sending a message via the A2A client in src/index.ts. The code generates a messageId (message-${Date.now}) and sends the 'query' prompt to the agent. Mastra's A2A implementation may return a Task object rather than a direct message; this behavior is noted but runtime details are not modeled beyond task semantics.
-  expected_output: 'Completed: initial_query_task'
+task_get_agent_card:
+  description: Retrieve agent card metadata (getAgentCard / getExtendedAgentCard).
+  expected_output: AgentCard JSON object containing metadata about the agent.
+task_send_message:
+  description: Send a single message to an agent and receive a message or task response.
+  expected_output: A SendMessageResponse (Message or Task).
+task_send_message_stream:
+  description: Initiate a streaming message to receive real-time task events.
+  expected_output: Streamed A2A events (Message, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent).
+task_get_task:
+  description: Query status and result of an existing task.
+  expected_output: GetTaskResponse containing current task data.
+task_cancel_task:
+  description: Cancel a running task for the agent.
+  expected_output: Task object representing the cancelled task or confirmation of
+    cancellation.
+task_resubscribe_task:
+  description: Resume a previously started task stream to receive ongoing updates.
+  expected_output: Streamed A2A events for the existing task.
+task_set_push_notification_config:
+  description: Set push notification configuration for a task.
+  expected_output: Acknowledgement and the stored TaskPushNotificationConfig.
+task_get_push_notification_config:
+  description: Get push notification configuration for a task.
+  expected_output: The TaskPushNotificationConfig for the requested task.
+task_list_push_notification_config:
+  description: List push notification configurations.
+  expected_output: A list of TaskPushNotificationConfig objects.
+task_delete_push_notification_config:
+  description: Delete a push notification configuration for a task.
+  expected_output: Confirmation of deletion (void response or success envelope).

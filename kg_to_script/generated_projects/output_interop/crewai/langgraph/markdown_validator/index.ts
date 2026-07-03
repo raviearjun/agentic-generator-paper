@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MarkDownValidatorCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const markdown_validation_tool = tool(
  * Node: syntaxReviewTask
  * Agent: requirements_manager
  */
-async function syntaxReviewTask(state: typeof UnnamedProjectAnnotation.State) {
+async function syntaxReviewTask(state: typeof MarkDownValidatorCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -42,12 +42,12 @@ async function syntaxReviewTask(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MarkDownValidatorCrewAnnotation)
   .addNode("syntaxReviewTask", syntaxReviewTask)
   .addEdge(START, "syntaxReviewTask")
   .addEdge("syntaxReviewTask", END)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MarkDownValidatorCrew";
 // Workflow: markdown_validation_workflow

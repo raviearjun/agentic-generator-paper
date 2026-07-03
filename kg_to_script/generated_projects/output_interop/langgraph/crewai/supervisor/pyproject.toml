@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "generative_ui_agent"
 version = "0.1.0"
 description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+generative_ui_agent = "main:run"
 train      = "main:train"
 
 [tool.uv]

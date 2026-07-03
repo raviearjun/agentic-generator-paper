@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const GameBuilderCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_openai_api = tool(
  * Node: taskCode
  * Agent: senior_engineer_agent
  */
-async function taskCode(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCode(state: typeof GameBuilderCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskCode(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskReview
  * Agent: qa_engineer_agent
  */
-async function taskReview(state: typeof UnnamedProjectAnnotation.State) {
+async function taskReview(state: typeof GameBuilderCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskReview(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskEvaluate
  * Agent: chief_qa_engineer_agent
  */
-async function taskEvaluate(state: typeof UnnamedProjectAnnotation.State) {
+async function taskEvaluate(state: typeof GameBuilderCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -89,7 +89,7 @@ async function taskEvaluate(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(GameBuilderCrewAnnotation)
   .addNode("taskCode", taskCode)
   .addNode("taskReview", taskReview)
   .addNode("taskEvaluate", taskEvaluate)
@@ -100,5 +100,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "GameBuilderCrew";
 // Workflow: wp_sequential

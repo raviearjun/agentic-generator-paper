@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const OnboardingTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -15,7 +15,7 @@ const UnnamedProjectAnnotation = Annotation.Root({
  * Node: taskOnboardingPersonalInfo
  * Agent: onboarding_personal_information_agent
  */
-async function taskOnboardingPersonalInfo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskOnboardingPersonalInfo(state: typeof OnboardingTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -33,7 +33,7 @@ async function taskOnboardingPersonalInfo(state: typeof UnnamedProjectAnnotation
  * Node: taskOnboardingTopicPreference
  * Agent: onboarding_topic_preference_agent
  */
-async function taskOnboardingTopicPreference(state: typeof UnnamedProjectAnnotation.State) {
+async function taskOnboardingTopicPreference(state: typeof OnboardingTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -51,7 +51,7 @@ async function taskOnboardingTopicPreference(state: typeof UnnamedProjectAnnotat
  * Node: taskCustomerEngagementRequest
  * Agent: customer_engagement_agent
  */
-async function taskCustomerEngagementRequest(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCustomerEngagementRequest(state: typeof OnboardingTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -65,7 +65,7 @@ async function taskCustomerEngagementRequest(state: typeof UnnamedProjectAnnotat
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(OnboardingTeamAnnotation)
   .addNode("taskOnboardingPersonalInfo", taskOnboardingPersonalInfo)
   .addNode("taskOnboardingTopicPreference", taskOnboardingTopicPreference)
   .addNode("taskCustomerEngagementRequest", taskCustomerEngagementRequest)
@@ -76,5 +76,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "OnboardingTeam";
 // Workflow: onboarding_workflow

@@ -19,13 +19,13 @@ export const fileReadTool = createTool({
   description: `A tool to read a local job description example file.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: A tool to read a local job description example file.
     // Configurations:
     //   - file_path: job_description_example.md
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

@@ -19,13 +19,13 @@ export const toolOpenaiApi = createTool({
   description: `OpenAI API access used by CrewAI to call LLMs (configured via environment variables).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: OpenAI API access used by CrewAI to call LLMs (configured via environment variables).
     // Configurations:
     //   - OPENAI_API_KEY: env (set via environment variable)
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

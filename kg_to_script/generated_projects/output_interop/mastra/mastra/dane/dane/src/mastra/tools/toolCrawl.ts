@@ -19,13 +19,13 @@ export const toolCrawl = createTool({
   description: `Triggers Firecrawl integration to crawl and sync website content.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Triggers Firecrawl integration to crawl and sync website content.
     // Configurations:
     //   - FIRECRAWL_API_KEY: env_or_config
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

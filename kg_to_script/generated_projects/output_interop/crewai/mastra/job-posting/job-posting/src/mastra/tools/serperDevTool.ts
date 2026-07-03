@@ -19,13 +19,13 @@ export const serperDevTool = createTool({
   description: `Serper.dev integration tool for advanced search queries.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Serper.dev integration tool for advanced search queries.
     // Configurations:
     //   - api_key: unspecified
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

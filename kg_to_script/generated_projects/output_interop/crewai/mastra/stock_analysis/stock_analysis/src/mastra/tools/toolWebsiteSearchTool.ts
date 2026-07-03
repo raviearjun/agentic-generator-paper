@@ -19,11 +19,11 @@ export const toolWebsiteSearchTool = createTool({
   description: `Tool to search the web for relevant pages and summaries.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool to search the web for relevant pages and summaries.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

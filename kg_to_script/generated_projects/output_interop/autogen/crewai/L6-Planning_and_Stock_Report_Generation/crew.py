@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Crew: UnnamedProject
+Auto-generated CrewAI Crew: GroupChatTeamforBlogGeneration
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -12,8 +12,8 @@ from crewai.project import CrewBase, agent, crew, task
 
 
 @CrewBase
-class UnnamedProject:
-    """UnnamedProject crew"""
+class GroupChatTeamforBlogGeneration:
+    """GroupChatTeamforBlogGeneration crew"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
@@ -97,7 +97,7 @@ class UnnamedProject:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the UnnamedProject"""
+        """Creates the GroupChatTeamforBlogGeneration"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,

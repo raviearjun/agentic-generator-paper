@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "group_chat_teamfor_blog_generation"
 version = "0.1.0"
 description = "Team instantiated by GroupChat(agents=[...]) with a max_round and allowed speake"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+group_chat_teamfor_blog_generation = "main:run"
 train      = "main:train"
 
 [tool.uv]

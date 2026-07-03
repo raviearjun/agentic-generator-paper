@@ -13,18 +13,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "participants":
-        "",
-
-
-    "context":
-        "",
-
-
-    "objective":
-        "",
-
 }
 
 

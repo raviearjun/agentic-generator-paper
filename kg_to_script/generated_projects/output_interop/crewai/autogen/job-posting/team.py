@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: JobPostingCrew
 Goals:
   - : Analyze the company website and provided description to extract insights on culture, values, and specific needs.
   - : Use insights from the Research Analyst to create a detailed, engaging, and enticing job posting.

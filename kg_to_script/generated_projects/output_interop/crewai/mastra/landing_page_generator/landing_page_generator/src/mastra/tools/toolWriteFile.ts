@@ -19,11 +19,11 @@ export const toolWriteFile = createTool({
   description: `Validated write file tool that writes React component and other files into workdir.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Validated write file tool that writes React component and other files into workdir.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

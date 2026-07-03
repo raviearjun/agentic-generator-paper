@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const AICrewforscreenwritingAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const anyscale_tool = tool(
  * Node: task1
  * Agent: analyst
  */
-async function task1(state: typeof UnnamedProjectAnnotation.State) {
+async function task1(state: typeof AICrewforscreenwritingAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function task1(state: typeof UnnamedProjectAnnotation.State) {
  * Node: task2
  * Agent: scriptwriter
  */
-async function task2(state: typeof UnnamedProjectAnnotation.State) {
+async function task2(state: typeof AICrewforscreenwritingAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function task2(state: typeof UnnamedProjectAnnotation.State) {
  * Node: task3
  * Agent: formatter
  */
-async function task3(state: typeof UnnamedProjectAnnotation.State) {
+async function task3(state: typeof AICrewforscreenwritingAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -100,7 +100,7 @@ async function task3(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(AICrewforscreenwritingAnnotation)
   .addNode("task1", task1)
   .addNode("task2", task2)
   .addNode("task3", task3)
@@ -111,5 +111,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "AICrewforscreenwriting";
 // Workflow: crew_sequential_workflow

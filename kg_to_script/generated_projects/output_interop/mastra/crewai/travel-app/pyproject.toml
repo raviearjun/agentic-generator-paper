@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "mastra_instance"
 version = "0.1.0"
 description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastra_instance = "main:run"
 train      = "main:train"
 
 [tool.uv]

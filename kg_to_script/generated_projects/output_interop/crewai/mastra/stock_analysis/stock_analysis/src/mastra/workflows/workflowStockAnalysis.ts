@@ -32,7 +32,7 @@ const taskResearch = createStep({
   id: 'task_research',
   description: `Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({company_stock: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others.
     // This step uses agent: researchAnalystAgent

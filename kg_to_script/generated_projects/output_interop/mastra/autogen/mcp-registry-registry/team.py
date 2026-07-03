@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: RegistryRegistryMCPServer
 Goals:
   - : Provide discovery and access to MCP registries and their servers; normalize heterogeneous registry responses into a standard ServerEntry format.
 Capabilities:

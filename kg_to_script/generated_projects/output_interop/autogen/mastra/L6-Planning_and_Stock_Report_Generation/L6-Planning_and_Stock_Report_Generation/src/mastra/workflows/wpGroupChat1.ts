@@ -18,7 +18,7 @@ const taskInitiateWriteBlog = createStep({
   id: 'task_initiate_write_blog',
   description: `Initial user task message used to start the groupchat planning and execution.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({s_past: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23.
     // This step uses agent: admin

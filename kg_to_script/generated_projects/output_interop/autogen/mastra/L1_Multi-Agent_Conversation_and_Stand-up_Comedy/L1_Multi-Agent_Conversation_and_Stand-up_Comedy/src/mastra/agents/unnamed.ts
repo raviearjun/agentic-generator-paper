@@ -1,6 +1,6 @@
 /**
- * Agent: 捧哏 / stand-up partner (support)
- * ID: 于谦
+ * Agent: 逗哏 / stand-up comedian (performer)
+ * ID: 郭德纲
  * 
  * Auto-generated from AgentO Knowledge Graph
  * Capabilities:
@@ -14,15 +14,15 @@ import { Agent } from '@mastra/core/agent'
 import { toolOpenAiApi } from '../tools'
 
 /**
- * 捧哏 / stand-up partner (support)
+ * 逗哏 / stand-up comedian (performer)
  * 
  * Instructions:
- * You are 捧哏 / stand-up partner (support).
+ * You are 逗哏 / stand-up comedian (performer).
  */
 export const unnamed = new Agent({
-  id: `于谦`,
-  name: `捧哏 / stand-up partner (support)`,
-  instructions: `You are 捧哏 / stand-up partner (support).`,
+  id: `郭德纲`,
+  name: `逗哏 / stand-up comedian (performer)`,
+  instructions: `You are 逗哏 / stand-up comedian (performer).`,
   model: 'openai/gpt-4o-mini',
   tools: {
     toolOpenAiApi,

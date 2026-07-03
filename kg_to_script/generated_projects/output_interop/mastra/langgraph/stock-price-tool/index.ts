@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const stock_prices_tool = tool(
  * Node: taskInit
  * Agent: stock_agent
  */
-async function taskInit(state: typeof UnnamedProjectAnnotation.State) {
+async function taskInit(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskInit(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskQuery
  * Agent: stock_agent
  */
-async function taskQuery(state: typeof UnnamedProjectAnnotation.State) {
+async function taskQuery(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function taskQuery(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskToolCall
  * Agent: stock_agent
  */
-async function taskToolCall(state: typeof UnnamedProjectAnnotation.State) {
+async function taskToolCall(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function taskToolCall(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskEnd
  * Agent: stock_agent
  */
-async function taskEnd(state: typeof UnnamedProjectAnnotation.State) {
+async function taskEnd(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -96,7 +96,7 @@ async function taskEnd(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceAnnotation)
   .addNode("taskInit", taskInit)
   .addNode("taskQuery", taskQuery)
   .addNode("taskToolCall", taskToolCall)
@@ -109,5 +109,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstance";
 // Workflow: stock_workflow

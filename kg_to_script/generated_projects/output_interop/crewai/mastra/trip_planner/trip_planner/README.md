@@ -1,4 +1,4 @@
-# UnnamedProject
+# TripPlannerCrew
 
 CrewAI-based team that coordinates city selection, local research, and itinerary planning.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+TripPlannerCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

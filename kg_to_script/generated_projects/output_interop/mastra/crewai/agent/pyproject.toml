@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "mastra_instancelocal"
 version = "0.1.0"
 description = "Mastra instance created in src/mastra/index.ts containing Chef Agent"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastra_instancelocal = "main:run"
 train      = "main:train"
 
 [tool.uv]

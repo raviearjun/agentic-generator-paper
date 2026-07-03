@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "copy_crewagentsforcopygeneration"
 version = "0.1.0"
 description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+copy_crewagentsforcopygeneration = "main:run"
 train      = "main:train"
 
 [tool.uv]

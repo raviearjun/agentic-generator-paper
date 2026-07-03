@@ -10,18 +10,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "resumeText":
-        "",
-
-
-    "candidateName":
-        "",
-
-
-    "specialty":
-        "",
-
 }
 
 

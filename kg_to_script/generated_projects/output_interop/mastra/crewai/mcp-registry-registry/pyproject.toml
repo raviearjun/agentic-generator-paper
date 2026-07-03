@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "registry_registry_mcp_server"
 version = "0.1.0"
 description = "An MCP server that provides a registry of MCP registries and exposes tools 'regi"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+registry_registry_mcp_server = "main:run"
 train      = "main:train"
 
 [tool.uv]

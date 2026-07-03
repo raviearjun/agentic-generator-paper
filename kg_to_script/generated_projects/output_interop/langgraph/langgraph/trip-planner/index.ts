@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const TripPlannerAppTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const book_accommodation_tool = tool(
  * Node: viewAccommodationsTask
  * Agent: trip_planner_agent
  */
-async function viewAccommodationsTask(state: typeof UnnamedProjectAnnotation.State) {
+async function viewAccommodationsTask(state: typeof TripPlannerAppTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function viewAccommodationsTask(state: typeof UnnamedProjectAnnotation.Sta
  * Node: selectAccommodationTask
  * Agent: trip_planner_agent
  */
-async function selectAccommodationTask(state: typeof UnnamedProjectAnnotation.State) {
+async function selectAccommodationTask(state: typeof TripPlannerAppTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function selectAccommodationTask(state: typeof UnnamedProjectAnnotation.St
  * Node: confirmBookingTask
  * Agent: trip_planner_agent
  */
-async function confirmBookingTask(state: typeof UnnamedProjectAnnotation.State) {
+async function confirmBookingTask(state: typeof TripPlannerAppTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function confirmBookingTask(state: typeof UnnamedProjectAnnotation.State) 
  * Node: bookedConfirmationTask
  * Agent: trip_planner_agent
  */
-async function bookedConfirmationTask(state: typeof UnnamedProjectAnnotation.State) {
+async function bookedConfirmationTask(state: typeof TripPlannerAppTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -96,7 +96,7 @@ async function bookedConfirmationTask(state: typeof UnnamedProjectAnnotation.Sta
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(TripPlannerAppTeamAnnotation)
   .addNode("viewAccommodationsTask", viewAccommodationsTask)
   .addNode("selectAccommodationTask", selectAccommodationTask)
   .addNode("confirmBookingTask", confirmBookingTask)
@@ -109,5 +109,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "TripPlannerAppTeam";
 // Workflow: trip_planner_workflow

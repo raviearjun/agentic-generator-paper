@@ -19,7 +19,7 @@ const getImageTask = createStep({
   id: 'get_image_task',
   description: `Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds).`,
   inputSchema: z.object({query: z.string()}),
-  outputSchema: z.object({Image_object_with_fields: z.string()}),
+  outputSchema: z.object({image: z.string()}),
   execute: async ({ inputData }) => {
     // Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds).
     // This step uses tool: getRandomImageTool

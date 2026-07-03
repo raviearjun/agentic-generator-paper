@@ -1,5 +1,5 @@
 /**
- * Mastra AI Instance - UnnamedProject
+ * Mastra AI Instance - MarketingPostsCrew
  * 
  * Auto-generated from AgentO Knowledge Graph
  * Pipeline: KG (.ttl) → SPARQL → Pydantic IR → TypeScript

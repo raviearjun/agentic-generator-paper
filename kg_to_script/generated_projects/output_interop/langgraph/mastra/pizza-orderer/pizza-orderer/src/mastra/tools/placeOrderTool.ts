@@ -19,11 +19,11 @@ export const placeOrderTool = createTool({
   description: `Tool invoked to place a pizza order and confirm success.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool invoked to place a pizza order and confirm success.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

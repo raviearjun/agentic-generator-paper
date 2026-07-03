@@ -18,7 +18,7 @@ const taskReadCv = createStep({
   id: 'task_read_cv',
   description: `Extract relevant information from the given CV: professional summary, technical skills, work history, education, key achievements.`,
   inputSchema: z.object({path_to_cv: z.string()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({path_to_jobs_csv: z.string(), path_to_cv: z.string()}),
   execute: async ({ inputData }) => {
     // Extract relevant information from the given CV. Focus on skills, experience, education, and key achievements.
     // This step uses agent: cvReader
@@ -51,7 +51,7 @@ const taskMatchCv = createStep({
  */
 export const workflowSequential = createWorkflow({
   id: 'workflow_sequential',
-  inputSchema: z.object({sequential_with_two_steps: z.string()}),
+  inputSchema: z.object({path_to_cv: z.string()}),
   outputSchema: z.object({}),
   steps: [taskReadCv, taskMatchCv],
 })

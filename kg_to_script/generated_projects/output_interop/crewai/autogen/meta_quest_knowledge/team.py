@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: MetaQuestKnowledgeCrew
 Goals:
   - : Agent-level goal extracted from agents.yaml.
 """

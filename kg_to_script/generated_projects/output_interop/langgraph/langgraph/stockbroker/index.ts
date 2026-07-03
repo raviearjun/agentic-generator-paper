@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const TradingSystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const buy_stock_tool = tool(
  * Node: openBuyUiTask
  * Agent: trade_agent
  */
-async function openBuyUiTask(state: typeof UnnamedProjectAnnotation.State) {
+async function openBuyUiTask(state: typeof TradingSystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function openBuyUiTask(state: typeof UnnamedProjectAnnotation.State) {
  * Node: executePurchaseTask
  * Agent: trade_agent
  */
-async function executePurchaseTask(state: typeof UnnamedProjectAnnotation.State) {
+async function executePurchaseTask(state: typeof TradingSystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function executePurchaseTask(state: typeof UnnamedProjectAnnotation.State)
  * Node: confirmPurchaseTask
  * Agent: trade_agent
  */
-async function confirmPurchaseTask(state: typeof UnnamedProjectAnnotation.State) {
+async function confirmPurchaseTask(state: typeof TradingSystemAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -78,7 +78,7 @@ async function confirmPurchaseTask(state: typeof UnnamedProjectAnnotation.State)
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(TradingSystemAnnotation)
   .addNode("openBuyUiTask", openBuyUiTask)
   .addNode("executePurchaseTask", executePurchaseTask)
   .addNode("confirmPurchaseTask", confirmPurchaseTask)
@@ -89,5 +89,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "TradingSystem";
 // Workflow: buy_stock_workflow

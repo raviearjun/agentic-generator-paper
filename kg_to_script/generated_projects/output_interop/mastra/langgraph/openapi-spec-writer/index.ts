@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastravnextAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const tool_add_to_github = tool(
  * Node: taskSiteCrawlSync
  * Agent: openapi_spec_gen_agent
  */
-async function taskSiteCrawlSync(state: typeof UnnamedProjectAnnotation.State) {
+async function taskSiteCrawlSync(state: typeof MastravnextAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-3.5-turbo" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function taskSiteCrawlSync(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGenerateSpec
  * Agent: openapi_spec_gen_agent
  */
-async function taskGenerateSpec(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGenerateSpec(state: typeof MastravnextAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-3.5-turbo" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function taskGenerateSpec(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskAddToGithub
  * Agent: openapi_spec_gen_agent
  */
-async function taskAddToGithub(state: typeof UnnamedProjectAnnotation.State) {
+async function taskAddToGithub(state: typeof MastravnextAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-3.5-turbo" });
   const response = await model.invoke([
     {
@@ -100,7 +100,7 @@ async function taskAddToGithub(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastravnextAnnotation)
   .addNode("taskSiteCrawlSync", taskSiteCrawlSync)
   .addNode("taskGenerateSpec", taskGenerateSpec)
   .addNode("taskAddToGithub", taskAddToGithub)
@@ -111,6 +111,6 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastravnext";
 // Workflow: wp_open_api_spec_gen_workflow
 // Workflow: wp_make_pr_to_mastra

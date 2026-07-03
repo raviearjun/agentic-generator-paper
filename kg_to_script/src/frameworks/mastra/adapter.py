@@ -43,6 +43,22 @@ def _to_camel(name: str) -> str:
     return out
 
 
+def _unique_var_name(base: str, used: set) -> str:
+    """Disambiguate `base` against names already in `used`, then reserve it.
+
+    Multiple agents/tools/workflows can map to the same camelCase name (e.g.
+    two unnamed AutoGen agents both become "unnamed"), which would otherwise
+    collide as duplicate TS identifiers and overwrite each other's files.
+    """
+    name = base
+    suffix = 2
+    while name in used:
+        name = f"{base}{suffix}"
+        suffix += 1
+    used.add(name)
+    return name
+
+
 def _safe_schema_key(name: str) -> str:
     key = re.sub(r"[^a-zA-Z0-9_]+", "_", name or "").strip("_")
     if not key:
@@ -198,13 +214,14 @@ def _map_tools(project: AgenticProject) -> Tuple[Dict[str, MastraToolModel], Dic
     tools_by_iri: Dict[str, MastraToolModel] = {}
     iri_to_var: Dict[str, str] = {}
     tasks_by_tool: Dict[str, List] = {}
+    used_var_names: set = set()
 
     for task in project.tasks:
         if task.performed_by_iri:
             tasks_by_tool.setdefault(task.performed_by_iri, []).append(task)
 
     for tool in project.tools:
-        var_name = _to_camel(tool.var_name)
+        var_name = _unique_var_name(_to_camel(tool.var_name), used_var_names)
         related_tasks = tasks_by_tool.get(tool.iri, [])
         input_schema = None
         output_schema = None
@@ -336,6 +353,7 @@ def _map_memories(project: AgenticProject) -> Dict[str, MemoryModel]:
       verbatim so no information is lost.
     """
     mapped: Dict[str, MemoryModel] = {}
+    used_var_names: set = set()
     for mem in project.memories:
         storage_type = _detect_storage_type(mem.configs)
         storage_config: List[ConfigModel] = []
@@ -413,7 +431,7 @@ def _map_memories(project: AgenticProject) -> Dict[str, MemoryModel]:
 
         mapped[mem.iri] = MemoryModel(
             iri=mem.iri,
-            var_name=_to_camel(mem.var_name),
+            var_name=_unique_var_name(_to_camel(mem.var_name), used_var_names),
             label=mem.label,
             description=mem.description,
             storage_type=storage_type,
@@ -449,9 +467,10 @@ def _map_agents(
 ) -> Tuple[Dict[str, MastraAgentModel], Dict[str, str]]:
     agents: Dict[str, MastraAgentModel] = {}
     agent_var_by_iri: Dict[str, str] = {}
+    used_var_names: set = set()
 
     for agent in project.agents:
-        var_name = _to_camel(agent.var_name)
+        var_name = _unique_var_name(_to_camel(agent.var_name), used_var_names)
         agent_var_by_iri[agent.iri] = var_name
 
         llm_obj: Optional[LanguageModelModel] = None
@@ -513,8 +532,12 @@ def _map_workflows(
     tool_var_by_iri: Dict[str, str],
 ) -> List[WorkflowModel]:
     tasks_by_iri = {task.iri: task for task in project.tasks}
+    used_workflow_var_names: set = set()
     workflow_var_by_iri = {
-        wf.iri: _to_camel(wf.var_name or wf.label or wf.iri.split("#")[-1])
+        wf.iri: _unique_var_name(
+            _to_camel(wf.var_name or wf.label or wf.iri.split("#")[-1]),
+            used_workflow_var_names,
+        )
         for wf in project.workflows
     }
 

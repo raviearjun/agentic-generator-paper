@@ -19,11 +19,11 @@ export const toolUpdateFile = createTool({
   description: `Tool used to apply an accepted proposed change to files (invoked via tool call messages).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool used to apply an accepted proposed change to files (invoked via tool call messages).
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

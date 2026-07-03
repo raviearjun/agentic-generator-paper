@@ -19,11 +19,11 @@ export const toolMakeMove = createTool({
   description: `Executes a move on the chess board in UCI format and returns a human-readable result string.`,
   inputSchema: z.object({Executes_a_move_on_the_chess_board_in_UCI_format_and_returns_a_human: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Executes a move on the chess board in UCI format and returns a human-readable result string.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

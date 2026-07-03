@@ -12,10 +12,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "weaviate_feature":
-        "",
-
 }
 
 

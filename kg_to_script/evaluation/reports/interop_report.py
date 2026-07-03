@@ -35,18 +35,19 @@ def render_interop_markdown(results: Dict[str, Any]) -> str:
     # ── 1. CFCS Compatibility Matrix ──
     _render_matrix_table(lines, matrix, frameworks, "cfcs", "CFCS (Cross-Framework Compatibility Score)")
     lines.append("")
-    lines.append("> CFCS = 0.2·CSR + 0.2·DSR + 0.3·X-OEC_important + 0.3·X-WGI  ")
-    lines.append("> (When DSR is N/A for TypeScript targets, CSR weight is doubled to 0.4)")
+    lines.append("> CFCS = 0.2·SCR + 0.2·ER + 0.3·CCR + 0.3·WGI  ")
+    lines.append("> SCR = Syntactic Correctness Rate, ER = Executability Rate, CCR = Concept Coverage Rate")
+    lines.append("> (When ER is N/A for TypeScript targets, SCR weight is doubled to 0.4)")
     lines.append("")
 
     # ── 2. Individual metric matrices ──
-    _render_matrix_table(lines, matrix, frameworks, "csr", "CSR (Compilation Success Rate)")
+    _render_matrix_table(lines, matrix, frameworks, "syntactic_correctness_rate", "SCR (Syntactic Correctness Rate)")
     lines.append("")
-    _render_matrix_table(lines, matrix, frameworks, "xoec_important", "X-OEC Important (Ontology Element Coverage)")
+    _render_matrix_table(lines, matrix, frameworks, "concept_coverage_rate", "CCR (Concept Coverage Rate)")
     lines.append("")
-    _render_matrix_table(lines, matrix, frameworks, "xwgi", "X-WGI (Workflow Graph Isomorphism)")
+    _render_matrix_table(lines, matrix, frameworks, "avg_wgi", "WGI (Workflow Graph Isomorphism)")
     lines.append("")
-    _render_matrix_table(lines, matrix, frameworks, "xoec_all", "X-OEC All (Full Ontology Element Coverage)")
+    _render_matrix_table(lines, matrix, frameworks, "oec_all", "OEC All (Full Ontology Element Coverage)")
     lines.append("")
 
     # ── 3. Generation Success Matrix ──
@@ -92,13 +93,13 @@ def render_interop_markdown(results: Dict[str, Any]) -> str:
         lines.append(f"| Generated OK | {summary.get('generated_ok', 0)} |")
         lines.append(f"| Evaluated OK | {summary.get('evaluated_ok', 0)} |")
         lines.append(f"| Generation Errors | {summary.get('generation_errors', 0)} |")
-        lines.append(f"| CSR | {_pct(summary.get('csr'))} |")
-        dsr_val = summary.get("dsr")
-        dsr_na = summary.get("dsr_na", True)
-        lines.append(f"| DSR | {_pct(dsr_val) if not dsr_na else 'N/A (TypeScript target)'} |")
-        lines.append(f"| X-OEC All | {_pct(summary.get('avg_xoec_all'))} |")
-        lines.append(f"| X-OEC Important | {_pct(summary.get('avg_xoec_important'))} |")
-        lines.append(f"| X-WGI | {_pct(summary.get('avg_xwgi'))} |")
+        lines.append(f"| SCR (Syntactic Correctness Rate) | {_pct(summary.get('syntactic_correctness_rate'))} |")
+        er_val = summary.get("executability_rate")
+        er_na = summary.get("executability_rate_na", True)
+        lines.append(f"| ER (Executability Rate) | {_pct(er_val) if not er_na else 'N/A (TypeScript target)'} |")
+        lines.append(f"| OEC All | {_pct(summary.get('oec_all'))} |")
+        lines.append(f"| CCR (Concept Coverage Rate) | {_pct(summary.get('concept_coverage_rate'))} |")
+        lines.append(f"| WGI | {_pct(summary.get('avg_wgi'))} |")
         lines.append(f"| Edge F1 | {_pct(summary.get('avg_edge_f1'))} |")
         lines.append(f"| **CFCS** | **{_pct(summary.get('cfcs'))}** |")
         lines.append("")
@@ -109,16 +110,16 @@ def render_interop_markdown(results: Dict[str, Any]) -> str:
             lines.append("<details>")
             lines.append(f"<summary>Project details ({len(projects)} KGs)</summary>")
             lines.append("")
-            lines.append("| Project | Status | Syntax | Run | X-OEC Imp | X-WGI |")
+            lines.append("| Project | Status | SCR | ER | CCR | WGI |")
             lines.append("| :--- | :---: | :---: | :---: | :---: | :---: |")
             for p in projects:
                 status = p.get("status", "?")
                 if status == "ok":
-                    syntax_str = "✅" if p.get("syntax_ok") else "❌"
+                    scr_str = "✅" if p.get("syntax_ok") else "❌"
                     run_str = _run_emoji(p.get("run_status"))
-                    oec_imp = _pct(p.get("oec", {}).get("important_subset", {}).get("score"))
+                    ccr = _pct(p.get("oec", {}).get("important_subset", {}).get("score"))
                     wgi_val = _pct(p.get("wgi", {}).get("score"))
-                    lines.append(f"| `{p['project']}` | ✅ ok | {syntax_str} | {run_str} | {oec_imp} | {wgi_val} |")
+                    lines.append(f"| `{p['project']}` | ✅ ok | {scr_str} | {run_str} | {ccr} | {wgi_val} |")
                 else:
                     err_brief = (p.get("error", "")[:60] + "…") if len(p.get("error", "")) > 60 else p.get("error", "")
                     lines.append(f"| `{p['project']}` | ❌ {status} | - | - | - | - |")
@@ -149,16 +150,16 @@ def render_interop_markdown(results: Dict[str, Any]) -> str:
         cross_summaries = [p["summary"] for p in cross_pairs if p.get("summary")]
         if cross_summaries:
             avg_cfcs = _avg_field(cross_summaries, "cfcs")
-            avg_csr = _avg_field(cross_summaries, "csr")
-            avg_oec = _avg_field(cross_summaries, "avg_xoec_important")
-            avg_wgi = _avg_field(cross_summaries, "avg_xwgi")
+            avg_scr = _avg_field(cross_summaries, "syntactic_correctness_rate")
+            avg_ccr = _avg_field(cross_summaries, "concept_coverage_rate")
+            avg_wgi = _avg_field(cross_summaries, "avg_wgi")
 
             lines.append("### Cross-Framework (excluding same-framework)")
             lines.append("")
             lines.append(f"- **Avg CFCS:** {_pct(avg_cfcs)}")
-            lines.append(f"- **Avg CSR:** {_pct(avg_csr)}")
-            lines.append(f"- **Avg X-OEC Important:** {_pct(avg_oec)}")
-            lines.append(f"- **Avg X-WGI:** {_pct(avg_wgi)}")
+            lines.append(f"- **Avg SCR (Syntactic Correctness Rate):** {_pct(avg_scr)}")
+            lines.append(f"- **Avg CCR (Concept Coverage Rate):** {_pct(avg_ccr)}")
+            lines.append(f"- **Avg WGI:** {_pct(avg_wgi)}")
             lines.append(f"- **Cross-framework pairs evaluated:** {len(cross_summaries)}")
             lines.append("")
 

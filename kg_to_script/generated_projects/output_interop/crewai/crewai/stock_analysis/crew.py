@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Crew: UnnamedProject
+Auto-generated CrewAI Crew: StockAnalysisCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -89,8 +89,8 @@ investment_advisor_agent_llm = LLM(model="ollama/local")
 
 
 @CrewBase
-class UnnamedProject:
-    """UnnamedProject crew"""
+class StockAnalysisCrew:
+    """StockAnalysisCrew crew"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
@@ -167,7 +167,7 @@ class UnnamedProject:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the UnnamedProject"""
+        """Creates the StockAnalysisCrew"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,

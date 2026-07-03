@@ -1,4 +1,4 @@
-# UnnamedProject
+# MarketingPostsCrew
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MarketingPostsCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

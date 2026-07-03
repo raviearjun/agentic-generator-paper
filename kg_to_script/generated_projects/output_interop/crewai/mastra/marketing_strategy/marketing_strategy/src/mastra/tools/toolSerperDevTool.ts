@@ -19,11 +19,11 @@ export const toolSerperDevTool = createTool({
   description: `Tool for performing web/search queries via Serper.dev (used to find up-to-date information).`,
   inputSchema: z.object({used_to_find_up_to: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool for performing web/search queries via Serper.dev (used to find up-to-date information).
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

@@ -74,7 +74,7 @@ const taskTextObject = createStep({
   id: 'task_text_object',
   description: `Generate a lasagna recipe structured as an object with ingredients and steps.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({JSON_object_with_properties: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // I want to make lasagna, can you generate a lasagna recipe for me?
     // This step uses agent: chefAgent

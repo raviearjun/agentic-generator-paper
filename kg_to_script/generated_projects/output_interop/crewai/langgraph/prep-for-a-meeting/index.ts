@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MeetingPreparationCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const exa_search_tool_get_contents = tool(
  * Node: researchTask
  * Agent: researcher_agent
  */
-async function researchTask(state: typeof UnnamedProjectAnnotation.State) {
+async function researchTask(state: typeof MeetingPreparationCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function researchTask(state: typeof UnnamedProjectAnnotation.State) {
  * Node: industryAnalysisTask
  * Agent: industry_analyst_agent
  */
-async function industryAnalysisTask(state: typeof UnnamedProjectAnnotation.State) {
+async function industryAnalysisTask(state: typeof MeetingPreparationCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function industryAnalysisTask(state: typeof UnnamedProjectAnnotation.State
  * Node: meetingStrategyTask
  * Agent: meeting_strategy_agent
  */
-async function meetingStrategyTask(state: typeof UnnamedProjectAnnotation.State) {
+async function meetingStrategyTask(state: typeof MeetingPreparationCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -104,7 +104,7 @@ async function meetingStrategyTask(state: typeof UnnamedProjectAnnotation.State)
  * Node: summaryAndBriefingTask
  * Agent: summary_and_briefing_agent
  */
-async function summaryAndBriefingTask(state: typeof UnnamedProjectAnnotation.State) {
+async function summaryAndBriefingTask(state: typeof MeetingPreparationCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -118,7 +118,7 @@ async function summaryAndBriefingTask(state: typeof UnnamedProjectAnnotation.Sta
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MeetingPreparationCrewAnnotation)
   .addNode("researchTask", researchTask)
   .addNode("industryAnalysisTask", industryAnalysisTask)
   .addNode("meetingStrategyTask", meetingStrategyTask)
@@ -131,5 +131,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MeetingPreparationCrew";
 // Workflow: meeting_preparation_pattern

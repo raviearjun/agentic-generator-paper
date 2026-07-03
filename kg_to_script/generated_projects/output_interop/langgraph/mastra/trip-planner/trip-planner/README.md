@@ -1,4 +1,4 @@
-# UnnamedProject
+# TripPlannerAppTeam
 
 Team representing the LangGraph-backed trip planner UI and backend flows.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+TripPlannerAppTeam/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

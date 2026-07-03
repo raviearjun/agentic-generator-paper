@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "custom"
 version = "0.1.0"
 description = "Crew created in main.CustomCrew with agents [custom_agent_1, custom_agent_2] and"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+custom = "main:run"
 train      = "main:train"
 
 [tool.uv]

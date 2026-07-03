@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const WriterStateGraphTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const tool_draft_text_document = tool(
  * Node: taskPrepare
  * Agent: writer_agent
  */
-async function taskPrepare(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPrepare(state: typeof WriterStateGraphTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskPrepare(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskWriter
  * Agent: writer_agent
  */
-async function taskWriter(state: typeof UnnamedProjectAnnotation.State) {
+async function taskWriter(state: typeof WriterStateGraphTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function taskWriter(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskSuggestions
  * Agent: writer_agent
  */
-async function taskSuggestions(state: typeof UnnamedProjectAnnotation.State) {
+async function taskSuggestions(state: typeof WriterStateGraphTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -78,7 +78,7 @@ async function taskSuggestions(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(WriterStateGraphTeamAnnotation)
   .addNode("taskPrepare", taskPrepare)
   .addNode("taskWriter", taskWriter)
   .addNode("taskSuggestions", taskSuggestions)
@@ -89,5 +89,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "WriterStateGraphTeam";
 // Workflow: writer_state_graph_pattern

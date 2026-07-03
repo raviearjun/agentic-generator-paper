@@ -1,4 +1,4 @@
-# UnnamedProject
+# CodingandFinancialAnalysisCrew
 
 Team comprising a code writer and a code executor that collaborate to generate and run plotting code.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+CodingandFinancialAnalysisCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

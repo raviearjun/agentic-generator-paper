@@ -18,7 +18,7 @@ const taskParStepOne = createStep({
   id: 'task_par_step_one',
   description: `Doubles the input value (parallel workflow start)`,
   inputSchema: z.object({inputValue: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
     // Doubles the input value
     // This step uses agent: catOne
@@ -32,7 +32,7 @@ const taskParStepSix = createStep({
   id: 'task_par_step_six',
   description: `Logs the input value and returns rawText`,
   inputSchema: z.object({inputValue: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
     // Logs the input value
     // This step uses agent: catOne
@@ -46,7 +46,7 @@ const taskParStepTwo = createStep({
   id: 'task_par_step_two',
   description: `Adds 1 to the input value (parallel branch)`,
   inputSchema: z.object({valueToIncrement: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
     // Adds 1 to the input value
     // This step uses agent: catOne

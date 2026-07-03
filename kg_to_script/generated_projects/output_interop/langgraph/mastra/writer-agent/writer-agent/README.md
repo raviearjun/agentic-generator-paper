@@ -1,4 +1,4 @@
-# UnnamedProject
+# WriterStateGraphTeam
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+WriterStateGraphTeam/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

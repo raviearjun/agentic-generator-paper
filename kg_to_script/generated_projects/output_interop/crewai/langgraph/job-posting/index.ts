@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const JobPostingCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const file_read_tool = tool(
  * Node: researchCompanyCultureTask
  * Agent: research_agent
  */
-async function researchCompanyCultureTask(state: typeof UnnamedProjectAnnotation.State) {
+async function researchCompanyCultureTask(state: typeof JobPostingCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function researchCompanyCultureTask(state: typeof UnnamedProjectAnnotation
  * Node: researchRoleRequirementsTask
  * Agent: research_agent
  */
-async function researchRoleRequirementsTask(state: typeof UnnamedProjectAnnotation.State) {
+async function researchRoleRequirementsTask(state: typeof JobPostingCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function researchRoleRequirementsTask(state: typeof UnnamedProjectAnnotati
  * Node: draftJobPostingTask
  * Agent: writer_agent
  */
-async function draftJobPostingTask(state: typeof UnnamedProjectAnnotation.State) {
+async function draftJobPostingTask(state: typeof JobPostingCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -104,7 +104,7 @@ async function draftJobPostingTask(state: typeof UnnamedProjectAnnotation.State)
  * Node: reviewAndEditJobPostingTask
  * Agent: review_agent
  */
-async function reviewAndEditJobPostingTask(state: typeof UnnamedProjectAnnotation.State) {
+async function reviewAndEditJobPostingTask(state: typeof JobPostingCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -122,7 +122,7 @@ async function reviewAndEditJobPostingTask(state: typeof UnnamedProjectAnnotatio
  * Node: industryAnalysisTask
  * Agent: research_agent
  */
-async function industryAnalysisTask(state: typeof UnnamedProjectAnnotation.State) {
+async function industryAnalysisTask(state: typeof JobPostingCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -136,7 +136,7 @@ async function industryAnalysisTask(state: typeof UnnamedProjectAnnotation.State
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(JobPostingCrewAnnotation)
   .addNode("researchCompanyCultureTask", researchCompanyCultureTask)
   .addNode("researchRoleRequirementsTask", researchRoleRequirementsTask)
   .addNode("draftJobPostingTask", draftJobPostingTask)
@@ -151,5 +151,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "JobPostingCrew";
 // Workflow: job_posting_workflow

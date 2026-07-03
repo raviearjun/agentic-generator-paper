@@ -1,4 +1,4 @@
-# UnnamedProject
+# MarkDownValidatorCrew
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MarkDownValidatorCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

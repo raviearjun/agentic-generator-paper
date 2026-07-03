@@ -79,7 +79,7 @@ const taskReportCandidates = createStep({
  */
 export const workflowRecruitment = createWorkflow({
   id: 'workflow_recruitment',
-  inputSchema: z.object({process: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskResearchCandidates, taskMatchAndScoreCandidates, taskOutreachStrategy, taskReportCandidates],
 })

@@ -18,7 +18,7 @@ const taskWriteEmail = createStep({
   id: 'task_write_email',
   description: `LLM task that generates an initial email draft from conversation history.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({An_email_object_with_fields: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // You're an AI email assistant, tasked with writing an email for the user.
     // This step uses agent: emailAssistantAgent
@@ -44,7 +44,7 @@ const taskRewriteEmail = createStep({
   id: 'task_rewrite_email',
   description: `LLM task that rewrites the email according to user edits or responses.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({An_email_object_with_fields: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // You're an AI email assistant, tasked with rewriting an email for the user.
     // This step uses agent: emailAssistantAgent

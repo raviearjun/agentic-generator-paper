@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MatchToProposalCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_csv_search = tool(
  * Node: taskReadCv
  * Agent: cv_reader
  */
-async function taskReadCv(state: typeof UnnamedProjectAnnotation.State) {
+async function taskReadCv(state: typeof MatchToProposalCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskReadCv(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskMatchCv
  * Agent: matcher
  */
-async function taskMatchCv(state: typeof UnnamedProjectAnnotation.State) {
+async function taskMatchCv(state: typeof MatchToProposalCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -71,7 +71,7 @@ async function taskMatchCv(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MatchToProposalCrewAnnotation)
   .addNode("taskReadCv", taskReadCv)
   .addNode("taskMatchCv", taskMatchCv)
   .addEdge(START, "taskReadCv")
@@ -80,5 +80,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MatchToProposalCrew";
 // Workflow: workflow_sequential

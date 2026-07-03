@@ -1,0 +1,4 @@
+task_fetch_current_weather:
+  description: |
+    Fetch current weather data for the specified location using the weatherTool. If no location is provided, ask the user to supply one. Translate non-English location names to English before querying. Return concise but informative output including temperature, humidity, wind conditions, and precipitation. If asked for activity suggestions and forecast is available, include activity recommendations appropriate to the forecast.
+  expected_output: 'Completed: task_fetch_current_weather'

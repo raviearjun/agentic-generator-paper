@@ -18,7 +18,7 @@ const taskBrStepOne = createStep({
   id: 'task_br_step_one',
   description: `Doubles the input value (branched workflow start)`,
   inputSchema: z.object({inputValue: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
     // Doubles the input value
     // This step uses agent: catOne
@@ -32,7 +32,7 @@ const taskBrStepTwo = createStep({
   id: 'task_br_step_two',
   description: `Adds 1 to the input value`,
   inputSchema: z.object({valueToIncrement: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToRoot: z.number()}),
   execute: async ({ inputData }) => {
     // Adds 1 to the input value
     // This step uses agent: catOne
@@ -46,7 +46,7 @@ const taskBrStepFour = createStep({
   id: 'task_br_step_four',
   description: `Gives the square root of the input value`,
   inputSchema: z.object({valueToRoot: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
     // Gives the square root of the input value
     // This step uses agent: catOne
@@ -60,7 +60,7 @@ const taskBrStepThree = createStep({
   id: 'task_br_step_three',
   description: `Squares the input value (parallel branch)`,
   inputSchema: z.object({valueToSquare: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
     // Squares the input value
     // This step uses agent: catOne

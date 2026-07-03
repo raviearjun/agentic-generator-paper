@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: MatchToProposalCrew
 Goals:
   - : Extract relevant information from the CV, such as skills, experience, and education.
   - : Match the CV to the job opportunities based on skills, experience, and key achievements.

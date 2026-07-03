@@ -19,13 +19,13 @@ export const toolScrapeAndSummarizeWebsite = createTool({
   description: `Scrape website content via Browserless and summarize chunks using internal agent tasks.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Scrape website content via Browserless and summarize chunks using internal agent tasks.
     // Configurations:
     //   - BROWSERLESS_API_KEY: env
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

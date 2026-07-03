@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "match_to_proposal"
 version = "0.1.0"
 description = "CrewAI Team that coordinates cv_reader and matcher agents to match CVs to job pr"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+match_to_proposal = "main:run"
 train      = "main:train"
 
 [tool.uv]

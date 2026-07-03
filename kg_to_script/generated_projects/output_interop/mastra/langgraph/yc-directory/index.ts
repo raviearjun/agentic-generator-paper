@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastraInstanceycagentAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const yc_directory_tool = tool(
  * Node: fetchYcDirectoryTask
  * Agent: yc_directory_agent
  */
-async function fetchYcDirectoryTask(state: typeof UnnamedProjectAnnotation.State) {
+async function fetchYcDirectoryTask(state: typeof MastraInstanceycagentAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function fetchYcDirectoryTask(state: typeof UnnamedProjectAnnotation.State
  * Node: processYcDataTask
  * Agent: yc_directory_agent
  */
-async function processYcDataTask(state: typeof UnnamedProjectAnnotation.State) {
+async function processYcDataTask(state: typeof MastraInstanceycagentAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -60,7 +60,7 @@ async function processYcDataTask(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastraInstanceycagentAnnotation)
   .addNode("fetchYcDirectoryTask", fetchYcDirectoryTask)
   .addNode("processYcDataTask", processYcDataTask)
   .addEdge(START, "fetchYcDirectoryTask")
@@ -69,5 +69,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MastraInstanceycagent";
 // Workflow: yc_directory_workflow

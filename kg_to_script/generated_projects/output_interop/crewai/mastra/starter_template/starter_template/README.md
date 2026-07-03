@@ -1,4 +1,4 @@
-# UnnamedProject
+# CustomCrew
 
 Crew created in main.CustomCrew with agents [custom_agent_1, custom_agent_2] and tasks [custom_task_1, custom_task_2].
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+CustomCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

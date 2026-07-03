@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastraInstancelocalAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const my_tool = tool(
  * Node: taskQueryPantry
  * Agent: chef_agent
  */
-async function taskQueryPantry(state: typeof UnnamedProjectAnnotation.State) {
+async function taskQueryPantry(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskQueryPantry(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGenerateText
  * Agent: chef_agent
  */
-async function taskGenerateText(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGenerateText(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function taskGenerateText(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTextStream
  * Agent: chef_agent
  */
-async function taskTextStream(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTextStream(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function taskTextStream(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGenerateStream
  * Agent: chef_agent
  */
-async function taskGenerateStream(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGenerateStream(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -100,7 +100,7 @@ async function taskGenerateStream(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskTextObject
  * Agent: chef_agent
  */
-async function taskTextObject(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTextObject(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -118,7 +118,7 @@ async function taskTextObject(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTextObjectJsonschema
  * Agent: chef_agent
  */
-async function taskTextObjectJsonschema(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTextObjectJsonschema(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -136,7 +136,7 @@ async function taskTextObjectJsonschema(state: typeof UnnamedProjectAnnotation.S
  * Node: taskGenerateObject
  * Agent: chef_agent
  */
-async function taskGenerateObject(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGenerateObject(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -154,7 +154,7 @@ async function taskGenerateObject(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskStreamObject
  * Agent: chef_agent
  */
-async function taskStreamObject(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStreamObject(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -172,7 +172,7 @@ async function taskStreamObject(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGenerateStreamObject
  * Agent: chef_agent
  */
-async function taskGenerateStreamObject(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGenerateStreamObject(state: typeof MastraInstancelocalAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -186,7 +186,7 @@ async function taskGenerateStreamObject(state: typeof UnnamedProjectAnnotation.S
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastraInstancelocalAnnotation)
   .addNode("taskQueryPantry", taskQueryPantry)
   .addNode("taskGenerateText", taskGenerateText)
   .addNode("taskTextStream", taskTextStream)
@@ -209,5 +209,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MastraInstancelocal";
 // Workflow: chef_workflow

@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: AICrewforscreenwriting
 Goals:
   - : Create a screenplay from a newsgroup post.
 Capabilities:

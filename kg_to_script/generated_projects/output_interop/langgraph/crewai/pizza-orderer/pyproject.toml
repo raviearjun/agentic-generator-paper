@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "order_pizza_graph_team"
 version = "0.1.0"
 description = "Team representing the StateGraph workflow for ordering pizza."
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+order_pizza_graph_team = "main:run"
 train      = "main:train"
 
 [tool.uv]

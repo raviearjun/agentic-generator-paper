@@ -1,7 +1,7 @@
 [project]
-name = "unnamed_project"
+name = "mastra_a2_a_client"
 version = "0.1.0"
-description = "A small two-agent system instantiated in the example code demonstrating agent-to"
+description = "Represents the client-side component that orchestrates A2A interactions with a r"
 authors = [{name = "Your Name", email = "you@example.com"}]
 readme = "README.md"
 requires-python = ">=3.10,<=3.13"
@@ -10,10 +10,12 @@ dependencies = [
     "crewai[tools]>=0.152.0",
     "python-dotenv>=1.0.1",
     "pyyaml>=6.0.1",
+    # TODO: add PyPI package for custom tool "ToolA2AAPI"
+    # TODO: add PyPI package for custom tool "ToolProcessA2AStream"
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastra_a2_a_client = "main:run"
 train      = "main:train"
 
 [tool.uv]

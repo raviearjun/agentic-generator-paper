@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastraDaneprojectinstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -204,7 +204,7 @@ const tool_upstash_store = tool(
  * Node: taskChangelogStepA1
  * Agent: dane
  */
-async function taskChangelogStepA1(state: typeof UnnamedProjectAnnotation.State) {
+async function taskChangelogStepA1(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -222,7 +222,7 @@ async function taskChangelogStepA1(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskChangelogStepA2
  * Agent: dane_change_log
  */
-async function taskChangelogStepA2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskChangelogStepA2(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -240,7 +240,7 @@ async function taskChangelogStepA2(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskEntryMessageInput
  * Agent: dane
  */
-async function taskEntryMessageInput(state: typeof UnnamedProjectAnnotation.State) {
+async function taskEntryMessageInput(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -258,7 +258,7 @@ async function taskEntryMessageInput(state: typeof UnnamedProjectAnnotation.Stat
  * Node: taskEntryMessageOutput
  * Agent: dane
  */
-async function taskEntryMessageOutput(state: typeof UnnamedProjectAnnotation.State) {
+async function taskEntryMessageOutput(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -276,7 +276,7 @@ async function taskEntryMessageOutput(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskCommitGetDiff
  * Agent: dane
  */
-async function taskCommitGetDiff(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCommitGetDiff(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -294,7 +294,7 @@ async function taskCommitGetDiff(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCommitReadConventionalCommitSpec
  * Agent: dane
  */
-async function taskCommitReadConventionalCommitSpec(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCommitReadConventionalCommitSpec(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -312,7 +312,7 @@ async function taskCommitReadConventionalCommitSpec(state: typeof UnnamedProject
  * Node: taskCommitGenerateMessage
  * Agent: dane_commit_message
  */
-async function taskCommitGenerateMessage(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCommitGenerateMessage(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -330,7 +330,7 @@ async function taskCommitGenerateMessage(state: typeof UnnamedProjectAnnotation.
  * Node: taskCommitConfirmation
  * Agent: dane
  */
-async function taskCommitConfirmation(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCommitConfirmation(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -348,7 +348,7 @@ async function taskCommitConfirmation(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskCommitCommit
  * Agent: dane
  */
-async function taskCommitCommit(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCommitCommit(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -366,7 +366,7 @@ async function taskCommitCommit(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskFirstGetPullRequest
  * Agent: dane
  */
-async function taskFirstGetPullRequest(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFirstGetPullRequest(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -384,7 +384,7 @@ async function taskFirstGetPullRequest(state: typeof UnnamedProjectAnnotation.St
  * Node: taskFirstMessageGenerator
  * Agent: dane_new_contributor
  */
-async function taskFirstMessageGenerator(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFirstMessageGenerator(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -402,7 +402,7 @@ async function taskFirstMessageGenerator(state: typeof UnnamedProjectAnnotation.
  * Node: taskFirstCreateMessage
  * Agent: dane
  */
-async function taskFirstCreateMessage(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFirstCreateMessage(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -420,7 +420,7 @@ async function taskFirstCreateMessage(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskIssueGetIssue
  * Agent: dane
  */
-async function taskIssueGetIssue(state: typeof UnnamedProjectAnnotation.State) {
+async function taskIssueGetIssue(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -438,7 +438,7 @@ async function taskIssueGetIssue(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskIssueLabelIssue
  * Agent: dane_issue_labeler
  */
-async function taskIssueLabelIssue(state: typeof UnnamedProjectAnnotation.State) {
+async function taskIssueLabelIssue(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -456,7 +456,7 @@ async function taskIssueLabelIssue(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskIssueApplyLabels
  * Agent: dane
  */
-async function taskIssueApplyLabels(state: typeof UnnamedProjectAnnotation.State) {
+async function taskIssueApplyLabels(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -474,7 +474,7 @@ async function taskIssueApplyLabels(state: typeof UnnamedProjectAnnotation.State
  * Node: taskLinkGetBrokenLinks
  * Agent: dane
  */
-async function taskLinkGetBrokenLinks(state: typeof UnnamedProjectAnnotation.State) {
+async function taskLinkGetBrokenLinks(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -492,7 +492,7 @@ async function taskLinkGetBrokenLinks(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskLinkReportBrokenLinks
  * Agent: dane_link_checker
  */
-async function taskLinkReportBrokenLinks(state: typeof UnnamedProjectAnnotation.State) {
+async function taskLinkReportBrokenLinks(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -510,7 +510,7 @@ async function taskLinkReportBrokenLinks(state: typeof UnnamedProjectAnnotation.
  * Node: taskPkgGetPacakgesToPublish
  * Agent: dane_package_publisher
  */
-async function taskPkgGetPacakgesToPublish(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgGetPacakgesToPublish(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -528,7 +528,7 @@ async function taskPkgGetPacakgesToPublish(state: typeof UnnamedProjectAnnotatio
  * Node: taskPkgAssemblePackages
  * Agent: dane
  */
-async function taskPkgAssemblePackages(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgAssemblePackages(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -546,7 +546,7 @@ async function taskPkgAssemblePackages(state: typeof UnnamedProjectAnnotation.St
  * Node: taskPkgBuildPackages
  * Agent: dane
  */
-async function taskPkgBuildPackages(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgBuildPackages(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -564,7 +564,7 @@ async function taskPkgBuildPackages(state: typeof UnnamedProjectAnnotation.State
  * Node: taskPkgVerifyBuild
  * Agent: dane
  */
-async function taskPkgVerifyBuild(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgVerifyBuild(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -582,7 +582,7 @@ async function taskPkgVerifyBuild(state: typeof UnnamedProjectAnnotation.State) 
  * Node: taskPkgPublishChangeset
  * Agent: dane_package_publisher
  */
-async function taskPkgPublishChangeset(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgPublishChangeset(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -600,7 +600,7 @@ async function taskPkgPublishChangeset(state: typeof UnnamedProjectAnnotation.St
  * Node: taskPkgSetLatestDistTag
  * Agent: dane_package_publisher
  */
-async function taskPkgSetLatestDistTag(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPkgSetLatestDistTag(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -618,7 +618,7 @@ async function taskPkgSetLatestDistTag(state: typeof UnnamedProjectAnnotation.St
  * Node: taskTelStepA1
  * Agent: dane
  */
-async function taskTelStepA1(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTelStepA1(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -636,7 +636,7 @@ async function taskTelStepA1(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTelStepA2
  * Agent: dane
  */
-async function taskTelStepA2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTelStepA2(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -654,7 +654,7 @@ async function taskTelStepA2(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTelStepB2
  * Agent: dane
  */
-async function taskTelStepB2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTelStepB2(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -672,7 +672,7 @@ async function taskTelStepB2(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTelStepC2
  * Agent: dane
  */
-async function taskTelStepC2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTelStepC2(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -690,7 +690,7 @@ async function taskTelStepC2(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskTelStepD2
  * Agent: dane
  */
-async function taskTelStepD2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskTelStepD2(state: typeof MastraDaneprojectinstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -704,7 +704,7 @@ async function taskTelStepD2(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastraDaneprojectinstanceAnnotation)
   .addNode("taskChangelogStepA1", taskChangelogStepA1)
   .addNode("taskChangelogStepA2", taskChangelogStepA2)
   .addNode("taskEntryMessageInput", taskEntryMessageInput)
@@ -764,7 +764,7 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MastraDaneprojectinstance";
 // Workflow: workflow_changelog
 // Workflow: workflow_entry
 // Workflow: workflow_commit_message

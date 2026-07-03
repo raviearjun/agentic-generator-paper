@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const CustomCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const tool_duck_duck_go_search_run = tool(
  * Node: task1
  * Agent: agent_1_name
  */
-async function task1(state: typeof UnnamedProjectAnnotation.State) {
+async function task1(state: typeof CustomCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-3.5-turbo" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function task1(state: typeof UnnamedProjectAnnotation.State) {
  * Node: task2
  * Agent: agent_2_name
  */
-async function task2(state: typeof UnnamedProjectAnnotation.State) {
+async function task2(state: typeof CustomCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-3.5-turbo" });
   const response = await model.invoke([
     {
@@ -60,7 +60,7 @@ async function task2(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(CustomCrewAnnotation)
   .addNode("task1", task1)
   .addNode("task2", task2)
   .addEdge(START, "task1")
@@ -69,5 +69,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "CustomCrew";
 // Workflow: workflow_custom_crew

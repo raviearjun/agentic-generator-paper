@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: CopyCrewagentsforcopygeneration
 Goals:
   - : Produce thorough product and competitor analysis to inform marketing strategy.
   - : Formulate marketing strategies and creative ideas based on product and competitor analysis.

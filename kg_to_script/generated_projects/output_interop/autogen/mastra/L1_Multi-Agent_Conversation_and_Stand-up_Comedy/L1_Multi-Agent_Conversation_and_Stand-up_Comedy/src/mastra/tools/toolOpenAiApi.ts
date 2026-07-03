@@ -19,13 +19,13 @@ export const toolOpenAiApi = createTool({
   description: `External LLM API used by ConversableAgent (via autogen/OpenAI client).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: External LLM API used by ConversableAgent (via autogen/OpenAI client).
     // Configurations:
     //   - api_key: env:OPENAI_API_KEY (obtained via utils.get_openai_api_key)
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

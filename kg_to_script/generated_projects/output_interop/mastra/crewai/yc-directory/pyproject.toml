@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "mastra_instanceycagent"
 version = "0.1.0"
 description = "Mastra instance constructed in src/mastra/index.ts with a single agent 'ycAgent'"
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastra_instanceycagent = "main:run"
 train      = "main:train"
 
 [tool.uv]

@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const RegistryRegistryMCPServerAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_registry_servers = tool(
  * Node: taskFetchServersFromRegistry
  * Agent: registry_registry_server
  */
-async function taskFetchServersFromRegistry(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFetchServersFromRegistry(state: typeof RegistryRegistryMCPServerAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskFetchServersFromRegistry(state: typeof UnnamedProjectAnnotati
  * Node: taskPostProcessServers
  * Agent: registry_registry_server
  */
-async function taskPostProcessServers(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPostProcessServers(state: typeof RegistryRegistryMCPServerAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskPostProcessServers(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskFilterServers
  * Agent: registry_registry_server
  */
-async function taskFilterServers(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFilterServers(state: typeof RegistryRegistryMCPServerAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -93,7 +93,7 @@ async function taskFilterServers(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskGetServersFromRegistry
  * Agent: registry_registry_server
  */
-async function taskGetServersFromRegistry(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGetServersFromRegistry(state: typeof RegistryRegistryMCPServerAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -107,7 +107,7 @@ async function taskGetServersFromRegistry(state: typeof UnnamedProjectAnnotation
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(RegistryRegistryMCPServerAnnotation)
   .addNode("taskFetchServersFromRegistry", taskFetchServersFromRegistry)
   .addNode("taskPostProcessServers", taskPostProcessServers)
   .addNode("taskFilterServers", taskFilterServers)
@@ -120,5 +120,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "RegistryRegistryMCPServer";
 // Workflow: workflow_registry_servers

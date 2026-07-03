@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: BirdCheckerSystem
 Goals:
   - : System should determine whether a provided image contains a bird, identify its scientific name if present, and summarize location.
 Capabilities:

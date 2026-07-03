@@ -58,7 +58,7 @@ const reviewAndEditJobPostingTask = createStep({
   id: 'review_and_edit_job_posting_task',
   description: `Review the draft job posting for the role {hiring_needs}. Check for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values. Edit and refine the content, ensuring it speaks directly to the desired candidates and accurately reflects the role's unique benefits and opportunities. Provide feedback for any necessary revisions.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({error: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Review the draft job posting for the role {hiring_needs}. Check for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values. Edit and refine the content, ensuring it speaks directly to the desired candidates and accurately reflects the role's unique benefits and opportunities. Provide feedback for any necessary revisions.
     // This step uses agent: reviewAgent

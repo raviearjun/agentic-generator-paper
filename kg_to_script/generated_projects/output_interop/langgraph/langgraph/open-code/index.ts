@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const ProposedChangeUITeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const tool_update_file = tool(
  * Node: taskProposeChange
  * Agent: langgraph_agent
  */
-async function taskProposeChange(state: typeof UnnamedProjectAnnotation.State) {
+async function taskProposeChange(state: typeof ProposedChangeUITeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskProposeChange(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskUserDecision
  * Agent: langgraph_agent
  */
-async function taskUserDecision(state: typeof UnnamedProjectAnnotation.State) {
+async function taskUserDecision(state: typeof ProposedChangeUITeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function taskUserDecision(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskHandleReject
  * Agent: langgraph_agent
  */
-async function taskHandleReject(state: typeof UnnamedProjectAnnotation.State) {
+async function taskHandleReject(state: typeof ProposedChangeUITeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function taskHandleReject(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskFinalizeUi
  * Agent: langgraph_agent
  */
-async function taskFinalizeUi(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFinalizeUi(state: typeof ProposedChangeUITeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -96,7 +96,7 @@ async function taskFinalizeUi(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(ProposedChangeUITeamAnnotation)
   .addNode("taskProposeChange", taskProposeChange)
   .addNode("taskUserDecision", taskUserDecision)
   .addNode("taskHandleReject", taskHandleReject)
@@ -109,5 +109,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "ProposedChangeUITeam";
 // Workflow: workflow_proposed_change

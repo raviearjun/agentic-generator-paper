@@ -19,13 +19,13 @@ export const toolLinkedin = createTool({
   description: `Custom LinkedIn retrieval tool that uses an authenticated browser session to find candidate profiles.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Custom LinkedIn retrieval tool that uses an authenticated browser session to find candidate profiles.
     // Configurations:
     //   - LINKEDIN_COOKIE: env:LINKEDIN_COOKIE (set in environment)
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

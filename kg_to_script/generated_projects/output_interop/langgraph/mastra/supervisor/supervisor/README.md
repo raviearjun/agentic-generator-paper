@@ -1,4 +1,4 @@
-# UnnamedProject
+# GenerativeUiAgent
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+GenerativeUiAgent/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

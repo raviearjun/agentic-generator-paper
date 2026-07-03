@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: EmailAssistantTeamStateGraphsystem
 Human Agents:
   - human_user ()
 Capabilities:

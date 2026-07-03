@@ -19,20 +19,20 @@ def render_markdown(results: Dict[str, object]) -> str:
     lines.append("")
     lines.append("## Summary")
     lines.append("")
-    lines.append("| Framework | Projects | Errors | OEC Important | WGI | Edge F1 | Syntax OK | Run OK |")
+    lines.append("| Framework | Projects | Errors | CCR | WGI | Edge F1 | SCR | ER |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
     for framework in results.get("frameworks", []):
         summary = framework.get("summary", {})
         lines.append(
-            "| {name} | {projects} | {errors} | {oec_important} | {wgi} | {edge_f1} | {syntax} | {run} |".format(
+            "| {name} | {projects} | {errors} | {ccr} | {wgi} | {edge_f1} | {scr} | {er} |".format(
                 name=framework.get("name", ""),
                 projects=summary.get("projects", 0),
                 errors=summary.get("errors", 0),
-                oec_important=_pct(summary.get("avg_oec_important")),
+                ccr=_pct(summary.get("concept_coverage_rate")),
                 wgi=_pct(summary.get("avg_wgi")),
                 edge_f1=_pct(summary.get("avg_edge_f1")),
-                syntax=_pct(summary.get("syntax_success_rate")),
-                run=_pct(summary.get("run_success_rate")),
+                scr=_pct(summary.get("syntactic_correctness_rate")),
+                er=_pct(summary.get("executability_rate")),
             )
         )
 
@@ -42,7 +42,7 @@ def render_markdown(results: Dict[str, object]) -> str:
         lines.append("")
         lines.append(f"### {framework.get('name', '')}")
         lines.append("")
-        lines.append("| Project | Status | OEC Important | Missing Important | WGI | Missing Edges | Extra Edges | Syntax | Run Status |")
+        lines.append("| Project | Status | CCR | Missing Important | WGI | Missing Edges | Extra Edges | SCR | Run Status |")
         lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
         for project in framework.get("projects", []):
             if project.get("status") != "ok":
@@ -52,18 +52,18 @@ def render_markdown(results: Dict[str, object]) -> str:
                 continue
             oec = project["oec"]
             wgi = project["wgi"]
-            comp_str = "✅ OK" if project.get("syntax_ok") else "❌ FAIL"
+            scr_str = "✅ OK" if project.get("syntax_ok") else "❌ FAIL"
             run_status = project.get("run_status", "N/A")
             run_str = "✅ SUCCESS_DUMMY" if run_status == "SUCCESS_DUMMY" else (f"❌ {run_status}" if run_status != "N/A" else "➖ N/A")
             lines.append(
-                "| `{project}` | ok | {oec_important} | {missing_important} | {wgi} | {missing_edges} | {extra_edges} | {syntax} | {run} |".format(
+                "| `{project}` | ok | {ccr} | {missing_important} | {wgi} | {missing_edges} | {extra_edges} | {scr} | {run} |".format(
                     project=project.get("project", ""),
-                    oec_important=_pct(oec["important_subset"]["score"]),
+                    ccr=_pct(oec["important_subset"]["score"]),
                     missing_important=len(oec["important_subset"].get("missing", [])),
                     wgi=_pct(wgi["score"]),
                     missing_edges=len(wgi.get("missing_edges", [])),
                     extra_edges=len(wgi.get("extra_edges", [])),
-                    syntax=comp_str,
+                    scr=scr_str,
                     run=run_str,
                 )
             )
@@ -89,7 +89,7 @@ def render_markdown(results: Dict[str, object]) -> str:
                 lines.append(f"- `{project.get('project', '')}`: {project.get('error', '')}")
 
     lines.append("")
-    lines.append("## Lowest Important OEC")
+    lines.append("## Lowest CCR (Concept Coverage Rate)")
     lines.append("")
     for project in _lowest_projects(results, "important"):
         lines.append(

@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const RecruitmentCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const tool_linkedin = tool(
  * Node: taskResearchCandidates
  * Agent: researcher
  */
-async function taskResearchCandidates(state: typeof UnnamedProjectAnnotation.State) {
+async function taskResearchCandidates(state: typeof RecruitmentCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function taskResearchCandidates(state: typeof UnnamedProjectAnnotation.Sta
  * Node: taskMatchAndScoreCandidates
  * Agent: matcher
  */
-async function taskMatchAndScoreCandidates(state: typeof UnnamedProjectAnnotation.State) {
+async function taskMatchAndScoreCandidates(state: typeof RecruitmentCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -86,7 +86,7 @@ async function taskMatchAndScoreCandidates(state: typeof UnnamedProjectAnnotatio
  * Node: taskOutreachStrategy
  * Agent: communicator
  */
-async function taskOutreachStrategy(state: typeof UnnamedProjectAnnotation.State) {
+async function taskOutreachStrategy(state: typeof RecruitmentCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -104,7 +104,7 @@ async function taskOutreachStrategy(state: typeof UnnamedProjectAnnotation.State
  * Node: taskReportCandidates
  * Agent: reporter
  */
-async function taskReportCandidates(state: typeof UnnamedProjectAnnotation.State) {
+async function taskReportCandidates(state: typeof RecruitmentCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -118,7 +118,7 @@ async function taskReportCandidates(state: typeof UnnamedProjectAnnotation.State
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(RecruitmentCrewAnnotation)
   .addNode("taskResearchCandidates", taskResearchCandidates)
   .addNode("taskMatchAndScoreCandidates", taskMatchAndScoreCandidates)
   .addNode("taskOutreachStrategy", taskOutreachStrategy)
@@ -131,5 +131,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "RecruitmentCrew";
 // Workflow: workflow_recruitment

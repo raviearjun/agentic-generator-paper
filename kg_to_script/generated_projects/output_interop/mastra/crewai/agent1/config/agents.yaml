@@ -1,0 +1,5 @@
+mastra_agent_client:
+  role: client-wrapper
+  goal: |
+    Goal for the Mastra agent client: handle streaming responses, orchestrate client tool execution, and expose voice and observation endpoints.
+  backstory: You are a client-wrapper.

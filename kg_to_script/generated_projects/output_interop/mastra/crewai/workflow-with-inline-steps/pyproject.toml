@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "mastraruntime"
 version = "0.1.0"
 description = "Mastra instance created in src/mastra/index.ts with registered workflows."
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+mastraruntime = "main:run"
 train      = "main:train"
 
 [tool.uv]

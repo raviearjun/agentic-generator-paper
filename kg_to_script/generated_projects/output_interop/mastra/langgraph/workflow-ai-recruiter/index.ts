@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceworkflowairecruiterAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -15,7 +15,7 @@ const UnnamedProjectAnnotation = Annotation.Root({
  * Node: gatherCandidateInfoTask
  * Agent: mastra_llm
  */
-async function gatherCandidateInfoTask(state: typeof UnnamedProjectAnnotation.State) {
+async function gatherCandidateInfoTask(state: typeof MastrainstanceworkflowairecruiterAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -33,7 +33,7 @@ async function gatherCandidateInfoTask(state: typeof UnnamedProjectAnnotation.St
  * Node: askAboutSpecialtyTask
  * Agent: mastra_llm
  */
-async function askAboutSpecialtyTask(state: typeof UnnamedProjectAnnotation.State) {
+async function askAboutSpecialtyTask(state: typeof MastrainstanceworkflowairecruiterAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -51,7 +51,7 @@ async function askAboutSpecialtyTask(state: typeof UnnamedProjectAnnotation.Stat
  * Node: askAboutRoleTask
  * Agent: mastra_llm
  */
-async function askAboutRoleTask(state: typeof UnnamedProjectAnnotation.State) {
+async function askAboutRoleTask(state: typeof MastrainstanceworkflowairecruiterAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -65,7 +65,7 @@ async function askAboutRoleTask(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceworkflowairecruiterAnnotation)
   .addNode("gatherCandidateInfoTask", gatherCandidateInfoTask)
   .addNode("askAboutSpecialtyTask", askAboutSpecialtyTask)
   .addNode("askAboutRoleTask", askAboutRoleTask)
@@ -77,5 +77,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstanceworkflowairecruiter";
 // Workflow: candidate_workflow_pattern

@@ -49,7 +49,7 @@ const taskGetLegalMoves = createStep({
   id: 'task_get_legal_moves',
   description: `Player requests the list of legal moves for selection.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({comma: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // 调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。
     // This step uses agent: playerWhite
@@ -98,7 +98,7 @@ const taskCheckMadeMove = createStep({
  */
 export const wpChessNested = createWorkflow({
   id: 'wp_chess_nested',
-  inputSchema: z.object({Workflow_capturing_a_turn_sequence: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({Boolean: z.string()}),
   steps: [taskInitiateChat, taskBoardProxySummaryToWhite, taskGetLegalMoves, taskMakeMove, taskCheckMadeMove],
 })

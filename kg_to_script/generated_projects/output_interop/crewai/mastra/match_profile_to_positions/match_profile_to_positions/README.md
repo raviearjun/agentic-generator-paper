@@ -1,4 +1,4 @@
-# UnnamedProject
+# MatchToProposalCrew
 
 CrewAI Team that coordinates cv_reader and matcher agents to match CVs to job proposals.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+MatchToProposalCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

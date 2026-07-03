@@ -19,11 +19,11 @@ export const toolTripPlanner = createTool({
   description: `helps the user plan their trip; can suggest restaurants and places to stay in any given location.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: helps the user plan their trip; can suggest restaurants and places to stay in any given location.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

@@ -19,11 +19,11 @@ export const toolCopyLandingPageTemplate = createTool({
   description: `Copy a selected landing page template folder from templates/ into workdir/.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Copy a selected landing page template folder from templates/ into workdir/.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

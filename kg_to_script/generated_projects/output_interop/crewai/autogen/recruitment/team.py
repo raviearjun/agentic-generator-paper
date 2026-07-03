@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: RecruitmentCrew
 Goals:
   - : Agent goal: find potential candidates matching provided job requirements.
   - : Agent goal: evaluate and rank candidates against job requirements.

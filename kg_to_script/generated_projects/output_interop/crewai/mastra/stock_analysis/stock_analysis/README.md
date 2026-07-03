@@ -1,4 +1,4 @@
-# UnnamedProject
+# StockAnalysisCrew
 
 CrewAI-based team coordinating multiple analyst agents to produce stock analysis and recommendations.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+StockAnalysisCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

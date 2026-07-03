@@ -19,11 +19,11 @@ export const toolScrapeWebsiteTool = createTool({
   description: `Tool to scrape website content and convert to text for summarization.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool to scrape website content and convert to text for summarization.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

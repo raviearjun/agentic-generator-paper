@@ -11,14 +11,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "var1":
-        "",
-
-
-    "var2":
-        "",
-
 }
 
 

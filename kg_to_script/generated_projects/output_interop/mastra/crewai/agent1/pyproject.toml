@@ -1,0 +1,26 @@
+[project]
+name = "mastra_client_system"
+version = "0.1.0"
+description = "Represents the system/module that provides the Mastra agent client API implement"
+authors = [{name = "Your Name", email = "you@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10,<=3.13"
+
+dependencies = [
+    "crewai[tools]>=0.152.0",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.1",
+    # TODO: add PyPI package for custom tool "VoiceProviderTool"
+    # TODO: add PyPI package for custom tool "ClientToolsTool"
+]
+
+[project.scripts]
+mastra_client_system = "main:run"
+train      = "main:train"
+
+[tool.uv]
+dev-dependencies = []
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"

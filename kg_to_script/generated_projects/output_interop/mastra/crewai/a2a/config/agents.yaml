@@ -1,8 +1,4 @@
-my_agent:
-  role: LLM Agent
-  goal: LLM Agent
-  backstory: You are a LLM Agent.
-content_creator_agent:
-  role: LLM Agent
-  goal: LLM Agent
-  backstory: You are a LLM Agent.
+agent_id_constructor_parameter:
+  role: A2A remote agent
+  goal: A2A remote agent
+  backstory: You are a A2A remote agent.

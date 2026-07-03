@@ -1,6 +1,6 @@
 /**
- * Agent: Meta Reviewer
- * ID: 审核员主管
+ * Agent: Writer
+ * ID: 写手
  * 
  * Auto-generated from AgentO Knowledge Graph
  */
@@ -8,14 +8,14 @@
 import { Agent } from '@mastra/core/agent'
 
 /**
- * Meta Reviewer
+ * Writer
  * 
  * Instructions:
- * You are Meta Reviewer.
+ * You are Writer.
  */
 export const unnamed = new Agent({
-  id: `审核员主管`,
-  name: `Meta Reviewer`,
-  instructions: `You are Meta Reviewer.`,
+  id: `写手`,
+  name: `Writer`,
+  instructions: `You are Writer.`,
   model: 'openai/gpt-3.5-turbo',
 })

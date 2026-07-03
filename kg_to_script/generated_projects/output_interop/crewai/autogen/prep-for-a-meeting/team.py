@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: MeetingPreparationCrew
 Goals:
   - : Conduct thorough research on people and companies involved in the meeting.
   - : Analyze the current industry trends, challenges, and opportunities.

@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Crew: UnnamedProject
+Auto-generated CrewAI Crew: CodingandFinancialAnalysisCrew
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -44,8 +44,8 @@ def tool_plot_stock_prices(*args, **kwargs) -> str:
 
 
 @CrewBase
-class UnnamedProject:
-    """UnnamedProject crew"""
+class CodingandFinancialAnalysisCrew:
+    """CodingandFinancialAnalysisCrew crew"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
@@ -85,7 +85,7 @@ class UnnamedProject:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the UnnamedProject"""
+        """Creates the CodingandFinancialAnalysisCrew"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,

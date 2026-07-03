@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: ConversationalChessTeam
 Goals:
   - : Team-level goal: have the agents play a game of chess via conversational tool calls.
 Capabilities:

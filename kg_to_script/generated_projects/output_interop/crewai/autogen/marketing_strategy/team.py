@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: MarketingPostsCrew
 Goals:
   - : Create a comprehensive marketing strategy to showcase CrewAI's AI-driven solutions, emphasizing ease of use, scalability, and integration capabilities, targeting enterprise decision-makers.
   - : Conduct amazing analysis of the products and competitors, providing in-depth insights to guide marketing strategies.

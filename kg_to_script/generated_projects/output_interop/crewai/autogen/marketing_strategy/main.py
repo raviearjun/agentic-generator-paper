@@ -12,14 +12,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "customer_domain":
-        "",
-
-
-    "project_description":
-        "",
-
 }
 
 

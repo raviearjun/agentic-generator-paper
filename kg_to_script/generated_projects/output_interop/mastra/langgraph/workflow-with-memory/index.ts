@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -28,7 +28,7 @@ const tool_get_cat_facts = tool(
  * Node: taskStepOne
  * Agent: cat_one
  */
-async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepOne(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -46,7 +46,7 @@ async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepTwo
  * Agent: cat_one
  */
-async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepTwo(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -64,7 +64,7 @@ async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepThree
  * Agent: cat_one
  */
-async function taskStepThree(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepThree(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function taskStepThree(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepFour
  * Agent: cat_one
  */
-async function taskStepFour(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepFour(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -100,7 +100,7 @@ async function taskStepFour(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepFive
  * Agent: cat_one
  */
-async function taskStepFive(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepFive(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -118,7 +118,7 @@ async function taskStepFive(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskParStepOne
  * Agent: cat_one
  */
-async function taskParStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskParStepOne(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -136,7 +136,7 @@ async function taskParStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskParStepSix
  * Agent: cat_one
  */
-async function taskParStepSix(state: typeof UnnamedProjectAnnotation.State) {
+async function taskParStepSix(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -154,7 +154,7 @@ async function taskParStepSix(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskParStepTwo
  * Agent: cat_one
  */
-async function taskParStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskParStepTwo(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -172,7 +172,7 @@ async function taskParStepTwo(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskParStepThree
  * Agent: cat_one
  */
-async function taskParStepThree(state: typeof UnnamedProjectAnnotation.State) {
+async function taskParStepThree(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -190,7 +190,7 @@ async function taskParStepThree(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBrStepOne
  * Agent: cat_one
  */
-async function taskBrStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBrStepOne(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -208,7 +208,7 @@ async function taskBrStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBrStepTwo
  * Agent: cat_one
  */
-async function taskBrStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBrStepTwo(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -226,7 +226,7 @@ async function taskBrStepTwo(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBrStepFour
  * Agent: cat_one
  */
-async function taskBrStepFour(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBrStepFour(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -244,7 +244,7 @@ async function taskBrStepFour(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBrStepThree
  * Agent: cat_one
  */
-async function taskBrStepThree(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBrStepThree(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -262,7 +262,7 @@ async function taskBrStepThree(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBrStepFive
  * Agent: cat_one
  */
-async function taskBrStepFive(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBrStepFive(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -280,7 +280,7 @@ async function taskBrStepFive(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCycStepOne
  * Agent: cat_one
  */
-async function taskCycStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCycStepOne(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -298,7 +298,7 @@ async function taskCycStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCycStepTwo
  * Agent: cat_one
  */
-async function taskCycStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCycStepTwo(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -316,7 +316,7 @@ async function taskCycStepTwo(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCycStepThree
  * Agent: cat_one
  */
-async function taskCycStepThree(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCycStepThree(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -334,7 +334,7 @@ async function taskCycStepThree(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCycStepOneLoop
  * Agent: cat_one
  */
-async function taskCycStepOneLoop(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCycStepOneLoop(state: typeof MastrainstanceAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o" });
   const response = await model.invoke([
     {
@@ -348,7 +348,7 @@ async function taskCycStepOneLoop(state: typeof UnnamedProjectAnnotation.State) 
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastrainstanceAnnotation)
   .addNode("taskStepOne", taskStepOne)
   .addNode("taskStepTwo", taskStepTwo)
   .addNode("taskStepThree", taskStepThree)
@@ -391,7 +391,7 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastrainstance";
 // Workflow: wf_sequential
 // Workflow: wf_parallel
 // Workflow: wf_branched

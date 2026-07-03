@@ -1,0 +1,13 @@
+task_process_request:
+  description: |
+    Process incoming generate/stream request: validate params, prepare requestContext and clientTools, and forward to server endpoints (/agents/{agentId}/generate or /agents/{agentId}/stream).
+  expected_output: A streaming response or immediate FullOutput depending on route.
+task_execute_client_tool:
+  description: |
+    Handle tool-call finish reason: locate pending client tool calls, execute `clientTool.execute`, attach observability data, synthesize tool-result chunks, and continue the stream/recursion as needed.
+  expected_output: Tool result messages and possible recursive stream invocations.
+task_return_response:
+  description: |
+    Finalize and return the response stream to the client; close controller when no client-tool continuation is required, or recursively continue the stream if client-tools were executed.
+  expected_output: SSE/stream events for the client; final response close or recursion
+    handled.

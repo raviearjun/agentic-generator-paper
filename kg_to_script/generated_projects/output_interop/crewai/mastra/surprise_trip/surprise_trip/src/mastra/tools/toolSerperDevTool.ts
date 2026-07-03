@@ -19,13 +19,13 @@ export const toolSerperDevTool = createTool({
   description: `Web search tool (Serper.dev) used to search the web for activities, restaurants, and general information.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Web search tool (Serper.dev) used to search the web for activities, restaurants, and general information.
     // Configurations:
     //   - api_key: from_env
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

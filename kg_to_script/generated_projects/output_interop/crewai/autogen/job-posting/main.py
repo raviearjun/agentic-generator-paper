@@ -12,22 +12,6 @@ from autogen_agentchat.conditions import (
 
 INPUTS = {
 
-
-    "company_domain":
-        "",
-
-
-    "company_description":
-        "",
-
-
-    "hiring_needs":
-        "",
-
-
-    "specific_benefits":
-        "",
-
 }
 
 

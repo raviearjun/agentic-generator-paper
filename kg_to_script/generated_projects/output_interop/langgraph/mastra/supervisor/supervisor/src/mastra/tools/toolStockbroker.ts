@@ -19,11 +19,11 @@ export const toolStockbroker = createTool({
   description: `can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

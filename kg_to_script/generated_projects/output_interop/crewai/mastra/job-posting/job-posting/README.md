@@ -1,4 +1,4 @@
-# UnnamedProject
+# JobPostingCrew
 
 CrewAI crew that orchestrates agents to create job postings
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+JobPostingCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

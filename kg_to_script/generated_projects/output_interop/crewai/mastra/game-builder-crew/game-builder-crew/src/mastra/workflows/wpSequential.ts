@@ -65,7 +65,7 @@ const taskEvaluate = createStep({
  */
 export const wpSequential = createWorkflow({
   id: 'wp_sequential',
-  inputSchema: z.object({process: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskCode, taskReview, taskEvaluate],
 })

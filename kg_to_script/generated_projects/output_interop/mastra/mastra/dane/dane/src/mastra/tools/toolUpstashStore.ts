@@ -19,13 +19,13 @@ export const toolUpstashStore = createTool({
   description: `Upstash HTTP store used by Memory; token-based auth.`,
   inputSchema: z.object({token: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Upstash HTTP store used by Memory; token-based auth.
     // Configurations:
     //   - UPSTASH_STORE_URL: http://localhost:8079
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

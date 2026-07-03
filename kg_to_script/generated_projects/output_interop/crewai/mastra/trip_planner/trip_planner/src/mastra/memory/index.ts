@@ -1,1 +1,0 @@
-export { tripMemory } from './tripMemory'

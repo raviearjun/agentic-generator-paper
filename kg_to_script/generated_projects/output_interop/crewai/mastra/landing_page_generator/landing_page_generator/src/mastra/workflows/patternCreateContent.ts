@@ -16,7 +16,7 @@ const taskComponentContent = createStep({
   id: 'task_component_content',
   description: `A engineer will update the {component} (code below), return a list of good options of texts to replace EACH INDIVIDUAL existing text on the component, the suggestion MUST be based on the idea below, and also MUST be similar in length with the original text, we need to replace ALL TEXT.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({length: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // A engineer will update the {component} (code below), return a list of good options of texts to replace EACH INDIVIDUAL existing text on the component, the suggestion MUST be based on the idea below, and also MUST be similar in length with the original text, we need to replace ALL TEXT.
     // This step uses agent: seniorContentEditor

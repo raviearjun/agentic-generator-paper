@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const StockAnalysisCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -105,7 +105,7 @@ const tool_sec10_q_tool_amzn = tool(
  * Node: taskFinancialAnalysis
  * Agent: financial_analyst_agent
  */
-async function taskFinancialAnalysis(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFinancialAnalysis(state: typeof StockAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -123,7 +123,7 @@ async function taskFinancialAnalysis(state: typeof UnnamedProjectAnnotation.Stat
  * Node: taskResearch
  * Agent: research_analyst_agent
  */
-async function taskResearch(state: typeof UnnamedProjectAnnotation.State) {
+async function taskResearch(state: typeof StockAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -141,7 +141,7 @@ async function taskResearch(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskFilingsAnalysis
  * Agent: financial_analyst_agent
  */
-async function taskFilingsAnalysis(state: typeof UnnamedProjectAnnotation.State) {
+async function taskFilingsAnalysis(state: typeof StockAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -159,7 +159,7 @@ async function taskFilingsAnalysis(state: typeof UnnamedProjectAnnotation.State)
  * Node: taskRecommend
  * Agent: investment_advisor_agent
  */
-async function taskRecommend(state: typeof UnnamedProjectAnnotation.State) {
+async function taskRecommend(state: typeof StockAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -173,7 +173,7 @@ async function taskRecommend(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(StockAnalysisCrewAnnotation)
   .addNode("taskFinancialAnalysis", taskFinancialAnalysis)
   .addNode("taskResearch", taskResearch)
   .addNode("taskFilingsAnalysis", taskFilingsAnalysis)
@@ -186,5 +186,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "StockAnalysisCrew";
 // Workflow: workflow_stock_analysis

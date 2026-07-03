@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MarketingPostsCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_scrape_website_tool = tool(
  * Node: taskResearch
  * Agent: lead_market_analyst
  */
-async function taskResearch(state: typeof UnnamedProjectAnnotation.State) {
+async function taskResearch(state: typeof MarketingPostsCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskResearch(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskProjectUnderstanding
  * Agent: chief_marketing_strategist
  */
-async function taskProjectUnderstanding(state: typeof UnnamedProjectAnnotation.State) {
+async function taskProjectUnderstanding(state: typeof MarketingPostsCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskProjectUnderstanding(state: typeof UnnamedProjectAnnotation.S
  * Node: taskMarketingStrategy
  * Agent: chief_marketing_strategist
  */
-async function taskMarketingStrategy(state: typeof UnnamedProjectAnnotation.State) {
+async function taskMarketingStrategy(state: typeof MarketingPostsCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -93,7 +93,7 @@ async function taskMarketingStrategy(state: typeof UnnamedProjectAnnotation.Stat
  * Node: taskCampaignIdea
  * Agent: creative_content_creator
  */
-async function taskCampaignIdea(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCampaignIdea(state: typeof MarketingPostsCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -111,7 +111,7 @@ async function taskCampaignIdea(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCopyCreation
  * Agent: creative_content_creator
  */
-async function taskCopyCreation(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCopyCreation(state: typeof MarketingPostsCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -125,7 +125,7 @@ async function taskCopyCreation(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MarketingPostsCrewAnnotation)
   .addNode("taskResearch", taskResearch)
   .addNode("taskProjectUnderstanding", taskProjectUnderstanding)
   .addNode("taskMarketingStrategy", taskMarketingStrategy)
@@ -140,5 +140,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "MarketingPostsCrew";
 // Workflow: wp_sequential

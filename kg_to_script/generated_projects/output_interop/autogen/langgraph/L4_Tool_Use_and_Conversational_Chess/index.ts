@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const ConversationalChessTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -39,7 +39,7 @@ const tool_make_move = tool(
  * Node: taskInitiateChat
  * Agent: player_black
  */
-async function taskInitiateChat(state: typeof UnnamedProjectAnnotation.State) {
+async function taskInitiateChat(state: typeof ConversationalChessTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -57,7 +57,7 @@ async function taskInitiateChat(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskBoardProxySummaryToWhite
  * Agent: board_proxy
  */
-async function taskBoardProxySummaryToWhite(state: typeof UnnamedProjectAnnotation.State) {
+async function taskBoardProxySummaryToWhite(state: typeof ConversationalChessTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -75,7 +75,7 @@ async function taskBoardProxySummaryToWhite(state: typeof UnnamedProjectAnnotati
  * Node: taskGetLegalMoves
  * Agent: player_white
  */
-async function taskGetLegalMoves(state: typeof UnnamedProjectAnnotation.State) {
+async function taskGetLegalMoves(state: typeof ConversationalChessTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -93,7 +93,7 @@ async function taskGetLegalMoves(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskMakeMove
  * Agent: player_white
  */
-async function taskMakeMove(state: typeof UnnamedProjectAnnotation.State) {
+async function taskMakeMove(state: typeof ConversationalChessTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -111,7 +111,7 @@ async function taskMakeMove(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskCheckMadeMove
  * Agent: board_proxy
  */
-async function taskCheckMadeMove(state: typeof UnnamedProjectAnnotation.State) {
+async function taskCheckMadeMove(state: typeof ConversationalChessTeamAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -125,7 +125,7 @@ async function taskCheckMadeMove(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(ConversationalChessTeamAnnotation)
   .addNode("taskInitiateChat", taskInitiateChat)
   .addNode("taskBoardProxySummaryToWhite", taskBoardProxySummaryToWhite)
   .addNode("taskGetLegalMoves", taskGetLegalMoves)
@@ -139,5 +139,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "ConversationalChessTeam";
 // Workflow: wp_chess_nested

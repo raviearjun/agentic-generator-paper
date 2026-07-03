@@ -1,5 +1,5 @@
 [project]
-name = "unnamed_project"
+name = "recruitment"
 version = "0.1.0"
 description = "CrewAI-based team coordinating agents to automate recruitment tasks."
 authors = [{name = "Your Name", email = "you@example.com"}]
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-unnamed_project = "main:run"
+recruitment = "main:run"
 train      = "main:train"
 
 [tool.uv]

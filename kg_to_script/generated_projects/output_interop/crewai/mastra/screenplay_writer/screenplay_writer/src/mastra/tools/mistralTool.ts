@@ -19,13 +19,13 @@ export const mistralTool = createTool({
   description: `Official Mistral LLM API endpoint (optional selection in script).`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Official Mistral LLM API endpoint (optional selection in script).
     // Configurations:
     //   - api_key: env:MISTRAL_API_KEY
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

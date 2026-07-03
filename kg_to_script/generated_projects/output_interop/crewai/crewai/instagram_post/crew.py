@@ -1,5 +1,5 @@
 """
-Auto-generated CrewAI Crew: UnnamedProject
+Auto-generated CrewAI Crew: CopyCrewagentsforcopygeneration
 
 Source  : AgentO Knowledge Graph → SPARQL → Pydantic → Jinja2
 Pipeline: 3-Layer Conversion Pipeline
@@ -58,8 +58,8 @@ chief_creative_diretor_agent_llm = LLM(model="ollama/model")
 
 
 @CrewBase
-class UnnamedProject:
-    """UnnamedProject crew"""
+class CopyCrewagentsforcopygeneration:
+    """CopyCrewagentsforcopygeneration crew"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
@@ -161,7 +161,7 @@ class UnnamedProject:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the UnnamedProject"""
+        """Creates the CopyCrewagentsforcopygeneration"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,

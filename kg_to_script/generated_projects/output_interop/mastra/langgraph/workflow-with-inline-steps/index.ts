@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const MastraruntimeAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -15,7 +15,7 @@ const UnnamedProjectAnnotation = Annotation.Root({
  * Node: taskStepOne
  * Agent: mastra_default_agent
  */
-async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepOne(state: typeof MastraruntimeAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -33,7 +33,7 @@ async function taskStepOne(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskStepTwo
  * Agent: mastra_default_agent
  */
-async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
+async function taskStepTwo(state: typeof MastraruntimeAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -47,7 +47,7 @@ async function taskStepTwo(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(MastraruntimeAnnotation)
   .addNode("taskStepOne", taskStepOne)
   .addNode("taskStepTwo", taskStepTwo)
   .addEdge(START, "taskStepOne")
@@ -56,5 +56,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "mastraruntime";
 // Workflow: my_workflow

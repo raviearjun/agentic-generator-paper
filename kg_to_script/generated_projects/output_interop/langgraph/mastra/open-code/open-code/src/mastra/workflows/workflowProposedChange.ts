@@ -77,7 +77,7 @@ const taskFinalizeUi = createStep({
  */
 export const workflowProposedChange = createWorkflow({
   id: 'workflow_proposed_change',
-  inputSchema: z.object({Workflow_capturing_the_lifecycle_of_a_proposed_code_change: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({Final_UI_state: z.string()}),
   steps: [taskProposeChange, taskUserDecision, taskHandleReject, taskFinalizeUi],
 })

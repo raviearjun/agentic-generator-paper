@@ -1,4 +1,4 @@
-# UnnamedProject
+# GroupChatTeamforBlogGeneration
 
 Team instantiated by GroupChat(agents=[...]) with a max_round and allowed speaker transitions.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+GroupChatTeamforBlogGeneration/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

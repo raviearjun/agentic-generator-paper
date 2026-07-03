@@ -18,7 +18,7 @@ const taskGuodegangInitiateChat1 = createStep({
   id: 'task_guodegang_initiate_chat_1',
   description: `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; recipient=于谦; max_turns=6`,
   inputSchema: z.object({}),
-  outputSchema: z.object({A_multi: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; recipient=于谦; max_turns=6
     // This step uses agent: unnamed
@@ -32,7 +32,7 @@ const taskGuodegangInitiateChat2 = createStep({
   id: 'task_guodegang_initiate_chat_2',
   description: `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; summary_method="reflection_with_llm"; summary_prompt="简洁的总结下这场相声表演。"`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Conversation_with_an_appended_LLM: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; summary_method="reflection_with_llm"; summary_prompt="简洁的总结下这场相声表演。"
     // This step uses agent: unnamed
@@ -65,7 +65,7 @@ const taskGuodegangSendFollowup = createStep({
  */
 export const workflowXiangsheng = createWorkflow({
   id: 'workflow_xiangsheng',
-  inputSchema: z.object({High: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskGuodegangInitiateChat1, taskGuodegangInitiateChat2, taskGuodegangSendFollowup],
 })

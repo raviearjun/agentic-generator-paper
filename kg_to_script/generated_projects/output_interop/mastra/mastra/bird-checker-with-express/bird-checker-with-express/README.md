@@ -1,4 +1,4 @@
-# UnnamedProject
+# BirdCheckerSystem
 
 Mastra instance that hosts the bird checker agent and associated tools.
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+BirdCheckerSystem/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

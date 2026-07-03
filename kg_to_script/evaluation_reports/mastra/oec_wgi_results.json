@@ -10,12 +10,12 @@
         "projects": 20,
         "evaluated": 19,
         "errors": 1,
-        "avg_oec_all": 0.7377462414636389,
-        "avg_oec_important": 0.9842235493293149,
+        "oec_all": 0.7377462414636389,
+        "concept_coverage_rate": 0.9842235493293149,
         "avg_wgi": 0.9147746818025455,
         "avg_edge_f1": 0.8528265107212475,
-        "syntax_success_rate": 1.0,
-        "run_success_rate": 1.0
+        "syntactic_correctness_rate": 1.0,
+        "executability_rate": 1.0
       },
       "projects": [
         {

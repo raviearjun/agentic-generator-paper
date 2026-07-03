@@ -19,11 +19,11 @@ export const findPizzaTool = createTool({
   description: `Tool invoked to search for a pizza shop and return address and phone number.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool invoked to search for a pizza shop and return address and phone number.
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

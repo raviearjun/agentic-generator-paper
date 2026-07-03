@@ -65,7 +65,7 @@ const askAboutRoleTask = createStep({
  */
 export const candidateWorkflowPattern = createWorkflow({
   id: 'candidate_workflow_pattern',
-  inputSchema: z.object({Workflow_to_extract_candidate_information_from_a_resume_and_generate_follow: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [gatherCandidateInfoTask, askAboutSpecialtyTask, askAboutRoleTask],
 })

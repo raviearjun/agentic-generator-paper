@@ -3,7 +3,7 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const UnnamedProjectAnnotation = Annotation.Root({
+const CodingandFinancialAnalysisCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
     reducer: (_, next) => next,
     default: () => [],
@@ -50,7 +50,7 @@ const tool_plot_stock_prices = tool(
  * Node: taskPlotYtdV1
  * Agent: code_executor_agent
  */
-async function taskPlotYtdV1(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPlotYtdV1(state: typeof CodingandFinancialAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -68,7 +68,7 @@ async function taskPlotYtdV1(state: typeof UnnamedProjectAnnotation.State) {
  * Node: taskPlotYtdV2
  * Agent: code_executor_agent
  */
-async function taskPlotYtdV2(state: typeof UnnamedProjectAnnotation.State) {
+async function taskPlotYtdV2(state: typeof CodingandFinancialAnalysisCrewAnnotation.State) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
     {
@@ -82,7 +82,7 @@ async function taskPlotYtdV2(state: typeof UnnamedProjectAnnotation.State) {
   return { messages: [response] };
 }
 
-const workflow = new StateGraph(UnnamedProjectAnnotation)
+const workflow = new StateGraph(CodingandFinancialAnalysisCrewAnnotation)
   .addNode("taskPlotYtdV1", taskPlotYtdV1)
   .addNode("taskPlotYtdV2", taskPlotYtdV2)
   .addEdge(START, "taskPlotYtdV1")
@@ -91,5 +91,5 @@ const workflow = new StateGraph(UnnamedProjectAnnotation)
 ;
 
 export const graph = workflow.compile();
-graph.name = "UnnamedProject";
+graph.name = "CodingandFinancialAnalysisCrew";
 // Workflow: workflow_l5_coding_and_financial_analysis

@@ -1,4 +1,4 @@
-# UnnamedProject
+# GameBuilderCrew
 
 CrewAI crew defined in GameBuilderCrew class (src/game_builder_crew/crew.py)
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+GameBuilderCrew/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

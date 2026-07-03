@@ -1,4 +1,4 @@
-# UnnamedProject
+# CopyCrewagentsforcopygeneration
 
 
 
@@ -34,7 +34,7 @@ npm run dev
 ## 📦 Project Structure
 
 ```
-UnnamedProject/
+CopyCrewagentsforcopygeneration/
 ├── src/
 │   └── mastra/
 │       ├── index.ts           # Mastra instance + registrations

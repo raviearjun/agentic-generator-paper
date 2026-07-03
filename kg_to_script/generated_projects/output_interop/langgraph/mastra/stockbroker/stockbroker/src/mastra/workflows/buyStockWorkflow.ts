@@ -32,7 +32,7 @@ const executePurchaseTask = createStep({
   id: 'execute_purchase_task',
   description: `Execute the purchase by invoking the buy-stock tool with purchaseDetails.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({purchaseDetails_object_with_fields: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload.
     // This step uses agent: tradeAgent
@@ -65,7 +65,7 @@ const confirmPurchaseTask = createStep({
  */
 export const buyStockWorkflow = createWorkflow({
   id: 'buy_stock_workflow',
-  inputSchema: z.object({A_simple_three_step_flow: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [openBuyUiTask, executePurchaseTask, confirmPurchaseTask],
 })

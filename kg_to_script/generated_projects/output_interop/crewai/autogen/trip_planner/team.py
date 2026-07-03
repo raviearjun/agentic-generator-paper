@@ -1,5 +1,5 @@
 """
-Auto-generated AutoGen Team: UnnamedProject
+Auto-generated AutoGen Team: TripPlannerCrew
 Goals:
   - : Select the best city based on weather, season, and prices
   - : Provide the BEST insights about the selected city
