@@ -43,24 +43,6 @@ async function taskWriteEmail(state: typeof EmailAssistantTeamStateGraphsystemAn
 }
 
 /**
- * Node: taskWriteEmail
- * Agent: email_assistant_agent
- */
-async function taskWriteEmail(state: typeof EmailAssistantTeamStateGraphsystemAnnotation.State) {
-  const model = new ChatOpenAI({ model: "gpt-4o" });
-  const response = await model.invoke([
-    {
-      role: "system",
-      content:
-        "You are a Email Assistant." +
-        "\nNode: taskWriteEmail",
-    },
-    ...state.messages,
-  ]);
-  return { messages: [response] };
-}
-
-/**
  * Node: taskInterrupt
  * Agent: email_assistant_agent
  */
@@ -115,7 +97,6 @@ async function taskSendEmail(state: typeof EmailAssistantTeamStateGraphsystemAnn
 }
 
 const workflow = new StateGraph(EmailAssistantTeamStateGraphsystemAnnotation)
-  .addNode("taskWriteEmail", taskWriteEmail)
   .addNode("taskWriteEmail", taskWriteEmail)
   .addNode("taskInterrupt", taskInterrupt)
   .addNode("taskRewriteEmail", taskRewriteEmail)

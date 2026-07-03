@@ -7,57 +7,851 @@
       "kg_dir": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI",
       "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra",
       "summary": {
-        "projects": 17,
-        "evaluated": 16,
+        "projects": 20,
+        "evaluated": 19,
         "errors": 1,
-        "avg_oec_all": 0.7556239717563192,
-        "avg_oec_important": 0.9972826086956522,
-        "avg_wgi": 0.6300587395696091,
-        "avg_edge_f1": 0.6805059523809524,
-        "avg_ast_sim": 0.47949943719046706,
+        "avg_oec_all": 0.7377462414636389,
+        "avg_oec_important": 0.9842235493293149,
+        "avg_wgi": 0.9147746818025455,
+        "avg_edge_f1": 0.8528265107212475,
         "syntax_success_rate": 1.0,
         "run_success_rate": 1.0
       },
       "projects": [
+        {
+          "project": "a2a",
+          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/a2a_instances.ttl",
+          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/a2a",
+          "status": "ok",
+          "kg_element_count": 53,
+          "code_element_count": 26,
+          "oec": {
+            "all_extracted": {
+              "score": 0.8301886792452831,
+              "matched": 44,
+              "total": 53,
+              "missing": [
+                {
+                  "category": "agent_llm",
+                  "name": "agent_id_constructor_parameter_lm_default",
+                  "important": false,
+                  "aliases": [
+                    "agent_id_constructor_parameter_lm_default",
+                    "agent_id_constructor_parameter",
+                    "lm_default"
+                  ],
+                  "details": {
+                    "source": "agent_id_constructor_parameter",
+                    "target": "lm_default"
+                  }
+                },
+                {
+                  "category": "agent_tool",
+                  "name": "agent_id_constructor_parameter_tool_a_2_a_api",
+                  "important": true,
+                  "aliases": [
+                    "agent_id_constructor_parameter_tool_a_2_a_api",
+                    "agent_id_constructor_parameter",
+                    "tool_a_2_a_api"
+                  ],
+                  "details": {
+                    "source": "agent_id_constructor_parameter",
+                    "target": "tool_a_2_a_api"
+                  }
+                },
+                {
+                  "category": "agent_tool",
+                  "name": "agent_id_constructor_parameter_tool_process_a_2_a_stream",
+                  "important": true,
+                  "aliases": [
+                    "agent_id_constructor_parameter_tool_process_a_2_a_stream",
+                    "agent_id_constructor_parameter",
+                    "tool_process_a_2_a_stream"
+                  ],
+                  "details": {
+                    "source": "agent_id_constructor_parameter",
+                    "target": "tool_process_a_2_a_stream"
+                  }
+                },
+                {
+                  "category": "tool",
+                  "name": "tool_a_2_a_api",
+                  "important": true,
+                  "aliases": [
+                    "tool_a_2_a_api"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "tool_a_2_a_api_capability_a_2_a_api",
+                  "important": false,
+                  "aliases": [
+                    "tool_a_2_a_api_capability_a_2_a_api",
+                    "tool_a_2_a_api",
+                    "capability_a_2_a_api"
+                  ],
+                  "details": {
+                    "source": "tool_a_2_a_api",
+                    "target": "capability_a_2_a_api"
+                  }
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "tool_process_a_2_a_stream_capability_process_stream",
+                  "important": false,
+                  "aliases": [
+                    "tool_process_a_2_a_stream_capability_process_stream",
+                    "tool_process_a_2_a_stream",
+                    "capability_process_stream"
+                  ],
+                  "details": {
+                    "source": "tool_process_a_2_a_stream",
+                    "target": "capability_process_stream"
+                  }
+                },
+                {
+                  "category": "language_model",
+                  "name": "lm_default",
+                  "important": false,
+                  "aliases": [
+                    "lm_default"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "capability_a_2_a_api",
+                  "important": false,
+                  "aliases": [
+                    "capability_a_2_a_api"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "capability_process_stream",
+                  "important": false,
+                  "aliases": [
+                    "capability_process_stream"
+                  ],
+                  "details": {}
+                }
+              ],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_llm": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 2
+                },
+                "capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 2
+                },
+                "language_model": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "project": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "tool": {
+                  "score": 0.5,
+                  "matched": 1,
+                  "total": 2
+                },
+                "tool_capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 2
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                }
+              }
+            },
+            "important_subset": {
+              "score": 0.9347826086956522,
+              "matched": 43,
+              "total": 46,
+              "missing": [
+                {
+                  "category": "agent_tool",
+                  "name": "agent_id_constructor_parameter_tool_a_2_a_api",
+                  "important": true,
+                  "aliases": [
+                    "agent_id_constructor_parameter_tool_a_2_a_api",
+                    "agent_id_constructor_parameter",
+                    "tool_a_2_a_api"
+                  ],
+                  "details": {
+                    "source": "agent_id_constructor_parameter",
+                    "target": "tool_a_2_a_api"
+                  }
+                },
+                {
+                  "category": "agent_tool",
+                  "name": "agent_id_constructor_parameter_tool_process_a_2_a_stream",
+                  "important": true,
+                  "aliases": [
+                    "agent_id_constructor_parameter_tool_process_a_2_a_stream",
+                    "agent_id_constructor_parameter",
+                    "tool_process_a_2_a_stream"
+                  ],
+                  "details": {
+                    "source": "agent_id_constructor_parameter",
+                    "target": "tool_process_a_2_a_stream"
+                  }
+                },
+                {
+                  "category": "tool",
+                  "name": "tool_a_2_a_api",
+                  "important": true,
+                  "aliases": [
+                    "tool_a_2_a_api"
+                  ],
+                  "details": {}
+                }
+              ],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 2
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                },
+                "tool": {
+                  "score": 0.5,
+                  "matched": 1,
+                  "total": 2
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 10,
+                  "total": 10
+                }
+              }
+            }
+          },
+          "wgi": {
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
+            "edge_recall": 1.0,
+            "edge_f1": 1.0,
+            "kg_nodes": [
+              "task_cancel_task",
+              "task_delete_push_notification_config",
+              "task_get_agent_card",
+              "task_get_push_notification_config",
+              "task_get_task",
+              "task_list_push_notification_config",
+              "task_resubscribe_task",
+              "task_send_message",
+              "task_send_message_stream",
+              "task_set_push_notification_config"
+            ],
+            "code_nodes": [
+              "task_cancel_task",
+              "task_delete_push_notification_config",
+              "task_get_agent_card",
+              "task_get_push_notification_config",
+              "task_get_task",
+              "task_list_push_notification_config",
+              "task_resubscribe_task",
+              "task_send_message",
+              "task_send_message_stream",
+              "task_set_push_notification_config"
+            ],
+            "kg_edges": [
+              {
+                "source": "task_cancel_task",
+                "target": "task_resubscribe_task"
+              },
+              {
+                "source": "task_get_agent_card",
+                "target": "task_send_message"
+              },
+              {
+                "source": "task_get_push_notification_config",
+                "target": "task_list_push_notification_config"
+              },
+              {
+                "source": "task_get_task",
+                "target": "task_cancel_task"
+              },
+              {
+                "source": "task_list_push_notification_config",
+                "target": "task_delete_push_notification_config"
+              },
+              {
+                "source": "task_resubscribe_task",
+                "target": "task_set_push_notification_config"
+              },
+              {
+                "source": "task_send_message",
+                "target": "task_send_message_stream"
+              },
+              {
+                "source": "task_send_message_stream",
+                "target": "task_get_task"
+              },
+              {
+                "source": "task_set_push_notification_config",
+                "target": "task_get_push_notification_config"
+              }
+            ],
+            "code_edges": [
+              {
+                "source": "task_cancel_task",
+                "target": "task_resubscribe_task"
+              },
+              {
+                "source": "task_get_agent_card",
+                "target": "task_send_message"
+              },
+              {
+                "source": "task_get_push_notification_config",
+                "target": "task_list_push_notification_config"
+              },
+              {
+                "source": "task_get_task",
+                "target": "task_cancel_task"
+              },
+              {
+                "source": "task_list_push_notification_config",
+                "target": "task_delete_push_notification_config"
+              },
+              {
+                "source": "task_resubscribe_task",
+                "target": "task_set_push_notification_config"
+              },
+              {
+                "source": "task_send_message",
+                "target": "task_send_message_stream"
+              },
+              {
+                "source": "task_send_message_stream",
+                "target": "task_get_task"
+              },
+              {
+                "source": "task_set_push_notification_config",
+                "target": "task_get_push_notification_config"
+              }
+            ],
+            "missing_nodes": [],
+            "extra_nodes": [],
+            "missing_edges": [],
+            "extra_edges": []
+          },
+          "syntax_ok": true,
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
+        },
+        {
+          "project": "agent1",
+          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent1_instances.ttl",
+          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/agent1",
+          "status": "ok",
+          "kg_element_count": 38,
+          "code_element_count": 12,
+          "oec": {
+            "all_extracted": {
+              "score": 0.6052631578947368,
+              "matched": 23,
+              "total": 38,
+              "missing": [
+                {
+                  "category": "agent_goal",
+                  "name": "mastra_agent_client_mastra_agent_goal",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_client_mastra_agent_goal",
+                    "mastra_agent_client",
+                    "mastra_agent_goal"
+                  ],
+                  "details": {
+                    "source": "mastra_agent_client",
+                    "target": "mastra_agent_goal"
+                  }
+                },
+                {
+                  "category": "agent_llm",
+                  "name": "mastra_agent_client_lm_default",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_client_lm_default",
+                    "mastra_agent_client",
+                    "lm_default"
+                  ],
+                  "details": {
+                    "source": "mastra_agent_client",
+                    "target": "lm_default"
+                  }
+                },
+                {
+                  "category": "config",
+                  "name": "agent_mastra_agent_client_signal_runtime_options_ttl",
+                  "important": false,
+                  "aliases": [
+                    "agent_mastra_agent_client_signal_runtime_options_ttl",
+                    "signal_runtime_options_ttl",
+                    "300000",
+                    "signal_runtime_options_ttl_300000"
+                  ],
+                  "details": {
+                    "key": "signal_runtime_options_ttl",
+                    "owner": "mastra_agent_client",
+                    "owner_category": "agent",
+                    "value": "300000"
+                  }
+                },
+                {
+                  "category": "agent_capability",
+                  "name": "mastra_agent_client_cap_tool_execution",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_client_cap_tool_execution",
+                    "mastra_agent_client",
+                    "cap_tool_execution"
+                  ],
+                  "details": {
+                    "source": "mastra_agent_client",
+                    "target": "cap_tool_execution"
+                  }
+                },
+                {
+                  "category": "agent_capability",
+                  "name": "mastra_agent_client_cap_tts",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_client_cap_tts",
+                    "mastra_agent_client",
+                    "cap_tts"
+                  ],
+                  "details": {
+                    "source": "mastra_agent_client",
+                    "target": "cap_tts"
+                  }
+                },
+                {
+                  "category": "agent_capability",
+                  "name": "mastra_agent_client_cap_stt",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_client_cap_stt",
+                    "mastra_agent_client",
+                    "cap_stt"
+                  ],
+                  "details": {
+                    "source": "mastra_agent_client",
+                    "target": "cap_stt"
+                  }
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "voice_provider_tool_cap_tts",
+                  "important": false,
+                  "aliases": [
+                    "voice_provider_tool_cap_tts",
+                    "voice_provider_tool",
+                    "cap_tts"
+                  ],
+                  "details": {
+                    "source": "voice_provider_tool",
+                    "target": "cap_tts"
+                  }
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "voice_provider_tool_cap_stt",
+                  "important": false,
+                  "aliases": [
+                    "voice_provider_tool_cap_stt",
+                    "voice_provider_tool",
+                    "cap_stt"
+                  ],
+                  "details": {
+                    "source": "voice_provider_tool",
+                    "target": "cap_stt"
+                  }
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "client_tools_tool_cap_tool_execution",
+                  "important": false,
+                  "aliases": [
+                    "client_tools_tool_cap_tool_execution",
+                    "client_tools_tool",
+                    "cap_tool_execution"
+                  ],
+                  "details": {
+                    "source": "client_tools_tool",
+                    "target": "cap_tool_execution"
+                  }
+                },
+                {
+                  "category": "language_model",
+                  "name": "lm_default",
+                  "important": false,
+                  "aliases": [
+                    "lm_default"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "goal",
+                  "name": "mastra_agent_goal",
+                  "important": false,
+                  "aliases": [
+                    "mastra_agent_goal"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "goal",
+                  "name": "mastra_system_goal",
+                  "important": false,
+                  "aliases": [
+                    "mastra_system_goal"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "cap_tts",
+                  "important": false,
+                  "aliases": [
+                    "cap_tts"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "cap_stt",
+                  "important": false,
+                  "aliases": [
+                    "cap_stt"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "cap_tool_execution",
+                  "important": false,
+                  "aliases": [
+                    "cap_tool_execution"
+                  ],
+                  "details": {}
+                }
+              ],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 3
+                },
+                "agent_goal": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "agent_llm": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 1.0,
+                  "matched": 2,
+                  "total": 2
+                },
+                "capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 3
+                },
+                "config": {
+                  "score": 0.8,
+                  "matched": 4,
+                  "total": 5
+                },
+                "goal": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 2
+                },
+                "language_model": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "project": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "tool": {
+                  "score": 1.0,
+                  "matched": 2,
+                  "total": 2
+                },
+                "tool_capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 3
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                }
+              }
+            },
+            "important_subset": {
+              "score": 1.0,
+              "matched": 18,
+              "total": 18,
+              "missing": [],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 1.0,
+                  "matched": 2,
+                  "total": 2
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                },
+                "tool": {
+                  "score": 1.0,
+                  "matched": 2,
+                  "total": 2
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 3,
+                  "total": 3
+                }
+              }
+            }
+          },
+          "wgi": {
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
+            "edge_recall": 1.0,
+            "edge_f1": 1.0,
+            "kg_nodes": [
+              "task_execute_client_tool",
+              "task_process_request",
+              "task_return_response"
+            ],
+            "code_nodes": [
+              "task_execute_client_tool",
+              "task_process_request",
+              "task_return_response"
+            ],
+            "kg_edges": [
+              {
+                "source": "task_execute_client_tool",
+                "target": "task_return_response"
+              },
+              {
+                "source": "task_process_request",
+                "target": "task_execute_client_tool"
+              }
+            ],
+            "code_edges": [
+              {
+                "source": "task_execute_client_tool",
+                "target": "task_return_response"
+              },
+              {
+                "source": "task_process_request",
+                "target": "task_execute_client_tool"
+              }
+            ],
+            "missing_nodes": [],
+            "extra_nodes": [],
+            "missing_edges": [],
+            "extra_edges": []
+          },
+          "syntax_ok": true,
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
+        },
         {
           "project": "agent",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/agent",
           "status": "ok",
           "kg_element_count": 51,
-          "code_element_count": 79,
+          "code_element_count": 22,
           "oec": {
             "all_extracted": {
-              "score": 0.9019607843137255,
-              "matched": 46,
+              "score": 0.8431372549019608,
+              "matched": 43,
               "total": 51,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_deployer_scope",
+                  "name": "system_mastra_instancelocal_deployer_scope",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_deployer_scope",
+                    "system_mastra_instancelocal_deployer_scope",
                     "deployer_scope"
                   ],
                   "details": {
                     "key": "deployer_scope",
-                    "owner": "unnamed_project",
+                    "owner": "mastra_instancelocal",
                     "owner_category": "system"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_deployer_project_name",
+                  "name": "system_mastra_instancelocal_deployer_project_name",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_deployer_project_name",
+                    "system_mastra_instancelocal_deployer_project_name",
                     "deployer_project_name"
                   ],
                   "details": {
                     "key": "deployer_project_name",
-                    "owner": "unnamed_project",
+                    "owner": "mastra_instancelocal",
                     "owner_category": "system"
+                  }
+                },
+                {
+                  "category": "agent_llm",
+                  "name": "chef_agent_gpt_4_o",
+                  "important": false,
+                  "aliases": [
+                    "chef_agent_gpt_4_o",
+                    "chef_agent",
+                    "gpt_4_o"
+                  ],
+                  "details": {
+                    "source": "chef_agent",
+                    "target": "gpt_4_o"
                   }
                 },
                 {
@@ -78,6 +872,23 @@
                   }
                 },
                 {
+                  "category": "config",
+                  "name": "agent_chef_agent_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_chef_agent_model_name",
+                    "model_name",
+                    "gpt_4_o",
+                    "model_name_gpt_4_o"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "chef_agent",
+                    "owner_category": "agent",
+                    "value": "gpt-4o"
+                  }
+                },
+                {
                   "category": "tool_capability",
                   "name": "my_tool_my_tool_capability",
                   "important": false,
@@ -90,6 +901,15 @@
                     "source": "my_tool",
                     "target": "my_tool_capability"
                   }
+                },
+                {
+                  "category": "language_model",
+                  "name": "gpt_4_o",
+                  "important": false,
+                  "aliases": [
+                    "gpt_4_o"
+                  ],
+                  "details": {}
                 },
                 {
                   "category": "capability",
@@ -108,8 +928,8 @@
                   "total": 1
                 },
                 "agent_llm": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "agent_tool": {
@@ -123,13 +943,13 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 0.5,
-                  "matched": 3,
+                  "score": 0.3333333333333333,
+                  "matched": 2,
                   "total": 6
                 },
                 "language_model": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "project": {
@@ -175,10 +995,28 @@
               }
             },
             "important_subset": {
-              "score": 1.0,
-              "matched": 41,
+              "score": 0.975609756097561,
+              "matched": 40,
               "total": 41,
-              "missing": [],
+              "missing": [
+                {
+                  "category": "config",
+                  "name": "agent_chef_agent_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_chef_agent_model_name",
+                    "model_name",
+                    "gpt_4_o",
+                    "model_name_gpt_4_o"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "chef_agent",
+                    "owner_category": "agent",
+                    "value": "gpt-4o"
+                  }
+                }
+              ],
               "by_category": {
                 "agent": {
                   "score": 1.0,
@@ -191,8 +1029,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "step_task": {
@@ -229,17 +1067,17 @@
             }
           },
           "wgi": {
-            "score": 0.38636363636363635,
-            "normalized_graph_edit_distance": 0.6136363636363636,
-            "labeled_score": 0.38636363636363635,
-            "topology_score": 0.38636363636363635,
-            "labeled_normalized_graph_edit_distance": 0.6136363636363636,
-            "topology_normalized_graph_edit_distance": 0.6136363636363636,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.4,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.5714285714285715,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "task_generate_object",
               "task_generate_stream",
@@ -252,27 +1090,12 @@
               "task_text_stream"
             ],
             "code_nodes": [
-              "task_add_letter",
-              "task_add_letter_b",
-              "task_add_letter_c",
-              "task_add_letter_with_count",
-              "task_final_step",
               "task_generate_object",
               "task_generate_stream",
               "task_generate_stream_object",
               "task_generate_text",
-              "task_long_text",
-              "task_my_step",
-              "task_my_step_2",
-              "task_nested_text_processor",
               "task_query_pantry",
-              "task_short_text",
-              "task_step_four",
-              "task_step_one",
-              "task_step_three",
-              "task_step_two",
               "task_stream_object",
-              "task_suspend_resume",
               "task_text_object",
               "task_text_object_jsonschema",
               "task_text_stream"
@@ -313,22 +1136,6 @@
             ],
             "code_edges": [
               {
-                "source": "task_add_letter",
-                "target": "task_add_letter_b"
-              },
-              {
-                "source": "task_add_letter_b",
-                "target": "task_add_letter_c"
-              },
-              {
-                "source": "task_add_letter_c",
-                "target": "task_add_letter_with_count"
-              },
-              {
-                "source": "task_add_letter_with_count",
-                "target": "task_suspend_resume"
-              },
-              {
                 "source": "task_generate_object",
                 "target": "task_stream_object"
               },
@@ -341,44 +1148,12 @@
                 "target": "task_text_stream"
               },
               {
-                "source": "task_long_text",
-                "target": "task_nested_text_processor"
-              },
-              {
-                "source": "task_my_step",
-                "target": "task_my_step_2"
-              },
-              {
-                "source": "task_nested_text_processor",
-                "target": "task_final_step"
-              },
-              {
                 "source": "task_query_pantry",
                 "target": "task_generate_text"
               },
               {
-                "source": "task_short_text",
-                "target": "task_long_text"
-              },
-              {
-                "source": "task_step_one",
-                "target": "task_step_two"
-              },
-              {
-                "source": "task_step_three",
-                "target": "task_step_four"
-              },
-              {
-                "source": "task_step_two",
-                "target": "task_step_three"
-              },
-              {
                 "source": "task_stream_object",
                 "target": "task_generate_stream_object"
-              },
-              {
-                "source": "task_suspend_resume",
-                "target": "task_short_text"
               },
               {
                 "source": "task_text_object",
@@ -394,80 +1169,13 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "task_add_letter",
-              "task_add_letter_b",
-              "task_add_letter_c",
-              "task_add_letter_with_count",
-              "task_final_step",
-              "task_long_text",
-              "task_my_step",
-              "task_my_step_2",
-              "task_nested_text_processor",
-              "task_short_text",
-              "task_step_four",
-              "task_step_one",
-              "task_step_three",
-              "task_step_two",
-              "task_suspend_resume"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "task_add_letter",
-                "target": "task_add_letter_b"
-              },
-              {
-                "source": "task_add_letter_b",
-                "target": "task_add_letter_c"
-              },
-              {
-                "source": "task_add_letter_c",
-                "target": "task_add_letter_with_count"
-              },
-              {
-                "source": "task_add_letter_with_count",
-                "target": "task_suspend_resume"
-              },
-              {
-                "source": "task_long_text",
-                "target": "task_nested_text_processor"
-              },
-              {
-                "source": "task_my_step",
-                "target": "task_my_step_2"
-              },
-              {
-                "source": "task_nested_text_processor",
-                "target": "task_final_step"
-              },
-              {
-                "source": "task_short_text",
-                "target": "task_long_text"
-              },
-              {
-                "source": "task_step_one",
-                "target": "task_step_two"
-              },
-              {
-                "source": "task_step_three",
-                "target": "task_step_four"
-              },
-              {
-                "source": "task_step_two",
-                "target": "task_step_three"
-              },
-              {
-                "source": "task_suspend_resume",
-                "target": "task_short_text"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5306122448979592
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "bird-checker-with-express",
@@ -475,26 +1183,26 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/bird-checker-with-express",
           "status": "ok",
           "kg_element_count": 25,
-          "code_element_count": 14,
+          "code_element_count": 8,
           "oec": {
             "all_extracted": {
-              "score": 0.72,
-              "matched": 18,
+              "score": 0.6,
+              "matched": 15,
               "total": 25,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_runtime",
+                  "name": "system_bird_checker_system_runtime",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_runtime",
+                    "system_bird_checker_system_runtime",
                     "runtime",
                     "express_server",
                     "runtime_express_server"
                   ],
                   "details": {
                     "key": "runtime",
-                    "owner": "unnamed_project",
+                    "owner": "bird_checker_system",
                     "owner_category": "system",
                     "value": "express-server"
                   }
@@ -511,6 +1219,37 @@
                   "details": {
                     "source": "bird_checker",
                     "target": "goal_identify_birds"
+                  }
+                },
+                {
+                  "category": "agent_llm",
+                  "name": "bird_checker_claude_3_haiku_20240307",
+                  "important": false,
+                  "aliases": [
+                    "bird_checker_claude_3_haiku_20240307",
+                    "bird_checker",
+                    "claude_3_haiku_20240307"
+                  ],
+                  "details": {
+                    "source": "bird_checker",
+                    "target": "claude_3_haiku_20240307"
+                  }
+                },
+                {
+                  "category": "config",
+                  "name": "agent_bird_checker_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_bird_checker_model_name",
+                    "model_name",
+                    "claude_3_haiku_20240307",
+                    "model_name_claude_3_haiku_20240307"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "bird_checker",
+                    "owner_category": "agent",
+                    "value": "claude-3-haiku-20240307"
                   }
                 },
                 {
@@ -540,6 +1279,15 @@
                     "source": "get_random_image_tool",
                     "target": "get_random_image_capability"
                   }
+                },
+                {
+                  "category": "language_model",
+                  "name": "claude_3_haiku_20240307",
+                  "important": false,
+                  "aliases": [
+                    "claude_3_haiku_20240307"
+                  ],
+                  "details": {}
                 },
                 {
                   "category": "goal",
@@ -586,8 +1334,8 @@
                   "total": 1
                 },
                 "agent_llm": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "agent_tool": {
@@ -601,8 +1349,8 @@
                   "total": 2
                 },
                 "config": {
-                  "score": 0.8,
-                  "matched": 4,
+                  "score": 0.6,
+                  "matched": 3,
                   "total": 5
                 },
                 "goal": {
@@ -611,8 +1359,8 @@
                   "total": 1
                 },
                 "language_model": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "project": {
@@ -658,10 +1406,28 @@
               }
             },
             "important_subset": {
-              "score": 1.0,
-              "matched": 12,
+              "score": 0.9166666666666666,
+              "matched": 11,
               "total": 12,
-              "missing": [],
+              "missing": [
+                {
+                  "category": "config",
+                  "name": "agent_bird_checker_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_bird_checker_model_name",
+                    "model_name",
+                    "claude_3_haiku_20240307",
+                    "model_name_claude_3_haiku_20240307"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "bird_checker",
+                    "owner_category": "agent",
+                    "value": "claude-3-haiku-20240307"
+                  }
+                }
+              ],
               "by_category": {
                 "agent": {
                   "score": 1.0,
@@ -674,8 +1440,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "step_task": {
@@ -712,26 +1478,24 @@
             }
           },
           "wgi": {
-            "score": 0.5,
-            "normalized_graph_edit_distance": 0.5,
-            "labeled_score": 0.5,
-            "topology_score": 0.5,
-            "labeled_normalized_graph_edit_distance": 0.5,
-            "topology_normalized_graph_edit_distance": 0.5,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.5,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.6666666666666666,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "get_random_image_task",
               "image_metadata_task"
             ],
             "code_nodes": [
               "get_random_image_task",
-              "image_metadata_task",
-              "task_analyze_image",
-              "task_fetch_random_image"
+              "image_metadata_task"
             ],
             "kg_edges": [
               {
@@ -743,30 +1507,16 @@
               {
                 "source": "get_random_image_task",
                 "target": "image_metadata_task"
-              },
-              {
-                "source": "task_fetch_random_image",
-                "target": "task_analyze_image"
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "task_analyze_image",
-              "task_fetch_random_image"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "task_fetch_random_image",
-                "target": "task_analyze_image"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.3939393939393939
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "bird-checker-with-nextjs-and-eval",
@@ -783,68 +1533,68 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_anthropic_api_key",
+                  "name": "system_bird_checker_system_anthropic_api_key",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_anthropic_api_key",
+                    "system_bird_checker_system_anthropic_api_key",
                     "anthropic_api_key",
                     "env_anthropic_api_key",
                     "anthropic_api_key_env_anthropic_api_key"
                   ],
                   "details": {
                     "key": "anthropic_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "bird_checker_system",
                     "owner_category": "system",
                     "value": "env:ANTHROPIC_API_KEY"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_braintrust_api_key",
+                  "name": "system_bird_checker_system_braintrust_api_key",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_braintrust_api_key",
+                    "system_bird_checker_system_braintrust_api_key",
                     "braintrust_api_key",
                     "env_braintrust_api_key",
                     "braintrust_api_key_env_braintrust_api_key"
                   ],
                   "details": {
                     "key": "braintrust_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "bird_checker_system",
                     "owner_category": "system",
                     "value": "env:BRAINTRUST_API_KEY"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_anthropic_api_key",
+                  "name": "env_bird_checker_system_anthropic_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_anthropic_api_key",
+                    "env_bird_checker_system_anthropic_api_key",
                     "anthropic_api_key",
                     "env_anthropic_api_key",
                     "anthropic_api_key_env_anthropic_api_key"
                   ],
                   "details": {
                     "key": "anthropic_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "bird_checker_system",
                     "owner_category": "env",
                     "value": "env:ANTHROPIC_API_KEY"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "env_unnamed_project_braintrust_api_key",
+                  "name": "env_bird_checker_system_braintrust_api_key",
                   "important": false,
                   "aliases": [
-                    "env_unnamed_project_braintrust_api_key",
+                    "env_bird_checker_system_braintrust_api_key",
                     "braintrust_api_key",
                     "env_braintrust_api_key",
                     "braintrust_api_key_env_braintrust_api_key"
                   ],
                   "details": {
                     "key": "braintrust_api_key",
-                    "owner": "unnamed_project",
+                    "owner": "bird_checker_system",
                     "owner_category": "env",
                     "value": "env:BRAINTRUST_API_KEY"
                   }
@@ -1140,10 +1890,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.33766233766233766
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "bird-checker-with-nextjs",
@@ -1151,11 +1899,11 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/bird-checker-with-nextjs",
           "status": "ok",
           "kg_element_count": 22,
-          "code_element_count": 9,
+          "code_element_count": 8,
           "oec": {
             "all_extracted": {
-              "score": 0.7727272727272727,
-              "matched": 17,
+              "score": 0.6818181818181818,
+              "matched": 15,
               "total": 22,
               "missing": [
                 {
@@ -1187,6 +1935,23 @@
                   }
                 },
                 {
+                  "category": "config",
+                  "name": "agent_bird_agent_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_bird_agent_model_name",
+                    "model_name",
+                    "claude_3_haiku_20240307",
+                    "model_name_claude_3_haiku_20240307"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "bird_agent",
+                    "owner_category": "agent",
+                    "value": "claude-3-haiku-20240307"
+                  }
+                },
+                {
                   "category": "tool_capability",
                   "name": "get_random_image_tool_get_random_image_capability",
                   "important": false,
@@ -1199,6 +1964,15 @@
                     "source": "get_random_image_tool",
                     "target": "get_random_image_capability"
                   }
+                },
+                {
+                  "category": "language_model",
+                  "name": "claude_3_haiku",
+                  "important": false,
+                  "aliases": [
+                    "claude_3_haiku"
+                  ],
+                  "details": {}
                 },
                 {
                   "category": "goal",
@@ -1246,8 +2020,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 4,
+                  "score": 0.75,
+                  "matched": 3,
                   "total": 4
                 },
                 "goal": {
@@ -1256,8 +2030,8 @@
                   "total": 1
                 },
                 "language_model": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "project": {
@@ -1303,10 +2077,28 @@
               }
             },
             "important_subset": {
-              "score": 1.0,
-              "matched": 12,
+              "score": 0.9166666666666666,
+              "matched": 11,
               "total": 12,
-              "missing": [],
+              "missing": [
+                {
+                  "category": "config",
+                  "name": "agent_bird_agent_model_name",
+                  "important": true,
+                  "aliases": [
+                    "agent_bird_agent_model_name",
+                    "model_name",
+                    "claude_3_haiku_20240307",
+                    "model_name_claude_3_haiku_20240307"
+                  ],
+                  "details": {
+                    "key": "model_name",
+                    "owner": "bird_agent",
+                    "owner_category": "agent",
+                    "value": "claude-3-haiku-20240307"
+                  }
+                }
+              ],
               "by_category": {
                 "agent": {
                   "score": 1.0,
@@ -1319,8 +2111,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 1,
+                  "score": 0.0,
+                  "matched": 0,
                   "total": 1
                 },
                 "step_task": {
@@ -1394,10 +2186,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.36619718309859156
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "crypto-chatbot",
@@ -1412,7 +2202,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/dane",
           "status": "ok",
           "kg_element_count": 230,
-          "code_element_count": 117,
+          "code_element_count": 105,
           "oec": {
             "all_extracted": {
               "score": 0.8217391304347826,
@@ -2293,10 +3083,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.29411764705882354
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "mcp-registry-registry",
@@ -2304,7 +3092,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/mcp-registry-registry",
           "status": "ok",
           "kg_element_count": 40,
-          "code_element_count": 26,
+          "code_element_count": 14,
           "oec": {
             "all_extracted": {
               "score": 0.75,
@@ -2313,17 +3101,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_node_package_version",
+                  "name": "system_registry_registry_mcp_server_node_package_version",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_node_package_version",
+                    "system_registry_registry_mcp_server_node_package_version",
                     "node_package_version",
                     "inferred_from_package_json_at_runtime_not_resolved_statically",
                     "node_package_version_inferred_from_package_json_at_runtime_not_resolved_statically"
                   ],
                   "details": {
                     "key": "node_package_version",
-                    "owner": "unnamed_project",
+                    "owner": "registry_registry_mcp_server",
                     "owner_category": "system",
                     "value": "inferred from package.json at runtime (not resolved statically)"
                   }
@@ -2563,17 +3351,17 @@
             }
           },
           "wgi": {
-            "score": 0.5833333333333333,
-            "normalized_graph_edit_distance": 0.4166666666666667,
-            "labeled_score": 0.5833333333333333,
-            "topology_score": 0.5833333333333333,
-            "labeled_normalized_graph_edit_distance": 0.4166666666666667,
-            "topology_normalized_graph_edit_distance": 0.4166666666666667,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.6,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.7499999999999999,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "task_fetch_servers_from_registry",
               "task_filter_servers",
@@ -2581,9 +3369,6 @@
               "task_post_process_servers"
             ],
             "code_nodes": [
-              "finalize_task",
-              "initialize_agent_task",
-              "search_mcp_registries_task",
               "task_fetch_servers_from_registry",
               "task_filter_servers",
               "task_get_servers_from_registry",
@@ -2605,14 +3390,6 @@
             ],
             "code_edges": [
               {
-                "source": "initialize_agent_task",
-                "target": "search_mcp_registries_task"
-              },
-              {
-                "source": "search_mcp_registries_task",
-                "target": "finalize_task"
-              },
-              {
                 "source": "task_fetch_servers_from_registry",
                 "target": "task_post_process_servers"
               },
@@ -2626,28 +3403,13 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "finalize_task",
-              "initialize_agent_task",
-              "search_mcp_registries_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "initialize_agent_task",
-                "target": "search_mcp_registries_task"
-              },
-              {
-                "source": "search_mcp_registries_task",
-                "target": "finalize_task"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.3118279569892473
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "openapi-spec-writer",
@@ -2655,7 +3417,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/openapi-spec-writer",
           "status": "ok",
           "kg_element_count": 33,
-          "code_element_count": 35,
+          "code_element_count": 15,
           "oec": {
             "all_extracted": {
               "score": 0.7575757575757576,
@@ -2883,26 +3645,23 @@
             }
           },
           "wgi": {
-            "score": 0.5,
-            "normalized_graph_edit_distance": 0.5,
-            "labeled_score": 0.5,
-            "topology_score": 0.5,
-            "labeled_normalized_graph_edit_distance": 0.5,
-            "topology_normalized_graph_edit_distance": 0.5,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.5,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.6666666666666666,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "task_add_to_github",
               "task_generate_spec",
               "task_site_crawl_sync"
             ],
             "code_nodes": [
-              "add_to_github_task",
-              "generate_spec_task",
-              "site_crawl_sync_step_task",
               "task_add_to_github",
               "task_generate_spec",
               "task_site_crawl_sync"
@@ -2915,46 +3674,31 @@
             ],
             "code_edges": [
               {
-                "source": "site_crawl_sync_step_task",
-                "target": "generate_spec_task"
-              },
-              {
                 "source": "task_site_crawl_sync",
                 "target": "task_generate_spec"
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "add_to_github_task",
-              "generate_spec_task",
-              "site_crawl_sync_step_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "site_crawl_sync_step_task",
-                "target": "generate_spec_task"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.3783783783783784
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "quick-start",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/quick-start_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/quick-start",
           "status": "ok",
-          "kg_element_count": 33,
-          "code_element_count": 13,
+          "kg_element_count": 32,
+          "code_element_count": 9,
           "oec": {
             "all_extracted": {
-              "score": 0.5151515151515151,
-              "matched": 17,
-              "total": 33,
+              "score": 0.5625,
+              "matched": 18,
+              "total": 32,
               "missing": [
                 {
                   "category": "agent_goal",
@@ -2985,23 +3729,6 @@
                   }
                 },
                 {
-                  "category": "config",
-                  "name": "agent_cat_one_provider",
-                  "important": false,
-                  "aliases": [
-                    "agent_cat_one_provider",
-                    "provider",
-                    "open_ai",
-                    "provider_open_ai"
-                  ],
-                  "details": {
-                    "key": "provider",
-                    "owner": "cat_one",
-                    "owner_category": "agent",
-                    "value": "OPEN_AI"
-                  }
-                },
-                {
                   "category": "agent_goal",
                   "name": "agent_two_goal_agent_two",
                   "important": false,
@@ -3027,23 +3754,6 @@
                   "details": {
                     "source": "agent_two",
                     "target": "lm_llama_3"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_agent_two_provider",
-                  "important": false,
-                  "aliases": [
-                    "agent_agent_two_provider",
-                    "provider",
-                    "groq",
-                    "provider_groq"
-                  ],
-                  "details": {
-                    "key": "provider",
-                    "owner": "agent_two",
-                    "owner_category": "agent",
-                    "value": "GROQ"
                   }
                 },
                 {
@@ -3174,19 +3884,14 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 0.75,
-                  "matched": 6,
+                  "score": 1.0,
+                  "matched": 8,
                   "total": 8
                 },
                 "goal": {
                   "score": 0.0,
                   "matched": 0,
                   "total": 2
-                },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 1,
-                  "total": 1
                 },
                 "language_model": {
                   "score": 0.0,
@@ -3315,10 +4020,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5777777777777777
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "stock-price-tool",
@@ -3326,11 +4029,11 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/stock-price-tool",
           "status": "ok",
           "kg_element_count": 27,
-          "code_element_count": 15,
+          "code_element_count": 12,
           "oec": {
             "all_extracted": {
-              "score": 0.8148148148148148,
-              "matched": 22,
+              "score": 0.8518518518518519,
+              "matched": 23,
               "total": 27,
               "missing": [
                 {
@@ -3345,23 +4048,6 @@
                   "details": {
                     "source": "stock_agent",
                     "target": "gpt_4_o_model"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_stock_agent_provider",
-                  "important": false,
-                  "aliases": [
-                    "agent_stock_agent_provider",
-                    "provider",
-                    "open_ai",
-                    "provider_open_ai"
-                  ],
-                  "details": {
-                    "key": "provider",
-                    "owner": "stock_agent",
-                    "owner_category": "agent",
-                    "value": "OPEN_AI"
                   }
                 },
                 {
@@ -3419,8 +4105,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 0.5,
-                  "matched": 1,
+                  "score": 1.0,
+                  "matched": 2,
                   "total": 2
                 },
                 "language_model": {
@@ -3520,14 +4206,14 @@
             }
           },
           "wgi": {
-            "score": 0.875,
-            "normalized_graph_edit_distance": 0.125,
-            "labeled_score": 0.875,
-            "topology_score": 0.875,
-            "labeled_normalized_graph_edit_distance": 0.125,
-            "topology_normalized_graph_edit_distance": 0.125,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
             "edge_precision": 1.0,
             "edge_recall": 1.0,
             "edge_f1": 1.0,
@@ -3538,7 +4224,6 @@
               "task_tool_call"
             ],
             "code_nodes": [
-              "fetch_stock_price_for_symbol_aapl_example",
               "task_end",
               "task_init",
               "task_query",
@@ -3573,17 +4258,13 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "fetch_stock_price_for_symbol_aapl_example"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.574468085106383
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "travel-app",
@@ -3591,7 +4272,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/travel-app",
           "status": "ok",
           "kg_element_count": 72,
-          "code_element_count": 52,
+          "code_element_count": 28,
           "oec": {
             "all_extracted": {
               "score": 0.75,
@@ -3600,17 +4281,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_postgres_store_connection_string",
+                  "name": "system_mastra_instance_postgres_store_connection_string",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_postgres_store_connection_string",
+                    "system_mastra_instance_postgres_store_connection_string",
                     "postgres_store_connection_string",
                     "env_postgres_store_connection",
                     "postgres_store_connection_string_env_postgres_store_connection"
                   ],
                   "details": {
                     "key": "postgres_store_connection_string",
-                    "owner": "unnamed_project",
+                    "owner": "mastra_instance",
                     "owner_category": "system",
                     "value": "env:PostgresStore_CONNECTION"
                   }
@@ -4009,17 +4690,17 @@
             }
           },
           "wgi": {
-            "score": 0.55,
-            "normalized_graph_edit_distance": 0.45,
-            "labeled_score": 0.55,
-            "topology_score": 0.55,
-            "labeled_normalized_graph_edit_distance": 0.45,
-            "topology_normalized_graph_edit_distance": 0.45,
+            "score": 0.9166666666666666,
+            "normalized_graph_edit_distance": 0.08333333333333333,
+            "labeled_score": 0.9166666666666666,
+            "topology_score": 0.75,
+            "labeled_normalized_graph_edit_distance": 0.08333333333333333,
+            "topology_normalized_graph_edit_distance": 0.25,
             "exact_isomorphic": false,
             "topology_isomorphic": false,
-            "edge_precision": 0.5,
+            "edge_precision": 0.8,
             "edge_recall": 1.0,
-            "edge_f1": 0.6666666666666666,
+            "edge_f1": 0.888888888888889,
             "kg_nodes": [
               "task_accommodation_airbnb",
               "task_accommodation_hotels",
@@ -4030,11 +4711,6 @@
               "task_sync_csv_data"
             ],
             "code_nodes": [
-              "find_accommodation_hotel_or_airbnb",
-              "find_attractions",
-              "find_outbound_flight",
-              "find_return_flight",
-              "sync_csv_data_task",
               "task_accommodation_airbnb",
               "task_accommodation_hotels",
               "task_airbnb_location",
@@ -4063,18 +4739,6 @@
             ],
             "code_edges": [
               {
-                "source": "find_accommodation_hotel_or_airbnb",
-                "target": "find_attractions"
-              },
-              {
-                "source": "find_outbound_flight",
-                "target": "find_return_flight"
-              },
-              {
-                "source": "find_return_flight",
-                "target": "find_accommodation_hotel_or_airbnb"
-              },
-              {
                 "source": "task_accommodation_hotels",
                 "target": "task_attraction"
               },
@@ -4096,27 +4760,9 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "find_accommodation_hotel_or_airbnb",
-              "find_attractions",
-              "find_outbound_flight",
-              "find_return_flight",
-              "sync_csv_data_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
             "extra_edges": [
-              {
-                "source": "find_accommodation_hotel_or_airbnb",
-                "target": "find_attractions"
-              },
-              {
-                "source": "find_outbound_flight",
-                "target": "find_return_flight"
-              },
-              {
-                "source": "find_return_flight",
-                "target": "find_accommodation_hotel_or_airbnb"
-              },
               {
                 "source": "task_outbound_flight",
                 "target": "task_return_flight"
@@ -4124,10 +4770,224 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.3118279569892473
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
+        },
+        {
+          "project": "weather-agent1",
+          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/weather-agent1_instances.ttl",
+          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/weather-agent1",
+          "status": "ok",
+          "kg_element_count": 13,
+          "code_element_count": 6,
+          "oec": {
+            "all_extracted": {
+              "score": 0.6923076923076923,
+              "matched": 9,
+              "total": 13,
+              "missing": [
+                {
+                  "category": "agent_llm",
+                  "name": "weather_agent_lm_gpt_4_o_mini",
+                  "important": false,
+                  "aliases": [
+                    "weather_agent_lm_gpt_4_o_mini",
+                    "weather_agent",
+                    "lm_gpt_4_o_mini"
+                  ],
+                  "details": {
+                    "source": "weather_agent",
+                    "target": "lm_gpt_4_o_mini"
+                  }
+                },
+                {
+                  "category": "tool_capability",
+                  "name": "tool_weather_tool_capability_fetch_weather",
+                  "important": false,
+                  "aliases": [
+                    "tool_weather_tool_capability_fetch_weather",
+                    "tool_weather_tool",
+                    "capability_fetch_weather"
+                  ],
+                  "details": {
+                    "source": "tool_weather_tool",
+                    "target": "capability_fetch_weather"
+                  }
+                },
+                {
+                  "category": "language_model",
+                  "name": "lm_gpt_4_o_mini",
+                  "important": false,
+                  "aliases": [
+                    "lm_gpt_4_o_mini"
+                  ],
+                  "details": {}
+                },
+                {
+                  "category": "capability",
+                  "name": "capability_fetch_weather",
+                  "important": false,
+                  "aliases": [
+                    "capability_fetch_weather"
+                  ],
+                  "details": {}
+                }
+              ],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_llm": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "language_model": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "project": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "tool": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "tool_capability": {
+                  "score": 0.0,
+                  "matched": 0,
+                  "total": 1
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                }
+              }
+            },
+            "important_subset": {
+              "score": 1.0,
+              "matched": 8,
+              "total": 8,
+              "missing": [],
+              "by_category": {
+                "agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "agent_tool": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "step_task": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "task": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "task_agent": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "tool": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                },
+                "workflow_step": {
+                  "score": 1.0,
+                  "matched": 1,
+                  "total": 1
+                }
+              }
+            }
+          },
+          "wgi": {
+            "score": 0.5,
+            "normalized_graph_edit_distance": 0.5,
+            "labeled_score": 0.5,
+            "topology_score": 0.0,
+            "labeled_normalized_graph_edit_distance": 0.5,
+            "topology_normalized_graph_edit_distance": 1.5,
+            "exact_isomorphic": false,
+            "topology_isomorphic": false,
+            "edge_precision": 0.0,
+            "edge_recall": 0.0,
+            "edge_f1": 0.0,
+            "kg_nodes": [
+              "task_fetch_current_weather"
+            ],
+            "code_nodes": [
+              "task_fetch_current_weather"
+            ],
+            "kg_edges": [
+              {
+                "source": "task_fetch_current_weather",
+                "target": "task_fetch_current_weather"
+              }
+            ],
+            "code_edges": [],
+            "missing_nodes": [],
+            "extra_nodes": [],
+            "missing_edges": [
+              {
+                "source": "task_fetch_current_weather",
+                "target": "task_fetch_current_weather"
+              }
+            ],
+            "extra_edges": []
+          },
+          "syntax_ok": true,
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "weather-agent",
@@ -4135,7 +4995,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/weather-agent",
           "status": "ok",
           "kg_element_count": 21,
-          "code_element_count": 25,
+          "code_element_count": 8,
           "oec": {
             "all_extracted": {
               "score": 0.6666666666666666,
@@ -4362,29 +5222,24 @@
             }
           },
           "wgi": {
-            "score": 0.2727272727272727,
-            "normalized_graph_edit_distance": 0.7272727272727273,
-            "labeled_score": 0.2727272727272727,
-            "topology_score": 0.2727272727272727,
-            "labeled_normalized_graph_edit_distance": 0.7272727272727273,
-            "topology_normalized_graph_edit_distance": 0.7272727272727273,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.25,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.4,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "task_fetch_weather",
               "task_plan_activities"
             ],
             "code_nodes": [
-              "explain_weather_task",
-              "fetch_weather_task",
-              "map_forecast_to_prompt_task",
-              "plan_activities",
               "task_fetch_weather",
-              "task_plan_activities",
-              "weather_tool_call_task"
+              "task_plan_activities"
             ],
             "kg_edges": [
               {
@@ -4394,78 +5249,45 @@
             ],
             "code_edges": [
               {
-                "source": "fetch_weather_task",
-                "target": "plan_activities"
-              },
-              {
-                "source": "map_forecast_to_prompt_task",
-                "target": "explain_weather_task"
-              },
-              {
                 "source": "task_fetch_weather",
                 "target": "task_plan_activities"
-              },
-              {
-                "source": "weather_tool_call_task",
-                "target": "map_forecast_to_prompt_task"
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "explain_weather_task",
-              "fetch_weather_task",
-              "map_forecast_to_prompt_task",
-              "plan_activities",
-              "weather_tool_call_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "fetch_weather_task",
-                "target": "plan_activities"
-              },
-              {
-                "source": "map_forecast_to_prompt_task",
-                "target": "explain_weather_task"
-              },
-              {
-                "source": "weather_tool_call_task",
-                "target": "map_forecast_to_prompt_task"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5254237288135594
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "workflow-ai-recruiter",
           "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-ai-recruiter_instances.ttl",
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-ai-recruiter",
           "status": "ok",
-          "kg_element_count": 23,
-          "code_element_count": 16,
+          "kg_element_count": 20,
+          "code_element_count": 8,
           "oec": {
             "all_extracted": {
-              "score": 0.8260869565217391,
-              "matched": 19,
-              "total": 23,
+              "score": 0.8,
+              "matched": 16,
+              "total": 20,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_trigger_schema",
+                  "name": "system_mastrainstanceworkflowairecruiter_trigger_schema",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_trigger_schema",
+                    "system_mastrainstanceworkflowairecruiter_trigger_schema",
                     "trigger_schema",
                     "resume_text_string",
                     "trigger_schema_resume_text_string"
                   ],
                   "details": {
                     "key": "trigger_schema",
-                    "owner": "unnamed_project",
+                    "owner": "mastrainstanceworkflowairecruiter",
                     "owner_category": "system",
                     "value": "resumeText: string"
                   }
@@ -4525,11 +5347,6 @@
                 "config": {
                   "score": 0.3333333333333333,
                   "matched": 1,
-                  "total": 3
-                },
-                "input_variable": {
-                  "score": 1.0,
-                  "matched": 3,
                   "total": 3
                 },
                 "language_model": {
@@ -4614,28 +5431,25 @@
             }
           },
           "wgi": {
-            "score": 0.36363636363636365,
-            "normalized_graph_edit_distance": 0.6363636363636364,
-            "labeled_score": 0.36363636363636365,
-            "topology_score": 0.30000000000000004,
-            "labeled_normalized_graph_edit_distance": 0.6363636363636364,
-            "topology_normalized_graph_edit_distance": 0.7,
+            "score": 0.6666666666666667,
+            "normalized_graph_edit_distance": 0.3333333333333333,
+            "labeled_score": 0.6666666666666667,
+            "topology_score": 0.19999999999999996,
+            "labeled_normalized_graph_edit_distance": 0.3333333333333333,
+            "topology_normalized_graph_edit_distance": 0.8,
             "exact_isomorphic": false,
             "topology_isomorphic": false,
-            "edge_precision": 0.25,
+            "edge_precision": 0.5,
             "edge_recall": 0.5,
-            "edge_f1": 0.3333333333333333,
+            "edge_f1": 0.5,
             "kg_nodes": [
               "ask_about_role_task",
               "ask_about_specialty_task",
               "gather_candidate_info_task"
             ],
             "code_nodes": [
-              "ask_about_role",
               "ask_about_role_task",
-              "ask_about_specialty",
               "ask_about_specialty_task",
-              "gather_candidate_info",
               "gather_candidate_info_task"
             ],
             "kg_edges": [
@@ -4650,16 +5464,8 @@
             ],
             "code_edges": [
               {
-                "source": "ask_about_specialty",
-                "target": "ask_about_role"
-              },
-              {
                 "source": "ask_about_specialty_task",
                 "target": "ask_about_role_task"
-              },
-              {
-                "source": "gather_candidate_info",
-                "target": "ask_about_specialty"
               },
               {
                 "source": "gather_candidate_info_task",
@@ -4667,11 +5473,7 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "ask_about_role",
-              "ask_about_specialty",
-              "gather_candidate_info"
-            ],
+            "extra_nodes": [],
             "missing_edges": [
               {
                 "source": "gather_candidate_info_task",
@@ -4680,24 +5482,14 @@
             ],
             "extra_edges": [
               {
-                "source": "ask_about_specialty",
-                "target": "ask_about_role"
-              },
-              {
                 "source": "ask_about_specialty_task",
                 "target": "ask_about_role_task"
-              },
-              {
-                "source": "gather_candidate_info",
-                "target": "ask_about_specialty"
               }
             ]
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.4716981132075472
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "workflow-with-inline-steps",
@@ -4705,7 +5497,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-inline-steps",
           "status": "ok",
           "kg_element_count": 13,
-          "code_element_count": 11,
+          "code_element_count": 6,
           "oec": {
             "all_extracted": {
               "score": 0.8461538461538461,
@@ -4824,24 +5616,23 @@
             }
           },
           "wgi": {
-            "score": 0.6,
-            "normalized_graph_edit_distance": 0.4,
-            "labeled_score": 0.6,
-            "topology_score": 0.6,
-            "labeled_normalized_graph_edit_distance": 0.4,
-            "topology_normalized_graph_edit_distance": 0.4,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.5,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.6666666666666666,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "task_step_one",
               "task_step_two"
             ],
             "code_nodes": [
               "task_step_one",
-              "task_step_three",
               "task_step_two"
             ],
             "kg_edges": [
@@ -4854,29 +5645,16 @@
               {
                 "source": "task_step_one",
                 "target": "task_step_two"
-              },
-              {
-                "source": "task_step_two",
-                "target": "task_step_three"
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "task_step_three"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "task_step_two",
-                "target": "task_step_three"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.7
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "workflow-with-memory",
@@ -4884,43 +5662,26 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-memory",
           "status": "ok",
           "kg_element_count": 92,
-          "code_element_count": 62,
+          "code_element_count": 44,
           "oec": {
             "all_extracted": {
-              "score": 0.9239130434782609,
-              "matched": 85,
+              "score": 0.9347826086956522,
+              "matched": 86,
               "total": 92,
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_logger_level",
+                  "name": "system_mastrainstance_memory_connection_string",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_logger_level",
-                    "logger_level",
-                    "debug",
-                    "logger_level_debug"
-                  ],
-                  "details": {
-                    "key": "logger_level",
-                    "owner": "unnamed_project",
-                    "owner_category": "system",
-                    "value": "debug"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "system_unnamed_project_memory_connection_string",
-                  "important": false,
-                  "aliases": [
-                    "system_unnamed_project_memory_connection_string",
+                    "system_mastrainstance_memory_connection_string",
                     "memory_connection_string",
                     "env_postgres_url",
                     "memory_connection_string_env_postgres_url"
                   ],
                   "details": {
                     "key": "memory_connection_string",
-                    "owner": "unnamed_project",
+                    "owner": "mastrainstance",
                     "owner_category": "system",
                     "value": "env:POSTGRES_URL"
                   }
@@ -5011,8 +5772,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 0.5714285714285714,
-                  "matched": 4,
+                  "score": 0.7142857142857143,
+                  "matched": 5,
                   "total": 7
                 },
                 "language_model": {
@@ -5122,17 +5883,17 @@
             }
           },
           "wgi": {
-            "score": 0.6304347826086957,
-            "normalized_graph_edit_distance": 0.3695652173913043,
-            "labeled_score": 0.6304347826086957,
-            "topology_score": 0.5681818181818181,
-            "labeled_normalized_graph_edit_distance": 0.3695652173913043,
-            "topology_normalized_graph_edit_distance": 0.4318181818181818,
+            "score": 0.8529411764705882,
+            "normalized_graph_edit_distance": 0.14705882352941177,
+            "labeled_score": 0.8529411764705882,
+            "topology_score": 0.65625,
+            "labeled_normalized_graph_edit_distance": 0.14705882352941177,
+            "topology_normalized_graph_edit_distance": 0.34375,
             "exact_isomorphic": false,
             "topology_isomorphic": false,
-            "edge_precision": 0.55,
+            "edge_precision": 0.7857142857142857,
             "edge_recall": 0.8461538461538461,
-            "edge_f1": 0.6666666666666667,
+            "edge_f1": 0.8148148148148148,
             "kg_nodes": [
               "task_br_step_five",
               "task_br_step_four",
@@ -5154,12 +5915,6 @@
               "task_step_two"
             ],
             "code_nodes": [
-              "step_five_task",
-              "step_four_task",
-              "step_one_task",
-              "step_six_task",
-              "step_three_task",
-              "step_two_task",
               "task_br_step_five",
               "task_br_step_four",
               "task_br_step_one",
@@ -5235,30 +5990,6 @@
             ],
             "code_edges": [
               {
-                "source": "step_four_task",
-                "target": "step_five_task"
-              },
-              {
-                "source": "step_one_task",
-                "target": "step_six_task"
-              },
-              {
-                "source": "step_one_task",
-                "target": "step_two_task"
-              },
-              {
-                "source": "step_six_task",
-                "target": "step_two_task"
-              },
-              {
-                "source": "step_three_task",
-                "target": "step_four_task"
-              },
-              {
-                "source": "step_two_task",
-                "target": "step_three_task"
-              },
-              {
                 "source": "task_br_step_four",
                 "target": "task_br_step_three"
               },
@@ -5316,14 +6047,7 @@
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "step_five_task",
-              "step_four_task",
-              "step_one_task",
-              "step_six_task",
-              "step_three_task",
-              "step_two_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [
               {
                 "source": "task_br_step_one",
@@ -5335,30 +6059,6 @@
               }
             ],
             "extra_edges": [
-              {
-                "source": "step_four_task",
-                "target": "step_five_task"
-              },
-              {
-                "source": "step_one_task",
-                "target": "step_six_task"
-              },
-              {
-                "source": "step_one_task",
-                "target": "step_two_task"
-              },
-              {
-                "source": "step_six_task",
-                "target": "step_two_task"
-              },
-              {
-                "source": "step_three_task",
-                "target": "step_four_task"
-              },
-              {
-                "source": "step_two_task",
-                "target": "step_three_task"
-              },
               {
                 "source": "task_br_step_four",
                 "target": "task_br_step_three"
@@ -5374,10 +6074,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5777777777777777
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "workflow-with-separate-steps",
@@ -5385,7 +6083,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-separate-steps",
           "status": "ok",
           "kg_element_count": 24,
-          "code_element_count": 12,
+          "code_element_count": 10,
           "oec": {
             "all_extracted": {
               "score": 0.7916666666666666,
@@ -5394,17 +6092,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_trigger_schema",
+                  "name": "system_mastrainstance_trigger_schema",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_trigger_schema",
+                    "system_mastrainstance_trigger_schema",
                     "trigger_schema",
                     "input_value_number",
                     "trigger_schema_input_value_number"
                   ],
                   "details": {
                     "key": "trigger_schema",
-                    "owner": "unnamed_project",
+                    "owner": "mastrainstance",
                     "owner_category": "system",
                     "value": "inputValue:number"
                   }
@@ -5634,10 +6332,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6097560975609756
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "yc-directory",
@@ -5645,7 +6341,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/yc-directory",
           "status": "ok",
           "kg_element_count": 21,
-          "code_element_count": 17,
+          "code_element_count": 8,
           "oec": {
             "all_extracted": {
               "score": 0.7142857142857143,
@@ -5850,27 +6546,24 @@
             }
           },
           "wgi": {
-            "score": 0.375,
-            "normalized_graph_edit_distance": 0.625,
-            "labeled_score": 0.375,
-            "topology_score": 0.375,
-            "labeled_normalized_graph_edit_distance": 0.625,
-            "topology_normalized_graph_edit_distance": 0.625,
-            "exact_isomorphic": false,
-            "topology_isomorphic": false,
-            "edge_precision": 0.3333333333333333,
+            "score": 1.0,
+            "normalized_graph_edit_distance": 0.0,
+            "labeled_score": 1.0,
+            "topology_score": 1.0,
+            "labeled_normalized_graph_edit_distance": 0.0,
+            "topology_normalized_graph_edit_distance": 0.0,
+            "exact_isomorphic": true,
+            "topology_isomorphic": true,
+            "edge_precision": 1.0,
             "edge_recall": 1.0,
-            "edge_f1": 0.5,
+            "edge_f1": 1.0,
             "kg_nodes": [
               "fetch_yc_directory_task",
               "process_yc_data_task"
             ],
             "code_nodes": [
-              "answer_yc_directory_query",
-              "fetch_yc_data_task",
               "fetch_yc_directory_task",
-              "process_yc_data_task",
-              "run_evals_task"
+              "process_yc_data_task"
             ],
             "kg_edges": [
               {
@@ -5880,41 +6573,18 @@
             ],
             "code_edges": [
               {
-                "source": "fetch_yc_data_task",
-                "target": "answer_yc_directory_query"
-              },
-              {
                 "source": "fetch_yc_directory_task",
                 "target": "process_yc_data_task"
-              },
-              {
-                "source": "run_evals_task",
-                "target": "fetch_yc_data_task"
               }
             ],
             "missing_nodes": [],
-            "extra_nodes": [
-              "answer_yc_directory_query",
-              "fetch_yc_data_task",
-              "run_evals_task"
-            ],
+            "extra_nodes": [],
             "missing_edges": [],
-            "extra_edges": [
-              {
-                "source": "fetch_yc_data_task",
-                "target": "answer_yc_directory_query"
-              },
-              {
-                "source": "run_evals_task",
-                "target": "fetch_yc_data_task"
-              }
-            ]
+            "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.7105263157894737
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         }
       ]
     }

@@ -19,13 +19,13 @@ export const toolSlackClient = createTool({
   description: `Mastra MCP client for Slack, runs a docker command to post messages.`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Mastra MCP client for Slack, runs a docker command to post messages.
     // Configurations:
     //   - SLACK_BOT_TOKEN: env_or_config
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

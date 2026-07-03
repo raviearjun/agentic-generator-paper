@@ -11,11 +11,11 @@
         "evaluated": 16,
         "errors": 0,
         "avg_oec_all": 0.6299478722576812,
-        "avg_oec_important": 0.949550949745336,
+        "avg_oec_important": 0.9495509497453359,
         "avg_wgi": 0.9125631313131313,
         "avg_edge_f1": 0.8805555555555555,
         "syntax_success_rate": 1.0,
-        "run_success_rate": 0.0
+        "run_success_rate": 1.0
       },
       "projects": [
         {
@@ -489,8 +489,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/game-builder-crew/main.py\", line 18, in <module>\n    from crew import GameBuilderCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/game-builder-crew/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "industry-agents",
@@ -978,8 +978,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/industry-agents/main.py\", line 18, in <module>\n    from crew import blogcrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/industry-agents/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "instagram_post",
@@ -1639,8 +1639,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/instagram_post/main.py\", line 18, in <module>\n    from crew import CopyCrewagentsforcopygeneration\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/instagram_post/crew.py\", line 20, in <module>\n    from crewai import Agent, Crew, Process, Task, LLM\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "job-posting",
@@ -2078,8 +2078,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/job-posting/main.py\", line 18, in <module>\n    from crew import UnnamedProject\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/job-posting/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "landing_page_generator",
@@ -2241,8 +2241,8 @@
                   "aliases": [
                     "tool_tool_learn_landing_page_options_templates_config",
                     "templates_config",
-                    "templates_json",
                     "config_templates_json",
+                    "templates_json",
                     "templates_config_config_templates_json"
                   ],
                   "details": {
@@ -2751,8 +2751,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/landing_page_generator/main.py\", line 18, in <module>\n    from crew import UnnamedProject\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/landing_page_generator/crew.py\", line 23, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "markdown_validator",
@@ -3036,8 +3036,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/markdown_validator/main.py\", line 18, in <module>\n    from crew import MarkDownValidatorCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/markdown_validator/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "marketing_strategy",
@@ -3554,8 +3554,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/marketing_strategy/main.py\", line 18, in <module>\n    from crew import MarketingPostsCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/marketing_strategy/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "match_profile_to_positions",
@@ -3595,8 +3595,8 @@
                   "aliases": [
                     "system_match_to_proposal_crew_path_to_cv",
                     "path_to_cv",
-                    "src_match_to_proposal_data_cv_md",
                     "cv_md",
+                    "src_match_to_proposal_data_cv_md",
                     "path_to_cv_src_match_to_proposal_data_cv_md"
                   ],
                   "details": {
@@ -3939,8 +3939,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/match_profile_to_positions/main.py\", line 18, in <module>\n    from crew import MatchToProposalCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/match_profile_to_positions/crew.py\", line 15, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "meta_quest_knowledge",
@@ -4149,8 +4149,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/meta_quest_knowledge/main.py\", line 18, in <module>\n    from crew import MetaQuestKnowledgeCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/meta_quest_knowledge/crew.py\", line 10, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "prep-for-a-meeting",
@@ -4656,8 +4656,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/prep-for-a-meeting/main.py\", line 18, in <module>\n    from crew import MeetingPreparationCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/prep-for-a-meeting/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "recruitment",
@@ -5217,8 +5217,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/recruitment/main.py\", line 18, in <module>\n    from crew import RecruitmentCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/recruitment/crew.py\", line 18, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "screenplay_writer",
@@ -5723,8 +5723,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/screenplay_writer/main.py\", line 18, in <module>\n    from crew import AICrewforscreenwriting\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/screenplay_writer/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "starter_template",
@@ -6109,8 +6109,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/starter_template/main.py\", line 18, in <module>\n    from crew import CustomCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/starter_template/crew.py\", line 13, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "stock_analysis",
@@ -6687,8 +6687,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/stock_analysis/main.py\", line 18, in <module>\n    from crew import StockAnalysisCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/stock_analysis/crew.py\", line 17, in <module>\n    from crewai import Agent, Crew, Process, Task, LLM\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "surprise_trip",
@@ -7202,8 +7202,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/surprise_trip/main.py\", line 18, in <module>\n    from crew import SurpriseTravelCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/surprise_trip/crew.py\", line 16, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "trip_planner",
@@ -7759,8 +7759,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "IMPORT_ERROR",
-          "run_output": "  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/trip_planner/main.py\", line 18, in <module>\n    from crew import TripPlannerCrew\n  File \"/Users/ravie/dev/agento/kg_to_script/generated_projects/output_crewai/trip_planner/crew.py\", line 20, in <module>\n    from crewai import Agent, Crew, Process, Task\nModuleNotFoundError: No module named 'crewai'"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         }
       ]
     }

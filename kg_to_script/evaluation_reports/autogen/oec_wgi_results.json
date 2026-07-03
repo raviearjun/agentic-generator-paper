@@ -14,7 +14,6 @@
         "avg_oec_important": 0.9354632699269225,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
-        "avg_ast_sim": 0.4732493272391405,
         "syntax_success_rate": 1.0,
         "run_success_rate": 1.0
       },
@@ -34,17 +33,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_performance_type",
+                  "name": "system_standup_duo_performance_type",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_performance_type",
+                    "system_standup_duo_performance_type",
                     "performance_type",
                     "stand_up_comedy",
                     "performance_type_stand_up_comedy"
                   ],
                   "details": {
                     "key": "performance_type",
-                    "owner": "unnamed_project",
+                    "owner": "standup_duo",
                     "owner_category": "system",
                     "value": "\u76f8\u58f0 / stand-up comedy"
                   }
@@ -512,9 +511,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5135135135135135
+          "run_output": ""
         },
         {
           "project": "L2_Sequential_Chats_and_Customer_Onboarding",
@@ -840,9 +837,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.42857142857142855
+          "run_output": ""
         },
         {
           "project": "L3_Reflection_and_Blogpost_Writing",
@@ -1122,9 +1117,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.47368421052631576
+          "run_output": ""
         },
         {
           "project": "L4_Tool_Use_and_Conversational_Chess",
@@ -1141,17 +1134,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_game_mode",
+                  "name": "system_conversational_chess_team_game_mode",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_game_mode",
+                    "system_conversational_chess_team_game_mode",
                     "game_mode",
                     "conversational_chess",
                     "game_mode_conversational_chess"
                   ],
                   "details": {
                     "key": "game_mode",
-                    "owner": "unnamed_project",
+                    "owner": "conversational_chess_team",
                     "owner_category": "system",
                     "value": "conversational_chess"
                   }
@@ -1619,9 +1612,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5238095238095238
+          "run_output": ""
         },
         {
           "project": "L5_Coding_and_Financial_Analysis",
@@ -1638,17 +1629,17 @@
               "missing": [
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_work_dir",
+                  "name": "system_codingand_financial_analysis_crew_work_dir",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_work_dir",
+                    "system_codingand_financial_analysis_crew_work_dir",
                     "work_dir",
                     "coding",
                     "work_dir_coding"
                   ],
                   "details": {
                     "key": "work_dir",
-                    "owner": "unnamed_project",
+                    "owner": "codingand_financial_analysis_crew",
                     "owner_category": "system",
                     "value": "coding"
                   }
@@ -2034,9 +2025,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.5128205128205128
+          "run_output": ""
         },
         {
           "project": "L6-Planning_and_Stock_Report_Generation",
@@ -2053,43 +2042,43 @@
               "missing": [
                 {
                   "category": "project",
-                  "name": "unnamed_project",
+                  "name": "group_chat_teamfor_blog_generation",
                   "important": false,
                   "aliases": [
-                    "unnamed_project"
+                    "group_chat_teamfor_blog_generation"
                   ],
                   "details": {}
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_max_round",
+                  "name": "system_group_chat_teamfor_blog_generation_max_round",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_max_round",
+                    "system_group_chat_teamfor_blog_generation_max_round",
                     "max_round",
                     "10",
                     "max_round_10"
                   ],
                   "details": {
                     "key": "max_round",
-                    "owner": "unnamed_project",
+                    "owner": "group_chat_teamfor_blog_generation",
                     "owner_category": "system",
                     "value": "10"
                   }
                 },
                 {
                   "category": "config",
-                  "name": "system_unnamed_project_allowed_speaker_transitions",
+                  "name": "system_group_chat_teamfor_blog_generation_allowed_speaker_transitions",
                   "important": false,
                   "aliases": [
-                    "system_unnamed_project_allowed_speaker_transitions",
+                    "system_group_chat_teamfor_blog_generation_allowed_speaker_transitions",
                     "allowed_speaker_transitions",
                     "user_proxy_engineer_writer_executor_planner_engineer_user_proxy_executor_writer_user_proxy_planner_executor_user_proxy_engineer_planner_planner_user_proxy_engineer_writer",
                     "allowed_speaker_transitions_user_proxy_engineer_writer_executor_planner_engineer_user_proxy_executor_writer_user_proxy_planner_executor_user_proxy_engineer_planner_planner_user_proxy_engineer_writer"
                   ],
                   "details": {
                     "key": "allowed_speaker_transitions",
-                    "owner": "unnamed_project",
+                    "owner": "group_chat_teamfor_blog_generation",
                     "owner_category": "system",
                     "value": "{ user_proxy: [engineer, writer, executor, planner], engineer: [user_proxy, executor], writer: [user_proxy, planner], executor: [user_proxy, engineer, planner], planner: [user_proxy, engineer, writer] }"
                   }
@@ -2434,9 +2423,7 @@
           },
           "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.3870967741935484
+          "run_output": ""
         }
       ]
     }

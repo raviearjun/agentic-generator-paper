@@ -392,7 +392,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("evaluation_reports"),
+        default=Path(__file__).parent.parent / "evaluation_reports",
         help="Directory for JSON and Markdown interop reports.",
     )
     parser.add_argument(

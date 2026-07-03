@@ -19,13 +19,13 @@ export const clientToolsTool = createTool({
   description: `Abstract representation of the \`clientTools\` map supplied to the Mastra agent client; client-provided tools executed via \`clientTool.execute\`.`,
   inputSchema: z.object({client: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Abstract representation of the \`clientTools\` map supplied to the Mastra agent client; client-provided tools executed via \`clientTool.execute\`.
     // Configurations:
     //   - clientTools: map (client-provided) - values not present in source
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

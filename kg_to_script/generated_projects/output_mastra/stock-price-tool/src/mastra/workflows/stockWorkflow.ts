@@ -19,7 +19,7 @@ const taskInit = createStep({
   id: 'task_init',
   description: `Initialize the Stock Agent before handling requests.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({symbol: z.string()}),
   execute: async ({ inputData }) => {
     // Initialize the Stock Agent before handling requests.
     // This step uses agent: stockAgent
@@ -33,7 +33,7 @@ const taskQuery = createStep({
   id: 'task_query',
   description: `What is the current stock price of Apple (AAPL)?`,
   inputSchema: z.object({symbol: z.string()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({symbol: z.string()}),
   execute: async ({ inputData }) => {
     // What is the current stock price of Apple (AAPL)?
     // This step uses agent: stockAgent

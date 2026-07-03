@@ -194,6 +194,24 @@ def _storage_package(mem: MemoryModel) -> str:
     return _STORAGE_CLASS_MAP.get(mem.storage_type, {"package": "@mastra/libsql"})["package"]
 
 
+def _quote_js_value(val: str) -> str:
+    """Return val as a TS expression: unquoted if it's already a JS expression
+    (process.env.*, a numeric literal, or a call expression like
+    `openai.embedding('text-embedding-3-small')`), single-quoted string literal
+    otherwise.
+    """
+    stripped = val.strip()
+    if (
+        stripped.startswith("process.env")
+        or stripped.lstrip("-").isdigit()
+        or re.match(r'^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*\(', stripped)
+    ):
+        return stripped
+    # String literal — escape any single quotes inside the value
+    inner = stripped.replace("'", "\\'")
+    return f"'{inner}'"
+
+
 def _storage_config_entries(mem: MemoryModel) -> List[Dict[str, str]]:
     """
     Return list of {key, value} dicts for the storage constructor.
@@ -217,20 +235,8 @@ def _storage_config_entries(mem: MemoryModel) -> List[Dict[str, str]]:
         escaped = k.replace('\\', '\\\\').replace('"', '\\"')
         return f'"{escaped}"'
 
-    def _quote(val: str) -> str:
-        """Return val as a TS expression: unquoted if JS expr, single-quoted otherwise."""
-        stripped = val.strip()
-        if (
-            stripped.startswith("process.env")
-            or stripped.lstrip("-").isdigit()
-        ):
-            return stripped
-        # String literal — escape any single quotes inside the value
-        inner = stripped.replace("'", "\\'")
-        return f"'{inner}'"
-
     if mem.storage_config:
-        entries = [{"key": _safe_key(cfg.key), "value": _quote(cfg.value)} for cfg in mem.storage_config]
+        entries = [{"key": _safe_key(cfg.key), "value": _quote_js_value(cfg.value)} for cfg in mem.storage_config]
         # Always ensure 'id' is present for all storage types (required by modern Mastra stores)
         if not any(e["key"] == "id" for e in entries):
             store_id = f"mastra-{mem.storage_type}-store"
@@ -257,14 +263,8 @@ def _vector_package(mem: MemoryModel) -> str:
 
 def _vector_config_entries(mem: MemoryModel) -> List[Dict[str, str]]:
     """Return list of {key, value} dicts for the vector store constructor."""
-    def _quote(val: str) -> str:
-        stripped = val.strip()
-        if stripped.startswith("process.env") or stripped.lstrip("-").isdigit():
-            return stripped
-        return f"'{stripped}'"
-
     if mem.vector_config:
-        return [{"key": cfg.key, "value": _quote(cfg.value)} for cfg in mem.vector_config]
+        return [{"key": cfg.key, "value": _quote_js_value(cfg.value)} for cfg in mem.vector_config]
     return []
 
 
@@ -291,6 +291,14 @@ def _sanitize_zod_schema(schema: Optional[str]) -> Optional[str]:
 
 # ─────────────────────── File Generators ───────────────────────
 
+def _clear_stale_files(directory: Path) -> None:
+    """Removes .ts files left in directory from an earlier generator run."""
+    if not directory.exists():
+        return
+    for path in directory.glob("*.ts"):
+        path.unlink()
+
+
 def generate_project(project: MastraProject, output_dir: str) -> str:
     """
     Generate complete Mastra AI TypeScript project directory.
@@ -314,7 +322,15 @@ def generate_project(project: MastraProject, output_dir: str) -> str:
     (mastra_dir / "workflows").mkdir(exist_ok=True)
     if project.memory_configs:
         (mastra_dir / "memory").mkdir(exist_ok=True)
-    
+
+    # Clear stale files left over from a previous run against this same output
+    # directory (e.g. a renamed/removed tool or workflow) so they don't linger
+    # with imports that no longer resolve against the freshly generated index.ts.
+    _clear_stale_files(mastra_dir / "agents")
+    _clear_stale_files(mastra_dir / "tools")
+    _clear_stale_files(mastra_dir / "workflows")
+    _clear_stale_files(mastra_dir / "memory")
+
     # Generate files
     _generate_index_ts(project, mastra_dir)
     _generate_agent_files(project, mastra_dir / "agents")
@@ -420,10 +436,34 @@ def _generate_workflow_files(project: MastraProject, workflows_dir: Path) -> Non
                 "suspend_schema": _sanitize_zod_schema(step.suspend_schema),
                 "resume_schema": _sanitize_zod_schema(step.resume_schema),
             }))
-        
+
+        wf_input_schema = _sanitize_zod_schema(workflow.input_schema)
+        wf_output_schema = _sanitize_zod_schema(workflow.output_schema)
+
+        # For `.then()`-chained workflows (everything except `.parallel([...])`),
+        # Mastra type-checks that each step's inputSchema is assignable from the
+        # previous step's outputSchema, and the first step's from the workflow
+        # input. Step output schemas aren't extracted from the KG (they default
+        # to `z.object({})`), so any step with a non-empty inputSchema breaks the
+        # chain. Rewrite each step's outputSchema to the next step's inputSchema
+        # (a reasonable scaffold assumption: a step produces what the next one
+        # consumes) and align the workflow input/output with the chain endpoints,
+        # while preserving each step's declared inputSchema for fidelity.
+        if sanitized_steps and workflow.control_flow.value != "parallel":
+            chained_steps = []
+            for idx, step in enumerate(sanitized_steps):
+                if idx + 1 < len(sanitized_steps):
+                    next_input = sanitized_steps[idx + 1].input_schema
+                    chained_steps.append(step.model_copy(update={"output_schema": next_input}))
+                else:
+                    chained_steps.append(step)
+            sanitized_steps = chained_steps
+            wf_input_schema = sanitized_steps[0].input_schema
+            wf_output_schema = sanitized_steps[-1].output_schema
+
         workflow_for_render = workflow.model_copy(update={
-            "input_schema": _sanitize_zod_schema(workflow.input_schema),
-            "output_schema": _sanitize_zod_schema(workflow.output_schema),
+            "input_schema": wf_input_schema,
+            "output_schema": wf_output_schema,
             "steps": sanitized_steps,
         })
 
@@ -450,8 +490,11 @@ def _generate_memory_files(project: MastraProject, memory_dir: Path) -> None:
     template = env.get_template("memory.ts.j2")
 
     for mem in project.memory_configs:
+        mem_for_render = mem.model_copy(update={
+            "embedder_model": _quote_js_value(mem.embedder_model) if mem.embedder_model else mem.embedder_model,
+        })
         content = template.render(
-            memory=mem,
+            memory=mem_for_render,
             storage_class=_storage_class(mem),
             storage_package=_storage_package(mem),
             storage_config_entries=_storage_config_entries(mem),

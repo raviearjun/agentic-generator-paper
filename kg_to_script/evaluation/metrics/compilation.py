@@ -6,6 +6,8 @@ import sys
 import subprocess
 from pathlib import Path
 
+from .node_runtime import ensure_node_modules
+
 
 def compile_project(project_dir: Path, framework: str) -> bool:
     """Checks syntax compilation of the project based on the framework type.
@@ -40,17 +42,17 @@ def _compile_python_files(project_dir: Path) -> bool:
 
 
 def _compile_typescript_files(project_dir: Path) -> bool:
-    """Runs tsc compiler on the project directory if node_modules exists, otherwise defaults to True."""
-    node_modules_path = project_dir / "node_modules"
-    if node_modules_path.exists():
-        try:
-            res = subprocess.run(
-                ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
-                cwd=project_dir,
-                capture_output=True,
-                text=True,
-            )
-            return res.returncode == 0
-        except Exception:
-            return False
-    return True
+    """Installs dependencies on demand, then runs tsc --noEmit on the project directory."""
+    ok, _ = ensure_node_modules(project_dir)
+    if not ok:
+        return False
+    try:
+        res = subprocess.run(
+            ["node", "node_modules/typescript/bin/tsc", "--noEmit"],
+            cwd=project_dir,
+            capture_output=True,
+            text=True,
+        )
+        return res.returncode == 0
+    except Exception:
+        return False

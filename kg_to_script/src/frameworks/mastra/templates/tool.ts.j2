@@ -35,9 +35,9 @@ export const {{ tool.var_name }} = createTool({
 {% else %}
   outputSchema: z.object({}),  // TODO: Define output schema
 {% endif %}
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
 {% if tool.execute_description %}
     // Description: {{ tool.execute_description | ts_comment }}
 {% endif %}
@@ -47,7 +47,7 @@ export const {{ tool.var_name }} = createTool({
     //   - {{ config.key }}: {{ config.value | ts_comment }}
 {% endfor %}
 {% endif %}
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

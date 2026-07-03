@@ -14,7 +14,6 @@
         "avg_oec_important": 0.953542780748663,
         "avg_wgi": 0.9488636363636364,
         "avg_edge_f1": 0.9539473684210527,
-        "avg_ast_sim": 0.3906592719383783,
         "syntax_success_rate": 1.0,
         "run_success_rate": 1.0
       },
@@ -169,10 +168,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.8529411764705882
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "email-agent",
@@ -449,10 +446,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.44776119402985076
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "open-code",
@@ -830,10 +825,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.0
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "pizza-orderer",
@@ -1087,10 +1080,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.6818181818181818
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "stockbroker",
@@ -1336,10 +1327,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.0
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "supervisor",
@@ -2324,10 +2313,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.65
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "trip-planner",
@@ -2586,10 +2573,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.0
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "writer-agent",
@@ -2843,10 +2828,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "N/A",
-          "run_output": "",
-          "gt_found": true,
-          "ast_sim": 0.4927536231884058
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         }
       ]
     }

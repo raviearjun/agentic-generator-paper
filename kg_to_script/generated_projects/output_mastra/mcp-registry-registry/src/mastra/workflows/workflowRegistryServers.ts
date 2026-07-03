@@ -79,7 +79,7 @@ const taskGetServersFromRegistry = createStep({
  */
 export const workflowRegistryServers = createWorkflow({
   id: 'workflow_registry_servers',
-  inputSchema: z.object({Inferred_workflow_for_serving_registry_server_listing: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskFetchServersFromRegistry, taskPostProcessServers, taskFilterServers, taskGetServersFromRegistry],
 })

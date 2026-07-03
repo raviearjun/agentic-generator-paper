@@ -19,11 +19,11 @@ export const toolGenerateSpec = createTool({
   description: `Generate a spec from a website`,
   inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Generate a spec from a website
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

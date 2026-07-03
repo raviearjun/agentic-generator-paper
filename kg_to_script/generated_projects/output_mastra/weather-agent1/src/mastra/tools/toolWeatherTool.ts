@@ -19,11 +19,11 @@ export const toolWeatherTool = createTool({
   description: `Tool to fetch current weather data for a specified location (current conditions: temperature, humidity, wind, precipitation).`,
   inputSchema: z.object({current_conditions: z.string()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Tool to fetch current weather data for a specified location (current conditions: temperature, humidity, wind, precipitation).
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

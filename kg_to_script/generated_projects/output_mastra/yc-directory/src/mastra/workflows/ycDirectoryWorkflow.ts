@@ -18,7 +18,7 @@ const fetchYcDirectoryTask = createStep({
   id: 'fetch_yc_directory_task',
   description: `Task to retrieve the YC directory dataset using the yc-directory tool.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Array_of_objects_with_fields: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.
     // This step uses agent: ycDirectoryAgent
@@ -51,7 +51,7 @@ const processYcDataTask = createStep({
  */
 export const ycDirectoryWorkflow = createWorkflow({
   id: 'yc_directory_workflow',
-  inputSchema: z.object({Simple_workflow: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({and_a_one: z.string()}),
   steps: [fetchYcDirectoryTask, processYcDataTask],
 })

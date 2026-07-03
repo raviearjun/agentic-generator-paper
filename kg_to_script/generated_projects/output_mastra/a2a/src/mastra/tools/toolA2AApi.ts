@@ -19,11 +19,11 @@ export const toolA2AApi = createTool({
   description: `A2A JSON-RPC HTTP API endpoints used to interact with remote agents (agent-card, message/send, message/stream, tasks/*, pushNotificationConfig/*).`,
   inputSchema: z.object({A2A_JSON: z.number()}),
   outputSchema: z.object({}),  // TODO: Define output schema
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: A2A JSON-RPC HTTP API endpoints used to interact with remote agents (agent-card, message/send, message/stream, tasks/*, pushNotificationConfig/*).
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

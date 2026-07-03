@@ -40,11 +40,28 @@ def _to_pascal(name: str) -> str:
 
 def _build_common_context(project: LangGraphProject) -> Dict[str, Any]:
     node_by_iri = {n.iri: n for n in project.nodes}
+
+    # Deduplicate nodes by their TypeScript name: two KG tasks can resolve to the
+    # same ts_name, which would emit duplicate function/addNode declarations and
+    # fail to compile ("symbol already declared"). Keep first occurrence.
+    unique_nodes = []
+    seen_node_names = set()
+    for node in project.nodes:
+        if node.ts_name in seen_node_names:
+            continue
+        seen_node_names.add(node.ts_name)
+        unique_nodes.append(node)
+
     edges_named: List[Dict[str, str]] = []
+    seen_edges = set()
     for edge in project.edges:
         src = node_by_iri.get(edge.source)
         tgt = node_by_iri.get(edge.target)
         if src and tgt:
+            pair = (src.ts_name, tgt.ts_name)
+            if pair in seen_edges:
+                continue
+            seen_edges.add(pair)
             edges_named.append({"source": src.ts_name, "target": tgt.ts_name})
 
     agent_by_iri = {a.iri: a for a in project.agents}
@@ -55,7 +72,7 @@ def _build_common_context(project: LangGraphProject) -> Dict[str, Any]:
         "agents": project.agents,
         "agent_by_iri": agent_by_iri,
         "tools": project.tools,
-        "nodes": project.nodes,
+        "nodes": unique_nodes,
         "edges": edges_named,
         "routes": project.routes,
         "router_node_name": project.router_node_name,
@@ -83,7 +100,19 @@ def _build_manifest(output_dir: str, pattern: str) -> Dict[str, Any]:
     }
 
 
-def _write_base_files(output_dir: str) -> None:
+def _write_base_files(output_dir: str, project: LangGraphProject) -> None:
+    dependencies = {
+        "@langchain/langgraph": "^0.2.0",
+        "@langchain/core": "^0.3.0",
+        "@langchain/openai": "^0.5.0",
+        "zod": "^3.24.0",
+    }
+    # Add provider-specific packages actually imported by the generated code
+    # (templates emit `ChatAnthropic` from '@langchain/anthropic' for anthropic
+    # agents). Without this the import fails to resolve at runtime/typecheck.
+    if any(agent.provider == "anthropic" for agent in project.agents):
+        dependencies["@langchain/anthropic"] = "^0.3.0"
+
     package_json = {
         "name": "langgraph-generated-project",
         "version": "0.1.0",
@@ -93,12 +122,7 @@ def _write_base_files(output_dir: str) -> None:
             "dev": "tsx index.ts",
             "typecheck": "tsc --noEmit",
         },
-        "dependencies": {
-            "@langchain/langgraph": "^0.2.0",
-            "@langchain/core": "^0.3.0",
-            "@langchain/openai": "^0.5.0",
-            "zod": "^3.24.0",
-        },
+        "dependencies": dependencies,
         "devDependencies": {
             "typescript": "^5.6.0",
             "tsx": "^4.19.0",
@@ -179,7 +203,7 @@ def generate_project(project: LangGraphProject, output_dir: str) -> str:
             f.write(general_template.render(**ctx).strip() + "\n")
 
 
-    _write_base_files(output_dir)
+    _write_base_files(output_dir, project)
 
     manifest = _build_manifest(output_dir, pattern)
     with open(os.path.join(output_dir, "manifest.json"), "w", encoding="utf-8") as f:

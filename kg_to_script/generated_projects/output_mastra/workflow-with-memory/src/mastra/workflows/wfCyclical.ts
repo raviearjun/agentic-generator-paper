@@ -18,7 +18,7 @@ const taskCycStepOne = createStep({
   id: 'task_cyc_step_one',
   description: `Doubles the input value (cyclical workflow start)`,
   inputSchema: z.object({inputValue: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
     // Doubles the input value
     // This step uses agent: catOne
@@ -32,7 +32,7 @@ const taskCycStepTwo = createStep({
   id: 'task_cyc_step_two',
   description: `Adds 1 to the input value (cyclical workflow)`,
   inputSchema: z.object({valueToIncrement: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
     // Adds 1 to the input value
     // This step uses agent: catOne
@@ -46,7 +46,7 @@ const taskCycStepThree = createStep({
   id: 'task_cyc_step_three',
   description: `Squares the input value when condition met (doubledValue == 10)`,
   inputSchema: z.object({valueToSquare: z.number()}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
     // Squares the input value
     // This step uses agent: catOne

@@ -19,13 +19,13 @@ export const mastraRuntime = createTool({
   description: `Runtime engine that executes workflow step code (non-LLM execution).`,
   inputSchema: z.object({non: z.string()}),
   outputSchema: z.object({rawText: z.string()}),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // TODO: Implement tool logic
-    // 
+    //
     // Description: Runtime engine that executes workflow step code (non-LLM execution).
     // Configurations:
     //   - engine: mastra
-    // 
+    //
     // Implementation should:
     // 1. Use inputData according to inputSchema
     // 2. Perform the tool's logic

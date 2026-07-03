@@ -16,7 +16,7 @@ const taskFetchWeather = createStep({
   id: 'task_fetch_weather',
   description: `Fetches weather forecast for a given city`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Array_of_daily_forecast_objects_with_fields: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects.
     // This step uses agent: weatherAgent

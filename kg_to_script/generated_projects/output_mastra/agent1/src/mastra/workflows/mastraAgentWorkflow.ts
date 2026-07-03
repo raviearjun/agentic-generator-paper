@@ -65,7 +65,7 @@ const taskReturnResponse = createStep({
  */
 export const mastraAgentWorkflow = createWorkflow({
   id: 'mastra_agent_workflow',
-  inputSchema: z.object({High: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskProcessRequest, taskExecuteClientTool, taskReturnResponse],
 })
