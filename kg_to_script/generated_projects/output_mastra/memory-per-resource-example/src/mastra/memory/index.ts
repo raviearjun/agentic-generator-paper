@@ -1,1 +1,0 @@
-export { memoryDemo } from './memoryDemo'

@@ -1,1 +1,0 @@
-export { famousPersonMemory } from './famousPersonMemory'
