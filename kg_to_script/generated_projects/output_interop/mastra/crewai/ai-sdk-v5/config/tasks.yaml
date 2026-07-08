@@ -1,8 +1,0 @@
-fetch_current_weather:
-  description: |
-    Task to fetch current weather for a specified location. Implemented by invoking the 'get-weather' tool. The agent will ask the user for a location if not provided.
-  expected_output: 'Completed: fetch_current_weather'
-weather_agent_participation_placeholder:
-  description: A provenance-style record that the agent participates in the fetch
-    current weather task.
-  expected_output: 'Completed: weather_agent_participation_placeholder'

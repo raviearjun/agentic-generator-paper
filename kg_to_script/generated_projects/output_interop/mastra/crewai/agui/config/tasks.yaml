@@ -1,7 +1,0 @@
-network_supervisor_task:
-  description: You are a helpful supervisor agent that can help users with a variety
-    of tasks.
-  expected_output: 'Completed: network_supervisor_task'
-copilotkit:
-  description: Copilotkit
-  expected_output: 'Completed: copilotkit'

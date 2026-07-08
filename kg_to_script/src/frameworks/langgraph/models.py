@@ -46,6 +46,16 @@ class LangGraphNodeModel(BaseModel):
     agent_ref: Optional[str] = Field(None, description="IRI of the agent assigned to this node")
     node_kind: str = Field("worker", description="Node kind: router | worker | general_input | end")
     group: str = Field("core", description="Optional grouping label for file organization")
+    task_description: str = Field(
+        "",
+        description=(
+            "The originating Task's :description text (from :hasAssociatedTask). "
+            "Without this, generated node prompts only carry the agent's generic "
+            "role persona ('You are a {role}.') and never the task-specific "
+            "instructions, so nodes can't tell what work they're actually meant "
+            "to do beyond their own name."
+        ),
+    )
     is_start: bool = Field(False, description="True if this is the START node")
     is_end: bool = Field(False, description="True if this is the END node")
 

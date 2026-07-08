@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraInstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -79,6 +83,7 @@ async function taskOutboundFlight(state: typeof MastraInstanceAnnotation.State) 
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning." +
         "\nNode: taskOutboundFlight",
     },
     ...state.messages,
@@ -97,6 +102,7 @@ async function taskReturnFlight(state: typeof MastraInstanceAnnotation.State) {
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps." +
         "\nNode: taskReturnFlight",
     },
     ...state.messages,
@@ -115,6 +121,7 @@ async function taskAccommodationHotels(state: typeof MastraInstanceAnnotation.St
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning." +
         "\nNode: taskAccommodationHotels",
     },
     ...state.messages,
@@ -133,6 +140,7 @@ async function taskAttraction(state: typeof MastraInstanceAnnotation.State) {
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available." +
         "\nNode: taskAttraction",
     },
     ...state.messages,
@@ -151,6 +159,7 @@ async function taskAirbnbLocation(state: typeof MastraInstanceAnnotation.State) 
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning." +
         "\nNode: taskAirbnbLocation",
     },
     ...state.messages,
@@ -169,6 +178,7 @@ async function taskAccommodationAirbnb(state: typeof MastraInstanceAnnotation.St
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning." +
         "\nNode: taskAccommodationAirbnb",
     },
     ...state.messages,
@@ -187,6 +197,7 @@ async function taskSyncCsvData(state: typeof MastraInstanceAnnotation.State) {
       role: "system",
       content:
         "You are a travel analyzer." +
+        "\n\nYour task: Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime." +
         "\nNode: taskSyncCsvData",
     },
     ...state.messages,

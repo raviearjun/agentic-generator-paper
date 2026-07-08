@@ -8,6 +8,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -16,7 +17,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_write_email
         # Workflow Edge: task_write_email -> task_write_email
@@ -25,9 +33,23 @@ async def main():
         print("Executing step: task_write_email")
         print("=" * 80)
 
-        task_prompt = """LLM task that generates an initial email draft from conversation history. """
-        # Execute via the assigned agent: email_assistant_agent
-        result = await email_assistant_agent.run(task=task_prompt)
+        task_prompt = """You're an AI email assistant, tasked with writing an email for the user.
+Use the entire conversation history between you, and the user to craft the email for them.
+
+<conversation>
+{CONVERSATION}
+</conversation>
+
+If there is NOT enough information to send an email, respond to the user requesting the missing information.
+Required fields:
+- subject - The subject of the email
+- body - The body of the email
+- to - The recipient of the email """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: email_assistant_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await email_assistant_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -44,9 +66,29 @@ async def main():
         print("Executing step: task_interrupt")
         print("=" * 80)
 
-        task_prompt = """Human-in-the-loop interruption UI which can edit, accept, ignore, or request a rewrite. """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        task_prompt = """# New Email
+
+## Subject
+{subject}
+
+## To
+{to}
+
+## Body
+{body}
+
+## Response Instructions
+
+- **Response**: Any response submitted will be passed to an LLM to rewrite the email. It can rewrite the email body, subject, or recipient.
+
+- **Edit or Accept**: Editing/Accepting the email will send the email.
+
+- **Ignore**: Ignoring the email will end the conversation, and the email will not be sent. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -62,9 +104,31 @@ async def main():
         print("Executing step: task_rewrite_email")
         print("=" * 80)
 
-        task_prompt = """LLM task that rewrites the email according to user edits or responses. """
-        # Execute via the assigned agent: email_assistant_agent
-        result = await email_assistant_agent.run(task=task_prompt)
+        task_prompt = """You're an AI email assistant, tasked with rewriting an email for the user.
+Here is the current state of the email for the user:
+<email>
+  <subject>
+    {SUBJECT}
+  </subject>
+  <body>
+    {BODY}
+  </body>
+  <to>
+    {TO}
+  </to>
+</email>
+
+Here is the user's response, which should contain some request for changes to the email:
+<user-response>
+{USER_RESPONSE}
+</user-response>
+
+Given that, please rewrite the email. Do NOT modify anything the user does not request to be changed. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: email_assistant_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await email_assistant_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -79,9 +143,12 @@ async def main():
         print("Executing step: task_send_email")
         print("=" * 80)
 
-        task_prompt = """Finalization step that sends/renders the sent email confirmation. """
-        # Execute via the assigned agent: email_assistant_agent
-        result = await email_assistant_agent.run(task=task_prompt)
+        task_prompt = """Render a confirmation UI indicating the email was successfully sent. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: email_assistant_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await email_assistant_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

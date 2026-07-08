@@ -16,57 +16,78 @@ import { catOne } from '../agents'
 
 const taskParStepOne = createStep({
   id: 'task_par_step_one',
-  description: `Doubles the input value (parallel workflow start)`,
+  description: `Doubles the input value`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
-    // Doubles the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_par_step_one not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Doubles the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      inputValue: context.inputValue ?? result.text,
+    }
   },
 })
 
 const taskParStepSix = createStep({
   id: 'task_par_step_six',
-  description: `Logs the input value and returns rawText`,
+  description: `Logs the input value`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
-    // Logs the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_par_step_six not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Logs the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToIncrement: context.valueToIncrement ?? result.text,
+    }
   },
 })
 
 const taskParStepTwo = createStep({
   id: 'task_par_step_two',
-  description: `Adds 1 to the input value (parallel branch)`,
+  description: `Adds 1 to the input value`,
   inputSchema: z.object({valueToIncrement: z.number()}),
   outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
-    // Adds 1 to the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_par_step_two not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Adds 1 to the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToSquare: context.valueToSquare ?? result.text,
+    }
   },
 })
 
 const taskParStepThree = createStep({
   id: 'task_par_step_three',
-  description: `Squares the input value (parallel branch end)`,
+  description: `Squares the input value`,
   inputSchema: z.object({valueToSquare: z.number()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Squares the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_par_step_three not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Squares the input value`
+    const result = await catOne.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

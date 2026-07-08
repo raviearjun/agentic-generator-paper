@@ -12,6 +12,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -20,7 +21,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_write_blog
         # Workflow Edge: task_write_blog -> task_critic_initiate_1
@@ -29,9 +37,13 @@ async def main():
         print("Executing step: task_write_blog")
         print("=" * 80)
 
-        task_prompt = """Writer generates a concise blogpost about DeepLearning.AI. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
+       DeepLearning.AI. 确保博客100 字以内。 """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -47,9 +59,13 @@ async def main():
         print("Executing step: task_critic_initiate_1")
         print("=" * 80)
 
-        task_prompt = """Critic initiates chat with Writer (first initiate_chat call, max_turns=3). """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
+       DeepLearning.AI. 确保博客100 字以内。 """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -65,9 +81,12 @@ async def main():
         print("Executing step: task_nested_seo_review")
         print("=" * 80)
 
-        task_prompt = """SEO reviewer performs one-turn review using reflection_with_llm summary_prompt. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. 这里的 审查员 应该是你自己的角色 """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -83,9 +102,12 @@ async def main():
         print("Executing step: task_nested_legal_review")
         print("=" * 80)
 
-        task_prompt = """Legal reviewer performs one-turn review using reflection_with_llm summary_prompt. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -101,9 +123,12 @@ async def main():
         print("Executing step: task_nested_ethics_review")
         print("=" * 80)
 
-        task_prompt = """Ethics reviewer performs one-turn review using reflection_with_llm summary_prompt. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''} """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -119,9 +144,12 @@ async def main():
         print("Executing step: task_meta_aggregate")
         print("=" * 80)
 
-        task_prompt = """Meta reviewer aggregates feedback and provides final suggestion. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """对所有审查员的反馈意见进行汇总，并对写作提出最终建议。 """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -136,9 +164,13 @@ async def main():
         print("Executing step: task_critic_initiate_2")
         print("=" * 80)
 
-        task_prompt = """Critic initiates chat with Writer (second initiate_chat call, max_turns=2) which triggers nested reviews. """
-        # Execute via the assigned agent: unnamed
-        result = await unnamed.run(task=task_prompt)
+        task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
+       DeepLearning.AI. 确保博客100 字以内。 """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: unnamed, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await unnamed.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

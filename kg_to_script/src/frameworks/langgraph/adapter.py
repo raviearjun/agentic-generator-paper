@@ -96,6 +96,7 @@ def _map_agents(project: AgenticProject) -> List[LangGraphAgentModel]:
 def _map_nodes_edges(project: AgenticProject) -> tuple[List[LangGraphNodeModel], List[LangGraphEdgeModel]]:
     step_by_iri: Dict[str, LangGraphNodeModel] = {}
     edges: List[LangGraphEdgeModel] = []
+    task_by_iri: Dict[str, str] = {task.iri: task.description for task in project.tasks if task.iri}
 
     for workflow in project.workflows:
         for step in workflow.steps:
@@ -110,6 +111,7 @@ def _map_nodes_edges(project: AgenticProject) -> tuple[List[LangGraphNodeModel],
                 group="nodes",
                 is_start=step.step_type == "StartStep",
                 is_end=step.step_type == "EndStep",
+                task_description=task_by_iri.get(step.task_iri, ""),
             )
             for target in step.next_step_iris:
                 edges.append(LangGraphEdgeModel(source=step.iri, target=target))
@@ -126,6 +128,7 @@ def _map_nodes_edges(project: AgenticProject) -> tuple[List[LangGraphNodeModel],
                 group="nodes",
                 is_start=idx == 0,
                 is_end=idx == len(project.tasks) - 1,
+                task_description=task.description,
             )
             if idx > 0:
                 prev_iri = f"task-step:{project.tasks[idx - 1].iri}"

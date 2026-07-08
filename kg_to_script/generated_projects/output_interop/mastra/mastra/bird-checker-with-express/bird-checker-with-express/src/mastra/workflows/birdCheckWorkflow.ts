@@ -19,7 +19,7 @@ import { getRandomImageTool } from '../tools'
 
 const getRandomImageTask = createStep({
   id: 'get_random_image_task',
-  description: `Task that obtains an image (imageUrl, photographer info) from Unsplash based on a query.`,
+  description: `Fetch a random image from Unsplash matching the provided query parameter (wildlife | bird | feathers | flying). Return imageUrl, photographerName, and photographerProfile.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
@@ -32,15 +32,21 @@ const getRandomImageTask = createStep({
 
 const imageMetadataTask = createStep({
   id: 'image_metadata_task',
-  description: `Task where the agent inspects an image and returns structured output indicating whether it is a bird, the species, and a short location summary.`,
+  description: `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.`,
   inputSchema: z.object({}),
   outputSchema: z.object({JSON_object_with_keys: z.string()}),
   execute: async ({ inputData }) => {
-    // View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.
-    // This step uses agent: birdChecker
-    // const result = await birdChecker.generate('...')
-    // TODO: Implement step logic
-    throw new Error('image_metadata_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.`
+    const result = await birdChecker.generate(prompt)
+    return {
+      ...context,
+      JSON_object_with_keys: context.JSON_object_with_keys ?? result.text,
+    }
   },
 })
 

@@ -8,8 +8,8 @@ task2:
   expected_output: |
     A screenplay dialogue consisting only of the dialogue parts between two persons, without parentheticals, wrylies, or directional notes.
 task3:
-  description: 'Format the script exactly like this:   ## (person 1): (first text
-    line from person 1) ...'
+  description: |
+    Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...
   expected_output: |
     A formatted script with the specified structure, ensuring each line is formatted according to the provided template.
 task0:

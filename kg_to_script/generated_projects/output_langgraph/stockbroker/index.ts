@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const TradingSystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function openBuyUiTask(state: typeof TradingSystemAnnotation.State) {
       role: "system",
       content:
         "You are a trading_assistant." +
+        "\n\nYour task: Open the buy stock user interface for the specified ticker and prefill price information. Expected output: UI displayed and ready for user input." +
         "\nNode: openBuyUiTask",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function executePurchaseTask(state: typeof TradingSystemAnnotation.State) 
       role: "system",
       content:
         "You are a trading_assistant." +
+        "\n\nYour task: Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload." +
         "\nNode: executePurchaseTask",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function confirmPurchaseTask(state: typeof TradingSystemAnnotation.State) 
       role: "system",
       content:
         "You are a trading_assistant." +
+        "\n\nYour task: Present the purchase confirmation message to the user, showing ticker, quantity, price, and total cost. Expected output: confirmation message shown in UI." +
         "\nNode: confirmPurchaseTask",
     },
     ...state.messages,

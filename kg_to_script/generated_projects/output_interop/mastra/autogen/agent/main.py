@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_query_pantry
         # Workflow Edge: task_query_pantry -> task_generate_text
@@ -24,9 +32,12 @@ async def main():
         print("Executing step: task_query_pantry")
         print("=" * 80)
 
-        task_prompt = """User asks what they can make given pantry ingredients (pasta, canned tomatoes, garlic, olive oil, dried herbs). """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -42,9 +53,12 @@ async def main():
         print("Executing step: task_generate_text")
         print("=" * 80)
 
-        task_prompt = """Alternate/duplicate generate usage with same pantry query. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -60,9 +74,12 @@ async def main():
         print("Executing step: task_text_stream")
         print("=" * 80)
 
-        task_prompt = """Streamed response for chicken/coconut/sweet potatoes/curry powder scenario. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -78,9 +95,12 @@ async def main():
         print("Executing step: task_generate_stream")
         print("=" * 80)
 
-        task_prompt = """Streaming variant with array input; yields streamed recipe. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -96,9 +116,12 @@ async def main():
         print("Executing step: task_text_object")
         print("=" * 80)
 
-        task_prompt = """Generate a lasagna recipe structured as an object with ingredients and steps. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """I want to make lasagna, can you generate a lasagna recipe for me? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -114,9 +137,12 @@ async def main():
         print("Executing step: task_text_object_jsonschema")
         print("=" * 80)
 
-        task_prompt = """Generate lasagna recipe constrained by provided JSON Schema. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """I want to make lasagna, can you generate a lasagna recipe for me? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -132,9 +158,12 @@ async def main():
         print("Executing step: task_generate_object")
         print("=" * 80)
 
-        task_prompt = """Generate lasagna recipe with structured output (array input variant). """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """I want to make lasagna, can you generate a lasagna recipe for me? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -150,9 +179,12 @@ async def main():
         print("Executing step: task_stream_object")
         print("=" * 80)
 
-        task_prompt = """Streamed generation of a lasagna recipe as structured object. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """I want to make lasagna, can you generate a lasagna recipe for me? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -167,9 +199,12 @@ async def main():
         print("Executing step: task_generate_stream_object")
         print("=" * 80)
 
-        task_prompt = """Final streaming structured generation variant. """
-        # Execute via the assigned agent: chef_agent
-        result = await chef_agent.run(task=task_prompt)
+        task_prompt = """I want to make lasagna, can you generate a lasagna recipe for me? """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chef_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chef_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

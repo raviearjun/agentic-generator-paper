@@ -9,6 +9,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -17,7 +18,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_code
         # Workflow Edge: task_code -> task_review
@@ -26,9 +34,16 @@ async def main():
         print("Executing step: task_code")
         print("=" * 80)
 
-        task_prompt = """code_task from config/tasks.yaml """
-        # Execute via the assigned agent: senior_engineer_agent
-        result = await senior_engineer_agent.run(task=task_prompt)
+        task_prompt = """You will create a game using python, these are the instructions:
+
+Instructions
+# ------------
+{game} """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: senior_engineer_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await senior_engineer_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -44,9 +59,20 @@ async def main():
         print("Executing step: task_review")
         print("=" * 80)
 
-        task_prompt = """review_task from config/tasks.yaml """
-        # Execute via the assigned agent: qa_engineer_agent
-        result = await qa_engineer_agent.run(task=task_prompt)
+        task_prompt = """You will create a game using python, these are the instructions:
+
+Instructions
+# ------------
+{game}
+
+Using the code you got, check for errors. Check for logic errors,
+syntax errors, missing imports, variable declarations, mismatched brackets,
+and security vulnerabilities. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: qa_engineer_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await qa_engineer_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -61,9 +87,19 @@ async def main():
         print("Executing step: task_evaluate")
         print("=" * 80)
 
-        task_prompt = """evaluate_task from config/tasks.yaml """
-        # Execute via the assigned agent: chief_qa_engineer_agent
-        result = await chief_qa_engineer_agent.run(task=task_prompt)
+        task_prompt = """You are helping create a game using python, these are the instructions:
+
+Instructions
+# ------------
+{game}
+
+You will look over the code to insure that it is complete and
+does the job that it is supposed to do. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chief_qa_engineer_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chief_qa_engineer_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

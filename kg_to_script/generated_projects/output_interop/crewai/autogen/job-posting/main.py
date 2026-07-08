@@ -9,6 +9,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -17,7 +18,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: research_company_culture_task
         # Workflow Edge: research_company_culture_task -> research_role_requirements_task
@@ -27,8 +35,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Analyze the provided company website and the hiring manager's company's domain {company_domain}, description {company_description}. Focus on understanding the company's culture, values, and mission. Identify unique selling points and specific projects or achievements highlighted on the site. Compile a report summarizing these insights, specifically how they can be leveraged in a job posting to attract the right candidates. """
-        # Execute via the assigned agent: research_agent
-        result = await research_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: research_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await research_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -45,8 +56,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Based on the hiring manager's needs: {hiring_needs}, identify the key skills, experiences, and qualities the ideal candidate should possess for the role. Consider the company's current projects, its competitive landscape, and industry trends. Prepare a list of recommended job requirements and qualifications that align with the company's needs and values. """
-        # Execute via the assigned agent: research_agent
-        result = await research_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: research_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await research_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -63,8 +77,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Draft a job posting for the role described by the hiring manager: {hiring_needs}. Use the insights on {company_description} to start with a compelling introduction, followed by a detailed role description, responsibilities, and required skills and qualifications. Ensure the tone aligns with the company's culture and incorporate any unique benefits or opportunities offered by the company. Specific benefits: {specific_benefits}. """
-        # Execute via the assigned agent: writer_agent
-        result = await writer_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: writer_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await writer_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -81,8 +98,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Review the draft job posting for the role {hiring_needs}. Check for clarity, engagement, grammatical accuracy, and alignment with the company's culture and values. Edit and refine the content, ensuring it speaks directly to the desired candidates and accurately reflects the role's unique benefits and opportunities. Provide feedback for any necessary revisions. """
-        # Execute via the assigned agent: review_agent
-        result = await review_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: review_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await review_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -98,8 +118,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Conduct an in-depth analysis of the industry related to the company's domain {company_domain}. Investigate current trends, challenges, and opportunities within the industry, utilizing market reports, recent developments, and expert opinions. Assess how these factors could impact the role being hired for and the overall attractiveness of the position to potential candidates. """
-        # Execute via the assigned agent: research_agent
-        result = await research_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: research_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await research_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const ProposedChangeUITeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskProposeChange(state: typeof ProposedChangeUITeamAnnotation.St
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Render the proposed change (code diff / description) to the user and request an explicit accept or reject decision." +
         "\nNode: taskProposeChange",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function taskUserDecision(state: typeof ProposedChangeUITeamAnnotation.Sta
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: User evaluates the proposed change and selects accept or reject; the selection drives subsequent tool calls and UI state." +
         "\nNode: taskUserDecision",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function taskHandleReject(state: typeof ProposedChangeUITeamAnnotation.Sta
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: On reject: call the update_file tool with REJECTED_CHANGE_CONTENT (or do not apply change) and submit a human message 'Rejected change.'." +
         "\nNode: taskHandleReject",
     },
     ...state.messages,
@@ -89,6 +96,7 @@ async function taskFinalizeUi(state: typeof ProposedChangeUITeamAnnotation.State
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Render final accepted or rejected status in the UI and present an artifact view of the proposed change." +
         "\nNode: taskFinalizeUi",
     },
     ...state.messages,

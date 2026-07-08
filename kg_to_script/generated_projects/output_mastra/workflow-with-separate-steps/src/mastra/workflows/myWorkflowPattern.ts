@@ -18,11 +18,14 @@ const taskStepOne = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Doubles triggerData.inputValue and returns an object with { doubledValue }.
-    // This step uses agent: mastraAgent
-    // const result = await mastraAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_step_one not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Doubles triggerData.inputValue and returns an object with { doubledValue }.`
+    const result = await mastraAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -32,11 +35,14 @@ const taskStepThree = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Triples triggerData.inputValue and returns an object with { tripledValue }.
-    // This step uses agent: mastraAgent
-    // const result = await mastraAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_step_three not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Triples triggerData.inputValue and returns an object with { tripledValue }.`
+    const result = await mastraAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -46,11 +52,14 @@ const taskStepTwo = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1.
-    // This step uses agent: mastraAgent
-    // const result = await mastraAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_step_two not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1.`
+    const result = await mastraAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -60,11 +69,14 @@ const taskStepFour = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even.
-    // This step uses agent: mastraAgent
-    // const result = await mastraAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_step_four not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even.`
+    const result = await mastraAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

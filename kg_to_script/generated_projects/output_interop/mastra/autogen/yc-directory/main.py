@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: fetch_yc_directory_task
         # Workflow Edge: fetch_yc_directory_task -> process_yc_data_task
@@ -24,9 +32,12 @@ async def main():
         print("Executing step: fetch_yc_directory_task")
         print("=" * 80)
 
-        task_prompt = """Task to retrieve the YC directory dataset using the yc-directory tool. """
-        # Execute via the assigned agent: yc_directory_agent
-        result = await yc_directory_agent.run(task=task_prompt)
+        task_prompt = """Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: yc_directory_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await yc_directory_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -41,9 +52,12 @@ async def main():
         print("Executing step: process_yc_data_task")
         print("=" * 80)
 
-        task_prompt = """Task to process/format the YC directory data for consumption by downstream callers (e.g., filtering, adding batch metadata). """
-        # Execute via the assigned agent: yc_directory_agent
-        result = await yc_directory_agent.run(task=task_prompt)
+        task_prompt = """Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: yc_directory_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await yc_directory_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

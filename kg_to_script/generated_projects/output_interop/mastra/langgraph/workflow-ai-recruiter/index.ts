@@ -3,7 +3,11 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
 const MastrainstanceworkflowairecruiterAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -22,6 +26,7 @@ async function gatherCandidateInfoTask(state: typeof Mastrainstanceworkflowairec
       role: "system",
       content:
         "You are a workflow-processor." +
+        "\n\nYour task: You are given this resume text: "\${resumeText}"" +
         "\nNode: gatherCandidateInfoTask",
     },
     ...state.messages,
@@ -40,6 +45,7 @@ async function askAboutSpecialtyTask(state: typeof Mastrainstanceworkflowairecru
       role: "system",
       content:
         "You are a workflow-processor." +
+        "\n\nYour task: You are a recruiter. Given the resume below, craft a short question for \${candidateName} about how they got into "\${specialty}". Resume: \${resumeText}" +
         "\nNode: askAboutSpecialtyTask",
     },
     ...state.messages,
@@ -58,6 +64,7 @@ async function askAboutRoleTask(state: typeof MastrainstanceworkflowairecruiterA
       role: "system",
       content:
         "You are a workflow-processor." +
+        "\n\nYour task: You are a recruiter. Given the resume below, craft a short question for \${candidateName} asking what interests them most about this role. Resume: \${resumeText}" +
         "\nNode: askAboutRoleTask",
     },
     ...state.messages,

@@ -1,27 +1,41 @@
 task_product_analysis:
   description: |
-    Analyze the given product website, identify unique features, benefits, narrative, and recommendations.
+    Analyze the given product website: {product_website}.
+    Extra details provided by the customer: {product_details}.
+    Focus on identifying unique features, benefits, and the overall narrative. Provide a final report articulating key selling points, market appeal, and suggestions for enhancement or positioning. Attention to detail and up-to-date (2024) context required.
   expected_output: A comprehensive analysis report covering product key selling points,
     market appeal, and suggestions.
 task_take_photograph:
   description: |
-    Imagine and describe three photograph concepts for the Instagram post based on provided copy and product context.
+    You MUST take the most amazing photo ever for an instagram post regarding the product. Provided ad copy: {copy}
+    Product: {product_website}
+    Extra details: {product_details}
+    Imagine the photograph and describe it in a paragraph. Follow examples (professional wide shot, soft lighting, 4k, crisp, etc.). Do not show the actual product in photos.
   expected_output: Provide 3 photographic options, each described in one paragraph
     following the examples.
 task_competitor_analysis:
-  description: Identify top competitors and analyze their strategies and positioning
-    relative to the product.
+  description: |
+    Explore competitors of: {product_website}.
+    Extra details provided by the customer: {product_details}.
+    Identify the top 3 competitors and analyze their strategies, market positioning, and customer perception. Include context about the target website and detailed comparison.
   expected_output: A ranked list of top 3 competitors with comparative analysis and
     implications for strategy.
 task_review_photo:
   description: |
-    Review photography drafts, approve or request clarifications or delegations; ensure alignment with product goals.
+    Review the photos from the senior photographer. Ensure alignment with product goals; review, approve, ask clarifying questions or delegate follow-up work as necessary. When delegating, include the full draft as part of the information.
+    Product: {product_website}
+    Extra details: {product_details}
+    Examples: (high tech airplane in a beautiful blue sky ...; the last supper ...; a bearded old man in the snows ...).
   expected_output: Return 3 reviewed photograph options with approval status or delegation
     instructions.
 task_campaign_development:
-  description: Create a targeted marketing campaign strategy and creative ideas.
+  description: |
+    Create a targeted marketing campaign for: {product_website}.
+    Extra details provided by the customer: {product_details}.
+    Produce strategy and creative content ideas designed to captivate the target audience. Provide ideas that resonate with the audience and include all available product/context information.
   expected_output: A detailed campaign strategy with creative content ideas and contextual
     rationale.
 task_instagram_ad_copy:
-  description: Craft engaging Instagram post copy aligned with marketing strategy.
+  description: |
+    Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.
   expected_output: Return 3 distinct Instagram ad copy options, each concise and attention-grabbing.

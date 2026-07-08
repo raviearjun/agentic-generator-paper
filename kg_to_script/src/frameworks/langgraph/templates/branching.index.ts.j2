@@ -23,7 +23,11 @@ import { z } from "zod";
 
 const {{ graph_class_name }}Annotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -62,6 +66,9 @@ async function {{ node.ts_name }}(state: typeof {{ graph_class_name }}Annotation
       role: "system",
       content:
         "{{ node_agent_prompt | ts_escape }}" +
+{% if node.task_description %}
+        "\n\nYour task: {{ node.task_description | ts_escape }}" +
+{% endif %}
         "\nNode: {{ node.ts_name }}",
     },
     ...state.messages,

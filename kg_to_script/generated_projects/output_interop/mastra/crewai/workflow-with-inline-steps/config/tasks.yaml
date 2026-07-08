@@ -1,7 +1,8 @@
 task_step_one:
-  description: Compute doubledValue from triggerData.inputValue.
+  description: 'Execute: doubledValue = context.machineContext.triggerData.inputValue
+    * 2'
   expected_output: 'doubledValue: number'
 task_step_two:
-  description: If stepOne succeeded, compute incrementedValue = doubledValue + 1;
-    else return 0.
+  description: |
+    If context.machineContext.stepResults.stepOne.status == 'success' then incrementedValue = context.machineContext.stepResults.stepOne.payload.doubledValue + 1 else incrementedValue = 0
   expected_output: 'incrementedValue: number'

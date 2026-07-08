@@ -14,15 +14,29 @@ import { danePackagePublisher } from '../agents'
 
 const taskPkgGetPacakgesToPublish = createStep({
   id: 'task_pkg_get_pacakges_to_publish',
-  description: `Use DanePackagePublisher agent to analyze repo and list packages requiring publish`,
-  inputSchema: z.object({}),
+  description: `Please analyze the following monorepo directories and identify packages that need pnpm publishing:`,
+  inputSchema: z.object({CRITICAL: z.string(), Include_create: z.array(z.string())}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Please analyze the following monorepo directories and identify packages that need pnpm publishing:
-    // This step uses agent: danePackagePublisher
-    // const result = await danePackagePublisher.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_pkg_get_pacakges_to_publish not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Please analyze the following monorepo directories and identify packages that need pnpm publishing:
+CRITICAL: This step is about planning. We do not want to build anything. All packages MUST be placed in the correct order.
+
+Publish Requirements:
+- @mastra/core first, MUST be before any other package
+- all packages in correct dependency order before building
+- Identify packages that have changes requiring a new pnpm publish
+- Include create-mastra in the packages list if changes exist
+- EXCLUDE @mastra/dane from consideration
+
+Please list all packages that need building grouped by their directory.
+DO NOT NOT USE the 'pnpmBuild' tool during this step.`
+    const result = await danePackagePublisher.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -64,29 +78,38 @@ const taskPkgVerifyBuild = createStep({
 
 const taskPkgPublishChangeset = createStep({
   id: 'task_pkg_publish_changeset',
-  description: `Use DanePackagePublisher agent to publish changeset (agent generates instructions) and then call pnpmChangesetPublish`,
+  description: `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({Update_npm_dist: z.string()}),
   execute: async ({ inputData }) => {
-    // All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.
-    // This step uses agent: danePackagePublisher
-    // const result = await danePackagePublisher.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_pkg_publish_changeset not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.`
+    const result = await danePackagePublisher.generate(prompt)
+    return {
+      ...context,
+      Update_npm_dist: context.Update_npm_dist ?? result.text,
+    }
   },
 })
 
 const taskPkgSetLatestDistTag = createStep({
   id: 'task_pkg_set_latest_dist_tag',
   description: `Update npm dist-tag for published packages (agent assisted)`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({Update_npm_dist: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Update npm dist-tag for published packages (agent assisted)
-    // This step uses agent: danePackagePublisher
-    // const result = await danePackagePublisher.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_pkg_set_latest_dist_tag not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Update npm dist-tag for published packages (agent assisted)`
+    const result = await danePackagePublisher.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -97,7 +120,7 @@ const taskPkgSetLatestDistTag = createStep({
  */
 export const workflowPnpmChangsetPublisher = createWorkflow({
   id: 'workflow_pnpm_changset_publisher',
-  inputSchema: z.object({}),
+  inputSchema: z.object({CRITICAL: z.string(), Include_create: z.array(z.string())}),
   outputSchema: z.object({}),
   steps: [taskPkgGetPacakgesToPublish, taskPkgAssemblePackages, taskPkgBuildPackages, taskPkgVerifyBuild, taskPkgPublishChangeset, taskPkgSetLatestDistTag],
 })

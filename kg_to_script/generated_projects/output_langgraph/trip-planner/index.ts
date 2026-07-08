@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const TripPlannerAppTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function viewAccommodationsTask(state: typeof TripPlannerAppTeamAnnotation
       role: "system",
       content:
         "Used by the trip planner LLM to format messages and construct tool calls for bookings." +
+        "\n\nYour task: List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation." +
         "\nNode: viewAccommodationsTask",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function selectAccommodationTask(state: typeof TripPlannerAppTeamAnnotatio
       role: "system",
       content:
         "Used by the trip planner LLM to format messages and construct tool calls for bookings." +
+        "\n\nYour task: When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger." +
         "\nNode: selectAccommodationTask",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function confirmBookingTask(state: typeof TripPlannerAppTeamAnnotation.Sta
       role: "system",
       content:
         "Used by the trip planner LLM to format messages and construct tool calls for bookings." +
+        "\n\nYour task: Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary." +
         "\nNode: confirmBookingTask",
     },
     ...state.messages,
@@ -89,6 +96,7 @@ async function bookedConfirmationTask(state: typeof TripPlannerAppTeamAnnotation
       role: "system",
       content:
         "Used by the trip planner LLM to format messages and construct tool calls for bookings." +
+        "\n\nYour task: Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it." +
         "\nNode: bookedConfirmationTask",
     },
     ...state.messages,

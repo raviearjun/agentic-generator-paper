@@ -14,43 +14,61 @@ import { biomedicalMarketingAgent, healthcareMarketingAgent, financialMarketingA
 
 const taskBiomedicalResearch = createStep({
   id: 'task_biomedical_research',
-  description: `Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Conduct a thorough research about {weaviate_feature}`,
+  inputSchema: z.object({weaviate_feature: z.string()}),
+  outputSchema: z.object({weaviate_feature: z.string()}),
   execute: async ({ inputData }) => {
-    // Conduct a thorough research about {weaviate_feature}
-    // This step uses agent: biomedicalMarketingAgent
-    // const result = await biomedicalMarketingAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_biomedical_research not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Conduct a thorough research about ${context.weaviate_feature ?? ''}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.`
+    const result = await biomedicalMarketingAgent.generate(prompt)
+    return {
+      ...context,
+      weaviate_feature: context.weaviate_feature ?? result.text,
+    }
   },
 })
 
 const taskHealthcareResearch = createStep({
   id: 'task_healthcare_research',
-  description: `Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Conduct a thorough research about {weaviate_feature}`,
+  inputSchema: z.object({weaviate_feature: z.string()}),
+  outputSchema: z.object({weaviate_feature: z.string()}),
   execute: async ({ inputData }) => {
-    // Conduct a thorough research about {weaviate_feature}
-    // This step uses agent: healthcareMarketingAgent
-    // const result = await healthcareMarketingAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_healthcare_research not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Conduct a thorough research about ${context.weaviate_feature ?? ''}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.`
+    const result = await healthcareMarketingAgent.generate(prompt)
+    return {
+      ...context,
+      weaviate_feature: context.weaviate_feature ?? result.text,
+    }
   },
 })
 
 const taskFinancialResearch = createStep({
   id: 'task_financial_research',
-  description: `Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.`,
-  inputSchema: z.object({}),
+  description: `Conduct a thorough research about {weaviate_feature}`,
+  inputSchema: z.object({weaviate_feature: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Conduct a thorough research about {weaviate_feature}
-    // This step uses agent: financialMarketingAgent
-    // const result = await financialMarketingAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_financial_research not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Conduct a thorough research about ${context.weaviate_feature ?? ''}
+Make sure you find any interesting and relevant information using the web and Weaviate blogs.`
+    const result = await financialMarketingAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -61,7 +79,7 @@ const taskFinancialResearch = createStep({
  */
 export const workflowBlogCrew = createWorkflow({
   id: 'workflow_blog_crew',
-  inputSchema: z.object({}),
+  inputSchema: z.object({weaviate_feature: z.string()}),
   outputSchema: z.object({}),
   steps: [taskBiomedicalResearch, taskHealthcareResearch, taskFinancialResearch],
 })

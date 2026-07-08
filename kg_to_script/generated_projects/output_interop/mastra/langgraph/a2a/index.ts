@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraA2AClientAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function taskGetAgentCard(state: typeof MastraA2AClientAnnotation.State) {
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard." +
         "\nNode: taskGetAgentCard",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function taskSendMessage(state: typeof MastraA2AClientAnnotation.State) {
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Send a message to the agent using JSON-RPC method message/send with MessageSendParams." +
         "\nNode: taskSendMessage",
     },
     ...state.messages,
@@ -82,6 +88,7 @@ async function taskSendMessageStream(state: typeof MastraA2AClientAnnotation.Sta
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task." +
         "\nNode: taskSendMessageStream",
     },
     ...state.messages,
@@ -100,6 +107,7 @@ async function taskGetTask(state: typeof MastraA2AClientAnnotation.State) {
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result." +
         "\nNode: taskGetTask",
     },
     ...state.messages,
@@ -118,6 +126,7 @@ async function taskCancelTask(state: typeof MastraA2AClientAnnotation.State) {
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task." +
         "\nNode: taskCancelTask",
     },
     ...state.messages,
@@ -136,6 +145,7 @@ async function taskResubscribeTask(state: typeof MastraA2AClientAnnotation.State
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream." +
         "\nNode: taskResubscribeTask",
     },
     ...state.messages,
@@ -154,6 +164,7 @@ async function taskSetPushNotificationConfig(state: typeof MastraA2AClientAnnota
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object." +
         "\nNode: taskSetPushNotificationConfig",
     },
     ...state.messages,
@@ -172,6 +183,7 @@ async function taskGetPushNotificationConfig(state: typeof MastraA2AClientAnnota
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/pushNotificationConfig/get JSON-RPC with identifying params." +
         "\nNode: taskGetPushNotificationConfig",
     },
     ...state.messages,
@@ -190,6 +202,7 @@ async function taskListPushNotificationConfig(state: typeof MastraA2AClientAnnot
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations." +
         "\nNode: taskListPushNotificationConfig",
     },
     ...state.messages,
@@ -208,6 +221,7 @@ async function taskDeletePushNotificationConfig(state: typeof MastraA2AClientAnn
       role: "system",
       content:
         "You are a A2A remote agent." +
+        "\n\nYour task: Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config." +
         "\nNode: taskDeletePushNotificationConfig",
     },
     ...state.messages,

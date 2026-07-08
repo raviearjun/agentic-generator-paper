@@ -15,8 +15,8 @@ import { mastraRuntime } from '../tools'
 const taskLogCatName = createStep({
   id: 'task_log_cat_name',
   description: `Log the cat name provided in the trigger: console.log(\`Hello, \${name} 🐈\`)`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({rawText: z.string()}),
+  inputSchema: z.object({name: z.string()}),
+  outputSchema: z.object({name: z.string()}),
   execute: async ({ inputData }) => {
     // Log the cat name provided in the trigger: console.log(\`Hello, \${name} 🐈\`)
     // This step uses tool: mastraRuntime
@@ -32,8 +32,8 @@ const taskLogCatName = createStep({
  */
 export const logCatWorkflow = createWorkflow({
   id: 'log_cat_workflow',
-  inputSchema: z.object({}),
-  outputSchema: z.object({rawText: z.string()}),
+  inputSchema: z.object({name: z.string()}),
+  outputSchema: z.object({name: z.string()}),
   steps: [taskLogCatName],
 })
   .parallel([taskLogCatName])

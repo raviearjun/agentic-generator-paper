@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: get_image_task
         # Workflow Edge: get_image_task -> bird_check_task
@@ -25,8 +33,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds). """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -42,8 +53,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student """
-        # Execute via the assigned agent: bird_agent
-        result = await bird_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: bird_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await bird_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

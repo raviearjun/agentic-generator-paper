@@ -26,15 +26,18 @@ const taskFirstGetPullRequest = createStep({
 
 const taskFirstMessageGenerator = createStep({
   id: 'task_first_message_generator',
-  description: `Generate contributor welcome message using DaneNewContributor agent using PR title/body/diff and Mastra docs`,
+  description: `Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.
-    // This step uses agent: daneNewContributor
-    // const result = await daneNewContributor.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_first_message_generator not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.`
+    const result = await daneNewContributor.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

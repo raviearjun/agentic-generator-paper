@@ -17,14 +17,17 @@ import { analyst, scriptwriter, formatter } from '../agents'
 const task1 = createStep({
   id: 'task1',
   description: `Analyse in much detail the following discussion: ### DISCUSSION: {{discussion}}`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({discussion: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Analyse in much detail the following discussion: ### DISCUSSION: {{discussion}}
-    // This step uses agent: analyst
-    // const result = await analyst.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task1 not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Analyse in much detail the following discussion: ### DISCUSSION: {${context.discussion ?? ''}}`
+    const result = await analyst.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -34,25 +37,31 @@ const task2 = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.
-    // This step uses agent: scriptwriter
-    // const result = await scriptwriter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task2 not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.`
+    const result = await scriptwriter.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
 const task3 = createStep({
   id: 'task3',
-  description: `Format the script exactly like this:   ## (person 1): (first text line from person 1) ...`,
+  description: `Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...
-    // This step uses agent: formatter
-    // const result = await formatter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task3 not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...`
+    const result = await formatter.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -65,7 +74,7 @@ const task3 = createStep({
  */
 export const crewSequentialWorkflow = createWorkflow({
   id: 'crew_sequential_workflow',
-  inputSchema: z.object({}),
+  inputSchema: z.object({discussion: z.string()}),
   outputSchema: z.object({}),
   steps: [task1, task2, task3],
 })

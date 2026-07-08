@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraDaneprojectinstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -211,6 +215,7 @@ async function taskChangelogStepA1(state: typeof MastraDaneprojectinstanceAnnota
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Get a git diff and connect to slack; runs git diff via execa" +
         "\nNode: taskChangelogStepA1",
     },
     ...state.messages,
@@ -229,6 +234,7 @@ async function taskChangelogStepA2(state: typeof MastraDaneprojectinstanceAnnota
       role: "system",
       content:
         "You are a changelog_writer." +
+        "\n\nYour task: Time: recent week\nGit diff to generate from: (git diff from previous step)\nTask:\n1. create a structured narrative changelog that highlights key updates and improvements.\n2. Include what packages were changed\nStructure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure\nFinally send this to the configured slack channel with slack_post_message tool." +
         "\nNode: taskChangelogStepA2",
     },
     ...state.messages,
@@ -247,6 +253,7 @@ async function taskEntryMessageInput(state: typeof MastraDaneprojectinstanceAnno
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Prompt user to input a message (inquirer prompt)" +
         "\nNode: taskEntryMessageInput",
     },
     ...state.messages,
@@ -265,6 +272,7 @@ async function taskEntryMessageOutput(state: typeof MastraDaneprojectinstanceAnn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId." +
         "\nNode: taskEntryMessageOutput",
     },
     ...state.messages,
@@ -283,6 +291,7 @@ async function taskCommitGetDiff(state: typeof MastraDaneprojectinstanceAnnotati
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Compute git diff of staged changes via git command" +
         "\nNode: taskCommitGetDiff",
     },
     ...state.messages,
@@ -301,6 +310,7 @@ async function taskCommitReadConventionalCommitSpec(state: typeof MastraDaneproj
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Read conventional commit spec using fsTool" +
         "\nNode: taskCommitReadConventionalCommitSpec",
     },
     ...state.messages,
@@ -319,6 +329,7 @@ async function taskCommitGenerateMessage(state: typeof MastraDaneprojectinstance
       role: "system",
       content:
         "You are a commit_message_generator." +
+        "\n\nYour task: Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array." +
         "\nNode: taskCommitGenerateMessage",
     },
     ...state.messages,
@@ -337,6 +348,7 @@ async function taskCommitConfirmation(state: typeof MastraDaneprojectinstanceAnn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Prompt human user to confirm commit message via inquirer confirm" +
         "\nNode: taskCommitConfirmation",
     },
     ...state.messages,
@@ -355,6 +367,7 @@ async function taskCommitCommit(state: typeof MastraDaneprojectinstanceAnnotatio
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Perform git commit with generated message (execSync git commit)" +
         "\nNode: taskCommitCommit",
     },
     ...state.messages,
@@ -373,6 +386,7 @@ async function taskFirstGetPullRequest(state: typeof MastraDaneprojectinstanceAn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Retrieve pull request data from GitHub integration and fetch diff" +
         "\nNode: taskFirstGetPullRequest",
     },
     ...state.messages,
@@ -391,6 +405,7 @@ async function taskFirstMessageGenerator(state: typeof MastraDaneprojectinstance
       role: "system",
       content:
         "You are a new_contributor_messaging." +
+        "\n\nYour task: Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice." +
         "\nNode: taskFirstMessageGenerator",
     },
     ...state.messages,
@@ -409,6 +424,7 @@ async function taskFirstCreateMessage(state: typeof MastraDaneprojectinstanceAnn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Post generated message as GitHub issue comment using github integration" +
         "\nNode: taskFirstCreateMessage",
     },
     ...state.messages,
@@ -427,6 +443,7 @@ async function taskIssueGetIssue(state: typeof MastraDaneprojectinstanceAnnotati
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Retrieve issue and repository labels using GitHub integration" +
         "\nNode: taskIssueGetIssue",
     },
     ...state.messages,
@@ -445,6 +462,7 @@ async function taskIssueLabelIssue(state: typeof MastraDaneprojectinstanceAnnota
       role: "system",
       content:
         "You are a issue_labeler." +
+        "\n\nYour task: Given issue title, body, and available repo labels, propose one or more labels to assign." +
         "\nNode: taskIssueLabelIssue",
     },
     ...state.messages,
@@ -463,6 +481,7 @@ async function taskIssueApplyLabels(state: typeof MastraDaneprojectinstanceAnnot
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Add labels to GitHub issue using integrations client" +
         "\nNode: taskIssueApplyLabels",
     },
     ...state.messages,
@@ -481,6 +500,7 @@ async function taskLinkGetBrokenLinks(state: typeof MastraDaneprojectinstanceAnn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Run linkinator via shell to collect links; parse JSON output" +
         "\nNode: taskLinkGetBrokenLinks",
     },
     ...state.messages,
@@ -499,6 +519,7 @@ async function taskLinkReportBrokenLinks(state: typeof MastraDaneprojectinstance
       role: "system",
       content:
         "You are a link_checker." +
+        "\n\nYour task: Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool." +
         "\nNode: taskLinkReportBrokenLinks",
     },
     ...state.messages,
@@ -517,6 +538,7 @@ async function taskPkgGetPacakgesToPublish(state: typeof MastraDaneprojectinstan
       role: "system",
       content:
         "You are a package_publisher." +
+        "\n\nYour task: Please analyze the following monorepo directories and identify packages that need pnpm publishing:\nCRITICAL: This step is about planning. We do not want to build anything. All packages MUST be placed in the correct order.\n\nPublish Requirements:\n- @mastra/core first, MUST be before any other package\n- all packages in correct dependency order before building\n- Identify packages that have changes requiring a new pnpm publish\n- Include create-mastra in the packages list if changes exist\n- EXCLUDE @mastra/dane from consideration\n\nPlease list all packages that need building grouped by their directory.\nDO NOT NOT USE the 'pnpmBuild' tool during this step." +
         "\nNode: taskPkgGetPacakgesToPublish",
     },
     ...state.messages,
@@ -535,6 +557,7 @@ async function taskPkgAssemblePackages(state: typeof MastraDaneprojectinstanceAn
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Assemble file system paths for the packages reported by the agent and prepare build sets" +
         "\nNode: taskPkgAssemblePackages",
     },
     ...state.messages,
@@ -553,6 +576,7 @@ async function taskPkgBuildPackages(state: typeof MastraDaneprojectinstanceAnnot
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Build packages using pnpmBuild tool for each package path (sequential and parallel phases)" +
         "\nNode: taskPkgBuildPackages",
     },
     ...state.messages,
@@ -571,6 +595,7 @@ async function taskPkgVerifyBuild(state: typeof MastraDaneprojectinstanceAnnotat
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Verify dist artifacts exist for all built packages" +
         "\nNode: taskPkgVerifyBuild",
     },
     ...state.messages,
@@ -589,6 +614,7 @@ async function taskPkgPublishChangeset(state: typeof MastraDaneprojectinstanceAn
       role: "system",
       content:
         "You are a package_publisher." +
+        "\n\nYour task: All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting." +
         "\nNode: taskPkgPublishChangeset",
     },
     ...state.messages,
@@ -607,6 +633,7 @@ async function taskPkgSetLatestDistTag(state: typeof MastraDaneprojectinstanceAn
       role: "system",
       content:
         "You are a package_publisher." +
+        "\n\nYour task: Update npm dist-tag for published packages (agent assisted)" +
         "\nNode: taskPkgSetLatestDistTag",
     },
     ...state.messages,
@@ -625,6 +652,7 @@ async function taskTelStepA1(state: typeof MastraDaneprojectinstanceAnnotation.S
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Create starting message for telephone game" +
         "\nNode: taskTelStepA1",
     },
     ...state.messages,
@@ -643,6 +671,7 @@ async function taskTelStepA2(state: typeof MastraDaneprojectinstanceAnnotation.S
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Prompt user for a message (inquirer input)" +
         "\nNode: taskTelStepA2",
     },
     ...state.messages,
@@ -661,6 +690,7 @@ async function taskTelStepB2(state: typeof MastraDaneprojectinstanceAnnotation.S
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Validate that the input message exists and pass through" +
         "\nNode: taskTelStepB2",
     },
     ...state.messages,
@@ -679,6 +709,7 @@ async function taskTelStepC2(state: typeof MastraDaneprojectinstanceAnnotation.S
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: When user confirms modification, call the haiku model to alter the message. Only return the new message." +
         "\nNode: taskTelStepC2",
     },
     ...state.messages,
@@ -697,6 +728,7 @@ async function taskTelStepD2(state: typeof MastraDaneprojectinstanceAnnotation.S
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: Pass the final message to the next participant or output" +
         "\nNode: taskTelStepD2",
     },
     ...state.messages,

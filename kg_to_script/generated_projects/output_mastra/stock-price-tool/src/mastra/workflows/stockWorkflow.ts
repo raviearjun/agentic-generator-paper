@@ -21,11 +21,17 @@ const taskInit = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({symbol: z.string()}),
   execute: async ({ inputData }) => {
-    // Initialize the Stock Agent before handling requests.
-    // This step uses agent: stockAgent
-    // const result = await stockAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_init not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Initialize the Stock Agent before handling requests.`
+    const result = await stockAgent.generate(prompt)
+    return {
+      ...context,
+      symbol: context.symbol ?? result.text,
+    }
   },
 })
 
@@ -35,11 +41,17 @@ const taskQuery = createStep({
   inputSchema: z.object({symbol: z.string()}),
   outputSchema: z.object({symbol: z.string()}),
   execute: async ({ inputData }) => {
-    // What is the current stock price of Apple (AAPL)?
-    // This step uses agent: stockAgent
-    // const result = await stockAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_query not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `What is the current stock price of Apple (AAPL)?`
+    const result = await stockAgent.generate(prompt)
+    return {
+      ...context,
+      symbol: context.symbol ?? result.text,
+    }
   },
 })
 
@@ -49,12 +61,14 @@ const taskToolCall = createStep({
   inputSchema: z.object({symbol: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price.
-    // This step uses agent: stockAgent
-    // const result = await stockAgent.generate('...')
-    // This step uses tool: stockPricesTool
-    // TODO: Implement step logic
-    throw new Error('task_tool_call not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price.`
+    const result = await stockAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -64,11 +78,14 @@ const taskEnd = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Return the formatted current price to the user.
-    // This step uses agent: stockAgent
-    // const result = await stockAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_end not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Return the formatted current price to the user.`
+    const result = await stockAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

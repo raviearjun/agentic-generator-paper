@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/mastra/index.ts",
   "scripts": {
-    "dev": "tsx src/mastra/index.ts",
+    "dev": "tsx run.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },

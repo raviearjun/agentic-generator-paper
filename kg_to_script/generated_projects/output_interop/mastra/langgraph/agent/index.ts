@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraInstancelocalAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskQueryPantry(state: typeof MastraInstancelocalAnnotation.State
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?" +
         "\nNode: taskQueryPantry",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function taskGenerateText(state: typeof MastraInstancelocalAnnotation.Stat
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?" +
         "\nNode: taskGenerateText",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function taskTextStream(state: typeof MastraInstancelocalAnnotation.State)
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder." +
         "\nNode: taskTextStream",
     },
     ...state.messages,
@@ -89,6 +96,7 @@ async function taskGenerateStream(state: typeof MastraInstancelocalAnnotation.St
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder." +
         "\nNode: taskGenerateStream",
     },
     ...state.messages,
@@ -107,6 +115,7 @@ async function taskTextObject(state: typeof MastraInstancelocalAnnotation.State)
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: I want to make lasagna, can you generate a lasagna recipe for me?" +
         "\nNode: taskTextObject",
     },
     ...state.messages,
@@ -125,6 +134,7 @@ async function taskTextObjectJsonschema(state: typeof MastraInstancelocalAnnotat
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: I want to make lasagna, can you generate a lasagna recipe for me?" +
         "\nNode: taskTextObjectJsonschema",
     },
     ...state.messages,
@@ -143,6 +153,7 @@ async function taskGenerateObject(state: typeof MastraInstancelocalAnnotation.St
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: I want to make lasagna, can you generate a lasagna recipe for me?" +
         "\nNode: taskGenerateObject",
     },
     ...state.messages,
@@ -161,6 +172,7 @@ async function taskStreamObject(state: typeof MastraInstancelocalAnnotation.Stat
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: I want to make lasagna, can you generate a lasagna recipe for me?" +
         "\nNode: taskStreamObject",
     },
     ...state.messages,
@@ -179,6 +191,7 @@ async function taskGenerateStreamObject(state: typeof MastraInstancelocalAnnotat
       role: "system",
       content:
         "You are a Chef." +
+        "\n\nYour task: I want to make lasagna, can you generate a lasagna recipe for me?" +
         "\nNode: taskGenerateStreamObject",
     },
     ...state.messages,

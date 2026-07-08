@@ -16,7 +16,7 @@ const taskChangelogStepA1 = createStep({
   id: 'task_changelog_step_a1',
   description: `Get a git diff and connect to slack; runs git diff via execa`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({Time: z.string(), Structure: z.string()}),
   execute: async ({ inputData }) => {
     // Get a git diff and connect to slack; runs git diff via execa
     // TODO: Implement step logic
@@ -26,15 +26,24 @@ const taskChangelogStepA1 = createStep({
 
 const taskChangelogStepA2 = createStep({
   id: 'task_changelog_step_a2',
-  description: `Generate changelog using the daneChangeLog agent and post to Slack`,
-  inputSchema: z.object({}),
+  description: `Time: recent week`,
+  inputSchema: z.object({Time: z.string(), Structure: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Time: recent week
-    // This step uses agent: daneChangeLog
-    // const result = await daneChangeLog.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_changelog_step_a2 not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Time: recent week
+Git diff to generate from: (git diff from previous step)
+Task:
+1. create a structured narrative changelog that highlights key updates and improvements.
+2. Include what packages were changed
+Structure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure
+Finally send this to the configured slack channel with slack_post_message tool.`
+    const result = await daneChangeLog.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

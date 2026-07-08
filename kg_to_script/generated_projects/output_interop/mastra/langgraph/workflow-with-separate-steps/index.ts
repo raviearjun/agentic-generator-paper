@@ -3,7 +3,11 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
 const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -22,6 +26,7 @@ async function taskStepOne(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: Doubles triggerData.inputValue and returns an object with { doubledValue }." +
         "\nNode: taskStepOne",
     },
     ...state.messages,
@@ -40,6 +45,7 @@ async function taskStepThree(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: Triples triggerData.inputValue and returns an object with { tripledValue }." +
         "\nNode: taskStepThree",
     },
     ...state.messages,
@@ -58,6 +64,7 @@ async function taskStepTwo(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1." +
         "\nNode: taskStepTwo",
     },
     ...state.messages,
@@ -76,6 +83,7 @@ async function taskStepFour(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even." +
         "\nNode: taskStepFour",
     },
     ...state.messages,

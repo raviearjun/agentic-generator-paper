@@ -1,8 +1,0 @@
-chef_agent:
-  role: Chef
-  goal: Chef
-  backstory: Agent-level instructions used as the system persona for the Chef Agent.
-memory_agent:
-  role: Memory
-  goal: Memory
-  backstory: Agent-level instructions used as the system persona for the Memory Agent.

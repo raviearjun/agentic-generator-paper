@@ -9,6 +9,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -17,7 +18,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_research
         # Workflow Edge: task_research -> task_project_understanding
@@ -29,8 +37,11 @@ async def main():
         task_prompt = """Conduct a thorough research about the customer and competitors in the context of {customer_domain}.
 Make sure you find any interesting and relevant information given the current year is 2024.
 We are working with them on the following project: {project_description}. """
-        # Execute via the assigned agent: lead_market_analyst
-        result = await lead_market_analyst.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: lead_market_analyst, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await lead_market_analyst.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -48,8 +59,11 @@ We are working with them on the following project: {project_description}. """
 
         task_prompt = """Understand the project details and the target audience for {project_description}.
 Review any provided materials and gather additional information as needed. """
-        # Execute via the assigned agent: chief_marketing_strategist
-        result = await chief_marketing_strategist.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chief_marketing_strategist, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chief_marketing_strategist.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -67,8 +81,11 @@ Review any provided materials and gather additional information as needed. """
 
         task_prompt = """Formulate a comprehensive marketing strategy for the project {project_description} of the customer {customer_domain}.
 Use the insights from the research task and the project understanding task to create a high-quality strategy. """
-        # Execute via the assigned agent: chief_marketing_strategist
-        result = await chief_marketing_strategist.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: chief_marketing_strategist, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await chief_marketing_strategist.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -86,8 +103,11 @@ Use the insights from the research task and the project understanding task to cr
 
         task_prompt = """Develop creative marketing campaign ideas for {project_description}.
 Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy. """
-        # Execute via the assigned agent: creative_content_creator
-        result = await creative_content_creator.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: creative_content_creator, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await creative_content_creator.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -104,8 +124,11 @@ Ensure the ideas are innovative, engaging, and aligned with the overall marketin
 
         task_prompt = """Create marketing copies based on the approved campaign ideas for {project_description}.
 Ensure the copies are compelling, clear, and tailored to the target audience. """
-        # Execute via the assigned agent: creative_content_creator
-        result = await creative_content_creator.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: creative_content_creator, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await creative_content_creator.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

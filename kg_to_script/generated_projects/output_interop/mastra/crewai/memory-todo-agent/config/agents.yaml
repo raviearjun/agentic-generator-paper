@@ -1,4 +1,0 @@
-todo_agent:
-  role: todolist manager
-  goal: todolist manager
-  backstory: You are a todolist manager.

@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraInstanceycagentAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function fetchYcDirectoryTask(state: typeof MastraInstanceycagentAnnotatio
       role: "system",
       content:
         "You are a directory." +
+        "\n\nYour task: Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool." +
         "\nNode: fetchYcDirectoryTask",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function processYcDataTask(state: typeof MastraInstanceycagentAnnotation.S
       role: "system",
       content:
         "You are a directory." +
+        "\n\nYour task: Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary." +
         "\nNode: processYcDataTask",
     },
     ...state.messages,

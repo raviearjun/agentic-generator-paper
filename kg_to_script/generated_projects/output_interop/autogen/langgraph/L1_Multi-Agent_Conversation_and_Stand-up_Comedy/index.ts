@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const StandupDuoAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function taskGuodegangInitiateChat1(state: typeof StandupDuoAnnotation.Sta
       role: "system",
       content:
         "You are a 逗哏 / stand-up comedian (performer)." +
+        "\n\nYour task: message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; recipient=于谦; max_turns=6" +
         "\nNode: taskGuodegangInitiateChat1",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function taskGuodegangInitiateChat2(state: typeof StandupDuoAnnotation.Sta
       role: "system",
       content:
         "You are a 逗哏 / stand-up comedian (performer)." +
+        "\n\nYour task: message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; summary_method="reflection_with_llm"; summary_prompt="简洁的总结下这场相声表演。"" +
         "\nNode: taskGuodegangInitiateChat2",
     },
     ...state.messages,
@@ -82,6 +88,7 @@ async function taskGuodegangSendFollowup(state: typeof StandupDuoAnnotation.Stat
       role: "system",
       content:
         "You are a 逗哏 / stand-up comedian (performer)." +
+        "\n\nYour task: message='我们刚才的相声在讲什么?'; recipient=于谦" +
         "\nNode: taskGuodegangSendFollowup",
     },
     ...state.messages,

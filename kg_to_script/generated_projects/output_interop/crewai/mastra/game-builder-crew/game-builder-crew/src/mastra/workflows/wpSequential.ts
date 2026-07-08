@@ -16,43 +16,77 @@ import { seniorEngineerAgent, qaEngineerAgent, chiefQaEngineerAgent } from '../a
 
 const taskCode = createStep({
   id: 'task_code',
-  description: `code_task from config/tasks.yaml`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `You will create a game using python, these are the instructions:`,
+  inputSchema: z.object({game: z.string()}),
+  outputSchema: z.object({game: z.string()}),
   execute: async ({ inputData }) => {
-    // You will create a game using python, these are the instructions:
-    // This step uses agent: seniorEngineerAgent
-    // const result = await seniorEngineerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_code not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `You will create a game using python, these are the instructions:
+
+Instructions
+# ------------
+${context.game ?? ''}`
+    const result = await seniorEngineerAgent.generate(prompt)
+    return {
+      ...context,
+      game: context.game ?? result.text,
+    }
   },
 })
 
 const taskReview = createStep({
   id: 'task_review',
-  description: `review_task from config/tasks.yaml`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `You will create a game using python, these are the instructions:`,
+  inputSchema: z.object({game: z.string()}),
+  outputSchema: z.object({game: z.string()}),
   execute: async ({ inputData }) => {
-    // You will create a game using python, these are the instructions:
-    // This step uses agent: qaEngineerAgent
-    // const result = await qaEngineerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_review not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `You will create a game using python, these are the instructions:
+
+Instructions
+# ------------
+${context.game ?? ''}
+
+Using the code you got, check for errors. Check for logic errors,
+syntax errors, missing imports, variable declarations, mismatched brackets,
+and security vulnerabilities.`
+    const result = await qaEngineerAgent.generate(prompt)
+    return {
+      ...context,
+      game: context.game ?? result.text,
+    }
   },
 })
 
 const taskEvaluate = createStep({
   id: 'task_evaluate',
-  description: `evaluate_task from config/tasks.yaml`,
-  inputSchema: z.object({}),
+  description: `You are helping create a game using python, these are the instructions:`,
+  inputSchema: z.object({game: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // You are helping create a game using python, these are the instructions:
-    // This step uses agent: chiefQaEngineerAgent
-    // const result = await chiefQaEngineerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_evaluate not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `You are helping create a game using python, these are the instructions:
+
+Instructions
+# ------------
+${context.game ?? ''}
+
+You will look over the code to insure that it is complete and
+does the job that it is supposed to do.`
+    const result = await chiefQaEngineerAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -65,7 +99,7 @@ const taskEvaluate = createStep({
  */
 export const wpSequential = createWorkflow({
   id: 'wp_sequential',
-  inputSchema: z.object({}),
+  inputSchema: z.object({game: z.string()}),
   outputSchema: z.object({}),
   steps: [taskCode, taskReview, taskEvaluate],
 })

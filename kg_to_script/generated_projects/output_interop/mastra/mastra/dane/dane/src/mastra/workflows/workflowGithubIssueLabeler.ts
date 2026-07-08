@@ -26,15 +26,18 @@ const taskIssueGetIssue = createStep({
 
 const taskIssueLabelIssue = createStep({
   id: 'task_issue_label_issue',
-  description: `Use DaneIssueLabeler agent to decide labels for an issue`,
+  description: `Given issue title, body, and available repo labels, propose one or more labels to assign.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Given issue title, body, and available repo labels, propose one or more labels to assign.
-    // This step uses agent: daneIssueLabeler
-    // const result = await daneIssueLabeler.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_issue_label_issue not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given issue title, body, and available repo labels, propose one or more labels to assign.`
+    const result = await daneIssueLabeler.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

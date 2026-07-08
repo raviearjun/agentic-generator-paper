@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const RegistryRegistryMCPServerAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function taskFetchServersFromRegistry(state: typeof RegistryRegistryMCPSer
       role: "system",
       content:
         "You are a mcp-server." +
+        "\n\nYour task: Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing." +
         "\nNode: taskFetchServersFromRegistry",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function taskPostProcessServers(state: typeof RegistryRegistryMCPServerAnn
       role: "system",
       content:
         "You are a mcp-server." +
+        "\n\nYour task: Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available." +
         "\nNode: taskPostProcessServers",
     },
     ...state.messages,
@@ -82,6 +88,7 @@ async function taskFilterServers(state: typeof RegistryRegistryMCPServerAnnotati
       role: "system",
       content:
         "You are a mcp-server." +
+        "\n\nYour task: Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags." +
         "\nNode: taskFilterServers",
     },
     ...state.messages,
@@ -100,6 +107,7 @@ async function taskGetServersFromRegistry(state: typeof RegistryRegistryMCPServe
       role: "system",
       content:
         "You are a mcp-server." +
+        "\n\nYour task: Orchestrate fetching, post-processing, and filtering of servers for a given registryId and optional filters; return final server list or throw on error." +
         "\nNode: taskGetServersFromRegistry",
     },
     ...state.messages,

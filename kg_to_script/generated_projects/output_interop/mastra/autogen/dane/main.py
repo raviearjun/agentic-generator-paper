@@ -13,6 +13,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -21,7 +22,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_changelog_step_a1
         # Workflow Edge: task_changelog_step_a1 -> task_changelog_step_a2
@@ -31,8 +39,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Get a git diff and connect to slack; runs git diff via execa """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -47,9 +58,18 @@ async def main():
         print("Executing step: task_changelog_step_a2")
         print("=" * 80)
 
-        task_prompt = """Generate changelog using the daneChangeLog agent and post to Slack """
-        # Execute via the assigned agent: dane_change_log
-        result = await dane_change_log.run(task=task_prompt)
+        task_prompt = """Time: recent week
+Git diff to generate from: (git diff from previous step)
+Task:
+1. create a structured narrative changelog that highlights key updates and improvements.
+2. Include what packages were changed
+Structure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure
+Finally send this to the configured slack channel with slack_post_message tool. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_change_log, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_change_log.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -66,8 +86,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Prompt user to input a message (inquirer prompt) """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -82,9 +105,12 @@ async def main():
         print("Executing step: task_entry_message_output")
         print("=" * 80)
 
-        task_prompt = """Send user message to Dane agent and stream/generate response """
-        # Execute via the assigned agent: dane
-        result = await dane.run(task=task_prompt)
+        task_prompt = """User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -101,8 +127,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Compute git diff of staged changes via git command """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -119,8 +148,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Read conventional commit spec using fsTool """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -136,9 +168,12 @@ async def main():
         print("Executing step: task_commit_generate_message")
         print("=" * 80)
 
-        task_prompt = """Generate commit message using DaneCommitMessage agent """
-        # Execute via the assigned agent: dane_commit_message
-        result = await dane_commit_message.run(task=task_prompt)
+        task_prompt = """Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_commit_message, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_commit_message.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -155,8 +190,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Prompt human user to confirm commit message via inquirer confirm """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -172,8 +210,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Perform git commit with generated message (execSync git commit) """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -190,8 +231,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Retrieve pull request data from GitHub integration and fetch diff """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -207,9 +251,12 @@ async def main():
         print("Executing step: task_first_message_generator")
         print("=" * 80)
 
-        task_prompt = """Generate contributor welcome message using DaneNewContributor agent using PR title/body/diff and Mastra docs """
-        # Execute via the assigned agent: dane_new_contributor
-        result = await dane_new_contributor.run(task=task_prompt)
+        task_prompt = """Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_new_contributor, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_new_contributor.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -225,8 +272,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Post generated message as GitHub issue comment using github integration """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -243,8 +293,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Retrieve issue and repository labels using GitHub integration """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -260,9 +313,12 @@ async def main():
         print("Executing step: task_issue_label_issue")
         print("=" * 80)
 
-        task_prompt = """Use DaneIssueLabeler agent to decide labels for an issue """
-        # Execute via the assigned agent: dane_issue_labeler
-        result = await dane_issue_labeler.run(task=task_prompt)
+        task_prompt = """Given issue title, body, and available repo labels, propose one or more labels to assign. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_issue_labeler, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_issue_labeler.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -278,8 +334,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Add labels to GitHub issue using integrations client """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -296,8 +355,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Run linkinator via shell to collect links; parse JSON output """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -312,9 +374,12 @@ async def main():
         print("Executing step: task_link_report_broken_links")
         print("=" * 80)
 
-        task_prompt = """Report broken links by generating a message with DaneLinkChecker and posting to Slack """
-        # Execute via the assigned agent: dane_link_checker
-        result = await dane_link_checker.run(task=task_prompt)
+        task_prompt = """Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_link_checker, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_link_checker.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -330,9 +395,23 @@ async def main():
         print("Executing step: task_pkg_get_pacakges_to_publish")
         print("=" * 80)
 
-        task_prompt = """Use DanePackagePublisher agent to analyze repo and list packages requiring publish """
-        # Execute via the assigned agent: dane_package_publisher
-        result = await dane_package_publisher.run(task=task_prompt)
+        task_prompt = """Please analyze the following monorepo directories and identify packages that need pnpm publishing:
+CRITICAL: This step is about planning. We do not want to build anything. All packages MUST be placed in the correct order.
+
+Publish Requirements:
+- @mastra/core first, MUST be before any other package
+- all packages in correct dependency order before building
+- Identify packages that have changes requiring a new pnpm publish
+- Include create-mastra in the packages list if changes exist
+- EXCLUDE @mastra/dane from consideration
+
+Please list all packages that need building grouped by their directory.
+DO NOT NOT USE the 'pnpmBuild' tool during this step. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_package_publisher, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_package_publisher.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -349,8 +428,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Assemble file system paths for the packages reported by the agent and prepare build sets """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -367,8 +449,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Build packages using pnpmBuild tool for each package path (sequential and parallel phases) """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -385,8 +470,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Verify dist artifacts exist for all built packages """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -402,9 +490,12 @@ async def main():
         print("Executing step: task_pkg_publish_changeset")
         print("=" * 80)
 
-        task_prompt = """Use DanePackagePublisher agent to publish changeset (agent generates instructions) and then call pnpmChangesetPublish """
-        # Execute via the assigned agent: dane_package_publisher
-        result = await dane_package_publisher.run(task=task_prompt)
+        task_prompt = """All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_package_publisher, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_package_publisher.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -420,8 +511,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Update npm dist-tag for published packages (agent assisted) """
-        # Execute via the assigned agent: dane_package_publisher
-        result = await dane_package_publisher.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane_package_publisher, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane_package_publisher.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -438,8 +532,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Create starting message for telephone game """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -456,8 +553,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Prompt user for a message (inquirer input) """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -474,8 +574,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Validate that the input message exists and pass through """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -491,9 +594,12 @@ async def main():
         print("Executing step: task_tel_step_c2")
         print("=" * 80)
 
-        task_prompt = """Optionally suspend and ask user to confirm modification; if confirmed, call inline LLM (claude-3-5-haiku) to modify message """
-        # Execute via the assigned agent: dane
-        result = await dane.run(task=task_prompt)
+        task_prompt = """When user confirms modification, call the haiku model to alter the message. Only return the new message. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: dane, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await dane.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -509,8 +615,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Pass the final message to the next participant or output """
-        # Execute via the assigned agent: agent
-        result = await agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

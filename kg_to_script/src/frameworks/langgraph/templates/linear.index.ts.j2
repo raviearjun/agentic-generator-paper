@@ -23,7 +23,11 @@ import { z } from "zod";
 
 const {{ graph_class_name }}Annotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -49,7 +53,15 @@ const {{ tool.var_name }} = tool(
 const {{ agent.var_name }} = async (state: typeof {{ graph_class_name }}Annotation.State) => {
   const model = new {{ "ChatAnthropic" if agent.provider == "anthropic" else "ChatOpenAI" }}({ model: "{{ agent.model_name }}" });
   const response = await model.invoke([
-    { role: "system", content: "{{ agent.prompt | ts_escape }}" },
+    {
+      role: "system",
+      content:
+        "{{ agent.prompt | ts_escape }}"
+{% if nodes and nodes[0].task_description %}
+        + "\n\nYour task: {{ nodes[0].task_description | ts_escape }}"
+{% endif %}
+      ,
+    },
     ...state.messages,
   ]);
   return { messages: [response] };
@@ -67,13 +79,13 @@ const defaultAgent = async (state: typeof {{ graph_class_name }}Annotation.State
 };
 {% endif %}
 
-const graph = new StateGraph({{ graph_class_name }}Annotation)
+const workflow = new StateGraph({{ graph_class_name }}Annotation)
   .addNode("{{ nodes[0].ts_name if nodes else 'chat' }}", {{ agents[0].var_name if agents else 'defaultAgent' }})
   .addEdge(START, "{{ nodes[0].ts_name if nodes else 'chat' }}")
   .addEdge("{{ nodes[0].ts_name if nodes else 'chat' }}", END);
 
-export const agent = graph.compile();
-agent.name = "{{ graph_name | ts_escape }}";
+export const graph = workflow.compile();
+graph.name = "{{ graph_name | ts_escape }}";
 {% for wf_name in workflow_names %}
 // Workflow: {{ wf_name }}
 {% endfor %}

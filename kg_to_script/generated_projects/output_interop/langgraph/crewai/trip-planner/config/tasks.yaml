@@ -1,17 +1,17 @@
 view_accommodations_task:
-  description: Display available accommodations or restaurants to the user and allow
-    selection.
+  description: |
+    List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.
   expected_output: A list of accommodation summary items suitable for a UI carousel/list.
 select_accommodation_task:
   description: |
-    Handle user selection of an accommodation and present detailed view including price breakdown and booking option.
+    When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.
   expected_output: Selected accommodation details and a ready-to-send booking payload.
 confirm_booking_task:
-  description: Prepare order details and invoke the booking tool using the 'book-accommodation'
-    tool call.
+  description: |
+    Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.
   expected_output: Tool call with serialized booking order; subsequent human confirmation
     message.
 booked_confirmation_task:
   description: |
-    Display booking confirmation details returned by the booking tool or show success message if no details returned.
+    Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.
   expected_output: A confirmation view or message; optionally a booking reference.

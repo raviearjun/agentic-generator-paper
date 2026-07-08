@@ -61,6 +61,24 @@ def _create_jinja_env() -> Environment:
     env.filters["ts_escape"] = _ts_escape
     env.filters["ts_comment"] = _ts_comment
 
+    # Custom filter: turn a raw task description into a TS template literal body,
+    # converting CrewAI-style {field_name} placeholders into real `${context.field_name
+    # ?? ''}` interpolations against a step's local `context` object, instead of
+    # leaving them as inert literal text the agent has no real value for.
+    import re as _re
+
+    def _ts_interpolate(s: str, var: str = "context") -> str:
+        if not s:
+            return ""
+        escaped = s.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+        return _re.sub(
+            r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}",
+            lambda m: f"${{{var}.{m.group(1)} ?? ''}}",
+            escaped,
+        )
+
+    env.filters["ts_interpolate"] = _ts_interpolate
+
     # Custom filter: escape for JSON string values
     def _json_escape(s: str) -> str:
         if not s:
@@ -271,6 +289,18 @@ def _vector_config_entries(mem: MemoryModel) -> List[Dict[str, str]]:
 import re
 
 
+def _extract_zod_field_names(schema: Optional[str]) -> List[str]:
+    """Pull top-level field names out of a "z.object({a: z.string(), ...})" string.
+
+    Used to give execute() bodies a concrete list of keys to read/write,
+    since the schema itself is stored as an opaque rendered string, not a
+    structured field list.
+    """
+    if not schema:
+        return []
+    return re.findall(r"(\w+):\s*z\.", schema)
+
+
 def _sanitize_zod_schema(schema: Optional[str]) -> Optional[str]:
     """
     Sanitize Zod schema strings extracted from the KG.
@@ -348,7 +378,8 @@ def generate_project(project: MastraProject, output_dir: str) -> str:
     _generate_tsconfig_json(project, project_dir)
     _generate_env_example(project, project_dir)
     _generate_readme(project, project_dir)
-    
+    _generate_run_ts(project, project_dir)
+
     return str(project_dir)
 
 
@@ -461,6 +492,14 @@ def _generate_workflow_files(project: MastraProject, workflows_dir: Path) -> Non
             wf_input_schema = sanitized_steps[0].input_schema
             wf_output_schema = sanitized_steps[-1].output_schema
 
+        sanitized_steps = [
+            step.model_copy(update={
+                "input_fields": _extract_zod_field_names(step.input_schema),
+                "output_fields": _extract_zod_field_names(step.output_schema),
+            })
+            for step in sanitized_steps
+        ]
+
         workflow_for_render = workflow.model_copy(update={
             "input_schema": wf_input_schema,
             "output_schema": wf_output_schema,
@@ -528,8 +567,9 @@ def _generate_package_json(project: MastraProject, project_dir: Path) -> None:
         project_description=project.description,
         dependencies=dependencies,
         dev_dependencies=dev_dependencies,
+        has_run_ts=bool(project.workflows),
     )
-    
+
     (project_dir / "package.json").write_text(content, encoding="utf-8")
 
 
@@ -645,6 +685,27 @@ def _generate_readme(project: MastraProject, project_dir: Path) -> None:
     )
     
     (project_dir / "README.md").write_text(content, encoding="utf-8")
+
+
+def _generate_run_ts(project: MastraProject, project_dir: Path) -> None:
+    """Generate run.ts - a driver that actually executes the project's workflows."""
+    if not project.workflows:
+        return
+
+    env = _create_jinja_env()
+    template = env.get_template("run.ts.j2")
+
+    workflows_ctx = []
+    for wf in project.workflows:
+        first_step = wf.steps[0] if wf.steps else None
+        seed_fields = (
+            _extract_zod_field_names(_sanitize_zod_schema(first_step.input_schema))
+            if first_step else []
+        )
+        workflows_ctx.append({"var_name": wf.var_name, "seed_fields": seed_fields})
+
+    content = template.render(workflows=workflows_ctx)
+    (project_dir / "run.ts").write_text(content, encoding="utf-8")
 
 
 def _generate_ad_hoc_tasks(project: MastraProject, workflows_dir: Path) -> None:

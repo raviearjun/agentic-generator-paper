@@ -40,9 +40,11 @@ const {{ tool.var_name }} = tool(
 
 {% for route in routes if not route.is_fallback %}
 {% set node_agent = none %}
+{% set node_task_description = "" %}
 {% for node in nodes %}
   {% if node.ts_name == route.target_node %}
     {% set node_agent = agent_by_iri[node.agent_ref] if (node.agent_ref and agent_by_iri and node.agent_ref in agent_by_iri) else none %}
+    {% set node_task_description = node.task_description %}
   {% endif %}
 {% endfor %}
 {% if not node_agent %}
@@ -61,7 +63,16 @@ const {{ tool.var_name }} = tool(
 async function {{ route.target_node }}(state: SupervisorState) {
   const model = new {{ node_model_class }}({ model: "{{ node_model_name | ts_escape }}" });
   const response = await model.invoke([
-    { role: "system", content: "Route: {{ route.route_key }}. {{ node_agent_prompt | ts_escape }}" },
+    {
+      role: "system",
+      content:
+        "Route: {{ route.route_key }}. {{ node_agent_prompt | ts_escape }}" +
+{% if node_task_description %}
+        "\n\nYour task: {{ node_task_description | ts_escape }}",
+{% else %}
+        "",
+{% endif %}
+    },
     ...state.messages,
   ]);
   return { messages: [response] };

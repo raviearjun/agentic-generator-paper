@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskLogCatName(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline expert." +
+        "\\n\\nYour task: Log the cat name provided in the trigger: console.log(\`Hello, \${name} 🐈\`)" +
         "\\nNode: taskLogCatName",
     },
     ...state.messages,

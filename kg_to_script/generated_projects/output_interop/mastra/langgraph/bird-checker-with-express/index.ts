@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const BirdCheckerSystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function getRandomImageTask(state: typeof BirdCheckerSystemAnnotation.Stat
       role: "system",
       content:
         "You are a bird-checker." +
+        "\n\nYour task: Fetch a random image from Unsplash matching the provided query parameter (wildlife | bird | feathers | flying). Return imageUrl, photographerName, and photographerProfile." +
         "\nNode: getRandomImageTask",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function imageMetadataTask(state: typeof BirdCheckerSystemAnnotation.State
       role: "system",
       content:
         "You are a bird-checker." +
+        "\n\nYour task: View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student." +
         "\nNode: imageMetadataTask",
     },
     ...state.messages,

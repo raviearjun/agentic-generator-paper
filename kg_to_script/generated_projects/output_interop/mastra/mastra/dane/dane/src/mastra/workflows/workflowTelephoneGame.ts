@@ -50,15 +50,18 @@ const taskTelStepB2 = createStep({
 
 const taskTelStepC2 = createStep({
   id: 'task_tel_step_c2',
-  description: `Optionally suspend and ask user to confirm modification; if confirmed, call inline LLM (claude-3-5-haiku) to modify message`,
+  description: `When user confirms modification, call the haiku model to alter the message. Only return the new message.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // When user confirms modification, call the haiku model to alter the message. Only return the new message.
-    // This step uses agent: dane
-    // const result = await dane.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_tel_step_c2 not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `When user confirms modification, call the haiku model to alter the message. Only return the new message.`
+    const result = await dane.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const WriterStateGraphTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskPrepare(state: typeof WriterStateGraphTeamAnnotation.State) {
       role: "system",
       content:
         "You are a writer." +
+        "\n\nYour task: Prepare a text document for the user with a short title and short description for browsing purposes. Can be also used when creating a new version of the document." +
         "\nNode: taskPrepare",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function taskWriter(state: typeof WriterStateGraphTeamAnnotation.State) {
       role: "system",
       content:
         "You are a writer." +
+        "\n\nYour task: Write a text document based on the user's request. Only output the content, do not ask any additional questions. If there is selected text in state.context.writer.selected, include that context in the generation." +
         "\nNode: taskWriter",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function taskSuggestions(state: typeof WriterStateGraphTeamAnnotation.Stat
       role: "system",
       content:
         "You are a writer." +
+        "\n\nYour task: Invoke the model on the conversation messages (including tool finished signals) to produce the finish/suggestions message; append the resulting model output to the message stream." +
         "\nNode: taskSuggestions",
     },
     ...state.messages,

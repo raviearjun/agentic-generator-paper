@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_step_one
         # Workflow Edge: task_step_one -> task_step_two
@@ -25,8 +33,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Doubles the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -43,8 +54,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Adds 1 to the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -61,8 +75,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Squares the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -79,8 +96,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Gives the square root of the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -96,8 +116,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Triples the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -114,9 +137,12 @@ async def main():
         print("Executing step: task_par_step_one")
         print("=" * 80)
 
-        task_prompt = """Doubles the input value (parallel workflow start) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Doubles the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -132,9 +158,12 @@ async def main():
         print("Executing step: task_par_step_six")
         print("=" * 80)
 
-        task_prompt = """Logs the input value and returns rawText """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Logs the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -150,9 +179,12 @@ async def main():
         print("Executing step: task_par_step_two")
         print("=" * 80)
 
-        task_prompt = """Adds 1 to the input value (parallel branch) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Adds 1 to the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -167,9 +199,12 @@ async def main():
         print("Executing step: task_par_step_three")
         print("=" * 80)
 
-        task_prompt = """Squares the input value (parallel branch end) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Squares the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -186,9 +221,12 @@ async def main():
         print("Executing step: task_br_step_one")
         print("=" * 80)
 
-        task_prompt = """Doubles the input value (branched workflow start) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Doubles the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -205,8 +243,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Adds 1 to the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -223,8 +264,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Gives the square root of the input value """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -240,9 +284,12 @@ async def main():
         print("Executing step: task_br_step_three")
         print("=" * 80)
 
-        task_prompt = """Squares the input value (parallel branch) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Squares the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -257,9 +304,12 @@ async def main():
         print("Executing step: task_br_step_five")
         print("=" * 80)
 
-        task_prompt = """Triples the input value (branch join) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Triples the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -275,9 +325,12 @@ async def main():
         print("Executing step: task_cyc_step_one")
         print("=" * 80)
 
-        task_prompt = """Doubles the input value (cyclical workflow start) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Doubles the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -293,9 +346,12 @@ async def main():
         print("Executing step: task_cyc_step_two")
         print("=" * 80)
 
-        task_prompt = """Adds 1 to the input value (cyclical workflow) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Adds 1 to the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -311,9 +367,12 @@ async def main():
         print("Executing step: task_cyc_step_three")
         print("=" * 80)
 
-        task_prompt = """Squares the input value when condition met (doubledValue == 10) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Squares the input value """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -328,9 +387,12 @@ async def main():
         print("Executing step: task_cyc_step_one_loop")
         print("=" * 80)
 
-        task_prompt = """Re-invocation of stepOne under condition (doubledValue == 12) """
-        # Execute via the assigned agent: cat_one
-        result = await cat_one.run(task=task_prompt)
+        task_prompt = """Doubles the input value (loop invocation) """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: cat_one, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await cat_one.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

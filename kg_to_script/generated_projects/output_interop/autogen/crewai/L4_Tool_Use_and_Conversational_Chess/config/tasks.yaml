@@ -1,18 +1,17 @@
 task_initiate_chat:
-  description: player_black initiates the game chat to start a move sequence.
+  description: 让我们下棋吧，该你走了！
   expected_output: Agent should start by calling get_legal_moves() or propose a move.
 task_board_proxy_summary_to_white:
-  description: Board proxy provides last message summary to the white player before
-    the player's turn.
+  description: Summary of last board state and last move (provided by board proxy).
   expected_output: A short summary that helps the player decide the next move.
 task_get_legal_moves:
-  description: Player requests the list of legal moves for selection.
+  description: 调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。
   expected_output: List of UCI moves (comma-separated) e.g., e2e4,g1f3,...
 task_make_move:
-  description: Player makes a selected move by calling make_move(move).
+  description: 选择一个合法走法并调用 make_move(move) 来执行该步棋。
   expected_output: Confirmation string describing the move and piece moved.
 task_check_made_move:
-  description: Board proxy evaluates the made_move flag to determine if the nested
-    chat should terminate.
+  description: |
+    Call check_made_move(msg) to determine if a move has been executed; if true, end nested chat iteration.
   expected_output: Boolean-like indicator (True when a move was made) in code; used
     as termination condition.

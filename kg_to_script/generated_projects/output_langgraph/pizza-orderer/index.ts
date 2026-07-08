@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const OrderPizzaGraphTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function findStoreTask(state: typeof OrderPizzaGraphTeamAnnotation.State) 
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them." +
         "\nNode: findStoreTask",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function orderPizzaTask(state: typeof OrderPizzaGraphTeamAnnotation.State)
       role: "system",
       content:
         "You are a assistant." +
+        "\n\nYour task: You are a helpful AI assistant, tasked with placing an order for a pizza for the user." +
         "\nNode: orderPizzaTask",
     },
     ...state.messages,

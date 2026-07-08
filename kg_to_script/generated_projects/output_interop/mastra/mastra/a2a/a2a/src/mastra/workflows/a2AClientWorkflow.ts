@@ -16,141 +16,198 @@ import { agentIdConstructorParameter } from '../agents'
 
 const taskGetAgentCard = createStep({
   id: 'task_get_agent_card',
-  description: `Retrieve agent card metadata (getAgentCard / getExtendedAgentCard).`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard.`,
+  inputSchema: z.object({agentId: z.string()}),
+  outputSchema: z.object({Send_a_message_to_the_agent_using_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_get_agent_card not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Request agent card metadata via GET /.well-known/${context.agentId ?? ''}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      Send_a_message_to_the_agent_using_JSON: context.Send_a_message_to_the_agent_using_JSON ?? result.text,
+    }
   },
 })
 
 const taskSendMessage = createStep({
   id: 'task_send_message',
-  description: `Send a single message to an agent and receive a message or task response.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Send a message to the agent using JSON-RPC method message/send with MessageSendParams.`,
+  inputSchema: z.object({Send_a_message_to_the_agent_using_JSON: z.string()}),
+  outputSchema: z.object({stream_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Send a message to the agent using JSON-RPC method message/send with MessageSendParams.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_send_message not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Send a message to the agent using JSON-RPC method message/send with MessageSendParams.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      stream_JSON: context.stream_JSON ?? result.text,
+    }
   },
 })
 
 const taskSendMessageStream = createStep({
   id: 'task_send_message_stream',
-  description: `Initiate a streaming message to receive real-time task events.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.`,
+  inputSchema: z.object({stream_JSON: z.string()}),
+  outputSchema: z.object({get_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_send_message_stream not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      get_JSON: context.get_JSON ?? result.text,
+    }
   },
 })
 
 const taskGetTask = createStep({
   id: 'task_get_task',
-  description: `Query status and result of an existing task.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result.`,
+  inputSchema: z.object({get_JSON: z.string()}),
+  outputSchema: z.object({cancel_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_get_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      cancel_JSON: context.cancel_JSON ?? result.text,
+    }
   },
 })
 
 const taskCancelTask = createStep({
   id: 'task_cancel_task',
-  description: `Cancel a running task for the agent.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task.`,
+  inputSchema: z.object({cancel_JSON: z.string()}),
+  outputSchema: z.object({resubscribe_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_cancel_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      resubscribe_JSON: context.resubscribe_JSON ?? result.text,
+    }
   },
 })
 
 const taskResubscribeTask = createStep({
   id: 'task_resubscribe_task',
-  description: `Resume a previously started task stream to receive ongoing updates.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.`,
+  inputSchema: z.object({resubscribe_JSON: z.string()}),
+  outputSchema: z.object({set_JSON: z.object({})}),
   execute: async ({ inputData }) => {
-    // Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_resubscribe_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      set_JSON: context.set_JSON ?? result.text,
+    }
   },
 })
 
 const taskSetPushNotificationConfig = createStep({
   id: 'task_set_push_notification_config',
-  description: `Set push notification configuration for a task.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object.`,
+  inputSchema: z.object({set_JSON: z.object({})}),
+  outputSchema: z.object({get_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_set_push_notification_config not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      get_JSON: context.get_JSON ?? result.text,
+    }
   },
 })
 
 const taskGetPushNotificationConfig = createStep({
   id: 'task_get_push_notification_config',
-  description: `Get push notification configuration for a task.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.`,
+  inputSchema: z.object({get_JSON: z.string()}),
+  outputSchema: z.object({list_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_get_push_notification_config not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      list_JSON: context.list_JSON ?? result.text,
+    }
   },
 })
 
 const taskListPushNotificationConfig = createStep({
   id: 'task_list_push_notification_config',
-  description: `List push notification configurations.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.`,
+  inputSchema: z.object({list_JSON: z.string()}),
+  outputSchema: z.object({delete_JSON: z.string()}),
   execute: async ({ inputData }) => {
-    // Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_list_push_notification_config not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return {
+      ...context,
+      delete_JSON: context.delete_JSON ?? result.text,
+    }
   },
 })
 
 const taskDeletePushNotificationConfig = createStep({
   id: 'task_delete_push_notification_config',
-  description: `Delete a push notification configuration for a task.`,
-  inputSchema: z.object({}),
+  description: `Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config.`,
+  inputSchema: z.object({delete_JSON: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config.
-    // This step uses agent: agentIdConstructorParameter
-    // const result = await agentIdConstructorParameter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_delete_push_notification_config not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config.`
+    const result = await agentIdConstructorParameter.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -163,7 +220,7 @@ const taskDeletePushNotificationConfig = createStep({
  */
 export const a2AClientWorkflow = createWorkflow({
   id: 'a2_a_client_workflow',
-  inputSchema: z.object({}),
+  inputSchema: z.object({agentId: z.string()}),
   outputSchema: z.object({}),
   steps: [taskGetAgentCard, taskSendMessage, taskSendMessageStream, taskGetTask, taskCancelTask, taskResubscribeTask, taskSetPushNotificationConfig, taskGetPushNotificationConfig, taskListPushNotificationConfig, taskDeletePushNotificationConfig],
 })

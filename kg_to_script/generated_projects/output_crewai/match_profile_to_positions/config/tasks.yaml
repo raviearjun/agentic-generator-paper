@@ -1,6 +1,9 @@
 task_read_cv:
   description: |
-    Extract relevant information from the given CV: professional summary, technical skills, work history, education, key achievements.
+    Extract relevant information from the given CV. Focus on skills, experience, education, and key achievements.
+    Ensure to capture the candidate's professional summary, technical skills, work history, and educational background.
+
+    CV file: {path_to_cv}
   expected_output: |
     A structured summary of the CV, including:
     - Professional Summary
@@ -10,7 +13,12 @@ task_read_cv:
     - Key Achievements
 task_match_cv:
   description: |
-    Match the CV to the job opportunities based on skills, experience, and key achievements; produce a ranked list.
+    Match the CV to the job opportunities based on skills, experience, and key achievements.
+    Evaluate how well the candidate's profile fits each job description, focusing on the alignment of skills, work history, and key achievements with the job requirements.
+
+    Jobs CSV file: {path_to_jobs_csv}
+
+    CV file: {path_to_cv}
   expected_output: |
     A ranked list of job opportunities that best match the CV, including:
     - Job Title

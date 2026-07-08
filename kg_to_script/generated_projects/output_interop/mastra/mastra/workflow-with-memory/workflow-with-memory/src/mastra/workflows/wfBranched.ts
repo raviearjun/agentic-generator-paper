@@ -16,15 +16,21 @@ import { catOne } from '../agents'
 
 const taskBrStepOne = createStep({
   id: 'task_br_step_one',
-  description: `Doubles the input value (branched workflow start)`,
+  description: `Doubles the input value`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
-    // Doubles the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_br_step_one not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Doubles the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToIncrement: context.valueToIncrement ?? result.text,
+    }
   },
 })
 
@@ -34,11 +40,17 @@ const taskBrStepTwo = createStep({
   inputSchema: z.object({valueToIncrement: z.number()}),
   outputSchema: z.object({valueToRoot: z.number()}),
   execute: async ({ inputData }) => {
-    // Adds 1 to the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_br_step_two not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Adds 1 to the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToRoot: context.valueToRoot ?? result.text,
+    }
   },
 })
 
@@ -48,39 +60,54 @@ const taskBrStepFour = createStep({
   inputSchema: z.object({valueToRoot: z.number()}),
   outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
-    // Gives the square root of the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_br_step_four not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Gives the square root of the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToSquare: context.valueToSquare ?? result.text,
+    }
   },
 })
 
 const taskBrStepThree = createStep({
   id: 'task_br_step_three',
-  description: `Squares the input value (parallel branch)`,
+  description: `Squares the input value`,
   inputSchema: z.object({valueToSquare: z.number()}),
   outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
-    // Squares the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_br_step_three not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Squares the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      inputValue: context.inputValue ?? result.text,
+    }
   },
 })
 
 const taskBrStepFive = createStep({
   id: 'task_br_step_five',
-  description: `Triples the input value (branch join)`,
+  description: `Triples the input value`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Triples the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_br_step_five not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Triples the input value`
+    const result = await catOne.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

@@ -34,11 +34,17 @@ const birdCheckTask = createStep({
   inputSchema: z.object({image: z.string()}),
   outputSchema: z.object({bird: z.boolean()}),
   execute: async ({ inputData }) => {
-    // view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student
-    // This step uses agent: birdAgent
-    // const result = await birdAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('bird_check_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student`
+    const result = await birdAgent.generate(prompt)
+    return {
+      ...context,
+      bird: context.bird ?? result.text,
+    }
   },
 })
 

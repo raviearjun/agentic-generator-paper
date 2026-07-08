@@ -1,8 +1,0 @@
-weather_agent:
-  role: weather assistant
-  goal: weather assistant
-  backstory: You are a weather assistant.
-planning_agent:
-  role: LLM Agent
-  goal: LLM Agent
-  backstory: You are a LLM Agent.

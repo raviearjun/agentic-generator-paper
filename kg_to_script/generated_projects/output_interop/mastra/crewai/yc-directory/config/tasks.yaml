@@ -1,9 +1,10 @@
 fetch_yc_directory_task:
-  description: Task to retrieve the YC directory dataset using the yc-directory tool.
+  description: |
+    Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.
   expected_output: |
     Array of objects with fields: name (string), longDescription (string), tags (string), industries (string), batch (string).
 process_yc_data_task:
   description: |
-    Task to process/format the YC directory data for consumption by downstream callers (e.g., filtering, adding batch metadata).
+    Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.
   expected_output: A list of formatted company summaries including name, batch, industries,
     and a one-sentence summary.

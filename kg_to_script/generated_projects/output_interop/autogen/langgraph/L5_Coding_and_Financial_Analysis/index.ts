@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const CodingandFinancialAnalysisCrewAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -57,6 +61,7 @@ async function taskPlotYtdV1(state: typeof CodingandFinancialAnalysisCrewAnnotat
       role: "system",
       content:
         "You are a Code Executor." +
+        "\n\nYour task: 今天是 {today}. 创建图表，显示 NVDA 和 TLSA 的股票收益。确保代码位于标记代码块中，并将图表保存到文件 ytd_stock_gains.png。" +
         "\nNode: taskPlotYtdV1",
     },
     ...state.messages,
@@ -75,6 +80,7 @@ async function taskPlotYtdV2(state: typeof CodingandFinancialAnalysisCrewAnnotat
       role: "system",
       content:
         "You are a Code Executor." +
+        "\n\nYour task: Today is {today}. Download the stock prices YTD for NVDA and TSLA and create a plot. Make sure the code is in markdown code block and save the figure to a file stock_prices_YTD_plot.png." +
         "\nNode: taskPlotYtdV2",
     },
     ...state.messages,

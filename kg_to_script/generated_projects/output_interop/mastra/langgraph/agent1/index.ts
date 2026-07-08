@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastraClientSystemAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function taskProcessRequest(state: typeof MastraClientSystemAnnotation.Sta
       role: "system",
       content:
         "You are a client-wrapper." +
+        "\n\nYour task: Process incoming generate/stream request: validate params, prepare requestContext and clientTools, and forward to server endpoints (/agents/{agentId}/generate or /agents/{agentId}/stream)." +
         "\nNode: taskProcessRequest",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function taskExecuteClientTool(state: typeof MastraClientSystemAnnotation.
       role: "system",
       content:
         "You are a client-wrapper." +
+        "\n\nYour task: Handle tool-call finish reason: locate pending client tool calls, execute \`clientTool.execute\`, attach observability data, synthesize tool-result chunks, and continue the stream/recursion as needed." +
         "\nNode: taskExecuteClientTool",
     },
     ...state.messages,
@@ -82,6 +88,7 @@ async function taskReturnResponse(state: typeof MastraClientSystemAnnotation.Sta
       role: "system",
       content:
         "You are a client-wrapper." +
+        "\n\nYour task: Finalize and return the response stream to the client; close controller when no client-tool continuation is required, or recursively continue the stream if client-tools were executed." +
         "\nNode: taskReturnResponse",
     },
     ...state.messages,

@@ -25,7 +25,20 @@ def _create_jinja_env() -> Environment:
     def _ts_escape(text: str) -> str:
         if not text:
             return ""
-        return text.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+        # Escape literal newlines/carriage returns too: this text is embedded
+        # in double-quoted string literals (not just backtick template
+        # literals), which cannot contain a raw newline — and multi-paragraph
+        # KG text (e.g. task descriptions) frequently has one, unlike the
+        # short single-line agent prompts this filter originally only had to
+        # handle.
+        return (
+            text.replace("\\", "\\\\")
+            .replace("`", "\\`")
+            .replace("${", "\\${")
+            .replace("\r\n", "\\n")
+            .replace("\n", "\\n")
+            .replace("\r", "\\n")
+        )
 
     env.filters["ts_escape"] = _ts_escape
     return env
@@ -36,6 +49,23 @@ def _to_pascal(name: str) -> str:
     if not chunks:
         return "Graph"
     return "".join(c[:1].upper() + c[1:] for c in chunks)
+
+
+def _collect_seed_fields(project: LangGraphProject) -> List[str]:
+    """Collect distinct {placeholder} field names across all node task descriptions.
+
+    Used to scaffold run.ts's `inputs` object so the user has a concrete list
+    of fields to fill in (mirroring the source project's real input variables,
+    e.g. CrewAI's inputs.yaml keys) instead of an empty, unusable object.
+    """
+    seen: List[str] = []
+    seen_set = set()
+    for node in project.nodes:
+        for name in re.findall(r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}", node.task_description or ""):
+            if name not in seen_set:
+                seen_set.add(name)
+                seen.append(name)
+    return seen
 
 
 def _build_common_context(project: LangGraphProject) -> Dict[str, Any]:
@@ -78,6 +108,7 @@ def _build_common_context(project: LangGraphProject) -> Dict[str, Any]:
         "router_node_name": project.router_node_name,
         "start_node_name": project.start_node_name,
         "workflow_names": project.workflow_names,
+        "seed_fields": _collect_seed_fields(project),
     }
 
 
@@ -119,7 +150,7 @@ def _write_base_files(output_dir: str, project: LangGraphProject) -> None:
         "private": True,
         "type": "module",
         "scripts": {
-            "dev": "tsx index.ts",
+            "dev": "tsx run.ts",
             "typecheck": "tsc --noEmit",
         },
         "dependencies": dependencies,
@@ -202,6 +233,9 @@ def generate_project(project: LangGraphProject, output_dir: str) -> str:
         with open(os.path.join(nodes_dir, "general-input.ts"), "w", encoding="utf-8") as f:
             f.write(general_template.render(**ctx).strip() + "\n")
 
+    run_template = env.get_template("run.ts.j2")
+    with open(os.path.join(output_dir, "run.ts"), "w", encoding="utf-8") as f:
+        f.write(run_template.render(**ctx).strip() + "\n")
 
     _write_base_files(output_dir, project)
 

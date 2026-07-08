@@ -16,57 +16,78 @@ import { catOne } from '../agents'
 
 const taskCycStepOne = createStep({
   id: 'task_cyc_step_one',
-  description: `Doubles the input value (cyclical workflow start)`,
+  description: `Doubles the input value`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
-    // Doubles the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_cyc_step_one not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Doubles the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToIncrement: context.valueToIncrement ?? result.text,
+    }
   },
 })
 
 const taskCycStepTwo = createStep({
   id: 'task_cyc_step_two',
-  description: `Adds 1 to the input value (cyclical workflow)`,
+  description: `Adds 1 to the input value`,
   inputSchema: z.object({valueToIncrement: z.number()}),
   outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
-    // Adds 1 to the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_cyc_step_two not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Adds 1 to the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      valueToSquare: context.valueToSquare ?? result.text,
+    }
   },
 })
 
 const taskCycStepThree = createStep({
   id: 'task_cyc_step_three',
-  description: `Squares the input value when condition met (doubledValue == 10)`,
+  description: `Squares the input value`,
   inputSchema: z.object({valueToSquare: z.number()}),
   outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
-    // Squares the input value
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_cyc_step_three not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Squares the input value`
+    const result = await catOne.generate(prompt)
+    return {
+      ...context,
+      inputValue: context.inputValue ?? result.text,
+    }
   },
 })
 
 const taskCycStepOneLoop = createStep({
   id: 'task_cyc_step_one_loop',
-  description: `Re-invocation of stepOne under condition (doubledValue == 12)`,
+  description: `Doubles the input value (loop invocation)`,
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Doubles the input value (loop invocation)
-    // This step uses agent: catOne
-    // const result = await catOne.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_cyc_step_one_loop not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Doubles the input value (loop invocation)`
+    const result = await catOne.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

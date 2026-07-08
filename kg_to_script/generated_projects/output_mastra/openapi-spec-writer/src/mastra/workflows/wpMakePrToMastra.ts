@@ -19,16 +19,18 @@ import { toolAddToGithub } from '../tools'
 
 const taskAddToGithub = createStep({
   id: 'task_add_to_github',
-  description: `Take a YAML blob, ask the agent to format it, then create branch, commit files and open a PR via the GitHub client.`,
+  description: `Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences.
-    // This step uses agent: openapiSpecGenAgent
-    // const result = await openapiSpecGenAgent.generate('...')
-    // This step uses tool: toolAddToGithub
-    // TODO: Implement step logic
-    throw new Error('task_add_to_github not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences.`
+    const result = await openapiSpecGenAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

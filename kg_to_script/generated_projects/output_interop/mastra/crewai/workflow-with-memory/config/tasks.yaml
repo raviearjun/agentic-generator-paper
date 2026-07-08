@@ -2,53 +2,53 @@ task_step_one:
   description: Doubles the input value
   expected_output: doubledValue
 task_par_step_one:
-  description: Doubles the input value (parallel workflow start)
+  description: Doubles the input value
   expected_output: doubledValue
 task_br_step_one:
-  description: Doubles the input value (branched workflow start)
+  description: Doubles the input value
   expected_output: doubledValue
 task_cyc_step_one:
-  description: Doubles the input value (cyclical workflow start)
+  description: Doubles the input value
   expected_output: doubledValue
 task_step_two:
   description: Adds 1 to the input value
   expected_output: incrementedValue
 task_par_step_six:
-  description: Logs the input value and returns rawText
+  description: Logs the input value
   expected_output: rawText
 task_br_step_two:
   description: Adds 1 to the input value
   expected_output: incrementedValue
 task_cyc_step_two:
-  description: Adds 1 to the input value (cyclical workflow)
+  description: Adds 1 to the input value
   expected_output: incrementedValue
 task_step_three:
   description: Squares the input value
   expected_output: squaredValue
 task_par_step_two:
-  description: Adds 1 to the input value (parallel branch)
+  description: Adds 1 to the input value
   expected_output: incrementedValue
 task_br_step_four:
   description: Gives the square root of the input value
   expected_output: rootValue
 task_cyc_step_three:
-  description: Squares the input value when condition met (doubledValue == 10)
+  description: Squares the input value
   expected_output: squaredValue
 task_step_four:
   description: Gives the square root of the input value
   expected_output: rootValue
 task_par_step_three:
-  description: Squares the input value (parallel branch end)
+  description: Squares the input value
   expected_output: squaredValue
 task_br_step_three:
-  description: Squares the input value (parallel branch)
+  description: Squares the input value
   expected_output: squaredValue
 task_cyc_step_one_loop:
-  description: Re-invocation of stepOne under condition (doubledValue == 12)
+  description: Doubles the input value (loop invocation)
   expected_output: doubledValue
 task_step_five:
   description: Triples the input value
   expected_output: tripledValue
 task_br_step_five:
-  description: Triples the input value (branch join)
+  description: Triples the input value
   expected_output: tripledValue

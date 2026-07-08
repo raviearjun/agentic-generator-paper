@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: open_buy_ui_task
         # Workflow Edge: open_buy_ui_task -> execute_purchase_task
@@ -24,9 +32,12 @@ async def main():
         print("Executing step: open_buy_ui_task")
         print("=" * 80)
 
-        task_prompt = """Prepare and present the buy stock UI to the user. """
-        # Execute via the assigned agent: trade_agent
-        result = await trade_agent.run(task=task_prompt)
+        task_prompt = """Open the buy stock user interface for the specified ticker and prefill price information. Expected output: UI displayed and ready for user input. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trade_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trade_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -42,9 +53,12 @@ async def main():
         print("Executing step: execute_purchase_task")
         print("=" * 80)
 
-        task_prompt = """Execute the purchase by invoking the buy-stock tool with purchaseDetails. """
-        # Execute via the assigned agent: trade_agent
-        result = await trade_agent.run(task=task_prompt)
+        task_prompt = """Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trade_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trade_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -59,9 +73,12 @@ async def main():
         print("Executing step: confirm_purchase_task")
         print("=" * 80)
 
-        task_prompt = """Display purchase confirmation to the user including executed quantity and price. """
-        # Execute via the assigned agent: trade_agent
-        result = await trade_agent.run(task=task_prompt)
+        task_prompt = """Present the purchase confirmation message to the user, showing ticker, quantity, price, and total cost. Expected output: confirmation message shown in UI. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trade_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trade_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

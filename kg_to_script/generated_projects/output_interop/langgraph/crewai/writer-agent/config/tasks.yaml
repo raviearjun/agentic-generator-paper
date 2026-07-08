@@ -1,12 +1,12 @@
 task_prepare:
-  description: Create an initial draft of the document by invoking the bound tool
-    and streaming response to the UI.
+  description: |
+    Prepare a text document for the user with a short title and short description for browsing purposes. Can be also used when creating a new version of the document.
   expected_output: 'Completed: task_prepare'
 task_writer:
   description: |
-    Generate the full document content based on the user's request and earlier messages; stream to UI, then finalise.
+    Write a text document based on the user's request. Only output the content, do not ask any additional questions. If there is selected text in state.context.writer.selected, include that context in the generation.
   expected_output: 'Completed: task_writer'
 task_suggestions:
   description: |
-    Call the model to produce a finishing/suggestions message based on collected messages and tool call completions.
+    Invoke the model on the conversation messages (including tool finished signals) to produce the finish/suggestions message; append the resulting model output to the message stream.
   expected_output: 'Completed: task_suggestions'

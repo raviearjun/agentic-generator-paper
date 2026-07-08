@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_get_agent_card
         # Workflow Edge: task_get_agent_card -> task_send_message
@@ -24,9 +32,12 @@ async def main():
         print("Executing step: task_get_agent_card")
         print("=" * 80)
 
-        task_prompt = """Retrieve agent card metadata (getAgentCard / getExtendedAgentCard). """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -42,9 +53,12 @@ async def main():
         print("Executing step: task_send_message")
         print("=" * 80)
 
-        task_prompt = """Send a single message to an agent and receive a message or task response. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Send a message to the agent using JSON-RPC method message/send with MessageSendParams. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -60,9 +74,12 @@ async def main():
         print("Executing step: task_send_message_stream")
         print("=" * 80)
 
-        task_prompt = """Initiate a streaming message to receive real-time task events. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -78,9 +95,12 @@ async def main():
         print("Executing step: task_get_task")
         print("=" * 80)
 
-        task_prompt = """Query status and result of an existing task. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -96,9 +116,12 @@ async def main():
         print("Executing step: task_cancel_task")
         print("=" * 80)
 
-        task_prompt = """Cancel a running task for the agent. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -114,9 +137,12 @@ async def main():
         print("Executing step: task_resubscribe_task")
         print("=" * 80)
 
-        task_prompt = """Resume a previously started task stream to receive ongoing updates. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -132,9 +158,12 @@ async def main():
         print("Executing step: task_set_push_notification_config")
         print("=" * 80)
 
-        task_prompt = """Set push notification configuration for a task. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -150,9 +179,12 @@ async def main():
         print("Executing step: task_get_push_notification_config")
         print("=" * 80)
 
-        task_prompt = """Get push notification configuration for a task. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/pushNotificationConfig/get JSON-RPC with identifying params. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -168,9 +200,12 @@ async def main():
         print("Executing step: task_list_push_notification_config")
         print("=" * 80)
 
-        task_prompt = """List push notification configurations. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -185,9 +220,12 @@ async def main():
         print("Executing step: task_delete_push_notification_config")
         print("=" * 80)
 
-        task_prompt = """Delete a push notification configuration for a task. """
-        # Execute via the assigned agent: agent_id_constructor_parameter
-        result = await agent_id_constructor_parameter.run(task=task_prompt)
+        task_prompt = """Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_id_constructor_parameter, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_id_constructor_parameter.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

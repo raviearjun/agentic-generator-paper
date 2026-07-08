@@ -16,57 +16,72 @@ import { tripPlannerAgent } from '../agents'
 
 const viewAccommodationsTask = createStep({
   id: 'view_accommodations_task',
-  description: `Display available accommodations or restaurants to the user and allow selection.`,
+  description: `List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.
-    // This step uses agent: tripPlannerAgent
-    // const result = await tripPlannerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('view_accommodations_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.`
+    const result = await tripPlannerAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
 const selectAccommodationTask = createStep({
   id: 'select_accommodation_task',
-  description: `Handle user selection of an accommodation and present detailed view including price breakdown and booking option.`,
+  description: `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({book: z.string()}),
   execute: async ({ inputData }) => {
-    // When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.
-    // This step uses agent: tripPlannerAgent
-    // const result = await tripPlannerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('select_accommodation_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.`
+    const result = await tripPlannerAgent.generate(prompt)
+    return {
+      ...context,
+      book: context.book ?? result.text,
+    }
   },
 })
 
 const confirmBookingTask = createStep({
   id: 'confirm_booking_task',
-  description: `Prepare order details and invoke the booking tool using the 'book-accommodation' tool call.`,
-  inputSchema: z.object({}),
+  description: `Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.`,
+  inputSchema: z.object({book: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.
-    // This step uses agent: tripPlannerAgent
-    // const result = await tripPlannerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('confirm_booking_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.`
+    const result = await tripPlannerAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
 const bookedConfirmationTask = createStep({
   id: 'booked_confirmation_task',
-  description: `Display booking confirmation details returned by the booking tool or show success message if no details returned.`,
+  description: `Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.
-    // This step uses agent: tripPlannerAgent
-    // const result = await tripPlannerAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('booked_confirmation_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.`
+    const result = await tripPlannerAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

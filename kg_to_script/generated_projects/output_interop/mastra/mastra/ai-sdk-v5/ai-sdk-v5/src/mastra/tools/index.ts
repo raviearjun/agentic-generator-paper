@@ -1,1 +1,0 @@
-export { getWeatherTool } from './getWeatherTool'

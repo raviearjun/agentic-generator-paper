@@ -356,7 +356,15 @@ def _extract_tasks(g: Graph, agents_map: Dict[str, AgentModel]) -> Dict[str, Tas
         tasks[iri].prompt_context = context
         if output and not tasks[iri].expected_output:
             tasks[iri].expected_output = output
-        if instr and not tasks[iri].description:
+        if instr:
+            # :promptInstruction is the actual operative task content given to
+            # the agent. It must win over the :Task node's own dcterms:description,
+            # which for some sources (e.g. AutoGen notebooks) is a generic
+            # meta-comment about the task's role ("Initial user task message
+            # used to start the groupchat...") rather than real task content
+            # ("Write a blogpost about Nvidia's stock..."). Previously this
+            # only backfilled description when empty, so instruction text was
+            # silently discarded whenever a generic description already existed.
             tasks[iri].description = instr
 
     # Expected output from Config if not set by prompt indicator

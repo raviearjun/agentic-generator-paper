@@ -15,14 +15,20 @@ import { travelAnalyzer } from '../agents'
 const taskSyncCsvData = createStep({
   id: 'task_sync_csv_data',
   description: `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({city: z.string()}),
   outputSchema: z.object({status: z.string()}),
   execute: async ({ inputData }) => {
-    // Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_sync_csv_data not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.`
+    const result = await travelAnalyzer.generate(prompt)
+    return {
+      ...context,
+      status: context.status ?? result.text,
+    }
   },
 })
 
@@ -33,7 +39,7 @@ const taskSyncCsvData = createStep({
  */
 export const workflowSyncCsvData = createWorkflow({
   id: 'workflow_sync_csv_data',
-  inputSchema: z.object({}),
+  inputSchema: z.object({city: z.string()}),
   outputSchema: z.object({status: z.string()}),
   steps: [taskSyncCsvData],
 })

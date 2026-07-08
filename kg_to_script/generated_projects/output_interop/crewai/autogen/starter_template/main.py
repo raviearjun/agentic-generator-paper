@@ -8,6 +8,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -16,7 +17,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_1
         # Workflow Edge: task_1 -> task_2
@@ -33,8 +41,11 @@ Make sure to use the most recent data as possible.
 
 Use this variable: {var1}
 And also this variable: {var2} """
-        # Execute via the assigned agent: agent_1_name
-        result = await agent_1_name.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_1_name, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_1_name.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -54,8 +65,11 @@ And also this variable: {var2} """
 If you do your BEST WORK, I'll give you a $10,000 commission!
 
 Make sure to do something else. """
-        # Execute via the assigned agent: agent_2_name
-        result = await agent_2_name.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: agent_2_name, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await agent_2_name.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

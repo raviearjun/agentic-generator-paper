@@ -81,7 +81,12 @@ const tool_router = tool(
 async function taskStockbroker(state: SupervisorState) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
-    { role: "system", content: "Route: taskStockbroker. You are a supervisor." },
+    {
+      role: "system",
+      content:
+        "Route: taskStockbroker. You are a supervisor." +
+        "",
+    },
     ...state.messages,
   ]);
   return { messages: [response] };
@@ -94,7 +99,12 @@ async function taskStockbroker(state: SupervisorState) {
 async function taskTripPlanner(state: SupervisorState) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
-    { role: "system", content: "Route: taskTripPlanner. You are a supervisor." },
+    {
+      role: "system",
+      content:
+        "Route: taskTripPlanner. You are a supervisor." +
+        "",
+    },
     ...state.messages,
   ]);
   return { messages: [response] };
@@ -107,7 +117,12 @@ async function taskTripPlanner(state: SupervisorState) {
 async function taskOpenCode(state: SupervisorState) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
-    { role: "system", content: "Route: taskOpenCode. You are a supervisor." },
+    {
+      role: "system",
+      content:
+        "Route: taskOpenCode. You are a supervisor." +
+        "",
+    },
     ...state.messages,
   ]);
   return { messages: [response] };
@@ -120,7 +135,12 @@ async function taskOpenCode(state: SupervisorState) {
 async function taskOrderPizza(state: SupervisorState) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
-    { role: "system", content: "Route: taskOrderPizza. You are a supervisor." },
+    {
+      role: "system",
+      content:
+        "Route: taskOrderPizza. You are a supervisor." +
+        "",
+    },
     ...state.messages,
   ]);
   return { messages: [response] };
@@ -133,7 +153,12 @@ async function taskOrderPizza(state: SupervisorState) {
 async function taskWriterAgent(state: SupervisorState) {
   const model = new ChatOpenAI({ model: "gpt-4o-mini" });
   const response = await model.invoke([
-    { role: "system", content: "Route: taskWriterAgent. You are a supervisor." },
+    {
+      role: "system",
+      content:
+        "Route: taskWriterAgent. You are a supervisor." +
+        "",
+    },
     ...state.messages,
   ]);
   return { messages: [response] };

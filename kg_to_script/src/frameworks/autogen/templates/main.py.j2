@@ -21,6 +21,9 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+{% if resolved_steps %}
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
+{% endif %}
 
 INPUTS = {
 
@@ -40,7 +43,14 @@ INPUTS = {
 async def main():
 {% if resolved_steps %}
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         {% for step in resolved_steps %}
         # ==================================================
         # Workflow Step: {{ step.task_var_name }}
@@ -53,8 +63,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """{{ step.task_description | replace('"""', '\\"\\"\\"') }} """
-        # Execute via the assigned agent: {{ step.agent_var }}
-        result = await {{ step.agent_var }}.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: {{ step.agent_var }}, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await {{ step.agent_var }}.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

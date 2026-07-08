@@ -17,31 +17,51 @@ task_link_get_broken_links:
   description: Run linkinator via shell to collect links; parse JSON output
   expected_output: 'Completed: task_link_get_broken_links'
 task_pkg_get_pacakges_to_publish:
-  description: Use DanePackagePublisher agent to analyze repo and list packages requiring
-    publish
+  description: |
+    Please analyze the following monorepo directories and identify packages that need pnpm publishing:
+    CRITICAL: This step is about planning. We do not want to build anything. All packages MUST be placed in the correct order.
+
+    Publish Requirements:
+    - @mastra/core first, MUST be before any other package
+    - all packages in correct dependency order before building
+    - Identify packages that have changes requiring a new pnpm publish
+    - Include create-mastra in the packages list if changes exist
+    - EXCLUDE @mastra/dane from consideration
+
+    Please list all packages that need building grouped by their directory.
+    DO NOT NOT USE the 'pnpmBuild' tool during this step.
   expected_output: 'Completed: task_pkg_get_pacakges_to_publish'
 task_tel_step_a1:
   description: Create starting message for telephone game
   expected_output: 'Completed: task_tel_step_a1'
 task_changelog_step_a2:
-  description: Generate changelog using the daneChangeLog agent and post to Slack
+  description: |
+    Time: recent week
+    Git diff to generate from: (git diff from previous step)
+    Task:
+    1. create a structured narrative changelog that highlights key updates and improvements.
+    2. Include what packages were changed
+    Structure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure
+    Finally send this to the configured slack channel with slack_post_message tool.
   expected_output: 'Completed: task_changelog_step_a2'
 task_entry_message_output:
-  description: Send user message to Dane agent and stream/generate response
+  description: |
+    User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.
   expected_output: 'Completed: task_entry_message_output'
 task_commit_read_conventional_commit_spec:
   description: Read conventional commit spec using fsTool
   expected_output: 'Completed: task_commit_read_conventional_commit_spec'
 task_first_message_generator:
   description: |
-    Generate contributor welcome message using DaneNewContributor agent using PR title/body/diff and Mastra docs
+    Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.
   expected_output: 'Completed: task_first_message_generator'
 task_issue_label_issue:
-  description: Use DaneIssueLabeler agent to decide labels for an issue
+  description: Given issue title, body, and available repo labels, propose one or
+    more labels to assign.
   expected_output: 'Completed: task_issue_label_issue'
 task_link_report_broken_links:
-  description: Report broken links by generating a message with DaneLinkChecker and
-    posting to Slack
+  description: |
+    Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.
   expected_output: 'Completed: task_link_report_broken_links'
 task_pkg_assemble_packages:
   description: Assemble file system paths for the packages reported by the agent and
@@ -51,7 +71,8 @@ task_tel_step_a2:
   description: Prompt user for a message (inquirer input)
   expected_output: 'Completed: task_tel_step_a2'
 task_commit_generate_message:
-  description: Generate commit message using DaneCommitMessage agent
+  description: |
+    Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.
   expected_output: 'Completed: task_commit_generate_message'
 task_first_create_message:
   description: Post generated message as GitHub issue comment using github integration
@@ -74,14 +95,14 @@ task_pkg_verify_build:
   expected_output: 'Completed: task_pkg_verify_build'
 task_tel_step_c2:
   description: |
-    Optionally suspend and ask user to confirm modification; if confirmed, call inline LLM (claude-3-5-haiku) to modify message
+    When user confirms modification, call the haiku model to alter the message. Only return the new message.
   expected_output: 'Completed: task_tel_step_c2'
 task_commit_commit:
   description: Perform git commit with generated message (execSync git commit)
   expected_output: 'Completed: task_commit_commit'
 task_pkg_publish_changeset:
   description: |
-    Use DanePackagePublisher agent to publish changeset (agent generates instructions) and then call pnpmChangesetPublish
+    All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.
   expected_output: 'Completed: task_pkg_publish_changeset'
 task_tel_step_d2:
   description: Pass the final message to the next participant or output

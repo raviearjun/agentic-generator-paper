@@ -1,11 +1,13 @@
 open_buy_ui_task:
-  description: Prepare and present the buy stock UI to the user.
+  description: |
+    Open the buy stock user interface for the specified ticker and prefill price information. Expected output: UI displayed and ready for user input.
   expected_output: ui_opened
 execute_purchase_task:
-  description: Execute the purchase by invoking the buy-stock tool with purchaseDetails.
+  description: |
+    Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload.
   expected_output: 'purchaseDetails object with fields: ticker (string), quantity
     (integer), price (number)'
 confirm_purchase_task:
-  description: Display purchase confirmation to the user including executed quantity
-    and price.
+  description: |
+    Present the purchase confirmation message to the user, showing ticker, quantity, price, and total cost. Expected output: confirmation message shown in UI.
   expected_output: confirmation_message

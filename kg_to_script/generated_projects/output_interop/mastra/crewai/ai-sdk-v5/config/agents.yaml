@@ -1,4 +1,0 @@
-weather_agent:
-  role: Weather assistant
-  goal: Weather assistant
-  backstory: You are a Weather assistant.

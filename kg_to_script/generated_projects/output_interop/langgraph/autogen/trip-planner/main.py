@@ -7,6 +7,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -15,7 +16,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: view_accommodations_task
         # Workflow Edge: view_accommodations_task -> select_accommodation_task
@@ -24,9 +32,12 @@ async def main():
         print("Executing step: view_accommodations_task")
         print("=" * 80)
 
-        task_prompt = """Display available accommodations or restaurants to the user and allow selection. """
-        # Execute via the assigned agent: trip_planner_agent
-        result = await trip_planner_agent.run(task=task_prompt)
+        task_prompt = """List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trip_planner_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trip_planner_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -42,9 +53,12 @@ async def main():
         print("Executing step: select_accommodation_task")
         print("=" * 80)
 
-        task_prompt = """Handle user selection of an accommodation and present detailed view including price breakdown and booking option. """
-        # Execute via the assigned agent: trip_planner_agent
-        result = await trip_planner_agent.run(task=task_prompt)
+        task_prompt = """When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trip_planner_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trip_planner_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -60,9 +74,12 @@ async def main():
         print("Executing step: confirm_booking_task")
         print("=" * 80)
 
-        task_prompt = """Prepare order details and invoke the booking tool using the 'book-accommodation' tool call. """
-        # Execute via the assigned agent: trip_planner_agent
-        result = await trip_planner_agent.run(task=task_prompt)
+        task_prompt = """Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trip_planner_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trip_planner_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -77,9 +94,12 @@ async def main():
         print("Executing step: booked_confirmation_task")
         print("=" * 80)
 
-        task_prompt = """Display booking confirmation details returned by the booking tool or show success message if no details returned. """
-        # Execute via the assigned agent: trip_planner_agent
-        result = await trip_planner_agent.run(task=task_prompt)
+        task_prompt = """Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it. """
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trip_planner_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trip_planner_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

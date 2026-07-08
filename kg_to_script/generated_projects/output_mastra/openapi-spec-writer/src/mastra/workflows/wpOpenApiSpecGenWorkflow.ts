@@ -19,7 +19,7 @@ import { toolSiteCrawl, toolGenerateSpec } from '../tools'
 
 const taskSiteCrawlSync = createStep({
   id: 'task_site_crawl_sync',
-  description: `Crawl a website and extract the markdown content and sync it to the database.`,
+  description: `Crawl the provided URL, extract main content as markdown, include sourceURL in metadata. Use provided pathRegex and limit. Exclude nav/header/footer and unrelated tags; return markdown blocks and metadata.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
@@ -32,16 +32,18 @@ const taskSiteCrawlSync = createStep({
 
 const taskGenerateSpec = createStep({
   id: 'task_generate_spec',
-  description: `For each crawled markdown page, ask the agent to turn it into an OpenAPI spec fragment; then ask the agent to merge fragments into a single spec.`,
+  description: `I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates.
-    // This step uses agent: openapiSpecGenAgent
-    // const result = await openapiSpecGenAgent.generate('...')
-    // This step uses tool: toolGenerateSpec
-    // TODO: Implement step logic
-    throw new Error('task_generate_spec not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates.`
+    const result = await openapiSpecGenAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

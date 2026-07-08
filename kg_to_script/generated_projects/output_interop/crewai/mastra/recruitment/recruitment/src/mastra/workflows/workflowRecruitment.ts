@@ -17,42 +17,63 @@ import { researcher, matcher, communicator, reporter } from '../agents'
 const taskResearchCandidates = createStep({
   id: 'task_research_candidates',
   description: `Conduct thorough research to find potential candidates for the specified job. Utilize various online resources and databases to gather a comprehensive list of potential candidates. Ensure that the candidates meet the job requirements provided.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  inputSchema: z.object({job_requirements: z.string()}),
+  outputSchema: z.object({job_requirements: z.string()}),
   execute: async ({ inputData }) => {
-    // Conduct thorough research to find potential candidates for the specified job. Utilize various online resources and databases to gather a comprehensive list of potential candidates. Ensure that the candidates meet the job requirements provided.
-    // This step uses agent: researcher
-    // const result = await researcher.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_research_candidates not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Conduct thorough research to find potential candidates for the specified job. Utilize various online resources and databases to gather a comprehensive list of potential candidates. Ensure that the candidates meet the job requirements provided.
+
+Job Requirements: ${context.job_requirements ?? ''}`
+    const result = await researcher.generate(prompt)
+    return {
+      ...context,
+      job_requirements: context.job_requirements ?? result.text,
+    }
   },
 })
 
 const taskMatchAndScoreCandidates = createStep({
   id: 'task_match_and_score_candidates',
-  description: `Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements, ensuring a fair and transparent assessment process.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements. Don't try to scrape people's linkedin, since you don't have access to it.`,
+  inputSchema: z.object({job_requirements: z.string()}),
+  outputSchema: z.object({job_requirements: z.string()}),
   execute: async ({ inputData }) => {
-    // Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements. Don't try to scrape people's linkedin, since you don't have access to it.
-    // This step uses agent: matcher
-    // const result = await matcher.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_match_and_score_candidates not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Evaluate and match the candidates to the best job positions based on their qualifications and suitability. Score each candidate to reflect their alignment with the job requirements. Don't try to scrape people's linkedin, since you don't have access to it.
+
+Job Requirements: ${context.job_requirements ?? ''}`
+    const result = await matcher.generate(prompt)
+    return {
+      ...context,
+      job_requirements: context.job_requirements ?? result.text,
+    }
   },
 })
 
 const taskOutreachStrategy = createStep({
   id: 'task_outreach_strategy',
   description: `Develop a comprehensive strategy to reach out to the selected candidates. Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({job_requirements: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Develop a comprehensive strategy to reach out to the selected candidates. Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.
-    // This step uses agent: communicator
-    // const result = await communicator.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_outreach_strategy not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Develop a comprehensive strategy to reach out to the selected candidates. Create effective outreach methods and templates that can engage the candidates and encourage them to consider the job opportunity.
+
+Job Requirements: ${context.job_requirements ?? ''}`
+    const result = await communicator.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -62,11 +83,14 @@ const taskReportCandidates = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.
-    // This step uses agent: reporter
-    // const result = await reporter.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_report_candidates not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.`
+    const result = await reporter.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -79,7 +103,7 @@ const taskReportCandidates = createStep({
  */
 export const workflowRecruitment = createWorkflow({
   id: 'workflow_recruitment',
-  inputSchema: z.object({}),
+  inputSchema: z.object({job_requirements: z.string()}),
   outputSchema: z.object({}),
   steps: [taskResearchCandidates, taskMatchAndScoreCandidates, taskOutreachStrategy, taskReportCandidates],
 })

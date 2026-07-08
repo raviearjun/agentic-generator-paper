@@ -202,10 +202,16 @@ class StepModel(BaseModel):
         description="Zod input schema (from :promptInputData)"
     )
     output_schema: Optional[str] = Field(
-        None, 
+        None,
         description="Zod output schema (from :promptOutputIndicator)"
     )
-    
+
+    # Field names parsed out of input_schema/output_schema (post schema-chaining
+    # in generator.py) for use in execute() body codegen — Jinja can't easily
+    # parse a raw "z.object({a: z.string(), b: z.string()})" string itself.
+    input_fields: List[str] = Field(default_factory=list)
+    output_fields: List[str] = Field(default_factory=list)
+
     # Execution logic
     execute_description: str = Field(
         "", 

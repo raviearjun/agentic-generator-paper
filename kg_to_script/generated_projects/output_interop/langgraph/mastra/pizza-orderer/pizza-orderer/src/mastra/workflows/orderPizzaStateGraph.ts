@@ -20,11 +20,14 @@ const findStoreTask = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them.
-    // This step uses agent: langgraphAnthropicAgent
-    // const result = await langgraphAnthropicAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('find_store_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `You are a helpful AI assistant, tasked with extracting information from the conversation between you, and the user, in order to find a pizza shop for them.`
+    const result = await langgraphAnthropicAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -34,11 +37,17 @@ const orderPizzaTask = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({address: z.string()}),
   execute: async ({ inputData }) => {
-    // You are a helpful AI assistant, tasked with placing an order for a pizza for the user.
-    // This step uses agent: langgraphAnthropicAgent
-    // const result = await langgraphAnthropicAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('order_pizza_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `You are a helpful AI assistant, tasked with placing an order for a pizza for the user.`
+    const result = await langgraphAnthropicAgent.generate(prompt)
+    return {
+      ...context,
+      address: context.address ?? result.text,
+    }
   },
 })
 

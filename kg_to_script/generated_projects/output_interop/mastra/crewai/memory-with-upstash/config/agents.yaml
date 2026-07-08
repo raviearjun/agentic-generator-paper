@@ -1,8 +1,0 @@
-chef_agent:
-  role: Chef
-  goal: Chef
-  backstory: Agent-level instructions for Chef Agent; used as persistent agent prompt.
-memory_agent:
-  role: Memory
-  goal: Memory
-  backstory: Agent-level instructions for Memory Agent; used as persistent agent prompt.

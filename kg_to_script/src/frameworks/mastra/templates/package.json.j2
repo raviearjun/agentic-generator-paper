@@ -9,7 +9,11 @@
   "type": "module",
   "main": "src/mastra/index.ts",
   "scripts": {
+{% if has_run_ts %}
+    "dev": "tsx run.ts",
+{% else %}
     "dev": "tsx src/mastra/index.ts",
+{% endif %}
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },

@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastrainstanceAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskStepOne(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Doubles the input value" +
         "\nNode: taskStepOne",
     },
     ...state.messages,
@@ -53,6 +58,7 @@ async function taskStepTwo(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Adds 1 to the input value" +
         "\nNode: taskStepTwo",
     },
     ...state.messages,
@@ -71,6 +77,7 @@ async function taskStepThree(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Squares the input value" +
         "\nNode: taskStepThree",
     },
     ...state.messages,
@@ -89,6 +96,7 @@ async function taskStepFour(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Gives the square root of the input value" +
         "\nNode: taskStepFour",
     },
     ...state.messages,
@@ -107,6 +115,7 @@ async function taskStepFive(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Triples the input value" +
         "\nNode: taskStepFive",
     },
     ...state.messages,
@@ -125,6 +134,7 @@ async function taskParStepOne(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Doubles the input value" +
         "\nNode: taskParStepOne",
     },
     ...state.messages,
@@ -143,6 +153,7 @@ async function taskParStepSix(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Logs the input value" +
         "\nNode: taskParStepSix",
     },
     ...state.messages,
@@ -161,6 +172,7 @@ async function taskParStepTwo(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Adds 1 to the input value" +
         "\nNode: taskParStepTwo",
     },
     ...state.messages,
@@ -179,6 +191,7 @@ async function taskParStepThree(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Squares the input value" +
         "\nNode: taskParStepThree",
     },
     ...state.messages,
@@ -197,6 +210,7 @@ async function taskBrStepOne(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Doubles the input value" +
         "\nNode: taskBrStepOne",
     },
     ...state.messages,
@@ -215,6 +229,7 @@ async function taskBrStepTwo(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Adds 1 to the input value" +
         "\nNode: taskBrStepTwo",
     },
     ...state.messages,
@@ -233,6 +248,7 @@ async function taskBrStepFour(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Gives the square root of the input value" +
         "\nNode: taskBrStepFour",
     },
     ...state.messages,
@@ -251,6 +267,7 @@ async function taskBrStepThree(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Squares the input value" +
         "\nNode: taskBrStepThree",
     },
     ...state.messages,
@@ -269,6 +286,7 @@ async function taskBrStepFive(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Triples the input value" +
         "\nNode: taskBrStepFive",
     },
     ...state.messages,
@@ -287,6 +305,7 @@ async function taskCycStepOne(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Doubles the input value" +
         "\nNode: taskCycStepOne",
     },
     ...state.messages,
@@ -305,6 +324,7 @@ async function taskCycStepTwo(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Adds 1 to the input value" +
         "\nNode: taskCycStepTwo",
     },
     ...state.messages,
@@ -323,6 +343,7 @@ async function taskCycStepThree(state: typeof MastrainstanceAnnotation.State) {
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Squares the input value" +
         "\nNode: taskCycStepThree",
     },
     ...state.messages,
@@ -341,6 +362,7 @@ async function taskCycStepOneLoop(state: typeof MastrainstanceAnnotation.State) 
       role: "system",
       content:
         "You are a feline-expert." +
+        "\n\nYour task: Doubles the input value (loop invocation)" +
         "\nNode: taskCycStepOneLoop",
     },
     ...state.messages,

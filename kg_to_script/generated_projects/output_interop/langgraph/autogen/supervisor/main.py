@@ -14,6 +14,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -22,7 +23,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_start
         # Workflow Edge: task_start -> task_router
@@ -32,8 +40,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Start step for the supervisor StateGraph that initializes routing to the 'router' step. """
-        # Execute via the assigned agent: supervisor
-        result = await supervisor.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: supervisor, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await supervisor.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -66,8 +77,11 @@ You're a highly helpful AI assistant, tasked with routing the user's query to th
 You should analyze the user's input, and choose the appropriate tool to use.
 
 The expected output is a single route name: one of {stockbroker, tripPlanner, openCode, orderPizza, generalInput, writerAgent}. """
-        # Execute via the assigned agent: router
-        result = await router.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: router, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await router.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -84,8 +98,11 @@ The expected output is a single route name: one of {stockbroker, tripPlanner, op
         print("=" * 80)
 
         task_prompt = """Tool: stockbroker — can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio. """
-        # Execute via the assigned agent: stockbroker
-        result = await stockbroker.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: stockbroker, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await stockbroker.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -102,8 +119,11 @@ The expected output is a single route name: one of {stockbroker, tripPlanner, op
         print("=" * 80)
 
         task_prompt = """Tool: tripPlanner — helps the user plan their trip; can suggest restaurants and places to stay for a given location. """
-        # Execute via the assigned agent: trip_planner
-        result = await trip_planner.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: trip_planner, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await trip_planner.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -120,8 +140,11 @@ The expected output is a single route name: one of {stockbroker, tripPlanner, op
         print("=" * 80)
 
         task_prompt = """Tool: openCode — can write a React TODO app for the user. Only call this tool if they request a TODO app. """
-        # Execute via the assigned agent: open_code
-        result = await open_code.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: open_code, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await open_code.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -138,8 +161,11 @@ The expected output is a single route name: one of {stockbroker, tripPlanner, op
         print("=" * 80)
 
         task_prompt = """Tool: orderPizza — can order a pizza for the user. """
-        # Execute via the assigned agent: order_pizza
-        result = await order_pizza.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: order_pizza, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await order_pizza.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -166,8 +192,11 @@ If the user asks what you can do, describe these tools.
 If the last message is a tool result, describe what the action was, congratulate the user, or send a friendly followup in response to the tool action. Ensure this is a clear and concise message.
 
 Otherwise, just answer as normal. """
-        # Execute via the assigned agent: general_input
-        result = await general_input.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: general_input, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await general_input.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -184,8 +213,11 @@ Otherwise, just answer as normal. """
         print("=" * 80)
 
         task_prompt = """Tool: writerAgent — can write a text document for the user. Only call this tool if they request a text document. """
-        # Execute via the assigned agent: writer_agent
-        result = await writer_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: writer_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await writer_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -201,8 +233,11 @@ Otherwise, just answer as normal. """
         print("=" * 80)
 
         task_prompt = """End step for the supervisor StateGraph indicating the workflow is complete. """
-        # Execute via the assigned agent: supervisor
-        result = await supervisor.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: supervisor, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await supervisor.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

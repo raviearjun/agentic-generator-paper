@@ -16,29 +16,41 @@ import { ycDirectoryAgent } from '../agents'
 
 const fetchYcDirectoryTask = createStep({
   id: 'fetch_yc_directory_task',
-  description: `Task to retrieve the YC directory dataset using the yc-directory tool.`,
-  inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  description: `Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.`,
+  inputSchema: z.object({yc: z.string()}),
+  outputSchema: z.object({Format_the_retrieved_YC_directory_data_for_user: z.string()}),
   execute: async ({ inputData }) => {
-    // Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.
-    // This step uses agent: ycDirectoryAgent
-    // const result = await ycDirectoryAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('fetch_yc_directory_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.`
+    const result = await ycDirectoryAgent.generate(prompt)
+    return {
+      ...context,
+      Format_the_retrieved_YC_directory_data_for_user: context.Format_the_retrieved_YC_directory_data_for_user ?? result.text,
+    }
   },
 })
 
 const processYcDataTask = createStep({
   id: 'process_yc_data_task',
-  description: `Task to process/format the YC directory data for consumption by downstream callers (e.g., filtering, adding batch metadata).`,
-  inputSchema: z.object({}),
+  description: `Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.`,
+  inputSchema: z.object({Format_the_retrieved_YC_directory_data_for_user: z.string()}),
   outputSchema: z.object({and_a_one: z.string()}),
   execute: async ({ inputData }) => {
-    // Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.
-    // This step uses agent: ycDirectoryAgent
-    // const result = await ycDirectoryAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('process_yc_data_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.`
+    const result = await ycDirectoryAgent.generate(prompt)
+    return {
+      ...context,
+      and_a_one: context.and_a_one ?? result.text,
+    }
   },
 })
 
@@ -51,7 +63,7 @@ const processYcDataTask = createStep({
  */
 export const ycDirectoryWorkflow = createWorkflow({
   id: 'yc_directory_workflow',
-  inputSchema: z.object({}),
+  inputSchema: z.object({yc: z.string()}),
   outputSchema: z.object({and_a_one: z.string()}),
   steps: [fetchYcDirectoryTask, processYcDataTask],
 })

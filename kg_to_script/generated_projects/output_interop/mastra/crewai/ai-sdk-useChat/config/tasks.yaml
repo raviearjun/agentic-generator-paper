@@ -1,9 +1,0 @@
-fetch_weather:
-  description: |
-    Fetches weather forecast for a given city by resolving the city name to coordinates and retrieving daily forecast data. Produces an array of forecast objects { date, maxTemp, minTemp, precipitationChance, condition, location }.
-  expected_output: 'Completed: fetch_weather'
-plan_activities:
-  description: |
-    Suggests activities based on the weather forecast. Calls an LLM agent (planningAgent) with the forecast data; receives a streaming text response which is concatenated into the final activities output.
-  expected_output: |
-    A single text string containing the daily activity recommendations formatted per the planning agent instructions.

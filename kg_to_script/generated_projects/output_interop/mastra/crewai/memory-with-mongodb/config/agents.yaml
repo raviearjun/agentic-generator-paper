@@ -1,8 +1,0 @@
-chef_agent:
-  role: chef
-  goal: chef
-  backstory: You are a chef.
-memory_agent:
-  role: memory
-  goal: memory
-  backstory: You are a memory.

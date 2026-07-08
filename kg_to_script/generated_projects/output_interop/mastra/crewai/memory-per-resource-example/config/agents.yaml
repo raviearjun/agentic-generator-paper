@@ -1,5 +1,0 @@
-personal_assistant:
-  role: Personal Assistant
-  goal: Personal Assistant
-  backstory: Agent instructions configured at creation time (Agent.instructions in
-    source code).

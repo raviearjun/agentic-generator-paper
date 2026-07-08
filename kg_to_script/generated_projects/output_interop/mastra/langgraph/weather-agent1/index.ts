@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const UnnamedProjectAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -35,6 +39,7 @@ async function taskFetchCurrentWeather(state: typeof UnnamedProjectAnnotation.St
       role: "system",
       content:
         "You are a Weather Assistant." +
+        "\n\nYour task: Fetch current weather data for the specified location using the weatherTool. If no location is provided, ask the user to supply one. Translate non-English location names to English before querying. Return concise but informative output including temperature, humidity, wind conditions, and precipitation. If asked for activity suggestions and forecast is available, include activity recommendations appropriate to the forecast." +
         "\nNode: taskFetchCurrentWeather",
     },
     ...state.messages,

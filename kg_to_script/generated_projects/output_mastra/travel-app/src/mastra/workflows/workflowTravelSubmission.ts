@@ -18,11 +18,14 @@ const taskOutboundFlight = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_outbound_flight not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning.`
+    const result = await travelAnalyzer.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -32,11 +35,14 @@ const taskReturnFlight = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_return_flight not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps.`
+    const result = await travelAnalyzer.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -46,11 +52,14 @@ const taskAccommodationHotels = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_accommodation_hotels not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning.`
+    const result = await travelAnalyzer.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -60,11 +69,14 @@ const taskAttraction = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_attraction not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available.`
+    const result = await travelAnalyzer.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -74,11 +86,14 @@ const taskAirbnbLocation = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_airbnb_location not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning.`
+    const result = await travelAnalyzer.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -88,11 +103,17 @@ const taskAccommodationAirbnb = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({reasoning: z.string()}),
   execute: async ({ inputData }) => {
-    // Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning.
-    // This step uses agent: travelAnalyzer
-    // const result = await travelAnalyzer.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_accommodation_airbnb not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning.`
+    const result = await travelAnalyzer.generate(prompt)
+    return {
+      ...context,
+      reasoning: context.reasoning ?? result.text,
+    }
   },
 })
 

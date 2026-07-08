@@ -15,14 +15,23 @@ import { seniorIdeaAnalyst, seniorStrategist } from '../agents'
 const taskExpandIdea = createStep({
   id: 'task_expand_idea',
   description: `THIS IS A GREAT IDEA! Analyze and expand it by conducting a comprehensive research.`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({idea: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // THIS IS A GREAT IDEA! Analyze and expand it by conducting a comprehensive research.
-    // This step uses agent: seniorIdeaAnalyst
-    // const result = await seniorIdeaAnalyst.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_expand_idea not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `THIS IS A GREAT IDEA! Analyze and expand it by conducting a comprehensive research.
+
+Final answer MUST be a comprehensive idea report detailing why this is a great idea, the value proposition, unique selling points, why people should care about it and distinguishing features.
+
+IDEA:
+# ----------
+${context.idea ?? ''}`
+    const result = await seniorIdeaAnalyst.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -32,11 +41,18 @@ const taskRefineIdea = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Expand idea report with a Why, How, and What messaging strategy using the Golden Circle Communication technique, based on the idea report.
-    // This step uses agent: seniorStrategist
-    // const result = await seniorStrategist.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_refine_idea not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Expand idea report with a Why, How, and What messaging strategy using the Golden Circle Communication technique, based on the idea report.
+
+Your final answer MUST be the updated complete comprehensive idea report with WHY, HOW, WHAT, a core message, key features and supporting arguments.
+
+YOU MUST RETURN THE COMPLETE IDEA REPORT AND THE DETAILS, You'll get a $100 tip if you do your best work!`
+    const result = await seniorStrategist.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -47,7 +63,7 @@ const taskRefineIdea = createStep({
  */
 export const patternExpandIdea = createWorkflow({
   id: 'pattern_expand_idea',
-  inputSchema: z.object({}),
+  inputSchema: z.object({idea: z.string()}),
   outputSchema: z.object({}),
   steps: [taskExpandIdea, taskRefineIdea],
 })

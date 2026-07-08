@@ -38,15 +38,18 @@ const taskCommitReadConventionalCommitSpec = createStep({
 
 const taskCommitGenerateMessage = createStep({
   id: 'task_commit_generate_message',
-  description: `Generate commit message using DaneCommitMessage agent`,
+  description: `Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.
-    // This step uses agent: daneCommitMessage
-    // const result = await daneCommitMessage.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_commit_generate_message not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.`
+    const result = await daneCommitMessage.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

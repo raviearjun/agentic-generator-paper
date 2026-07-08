@@ -1,15 +1,18 @@
 task_biomedical_research:
   description: |
-    Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.
+    Conduct a thorough research about {weaviate_feature}
+    Make sure you find any interesting and relevant information using the web and Weaviate blogs.
   expected_output: |
     Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.
 task_healthcare_research:
   description: |
-    Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.
+    Conduct a thorough research about {weaviate_feature}
+    Make sure you find any interesting and relevant information using the web and Weaviate blogs.
   expected_output: |
     Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.
 task_financial_research:
   description: |
-    Conduct a thorough research about {weaviate_feature}. Make sure you find any interesting and relevant information using the web and Weaviate blogs.
+    Conduct a thorough research about {weaviate_feature}
+    Make sure you find any interesting and relevant information using the web and Weaviate blogs.
   expected_output: |
     Write an industry specific analysis of why this Weaviate feature would be useful for your industry of expertise.

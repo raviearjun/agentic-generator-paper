@@ -103,18 +103,34 @@ const {{ step.var_name }} = createStep({
   outputSchema: z.object({}),
 {% endif %}
   execute: async ({ inputData }) => {
+{% if step.agent_var_name %}
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `{{ (step.execute_description or step.description) | ts_interpolate }}`
+    const result = await {{ step.agent_var_name }}.generate(prompt)
+{% if step.output_fields %}
+    return {
+      ...context,
+{% for field in step.output_fields %}
+      {{ field }}: context.{{ field }} ?? result.text,
+{% endfor %}
+    }
+{% else %}
+    return { ...context, output: result.text }
+{% endif %}
+{% else %}
 {% if step.execute_description %}
     // {{ step.execute_description.split('\n')[0] | ts_escape }}
-{% endif %}
-{% if step.agent_var_name %}
-    // This step uses agent: {{ step.agent_var_name }}
-    // const result = await {{ step.agent_var_name }}.generate('...')
 {% endif %}
 {% if step.tool_var_name %}
     // This step uses tool: {{ step.tool_var_name }}
 {% endif %}
     // TODO: Implement step logic
     throw new Error('{{ step.step_id }} not implemented yet')
+{% endif %}
   },
 })
 {% endif %}

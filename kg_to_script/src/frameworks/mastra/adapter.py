@@ -153,7 +153,12 @@ def _schema_from_prompt(raw: str) -> Optional[str]:
         return None
     if text.startswith("z.") or "z.object(" in text or "z.array(" in text:
         return text
-    for builder in (_schema_from_json_like, _schema_from_inline_field_hints, _schema_from_placeholders):
+    # Try placeholders before inline_field_hints: {name} template syntax is an
+    # explicit, unambiguous signal, whereas inline_field_hints' "word: word" /
+    # "word - word" regex false-triggers on ordinary hyphenated prose (e.g.
+    # "in-depth analysis" parses as a bogus "Conduct_an_in: <text>" field) and
+    # would otherwise shadow a perfectly good placeholder-derived schema.
+    for builder in (_schema_from_json_like, _schema_from_placeholders, _schema_from_inline_field_hints):
         schema = builder(text)
         if schema:
             return schema
@@ -233,8 +238,8 @@ def _map_tools(project: AgenticProject) -> Tuple[Dict[str, MastraToolModel], Dic
                 output_schema = _schema_from_prompt(cfg.value)
 
         for task in related_tasks:
-            input_schema = input_schema or _schema_from_prompt(task.prompt_input_data)
-            output_schema = output_schema or _schema_from_prompt(task.prompt_output_indicator)
+            input_schema = input_schema or _schema_from_prompt(task.prompt_input_data) or _schema_from_prompt(task.description)
+            output_schema = output_schema or _schema_from_prompt(task.prompt_output_indicator) or _schema_from_prompt(task.expected_output)
 
         if not input_schema:
             input_schema = _schema_from_prompt(tool.description)
@@ -567,8 +572,15 @@ def _map_workflows(
                     step_id=task_label or step_name,
                     step_order=step.step_order,
                     description=step.description or (task.description if task else ""),
-                    input_schema=_schema_from_prompt(task.prompt_input_data if task else ""),
-                    output_schema=_schema_from_prompt(task.prompt_output_indicator if task else ""),
+                    # CrewAI-sourced tasks never populate prompt_input_data/
+                    # prompt_output_indicator (CrewAI has no such fields), so
+                    # fall back to extracting {placeholder} tokens out of the
+                    # task's free-text description/expected_output instead of
+                    # always landing on an empty z.object({}) schema.
+                    input_schema=_schema_from_prompt(task.prompt_input_data if task else "")
+                    or _schema_from_prompt(task.description if task else ""),
+                    output_schema=_schema_from_prompt(task.prompt_output_indicator if task else "")
+                    or _schema_from_prompt(task.expected_output if task else ""),
                     execute_description=(task.prompt_instruction if task else "")
                     or (task.description if task else "")
                     or step.description,

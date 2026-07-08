@@ -1,20 +1,22 @@
 task_initiate_write_blog:
-  description: Initial user task message used to start the groupchat planning and
-    execution.
+  description: |
+    Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23.
   expected_output: |
     A blogpost in markdown analyzing Nvidia's past-month stock performance, with relevant charts or code results if available.
 task_planner_plan:
-  description: Planner's task to decompose the initial blogpost task into retrievable
-    Python-code-based steps.
+  description: |
+    Given the blogpost task, determine what information can be retrieved using Python code (e.g., historical prices, volumes) and produce a stepwise plan. After each step is executed, inspect results and direct remaining steps; on failure, suggest workarounds.
   expected_output: A list of ordered, executable steps for data retrieval and analysis.
 task_engineer_write_code:
-  description: Engineer tasked to implement code per the planner's steps.
+  description: |
+    Write Python code to retrieve stock data and produce analysis outputs based on the planner's specifications.
   expected_output: |
     Python scripts or code snippets that retrieve and preprocess data, compute metrics, and produce figures or tables.
 task_executor_run_code:
-  description: Executor runs the engineer's code and reports outputs.
+  description: |
+    Execute the latest code message from the engineer (look back up to last 3 messages for code), store artifacts in the 'coding' directory, and report outputs and errors.
   expected_output: Execution logs, produced files (data, charts), and error reports.
 task_writer_produce_blog:
-  description: Writer composes the final blogpost using execution outputs and admin
-    feedback.
+  description: |
+    Write a blog post in markdown summarizing Nvidia's stock performance in the past month using provided analysis outputs. Use appropriate titles and place content in a pseudo mdcode block. Accept and apply admin feedback to refine.
   expected_output: Final blogpost in markdown ready for publishing.

@@ -1,10 +1,9 @@
 task_plot_ytd_v1:
-  description: Initiated by code_executor_agent to request code from code_writer_agent
-    (Chinese message).
+  description: 今天是 {today}. 创建图表，显示 NVDA 和 TLSA 的股票收益。确保代码位于标记代码块中，并将图表保存到文件 ytd_stock_gains.png。
   expected_output: A python script in a markdown code block that downloads prices
     and saves ytd_stock_gains.png
 task_plot_ytd_v2:
   description: |
-    Initiated by code_executor_agent to request code from code_writer_agent (English message about downloading and plotting YTD stock prices).
+    Today is {today}. Download the stock prices YTD for NVDA and TSLA and create a plot. Make sure the code is in markdown code block and save the figure to a file stock_prices_YTD_plot.png.
   expected_output: A python script in a markdown code block that downloads prices
     and saves stock_prices_YTD_plot.png

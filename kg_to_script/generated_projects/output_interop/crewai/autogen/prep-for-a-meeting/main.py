@@ -10,6 +10,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -18,7 +19,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: research_task
         # Workflow Edge: research_task -> industry_analysis_task
@@ -34,8 +42,11 @@ business activities.
 
 Participants: {participants}
 Meeting Context: {context} """
-        # Execute via the assigned agent: researcher_agent
-        result = await researcher_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: researcher_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await researcher_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -58,8 +69,11 @@ overview of the industry landscape.
 
 Participants: {participants}
 Meeting Context: {context} """
-        # Execute via the assigned agent: industry_analyst_agent
-        result = await industry_analyst_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: industry_analyst_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await industry_analyst_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -80,8 +94,11 @@ for the meeting based on the research and industry analysis conducted
 
 Meeting Context: {context}
 Meeting Objective: {objective} """
-        # Execute via the assigned agent: meeting_strategy_agent
-        result = await meeting_strategy_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: meeting_strategy_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await meeting_strategy_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -104,8 +121,11 @@ participants with all necessary information and strategies.
 
 Meeting Context: {context}
 Meeting Objective: {objective} """
-        # Execute via the assigned agent: summary_and_briefing_agent
-        result = await summary_and_briefing_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: summary_and_briefing_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await summary_and_briefing_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

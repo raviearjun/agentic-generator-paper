@@ -1,8 +1,9 @@
 get_image_task:
-  description: UI-triggered task to obtain a random image from Unsplash based on selected
-    query.
+  description: Get a random image from Unsplash based on the selected option (wildlife,
+    feathers, flying, birds).
   expected_output: Image object with metadata (alt_description, urls, user links)
 classify_image_task:
-  description: Agent task to determine bird presence, species, and summarize location.
+  description: |
+    view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student
   expected_output: 'Object with fields: bird (boolean), species (string), location
     (string)'

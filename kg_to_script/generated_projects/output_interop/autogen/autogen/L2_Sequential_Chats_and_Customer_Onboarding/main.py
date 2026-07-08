@@ -10,6 +10,7 @@ from team import (
 from autogen_agentchat.conditions import (
     MaxMessageTermination,
 )
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
 
@@ -18,7 +19,14 @@ INPUTS = {
 
 async def main():
     try:
-        # Step-by-step sequential execution
+        # Step-by-step sequential execution.
+        #
+        # `history` accumulates every step's real conversation so far and is
+        # threaded into each subsequent step's .run() call. Without this,
+        # each step only ever sees its own task prompt in isolation - later
+        # steps (e.g. "review the draft") have no way to see what an earlier
+        # step (e.g. "draft the posting") actually produced.
+        history: list[BaseChatMessage] = []
         # ==================================================
         # Workflow Step: task_onboarding_personal_info
         # Workflow Edge: task_onboarding_personal_info -> task_onboarding_topic_preference
@@ -28,8 +36,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Hello, I'm here to help you get started with our product. Could you tell me your name and location? """
-        # Execute via the assigned agent: onboarding_personal_information_agent
-        result = await onboarding_personal_information_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: onboarding_personal_information_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await onboarding_personal_information_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -46,8 +57,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Great! Could you tell me what topics you are interested in reading about? """
-        # Execute via the assigned agent: onboarding_topic_preference_agent
-        result = await onboarding_topic_preference_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: onboarding_topic_preference_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await onboarding_topic_preference_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:
@@ -63,8 +77,11 @@ async def main():
         print("=" * 80)
 
         task_prompt = """Let's find something fun to read. """
-        # Execute via the assigned agent: customer_engagement_agent
-        result = await customer_engagement_agent.run(task=task_prompt)
+        history.append(TextMessage(content=task_prompt, source="user"))
+        # Execute via the assigned agent: customer_engagement_agent, passing the
+        # accumulated history so this step can see every prior step's output.
+        result = await customer_engagement_agent.run(task=history)
+        history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
         if hasattr(result, "messages") and result.messages:

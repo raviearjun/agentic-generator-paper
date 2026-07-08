@@ -1,20 +1,20 @@
 task_financial_analysis:
-  description: Conduct a thorough analysis of {company_stock}'s stock financial health
-    and market performance.
+  description: |
+    Conduct a thorough analysis of {company_stock}'s stock financial health and market performance. This includes examining key financial metrics such as P/E ratio, EPS growth, revenue trends, and debt-to-equity ratio. Also, analyze the stock's performance in comparison to its industry peers and overall market trends.
   expected_output: |
     The final report must expand on the summary provided but now including a clear assessment of the stock's financial standing, its strengths and weaknesses, and how it fares against its competitors in the current market scenario. Make sure to use the most recent data possible.
 task_research:
   description: |
-    Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry.
+    Collect and summarize recent news articles, press releases, and market analyses related to the {company_stock} stock and its industry. Pay special attention to any significant events, market sentiments, and analysts' opinions. Also include upcoming events like earnings and others.
   expected_output: |
     A report that includes a comprehensive summary of the latest news, any notable shifts in market sentiment, and potential impacts on the stock. Also return the stock ticker as {company_stock}.
 task_filings_analysis:
-  description: Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock}
-    in question.
+  description: |
+    Analyze the latest 10-Q and 10-K filings from EDGAR for the stock {company_stock}. Focus on Management's Discussion and Analysis, financial statements, insider trading activity, and any disclosed risks. Extract relevant data and insights that could influence the stock's future performance.
   expected_output: |
     Final answer must be an expanded report that highlights significant findings from these filings including any red flags or positive indicators for your customer.
 task_recommend:
   description: |
-    Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst to form a comprehensive investment recommendation.
+    Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. Consider all aspects, including financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings.
   expected_output: |
     A full detailed recommendation for the customer with clear investment stance and strategy, supporting evidence, and a well formatted report.

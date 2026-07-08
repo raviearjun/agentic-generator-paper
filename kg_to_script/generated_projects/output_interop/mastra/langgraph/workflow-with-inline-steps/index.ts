@@ -3,7 +3,11 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
 const MastraruntimeAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -22,6 +26,7 @@ async function taskStepOne(state: typeof MastraruntimeAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: Execute: doubledValue = context.machineContext.triggerData.inputValue * 2" +
         "\nNode: taskStepOne",
     },
     ...state.messages,
@@ -40,6 +45,7 @@ async function taskStepTwo(state: typeof MastraruntimeAnnotation.State) {
       role: "system",
       content:
         "You are a workflow-executor." +
+        "\n\nYour task: If context.machineContext.stepResults.stepOne.status == 'success' then incrementedValue = context.machineContext.stepResults.stepOne.payload.doubledValue + 1 else incrementedValue = 0" +
         "\nNode: taskStepTwo",
     },
     ...state.messages,

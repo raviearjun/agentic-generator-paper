@@ -18,11 +18,14 @@ const taskOnboardingPersonalInfo = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Hello, I'm here to help you get started with our product. Could you tell me your name and location?
-    // This step uses agent: onboardingPersonalInformationAgent
-    // const result = await onboardingPersonalInformationAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_onboarding_personal_info not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Hello, I'm here to help you get started with our product. Could you tell me your name and location?`
+    const result = await onboardingPersonalInformationAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -32,11 +35,14 @@ const taskOnboardingTopicPreference = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Great! Could you tell me what topics you are interested in reading about?
-    // This step uses agent: onboardingTopicPreferenceAgent
-    // const result = await onboardingTopicPreferenceAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_onboarding_topic_preference not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Great! Could you tell me what topics you are interested in reading about?`
+    const result = await onboardingTopicPreferenceAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
@@ -46,11 +52,14 @@ const taskCustomerEngagementRequest = createStep({
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Let's find something fun to read.
-    // This step uses agent: customerEngagementAgent
-    // const result = await customerEngagementAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_customer_engagement_request not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Let's find something fun to read.`
+    const result = await customerEngagementAgent.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

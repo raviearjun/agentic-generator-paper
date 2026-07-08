@@ -3,7 +3,11 @@ import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
 const OnboardingTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -22,6 +26,7 @@ async function taskOnboardingPersonalInfo(state: typeof OnboardingTeamAnnotation
       role: "system",
       content:
         "You are a onboarding_personal_information." +
+        "\n\nYour task: Hello, I'm here to help you get started with our product. Could you tell me your name and location?" +
         "\nNode: taskOnboardingPersonalInfo",
     },
     ...state.messages,
@@ -40,6 +45,7 @@ async function taskOnboardingTopicPreference(state: typeof OnboardingTeamAnnotat
       role: "system",
       content:
         "You are a onboarding_topic_preference." +
+        "\n\nYour task: Great! Could you tell me what topics you are interested in reading about?" +
         "\nNode: taskOnboardingTopicPreference",
     },
     ...state.messages,
@@ -58,6 +64,7 @@ async function taskCustomerEngagementRequest(state: typeof OnboardingTeamAnnotat
       role: "system",
       content:
         "You are a customer_engagement." +
+        "\n\nYour task: Let's find something fun to read." +
         "\nNode: taskCustomerEngagementRequest",
     },
     ...state.messages,

@@ -1,23 +1,27 @@
 task_write_blog:
-  description: Writer generates a concise blogpost about DeepLearning.AI.
+  description: |
+    撰写一篇简洁但引人入胜的博客，内容涉及
+           DeepLearning.AI. 确保博客100 字以内。
   expected_output: 'Completed: task_write_blog'
 task_critic_initiate_1:
-  description: Critic initiates chat with Writer (first initiate_chat call, max_turns=3).
+  description: |
+    撰写一篇简洁但引人入胜的博客，内容涉及
+           DeepLearning.AI. 确保博客100 字以内。
   expected_output: 'Completed: task_critic_initiate_1'
 task_nested_seo_review:
-  description: SEO reviewer performs one-turn review using reflection_with_llm summary_prompt.
+  description: '仅以 JSON 对象的格式返回审查结果  :{''审查员'': '''', ''审查结果'': ''''}. 这里的 审查员 应该是你自己的角色'
   expected_output: 'Completed: task_nested_seo_review'
 task_nested_legal_review:
-  description: Legal reviewer performs one-turn review using reflection_with_llm summary_prompt.
+  description: '仅以 JSON 对象的格式返回审查结果  :{''审查员'': '''', ''审查结果'': ''''}.'
   expected_output: 'Completed: task_nested_legal_review'
 task_nested_ethics_review:
-  description: Ethics reviewer performs one-turn review using reflection_with_llm
-    summary_prompt.
+  description: '仅以 JSON 对象的格式返回审查结果  :{''审查员'': '''', ''审查结果'': ''''}'
   expected_output: 'Completed: task_nested_ethics_review'
 task_meta_aggregate:
-  description: Meta reviewer aggregates feedback and provides final suggestion.
+  description: 对所有审查员的反馈意见进行汇总，并对写作提出最终建议。
   expected_output: 'Completed: task_meta_aggregate'
 task_critic_initiate_2:
   description: |
-    Critic initiates chat with Writer (second initiate_chat call, max_turns=2) which triggers nested reviews.
+    撰写一篇简洁但引人入胜的博客，内容涉及
+           DeepLearning.AI. 确保博客100 字以内。
   expected_output: 'Completed: task_critic_initiate_2'

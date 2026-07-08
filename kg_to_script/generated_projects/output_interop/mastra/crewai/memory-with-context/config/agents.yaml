@@ -1,5 +1,0 @@
-memory_agent:
-  role: assistant
-  goal: assistant
-  backstory: |
-    This prompt is supplied as the 'instructions' argument when creating the Agent instance in source code.

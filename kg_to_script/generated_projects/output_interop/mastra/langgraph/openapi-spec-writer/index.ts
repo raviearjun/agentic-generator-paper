@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const MastravnextAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -57,6 +61,7 @@ async function taskSiteCrawlSync(state: typeof MastravnextAnnotation.State) {
       role: "system",
       content:
         "You are a openapi-spec-writer." +
+        "\n\nYour task: Crawl the provided URL, extract main content as markdown, include sourceURL in metadata. Use provided pathRegex and limit. Exclude nav/header/footer and unrelated tags; return markdown blocks and metadata." +
         "\nNode: taskSiteCrawlSync",
     },
     ...state.messages,
@@ -75,6 +80,7 @@ async function taskGenerateSpec(state: typeof MastravnextAnnotation.State) {
       role: "system",
       content:
         "You are a openapi-spec-writer." +
+        "\n\nYour task: I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates." +
         "\nNode: taskGenerateSpec",
     },
     ...state.messages,
@@ -93,6 +99,7 @@ async function taskAddToGithub(state: typeof MastravnextAnnotation.State) {
       role: "system",
       content:
         "You are a openapi-spec-writer." +
+        "\n\nYour task: Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences." +
         "\nNode: taskAddToGithub",
     },
     ...state.messages,

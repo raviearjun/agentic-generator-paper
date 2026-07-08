@@ -5,7 +5,11 @@ import { z } from "zod";
 
 const ConversationalChessTeamAnnotation = Annotation.Root({
   messages: Annotation<any[]>({
-    reducer: (_, next) => next,
+    // Append rather than replace: each node only returns its own new
+    // message(s), so the reducer must accumulate history across nodes
+    // or every node past the first only ever sees the immediately
+    // preceding node's output.
+    reducer: (prev, next) => prev.concat(next),
     default: () => [],
   }),
 });
@@ -46,6 +50,7 @@ async function taskInitiateChat(state: typeof ConversationalChessTeamAnnotation.
       role: "system",
       content:
         "You are a Chess Player (Black)." +
+        "\n\nYour task: 让我们下棋吧，该你走了！" +
         "\nNode: taskInitiateChat",
     },
     ...state.messages,
@@ -64,6 +69,7 @@ async function taskBoardProxySummaryToWhite(state: typeof ConversationalChessTea
       role: "system",
       content:
         "You are a Board Proxy / Referee." +
+        "\n\nYour task: Summary of last board state and last move (provided by board proxy)." +
         "\nNode: taskBoardProxySummaryToWhite",
     },
     ...state.messages,
@@ -82,6 +88,7 @@ async function taskGetLegalMoves(state: typeof ConversationalChessTeamAnnotation
       role: "system",
       content:
         "You are a Chess Player (White)." +
+        "\n\nYour task: 调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。" +
         "\nNode: taskGetLegalMoves",
     },
     ...state.messages,
@@ -100,6 +107,7 @@ async function taskMakeMove(state: typeof ConversationalChessTeamAnnotation.Stat
       role: "system",
       content:
         "You are a Chess Player (White)." +
+        "\n\nYour task: 选择一个合法走法并调用 make_move(move) 来执行该步棋。" +
         "\nNode: taskMakeMove",
     },
     ...state.messages,
@@ -118,6 +126,7 @@ async function taskCheckMadeMove(state: typeof ConversationalChessTeamAnnotation
       role: "system",
       content:
         "You are a Board Proxy / Referee." +
+        "\n\nYour task: Call check_made_move(msg) to determine if a move has been executed; if true, end nested chat iteration." +
         "\nNode: taskCheckMadeMove",
     },
     ...state.messages,

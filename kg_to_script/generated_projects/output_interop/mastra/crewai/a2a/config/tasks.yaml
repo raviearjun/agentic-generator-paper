@@ -1,31 +1,39 @@
 task_get_agent_card:
-  description: Retrieve agent card metadata (getAgentCard / getExtendedAgentCard).
+  description: |
+    Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard.
   expected_output: AgentCard JSON object containing metadata about the agent.
 task_send_message:
-  description: Send a single message to an agent and receive a message or task response.
+  description: Send a message to the agent using JSON-RPC method message/send with
+    MessageSendParams.
   expected_output: A SendMessageResponse (Message or Task).
 task_send_message_stream:
-  description: Initiate a streaming message to receive real-time task events.
+  description: |
+    Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.
   expected_output: Streamed A2A events (Message, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent).
 task_get_task:
-  description: Query status and result of an existing task.
+  description: Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status
+    and result.
   expected_output: GetTaskResponse containing current task data.
 task_cancel_task:
-  description: Cancel a running task for the agent.
+  description: Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running
+    task.
   expected_output: Task object representing the cancelled task or confirmation of
     cancellation.
 task_resubscribe_task:
-  description: Resume a previously started task stream to receive ongoing updates.
+  description: |
+    Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.
   expected_output: Streamed A2A events for the existing task.
 task_set_push_notification_config:
-  description: Set push notification configuration for a task.
+  description: Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig
+    object.
   expected_output: Acknowledgement and the stored TaskPushNotificationConfig.
 task_get_push_notification_config:
-  description: Get push notification configuration for a task.
+  description: Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.
   expected_output: The TaskPushNotificationConfig for the requested task.
 task_list_push_notification_config:
-  description: List push notification configurations.
+  description: Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.
   expected_output: A list of TaskPushNotificationConfig objects.
 task_delete_push_notification_config:
-  description: Delete a push notification configuration for a task.
+  description: Call tasks/pushNotificationConfig/delete JSON-RPC with identifying
+    params to delete a config.
   expected_output: Confirmation of deletion (void response or success envelope).

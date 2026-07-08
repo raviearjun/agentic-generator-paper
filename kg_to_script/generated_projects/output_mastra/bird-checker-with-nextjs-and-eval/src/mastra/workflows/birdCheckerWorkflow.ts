@@ -19,7 +19,7 @@ import { getRandomImageTool } from '../tools'
 
 const getImageTask = createStep({
   id: 'get_image_task',
-  description: `UI-triggered task to obtain a random image from Unsplash based on selected query.`,
+  description: `Get a random image from Unsplash based on the selected option (wildlife, feathers, flying, birds).`,
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
@@ -32,15 +32,21 @@ const getImageTask = createStep({
 
 const classifyImageTask = createStep({
   id: 'classify_image_task',
-  description: `Agent task to determine bird presence, species, and summarize location.`,
+  description: `view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student`,
   inputSchema: z.object({}),
   outputSchema: z.object({Object_with_fields: z.string()}),
   execute: async ({ inputData }) => {
-    // view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student
-    // This step uses agent: birdAgent
-    // const result = await birdAgent.generate('...')
-    // TODO: Implement step logic
-    throw new Error('classify_image_task not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student`
+    const result = await birdAgent.generate(prompt)
+    return {
+      ...context,
+      Object_with_fields: context.Object_with_fields ?? result.text,
+    }
   },
 })
 

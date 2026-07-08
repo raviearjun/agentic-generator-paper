@@ -16,7 +16,7 @@ const taskLinkGetBrokenLinks = createStep({
   id: 'task_link_get_broken_links',
   description: `Run linkinator via shell to collect links; parse JSON output`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({Format_the_broken_links_JSON_into_a_human: z.string()}),
   execute: async ({ inputData }) => {
     // Run linkinator via shell to collect links; parse JSON output
     // TODO: Implement step logic
@@ -26,15 +26,18 @@ const taskLinkGetBrokenLinks = createStep({
 
 const taskLinkReportBrokenLinks = createStep({
   id: 'task_link_report_broken_links',
-  description: `Report broken links by generating a message with DaneLinkChecker and posting to Slack`,
-  inputSchema: z.object({}),
+  description: `Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.`,
+  inputSchema: z.object({Format_the_broken_links_JSON_into_a_human: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.
-    // This step uses agent: daneLinkChecker
-    // const result = await daneLinkChecker.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_link_report_broken_links not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.`
+    const result = await daneLinkChecker.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 

@@ -16,7 +16,7 @@ const taskEntryMessageInput = createStep({
   id: 'task_entry_message_input',
   description: `Prompt user to input a message (inquirer prompt)`,
   inputSchema: z.object({}),
-  outputSchema: z.object({}),
+  outputSchema: z.object({User: z.string()}),
   execute: async ({ inputData }) => {
     // Prompt user to input a message (inquirer prompt)
     // TODO: Implement step logic
@@ -26,15 +26,18 @@ const taskEntryMessageInput = createStep({
 
 const taskEntryMessageOutput = createStep({
   id: 'task_entry_message_output',
-  description: `Send user message to Dane agent and stream/generate response`,
-  inputSchema: z.object({}),
+  description: `User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.`,
+  inputSchema: z.object({User: z.string()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.
-    // This step uses agent: dane
-    // const result = await dane.generate('...')
-    // TODO: Implement step logic
-    throw new Error('task_entry_message_output not implemented yet')
+    // context accumulates every field seen so far (this step's own inputData,
+    // which already carries forward everything prior steps produced) so that
+    // {placeholder} references below can resolve to real values instead of
+    // being sent to the agent as inert literal text.
+    const context = inputData as Record<string, string>
+    const prompt = `User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.`
+    const result = await dane.generate(prompt)
+    return { ...context, output: result.text }
   },
 })
 
