@@ -16,7 +16,7 @@ const taskChangelogStepA1 = createStep({
   id: 'task_changelog_step_a1',
   description: `Get a git diff and connect to slack; runs git diff via execa`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Time: z.string(), Structure: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Get a git diff and connect to slack; runs git diff via execa
     // TODO: Implement step logic
@@ -27,7 +27,7 @@ const taskChangelogStepA1 = createStep({
 const taskChangelogStepA2 = createStep({
   id: 'task_changelog_step_a2',
   description: `Time: recent week`,
-  inputSchema: z.object({Time: z.string(), Structure: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,

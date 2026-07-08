@@ -124,8 +124,7 @@ async function main() {
   const run7 = await workflowPnpmChangsetPublisher.createRunAsync()
   const result7 = await run7.start({
     inputData: {
-      CRITICAL: "",
-      Include_create: "",
+      input: "",
     },
   })
 

@@ -17,8 +17,8 @@ import { z } from 'zod'
 export const getRandomImageTool = createTool({
   id: 'getRandomImageTool',
   description: `Gets a random image from unsplash based on the selected option`,
-  inputSchema: z.object({query: z.string()}),
-  outputSchema: z.object({Image_object_with_fields: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
+  outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic
     //

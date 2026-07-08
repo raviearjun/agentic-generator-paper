@@ -18,8 +18,8 @@ import { getRandomImageTool } from '../tools'
 const getImageTask = createStep({
   id: 'get_image_task',
   description: `Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds).`,
-  inputSchema: z.object({query: z.string()}),
-  outputSchema: z.object({image: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Fetch a random image from Unsplash matching the provided query (wildlife | feathers | flying | birds).
     // This step uses tool: getRandomImageTool
@@ -31,8 +31,8 @@ const getImageTask = createStep({
 const birdCheckTask = createStep({
   id: 'bird_check_task',
   description: `view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student`,
-  inputSchema: z.object({image: z.string()}),
-  outputSchema: z.object({bird: z.boolean()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -41,10 +41,7 @@ const birdCheckTask = createStep({
     const context = inputData as Record<string, string>
     const prompt = `view this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student`
     const result = await birdAgent.generate(prompt)
-    return {
-      ...context,
-      bird: context.bird ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -55,8 +52,8 @@ const birdCheckTask = createStep({
  */
 export const birdCheckerWorkflow = createWorkflow({
   id: 'bird_checker_workflow',
-  inputSchema: z.object({query: z.string()}),
-  outputSchema: z.object({bird: z.boolean()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   steps: [getImageTask, birdCheckTask],
 })
   .then(getImageTask)

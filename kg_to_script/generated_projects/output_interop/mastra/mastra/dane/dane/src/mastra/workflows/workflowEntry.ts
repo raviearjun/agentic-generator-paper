@@ -16,7 +16,7 @@ const taskEntryMessageInput = createStep({
   id: 'task_entry_message_input',
   description: `Prompt user to input a message (inquirer prompt)`,
   inputSchema: z.object({}),
-  outputSchema: z.object({User: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Prompt user to input a message (inquirer prompt)
     // TODO: Implement step logic
@@ -27,7 +27,7 @@ const taskEntryMessageInput = createStep({
 const taskEntryMessageOutput = createStep({
   id: 'task_entry_message_output',
   description: `User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.`,
-  inputSchema: z.object({User: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,

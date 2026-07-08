@@ -16,7 +16,7 @@ async function main() {
   const run1 = await birdCheckerWorkflow.createRunAsync()
   const result1 = await run1.start({
     inputData: {
-      query: "",
+      input: "",
     },
   })
 

@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolActiveDistTag = createTool({
   id: 'toolActiveDistTag',
   description: `Set npm dist-tag on published packages.`,
-  inputSchema: z.object({Set_npm_dist: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolA2AApi = createTool({
   id: 'toolA2AApi',
   description: `A2A JSON-RPC HTTP API endpoints used to interact with remote agents (agent-card, message/send, message/stream, tasks/*, pushNotificationConfig/*).`,
-  inputSchema: z.object({A2A_JSON: z.number()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

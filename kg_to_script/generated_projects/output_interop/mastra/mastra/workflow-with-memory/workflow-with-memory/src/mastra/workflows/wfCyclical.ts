@@ -20,17 +20,9 @@ const taskCycStepOne = createStep({
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({valueToIncrement: z.number()}),
   execute: async ({ inputData }) => {
-    // context accumulates every field seen so far (this step's own inputData,
-    // which already carries forward everything prior steps produced) so that
-    // {placeholder} references below can resolve to real values instead of
-    // being sent to the agent as inert literal text.
-    const context = inputData as Record<string, string>
-    const prompt = `Doubles the input value`
-    const result = await catOne.generate(prompt)
-    return {
-      ...context,
-      valueToIncrement: context.valueToIncrement ?? result.text,
-    }
+    // Doubles the input value
+    // TODO: Implement step logic
+    throw new Error('task_cyc_step_one not implemented yet')
   },
 })
 
@@ -40,17 +32,9 @@ const taskCycStepTwo = createStep({
   inputSchema: z.object({valueToIncrement: z.number()}),
   outputSchema: z.object({valueToSquare: z.number()}),
   execute: async ({ inputData }) => {
-    // context accumulates every field seen so far (this step's own inputData,
-    // which already carries forward everything prior steps produced) so that
-    // {placeholder} references below can resolve to real values instead of
-    // being sent to the agent as inert literal text.
-    const context = inputData as Record<string, string>
-    const prompt = `Adds 1 to the input value`
-    const result = await catOne.generate(prompt)
-    return {
-      ...context,
-      valueToSquare: context.valueToSquare ?? result.text,
-    }
+    // Adds 1 to the input value
+    // TODO: Implement step logic
+    throw new Error('task_cyc_step_two not implemented yet')
   },
 })
 
@@ -60,17 +44,9 @@ const taskCycStepThree = createStep({
   inputSchema: z.object({valueToSquare: z.number()}),
   outputSchema: z.object({inputValue: z.number()}),
   execute: async ({ inputData }) => {
-    // context accumulates every field seen so far (this step's own inputData,
-    // which already carries forward everything prior steps produced) so that
-    // {placeholder} references below can resolve to real values instead of
-    // being sent to the agent as inert literal text.
-    const context = inputData as Record<string, string>
-    const prompt = `Squares the input value`
-    const result = await catOne.generate(prompt)
-    return {
-      ...context,
-      inputValue: context.inputValue ?? result.text,
-    }
+    // Squares the input value
+    // TODO: Implement step logic
+    throw new Error('task_cyc_step_three not implemented yet')
   },
 })
 
@@ -80,14 +56,9 @@ const taskCycStepOneLoop = createStep({
   inputSchema: z.object({inputValue: z.number()}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
-    // context accumulates every field seen so far (this step's own inputData,
-    // which already carries forward everything prior steps produced) so that
-    // {placeholder} references below can resolve to real values instead of
-    // being sent to the agent as inert literal text.
-    const context = inputData as Record<string, string>
-    const prompt = `Doubles the input value (loop invocation)`
-    const result = await catOne.generate(prompt)
-    return { ...context, output: result.text }
+    // Doubles the input value (loop invocation)
+    // TODO: Implement step logic
+    throw new Error('task_cyc_step_one_loop not implemented yet')
   },
 })
 

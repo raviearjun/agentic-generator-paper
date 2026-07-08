@@ -16,7 +16,7 @@ const taskLinkGetBrokenLinks = createStep({
   id: 'task_link_get_broken_links',
   description: `Run linkinator via shell to collect links; parse JSON output`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Format_the_broken_links_JSON_into_a_human: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // Run linkinator via shell to collect links; parse JSON output
     // TODO: Implement step logic
@@ -27,7 +27,7 @@ const taskLinkGetBrokenLinks = createStep({
 const taskLinkReportBrokenLinks = createStep({
   id: 'task_link_report_broken_links',
   description: `Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.`,
-  inputSchema: z.object({Format_the_broken_links_JSON_into_a_human: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,

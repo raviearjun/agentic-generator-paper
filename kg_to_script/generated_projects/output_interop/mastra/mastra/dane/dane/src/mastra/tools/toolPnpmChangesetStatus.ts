@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolPnpmChangesetStatus = createTool({
   id: 'toolPnpmChangesetStatus',
   description: `Check which pnpm modules would be published via dry-run.`,
-  inputSchema: z.object({Check_which_pnpm_modules_would_be_published_via_dry: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

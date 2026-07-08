@@ -1,6 +1,6 @@
 {
   "root": "/Users/naura/projects/agentic-generator-paper/kg_to_script",
-  "timestamp": "2026-07-08T00:08:48.452002+00:00",
+  "timestamp": "2026-07-08T02:18:56.672415+00:00",
   "frameworks": [
     "crewai",
     "autogen",
@@ -53903,8 +53903,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 10 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "agent",
@@ -56179,8 +56179,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "localhost_8079",
                     "http_localhost_8079",
+                    "localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -61504,13 +61504,13 @@
         "extraction_errors": 1,
         "evaluation_errors": 0,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.5789473684210527,
+        "executability_rate": 0.631578947368421,
         "executability_rate_na": false,
         "oec_all": 0.6543617494799012,
         "concept_coverage_rate": 0.9028633602692357,
         "avg_wgi": 0.7915227170490329,
         "avg_edge_f1": 0.6473684210526316,
-        "cfcs": 0.8241052968796911
+        "cfcs": 0.8346316126691649
       },
       "is_same_framework": false
     },
@@ -64615,8 +64615,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "localhost_8079",
                     "http_localhost_8079",
+                    "localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -72728,8 +72728,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "localhost_8079",
                     "http_localhost_8079",
+                    "localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -77826,7 +77826,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -79601,7 +79601,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -80500,7 +80500,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -80825,7 +80825,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -82676,7 +82676,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -83070,7 +83070,7 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -83491,7 +83491,7 @@
               }
             ]
           },
-          "syntax_ok": false,
+          "syntax_ok": true,
           "run_status": "SUCCESS_DUMMY",
           "run_output": ""
         },
@@ -84012,14 +84012,14 @@
         "generation_errors": 0,
         "extraction_errors": 1,
         "evaluation_errors": 0,
-        "syntactic_correctness_rate": 0.631578947368421,
+        "syntactic_correctness_rate": 1.0,
         "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.7377462414636389,
         "concept_coverage_rate": 0.9842235493293148,
         "avg_wgi": 0.9147746818025455,
         "avg_edge_f1": 0.8528265107212475,
-        "cfcs": 0.8960152588132422
+        "cfcs": 0.969699469339558
       },
       "is_same_framework": true
     }
@@ -84189,9 +84189,9 @@
     },
     "mastra": {
       "crewai": {
-        "cfcs": 0.8241052968796911,
+        "cfcs": 0.8346316126691649,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.5789473684210527,
+        "executability_rate": 0.631578947368421,
         "executability_rate_na": false,
         "oec_all": 0.6543617494799012,
         "concept_coverage_rate": 0.9028633602692357,
@@ -84228,8 +84228,8 @@
         "generation_errors": 0
       },
       "mastra": {
-        "cfcs": 0.8960152588132422,
-        "syntactic_correctness_rate": 0.631578947368421,
+        "cfcs": 0.969699469339558,
+        "syntactic_correctness_rate": 1.0,
         "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.7377462414636389,
