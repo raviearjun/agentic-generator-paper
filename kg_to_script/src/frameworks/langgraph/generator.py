@@ -35,6 +35,7 @@ def _create_jinja_env() -> Environment:
             text.replace("\\", "\\\\")
             .replace("`", "\\`")
             .replace("${", "\\${")
+            .replace('"', '\\"')
             .replace("\r\n", "\\n")
             .replace("\n", "\\n")
             .replace("\r", "\\n")

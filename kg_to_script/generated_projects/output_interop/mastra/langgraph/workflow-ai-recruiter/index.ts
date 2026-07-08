@@ -26,7 +26,7 @@ async function gatherCandidateInfoTask(state: typeof Mastrainstanceworkflowairec
       role: "system",
       content:
         "You are a workflow-processor." +
-        "\n\nYour task: You are given this resume text: "\${resumeText}"" +
+        "\n\nYour task: You are given this resume text: \"\${resumeText}\"" +
         "\nNode: gatherCandidateInfoTask",
     },
     ...state.messages,
@@ -45,7 +45,7 @@ async function askAboutSpecialtyTask(state: typeof Mastrainstanceworkflowairecru
       role: "system",
       content:
         "You are a workflow-processor." +
-        "\n\nYour task: You are a recruiter. Given the resume below, craft a short question for \${candidateName} about how they got into "\${specialty}". Resume: \${resumeText}" +
+        "\n\nYour task: You are a recruiter. Given the resume below, craft a short question for \${candidateName} about how they got into \"\${specialty}\". Resume: \${resumeText}" +
         "\nNode: askAboutSpecialtyTask",
     },
     ...state.messages,

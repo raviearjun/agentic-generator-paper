@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: wfSequential")
   console.log("=".repeat(80))
 
-  const run1 = await wfSequential.createRunAsync()
+  const run1 = await wfSequential.createRun()
   const result1 = await run1.start({
     inputData: {
       inputValue: "",
@@ -31,7 +31,7 @@ async function main() {
   console.log("Workflow: wfParallel")
   console.log("=".repeat(80))
 
-  const run2 = await wfParallel.createRunAsync()
+  const run2 = await wfParallel.createRun()
   const result2 = await run2.start({
     inputData: {
       inputValue: "",
@@ -49,7 +49,7 @@ async function main() {
   console.log("Workflow: wfBranched")
   console.log("=".repeat(80))
 
-  const run3 = await wfBranched.createRunAsync()
+  const run3 = await wfBranched.createRun()
   const result3 = await run3.start({
     inputData: {
       inputValue: "",
@@ -67,7 +67,7 @@ async function main() {
   console.log("Workflow: wfCyclical")
   console.log("=".repeat(80))
 
-  const run4 = await wfCyclical.createRunAsync()
+  const run4 = await wfCyclical.createRun()
   const result4 = await run4.start({
     inputData: {
       inputValue: "",

@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: patternNested")
   console.log("=".repeat(80))
 
-  const run1 = await patternNested.createRunAsync()
+  const run1 = await patternNested.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

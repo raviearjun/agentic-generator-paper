@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowTravelSubmission")
   console.log("=".repeat(80))
 
-  const run1 = await workflowTravelSubmission.createRunAsync()
+  const run1 = await workflowTravelSubmission.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",
@@ -31,7 +31,7 @@ async function main() {
   console.log("Workflow: workflowSyncCsvData")
   console.log("=".repeat(80))
 
-  const run2 = await workflowSyncCsvData.createRunAsync()
+  const run2 = await workflowSyncCsvData.createRun()
   const result2 = await run2.start({
     inputData: {
       input: "",

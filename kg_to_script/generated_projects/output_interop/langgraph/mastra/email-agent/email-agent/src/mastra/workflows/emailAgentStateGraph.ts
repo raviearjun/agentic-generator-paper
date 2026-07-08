@@ -99,7 +99,7 @@ const taskSendEmail = createStep({
   id: 'task_send_email',
   description: `Render a confirmation UI indicating the email was successfully sent.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Confirmation_message_or_sent: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -108,10 +108,7 @@ const taskSendEmail = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Render a confirmation UI indicating the email was successfully sent.`
     const result = await emailAssistantAgent.generate(prompt)
-    return {
-      ...context,
-      Confirmation_message_or_sent: context.Confirmation_message_or_sent ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -125,7 +122,7 @@ const taskSendEmail = createStep({
 export const emailAgentStateGraph = createWorkflow({
   id: 'email_agent_state_graph',
   inputSchema: z.object({CONVERSATION: z.string()}),
-  outputSchema: z.object({Confirmation_message_or_sent: z.string()}),
+  outputSchema: z.object({}),
   steps: [taskWriteEmail, taskInterrupt, taskRewriteEmail, taskSendEmail],
 })
   .then(taskWriteEmail)

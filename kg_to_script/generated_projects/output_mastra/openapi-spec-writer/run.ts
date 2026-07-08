@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: wpOpenApiSpecGenWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await wpOpenApiSpecGenWorkflow.createRunAsync()
+  const run1 = await wpOpenApiSpecGenWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",
@@ -31,7 +31,7 @@ async function main() {
   console.log("Workflow: wpMakePrToMastra")
   console.log("=".repeat(80))
 
-  const run2 = await wpMakePrToMastra.createRunAsync()
+  const run2 = await wpMakePrToMastra.createRun()
   const result2 = await run2.start({
     inputData: {
       input: "",

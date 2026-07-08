@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: a2AClientWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await a2AClientWorkflow.createRunAsync()
+  const run1 = await a2AClientWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       agentId: "",

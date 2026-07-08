@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: orderPizzaStateGraph")
   console.log("=".repeat(80))
 
-  const run1 = await orderPizzaStateGraph.createRunAsync()
+  const run1 = await orderPizzaStateGraph.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

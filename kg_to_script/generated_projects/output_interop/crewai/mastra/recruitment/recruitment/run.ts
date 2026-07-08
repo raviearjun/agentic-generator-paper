@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowRecruitment")
   console.log("=".repeat(80))
 
-  const run1 = await workflowRecruitment.createRunAsync()
+  const run1 = await workflowRecruitment.createRun()
   const result1 = await run1.start({
     inputData: {
       job_requirements: "",

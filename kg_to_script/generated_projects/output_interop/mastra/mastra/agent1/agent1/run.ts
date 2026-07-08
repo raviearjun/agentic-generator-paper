@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: mastraAgentWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await mastraAgentWorkflow.createRunAsync()
+  const run1 = await mastraAgentWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       agentId: "",

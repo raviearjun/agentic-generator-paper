@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowRegistryServers")
   console.log("=".repeat(80))
 
-  const run1 = await workflowRegistryServers.createRunAsync()
+  const run1 = await workflowRegistryServers.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

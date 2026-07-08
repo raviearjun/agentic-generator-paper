@@ -18,7 +18,7 @@ export const toolGetLegalMoves = createTool({
   id: 'toolGetLegalMoves',
   description: `Returns a list of legal moves in UCI format for the current chess board state.`,
   inputSchema: z.object({}),  // TODO: Define input schema
-  outputSchema: z.object({comma: z.string()}),
+  outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic
     //

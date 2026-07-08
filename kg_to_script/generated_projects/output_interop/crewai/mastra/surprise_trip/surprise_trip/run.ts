@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowSequential")
   console.log("=".repeat(80))
 
-  const run1 = await workflowSequential.createRunAsync()
+  const run1 = await workflowSequential.createRun()
   const result1 = await run1.start({
     inputData: {
       destination: "",

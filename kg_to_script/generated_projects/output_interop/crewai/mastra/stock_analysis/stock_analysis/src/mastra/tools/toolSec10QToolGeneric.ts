@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolSec10QToolGeneric = createTool({
   id: 'toolSec10QToolGeneric',
   description: `A tool to semantically search a company's latest 10-Q SEC filing content.`,
-  inputSchema: z.object({s_latest_10: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

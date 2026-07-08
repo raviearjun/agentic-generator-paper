@@ -13,10 +13,10 @@ async function main() {
   console.log("Workflow: workflowL5CodingAndFinancialAnalysis")
   console.log("=".repeat(80))
 
-  const run1 = await workflowL5CodingAndFinancialAnalysis.createRunAsync()
+  const run1 = await workflowL5CodingAndFinancialAnalysis.createRun()
   const result1 = await run1.start({
     inputData: {
-      date_range: "",
+      today: "",
     },
   })
 

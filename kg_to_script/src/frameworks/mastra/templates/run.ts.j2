@@ -14,7 +14,7 @@ async function main() {
   console.log("Workflow: {{ wf.var_name }}")
   console.log("=".repeat(80))
 
-  const run{{ loop.index }} = await {{ wf.var_name }}.createRunAsync()
+  const run{{ loop.index }} = await {{ wf.var_name }}.createRun()
   const result{{ loop.index }} = await run{{ loop.index }}.start({
     inputData: {
 {% for field in wf.seed_fields %}

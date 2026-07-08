@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: patternTripPlanning")
   console.log("=".repeat(80))
 
-  const run1 = await patternTripPlanning.createRunAsync()
+  const run1 = await patternTripPlanning.createRun()
   const result1 = await run1.start({
     inputData: {
       origin: "",

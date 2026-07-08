@@ -13,10 +13,10 @@ async function main() {
   console.log("Workflow: buyStockWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await buyStockWorkflow.createRunAsync()
+  const run1 = await buyStockWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
-      Expected_output: "",
+      input: "",
     },
   })
 

@@ -1,6 +1,6 @@
 {
   "root": "/Users/naura/projects/agentic-generator-paper/kg_to_script",
-  "timestamp": "2026-07-08T02:18:56.672415+00:00",
+  "timestamp": "2026-07-08T03:23:40.016428+00:00",
   "frameworks": [
     "crewai",
     "autogen",
@@ -33676,8 +33676,8 @@
             ]
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 10 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "L2_Sequential_Chats_and_Customer_Onboarding",
@@ -34104,8 +34104,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 10 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "L3_Reflection_and_Blogpost_Writing",
@@ -34409,8 +34409,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 10 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "L4_Tool_Use_and_Conversational_Chess",
@@ -35990,13 +35990,13 @@
         "extraction_errors": 0,
         "evaluation_errors": 0,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.5,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.6675472808338746,
         "concept_coverage_rate": 0.8812544047916387,
         "avg_wgi": 0.9259259259259259,
         "avg_edge_f1": 0.9444444444444445,
-        "cfcs": 0.8421540992152695
+        "cfcs": 0.9421540992152694
       },
       "is_same_framework": false
     },
@@ -38411,8 +38411,8 @@
           "status": "ok",
           "oec": {
             "all_extracted": {
-              "score": 0.5581395348837209,
-              "matched": 24,
+              "score": 0.6046511627906976,
+              "matched": 26,
               "total": 43,
               "missing": [
                 {
@@ -38444,23 +38444,6 @@
                   "details": {
                     "source": "chatbot",
                     "target": "lm_gpt_3_5_turbo"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_chatbot_human_input_mode",
-                  "important": false,
-                  "aliases": [
-                    "agent_chatbot_human_input_mode",
-                    "human_input_mode",
-                    "never",
-                    "human_input_mode_never"
-                  ],
-                  "details": {
-                    "key": "human_input_mode",
-                    "owner": "chatbot",
-                    "owner_category": "agent",
-                    "value": "NEVER"
                   }
                 },
                 {
@@ -38503,23 +38486,6 @@
                   "details": {
                     "source": "unnamed",
                     "target": "lm_gpt_3_5_turbo"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_unnamed_human_input_mode",
-                  "important": false,
-                  "aliases": [
-                    "agent_unnamed_human_input_mode",
-                    "human_input_mode",
-                    "never",
-                    "human_input_mode_never"
-                  ],
-                  "details": {
-                    "key": "human_input_mode",
-                    "owner": "unnamed",
-                    "owner_category": "agent",
-                    "value": "NEVER"
                   }
                 },
                 {
@@ -38694,8 +38660,8 @@
                   "total": 2
                 },
                 "config": {
-                  "score": 0.4444444444444444,
-                  "matched": 4,
+                  "score": 0.6666666666666666,
+                  "matched": 6,
                   "total": 9
                 },
                 "goal": {
@@ -38931,9 +38897,9 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
-          "run_status": "SYNTAX_ERROR",
-          "run_output": "    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)\n    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)\n\nNode.js v20.18.2"
+          "syntax_ok": true,
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "L2_Sequential_Chats_and_Customer_Onboarding",
@@ -40819,14 +40785,14 @@
         "generation_errors": 0,
         "extraction_errors": 0,
         "evaluation_errors": 0,
-        "syntactic_correctness_rate": 0.8333333333333334,
-        "executability_rate": 0.8333333333333334,
+        "syntactic_correctness_rate": 1.0,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
-        "oec_all": 0.7009109563487129,
+        "oec_all": 0.7086628943332091,
         "concept_coverage_rate": 0.9116895909449102,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
-        "cfcs": 0.9068402106168065
+        "cfcs": 0.9735068772834732
       },
       "is_same_framework": false
     },
@@ -42498,8 +42464,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 20 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "L6-Planning_and_Stock_Report_Generation",
@@ -42795,13 +42761,13 @@
         "extraction_errors": 0,
         "evaluation_errors": 0,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.8333333333333334,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.7814507938481947,
         "concept_coverage_rate": 1.0,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
-        "cfcs": 0.9666666666666668
+        "cfcs": 1.0
       },
       "is_same_framework": false
     },
@@ -53499,8 +53465,8 @@
             "extra_edges": []
           },
           "syntax_ok": true,
-          "run_status": "TIMEOUT",
-          "run_output": "Proyek timeout setelah 10 detik"
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "agent1",
@@ -56179,8 +56145,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "http_localhost_8079",
                     "localhost_8079",
+                    "http_localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -61504,13 +61470,13 @@
         "extraction_errors": 1,
         "evaluation_errors": 0,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.631578947368421,
+        "executability_rate": 0.6842105263157895,
         "executability_rate_na": false,
         "oec_all": 0.6543617494799012,
         "concept_coverage_rate": 0.9028633602692357,
         "avg_wgi": 0.7915227170490329,
         "avg_edge_f1": 0.6473684210526316,
-        "cfcs": 0.8346316126691649
+        "cfcs": 0.8451579284586386
       },
       "is_same_framework": false
     },
@@ -64615,8 +64581,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "http_localhost_8079",
                     "localhost_8079",
+                    "http_localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -72728,8 +72694,8 @@
                   "aliases": [
                     "tool_tool_upstash_store_upstash_store_url",
                     "upstash_store_url",
-                    "http_localhost_8079",
                     "localhost_8079",
+                    "http_localhost_8079",
                     "upstash_store_url_http_localhost_8079"
                   ],
                   "details": {
@@ -76269,9 +76235,9 @@
             "missing_edges": [],
             "extra_edges": []
           },
-          "syntax_ok": false,
-          "run_status": "SYNTAX_ERROR",
-          "run_output": "    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)\n    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)\n\nNode.js v20.18.2"
+          "syntax_ok": true,
+          "run_status": "SUCCESS_DUMMY",
+          "run_output": ""
         },
         {
           "project": "workflow-with-inline-steps",
@@ -77418,14 +77384,14 @@
         "generation_errors": 0,
         "extraction_errors": 1,
         "evaluation_errors": 0,
-        "syntactic_correctness_rate": 0.9473684210526315,
-        "executability_rate": 0.6842105263157895,
+        "syntactic_correctness_rate": 1.0,
+        "executability_rate": 0.7368421052631579,
         "executability_rate_na": false,
         "oec_all": 0.6723423650497147,
         "concept_coverage_rate": 0.960958865881565,
         "avg_wgi": 0.9978070175438596,
         "avg_edge_f1": 0.9986504723346828,
-        "cfcs": 0.9139455545013115
+        "cfcs": 0.9349981860802589
       },
       "is_same_framework": false
     },
@@ -84081,9 +84047,9 @@
     },
     "autogen": {
       "crewai": {
-        "cfcs": 0.8421540992152695,
+        "cfcs": 0.9421540992152694,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.5,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.6675472808338746,
         "concept_coverage_rate": 0.8812544047916387,
@@ -84107,11 +84073,11 @@
         "generation_errors": 0
       },
       "langgraph": {
-        "cfcs": 0.9068402106168065,
-        "syntactic_correctness_rate": 0.8333333333333334,
-        "executability_rate": 0.8333333333333334,
+        "cfcs": 0.9735068772834732,
+        "syntactic_correctness_rate": 1.0,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
-        "oec_all": 0.7009109563487129,
+        "oec_all": 0.7086628943332091,
         "concept_coverage_rate": 0.9116895909449102,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
@@ -84120,9 +84086,9 @@
         "generation_errors": 0
       },
       "mastra": {
-        "cfcs": 0.9666666666666668,
+        "cfcs": 1.0,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.8333333333333334,
+        "executability_rate": 1.0,
         "executability_rate_na": false,
         "oec_all": 0.7814507938481947,
         "concept_coverage_rate": 1.0,
@@ -84189,9 +84155,9 @@
     },
     "mastra": {
       "crewai": {
-        "cfcs": 0.8346316126691649,
+        "cfcs": 0.8451579284586386,
         "syntactic_correctness_rate": 1.0,
-        "executability_rate": 0.631578947368421,
+        "executability_rate": 0.6842105263157895,
         "executability_rate_na": false,
         "oec_all": 0.6543617494799012,
         "concept_coverage_rate": 0.9028633602692357,
@@ -84215,9 +84181,9 @@
         "generation_errors": 0
       },
       "langgraph": {
-        "cfcs": 0.9139455545013115,
-        "syntactic_correctness_rate": 0.9473684210526315,
-        "executability_rate": 0.6842105263157895,
+        "cfcs": 0.9349981860802589,
+        "syntactic_correctness_rate": 1.0,
+        "executability_rate": 0.7368421052631579,
         "executability_rate_na": false,
         "oec_all": 0.6723423650497147,
         "concept_coverage_rate": 0.960958865881565,

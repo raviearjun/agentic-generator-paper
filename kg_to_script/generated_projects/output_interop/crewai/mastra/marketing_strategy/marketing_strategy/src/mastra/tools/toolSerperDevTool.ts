@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolSerperDevTool = createTool({
   id: 'toolSerperDevTool',
   description: `Tool for performing web/search queries via Serper.dev (used to find up-to-date information).`,
-  inputSchema: z.object({used_to_find_up_to: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: birdCheckerWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await birdCheckerWorkflow.createRunAsync()
+  const run1 = await birdCheckerWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

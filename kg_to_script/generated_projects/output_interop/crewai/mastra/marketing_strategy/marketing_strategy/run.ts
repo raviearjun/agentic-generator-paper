@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: wpSequential")
   console.log("=".repeat(80))
 
-  const run1 = await wpSequential.createRunAsync()
+  const run1 = await wpSequential.createRun()
   const result1 = await run1.start({
     inputData: {
       customer_domain: "",

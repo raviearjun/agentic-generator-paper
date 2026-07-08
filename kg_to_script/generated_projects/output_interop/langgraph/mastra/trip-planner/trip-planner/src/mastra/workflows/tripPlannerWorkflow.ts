@@ -35,7 +35,7 @@ const selectAccommodationTask = createStep({
   id: 'select_accommodation_task',
   description: `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({book: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -44,17 +44,14 @@ const selectAccommodationTask = createStep({
     const context = inputData as Record<string, string>
     const prompt = `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.`
     const result = await tripPlannerAgent.generate(prompt)
-    return {
-      ...context,
-      book: context.book ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const confirmBookingTask = createStep({
   id: 'confirm_booking_task',
   description: `Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.`,
-  inputSchema: z.object({book: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,

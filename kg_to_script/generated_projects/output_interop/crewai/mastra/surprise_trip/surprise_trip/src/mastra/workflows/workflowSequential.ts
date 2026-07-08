@@ -77,7 +77,7 @@ const taskItineraryCompilationTask = createStep({
   id: 'task_itinerary_compilation_task',
   description: `Compile all researched information into a comprehensive day-by-day itinerary for the trip to {destination}. Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences. Use text formatting and document creation tools to organize the information.`,
   inputSchema: z.object({destination: z.string()}),
-  outputSchema: z.object({A_detailed_itinerary_document_including_a_day_by: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -86,10 +86,7 @@ const taskItineraryCompilationTask = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Compile all researched information into a comprehensive day-by-day itinerary for the trip to ${context.destination ?? ''}. Ensure the itinerary integrates flights, hotel information, and all planned activities and dining experiences. Use text formatting and document creation tools to organize the information.`
     const result = await itineraryCompiler.generate(prompt)
-    return {
-      ...context,
-      A_detailed_itinerary_document_including_a_day_by: context.A_detailed_itinerary_document_including_a_day_by ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -101,7 +98,7 @@ const taskItineraryCompilationTask = createStep({
 export const workflowSequential = createWorkflow({
   id: 'workflow_sequential',
   inputSchema: z.object({destination: z.string(), origin: z.string(), age: z.string(), hotel_location: z.string(), flight_information: z.string(), trip_duration: z.string()}),
-  outputSchema: z.object({A_detailed_itinerary_document_including_a_day_by: z.string()}),
+  outputSchema: z.object({}),
   steps: [taskPersonalizedActivityPlanningTask, taskRestaurantScenicLocationScoutTask, taskItineraryCompilationTask],
 })
   .then(taskPersonalizedActivityPlanningTask)

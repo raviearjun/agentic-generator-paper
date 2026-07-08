@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: crewSequentialWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await crewSequentialWorkflow.createRunAsync()
+  const run1 = await crewSequentialWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       discussion: "",

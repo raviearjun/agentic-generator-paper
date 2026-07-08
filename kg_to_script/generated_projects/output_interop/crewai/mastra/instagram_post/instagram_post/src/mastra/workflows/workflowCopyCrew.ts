@@ -81,7 +81,7 @@ const taskInstagramAdCopy = createStep({
   id: 'task_instagram_ad_copy',
   description: `Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({each_concise_and_attention: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -90,10 +90,7 @@ const taskInstagramAdCopy = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.`
     const result = await creativeContentCreatorAgent.generate(prompt)
-    return {
-      ...context,
-      each_concise_and_attention: context.each_concise_and_attention ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -105,7 +102,7 @@ const taskInstagramAdCopy = createStep({
 export const workflowCopyCrew = createWorkflow({
   id: 'workflow_copy_crew',
   inputSchema: z.object({product_website: z.string(), product_details: z.string()}),
-  outputSchema: z.object({each_concise_and_attention: z.string()}),
+  outputSchema: z.object({}),
   steps: [taskProductAnalysis, taskCompetitorAnalysis, taskCampaignDevelopment, taskInstagramAdCopy],
 })
   .then(taskProductAnalysis)

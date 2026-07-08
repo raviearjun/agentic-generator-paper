@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: meetingPreparationPattern")
   console.log("=".repeat(80))
 
-  const run1 = await meetingPreparationPattern.createRunAsync()
+  const run1 = await meetingPreparationPattern.createRun()
   const result1 = await run1.start({
     inputData: {
       participants: "",

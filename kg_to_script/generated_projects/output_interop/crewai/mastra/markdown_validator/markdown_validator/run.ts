@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: markdownValidationWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await markdownValidationWorkflow.createRunAsync()
+  const run1 = await markdownValidationWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       filename: "",

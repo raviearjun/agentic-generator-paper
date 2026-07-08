@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: myWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await myWorkflow.createRunAsync()
+  const run1 = await myWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

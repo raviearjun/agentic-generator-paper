@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: candidateWorkflowPattern")
   console.log("=".repeat(80))
 
-  const run1 = await candidateWorkflowPattern.createRunAsync()
+  const run1 = await candidateWorkflowPattern.createRun()
   const result1 = await run1.start({
     inputData: {
       resumeText: "",

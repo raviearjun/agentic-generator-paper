@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowChangelog")
   console.log("=".repeat(80))
 
-  const run1 = await workflowChangelog.createRunAsync()
+  const run1 = await workflowChangelog.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",
@@ -31,7 +31,7 @@ async function main() {
   console.log("Workflow: workflowEntry")
   console.log("=".repeat(80))
 
-  const run2 = await workflowEntry.createRunAsync()
+  const run2 = await workflowEntry.createRun()
   const result2 = await run2.start({
     inputData: {
       input: "",
@@ -49,7 +49,7 @@ async function main() {
   console.log("Workflow: workflowCommitMessage")
   console.log("=".repeat(80))
 
-  const run3 = await workflowCommitMessage.createRunAsync()
+  const run3 = await workflowCommitMessage.createRun()
   const result3 = await run3.start({
     inputData: {
       input: "",
@@ -67,7 +67,7 @@ async function main() {
   console.log("Workflow: workflowGithubFirstContributorMessage")
   console.log("=".repeat(80))
 
-  const run4 = await workflowGithubFirstContributorMessage.createRunAsync()
+  const run4 = await workflowGithubFirstContributorMessage.createRun()
   const result4 = await run4.start({
     inputData: {
       input: "",
@@ -85,7 +85,7 @@ async function main() {
   console.log("Workflow: workflowGithubIssueLabeler")
   console.log("=".repeat(80))
 
-  const run5 = await workflowGithubIssueLabeler.createRunAsync()
+  const run5 = await workflowGithubIssueLabeler.createRun()
   const result5 = await run5.start({
     inputData: {
       input: "",
@@ -103,7 +103,7 @@ async function main() {
   console.log("Workflow: workflowLinkChecker")
   console.log("=".repeat(80))
 
-  const run6 = await workflowLinkChecker.createRunAsync()
+  const run6 = await workflowLinkChecker.createRun()
   const result6 = await run6.start({
     inputData: {
       input: "",
@@ -121,7 +121,7 @@ async function main() {
   console.log("Workflow: workflowPnpmChangsetPublisher")
   console.log("=".repeat(80))
 
-  const run7 = await workflowPnpmChangsetPublisher.createRunAsync()
+  const run7 = await workflowPnpmChangsetPublisher.createRun()
   const result7 = await run7.start({
     inputData: {
       input: "",
@@ -139,7 +139,7 @@ async function main() {
   console.log("Workflow: workflowTelephoneGame")
   console.log("=".repeat(80))
 
-  const run8 = await workflowTelephoneGame.createRunAsync()
+  const run8 = await workflowTelephoneGame.createRun()
   const result8 = await run8.start({
     inputData: {
       input: "",

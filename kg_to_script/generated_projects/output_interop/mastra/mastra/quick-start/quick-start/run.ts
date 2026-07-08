@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: logCatWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await logCatWorkflow.createRunAsync()
+  const run1 = await logCatWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       name: "",

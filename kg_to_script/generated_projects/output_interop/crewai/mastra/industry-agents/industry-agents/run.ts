@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowBlogCrew")
   console.log("=".repeat(80))
 
-  const run1 = await workflowBlogCrew.createRunAsync()
+  const run1 = await workflowBlogCrew.createRun()
   const result1 = await run1.start({
     inputData: {
       weaviate_feature: "",

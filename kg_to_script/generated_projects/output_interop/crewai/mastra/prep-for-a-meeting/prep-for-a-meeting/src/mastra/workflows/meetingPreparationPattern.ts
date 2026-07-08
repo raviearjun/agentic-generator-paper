@@ -95,7 +95,7 @@ const summaryAndBriefingTask = createStep({
   id: 'summary_and_briefing_task',
   description: `Compile all the research findings, industry analysis, and strategic`,
   inputSchema: z.object({context: z.string(), objective: z.string()}),
-  outputSchema: z.object({A_well: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -111,10 +111,7 @@ participants with all necessary information and strategies.
 Meeting Context: ${context.context ?? ''}
 Meeting Objective: ${context.objective ?? ''}`
     const result = await summaryAndBriefingAgent.generate(prompt)
-    return {
-      ...context,
-      A_well: context.A_well ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -126,7 +123,7 @@ Meeting Objective: ${context.objective ?? ''}`
 export const meetingPreparationPattern = createWorkflow({
   id: 'meeting_preparation_pattern',
   inputSchema: z.object({participants: z.string(), context: z.string()}),
-  outputSchema: z.object({A_well: z.string()}),
+  outputSchema: z.object({}),
   steps: [researchTask, industryAnalysisTask, meetingStrategyTask, summaryAndBriefingTask],
 })
   .then(researchTask)

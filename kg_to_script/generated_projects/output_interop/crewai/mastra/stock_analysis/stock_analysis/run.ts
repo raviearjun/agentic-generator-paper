@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowStockAnalysis")
   console.log("=".repeat(80))
 
-  const run1 = await workflowStockAnalysis.createRunAsync()
+  const run1 = await workflowStockAnalysis.createRun()
   const result1 = await run1.start({
     inputData: {
       company_stock: "",

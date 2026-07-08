@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: wpGroupChat1")
   console.log("=".repeat(80))
 
-  const run1 = await wpGroupChat1.createRunAsync()
+  const run1 = await wpGroupChat1.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

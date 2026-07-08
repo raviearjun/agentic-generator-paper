@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowCustomCrew")
   console.log("=".repeat(80))
 
-  const run1 = await workflowCustomCrew.createRunAsync()
+  const run1 = await workflowCustomCrew.createRun()
   const result1 = await run1.start({
     inputData: {
       var1: "",

@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolSec10KToolAmzn = createTool({
   id: 'toolSec10KToolAmzn',
   description: `SEC10KTool initialized with stock_name=AMZN to pre-load AMZN latest 10-K content.`,
-  inputSchema: z.object({SEC10KTool_initialized_with_stock_name: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

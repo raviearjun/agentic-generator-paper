@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: tripPlannerWorkflow")
   console.log("=".repeat(80))
 
-  const run1 = await tripPlannerWorkflow.createRunAsync()
+  const run1 = await tripPlannerWorkflow.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",

@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: patternExpandIdea")
   console.log("=".repeat(80))
 
-  const run1 = await patternExpandIdea.createRunAsync()
+  const run1 = await patternExpandIdea.createRun()
   const result1 = await run1.start({
     inputData: {
       idea: "",
@@ -31,7 +31,7 @@ async function main() {
   console.log("Workflow: patternChooseTemplate")
   console.log("=".repeat(80))
 
-  const run2 = await patternChooseTemplate.createRunAsync()
+  const run2 = await patternChooseTemplate.createRun()
   const result2 = await run2.start({
     inputData: {
       idea: "",
@@ -49,7 +49,7 @@ async function main() {
   console.log("Workflow: patternCreateContent")
   console.log("=".repeat(80))
 
-  const run3 = await patternCreateContent.createRunAsync()
+  const run3 = await patternCreateContent.createRun()
   const result3 = await run3.start({
     inputData: {
       component: "",

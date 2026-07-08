@@ -13,7 +13,7 @@ async function main() {
   console.log("Workflow: workflowWeatherAgent")
   console.log("=".repeat(80))
 
-  const run1 = await workflowWeatherAgent.createRunAsync()
+  const run1 = await workflowWeatherAgent.createRun()
   const result1 = await run1.start({
     inputData: {
       input: "",
