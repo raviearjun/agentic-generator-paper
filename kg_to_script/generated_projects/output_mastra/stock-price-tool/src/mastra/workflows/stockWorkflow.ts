@@ -19,7 +19,7 @@ const taskInit = createStep({
   id: 'task_init',
   description: `Initialize the Stock Agent before handling requests.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({symbol: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -28,18 +28,15 @@ const taskInit = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Initialize the Stock Agent before handling requests.`
     const result = await stockAgent.generate(prompt)
-    return {
-      ...context,
-      symbol: context.symbol ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskQuery = createStep({
   id: 'task_query',
   description: `What is the current stock price of Apple (AAPL)?`,
-  inputSchema: z.object({symbol: z.string()}),
-  outputSchema: z.object({symbol: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -48,17 +45,14 @@ const taskQuery = createStep({
     const context = inputData as Record<string, string>
     const prompt = `What is the current stock price of Apple (AAPL)?`
     const result = await stockAgent.generate(prompt)
-    return {
-      ...context,
-      symbol: context.symbol ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskToolCall = createStep({
   id: 'task_tool_call',
   description: `Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price.`,
-  inputSchema: z.object({symbol: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,

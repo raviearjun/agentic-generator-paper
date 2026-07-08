@@ -3,6 +3,8 @@ __pycache__/
 .gitignore
 *.pyc
 venv/
+.venv/
+**/.venv/
 .env
 .agento-env/
 .claude

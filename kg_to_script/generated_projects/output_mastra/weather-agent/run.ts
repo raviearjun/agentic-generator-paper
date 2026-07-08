@@ -16,7 +16,7 @@ async function main() {
   const run1 = await workflowWeatherWorkflow.createRunAsync()
   const result1 = await run1.start({
     inputData: {
-      city_as_input_to_retrieve_forecast_data_from_the_Open: "",
+      input: "",
     },
   })
 

@@ -63,14 +63,14 @@
 
 ### Agent Prompts (backstory + goal consolidated)
 :Prompt_Agent_1_Backstory_Goal rdf:type :Prompt ;
-    :promptInstruction "Define agent 1 backstory here
+    :promptInstruction """Define agent 1 backstory here
 
-Define agent 1 goal here" .
+Define agent 1 goal here""" .
 
 :Prompt_Agent_2_Backstory_Goal rdf:type :Prompt ;
-    :promptInstruction "Define agent 2 backstory here
+    :promptInstruction """Define agent 2 backstory here
 
-Define agent 2 goal here" .
+Define agent 2 goal here""" .
 
 ### Tools
 :Tool_DuckDuckGoSearchRun rdf:type :Tool ;

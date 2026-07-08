@@ -15,7 +15,7 @@ import { danePackagePublisher } from '../agents'
 const taskPkgGetPacakgesToPublish = createStep({
   id: 'task_pkg_get_pacakges_to_publish',
   description: `Please analyze the following monorepo directories and identify packages that need pnpm publishing:`,
-  inputSchema: z.object({CRITICAL: z.string(), Include_create: z.array(z.string())}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
@@ -80,7 +80,7 @@ const taskPkgPublishChangeset = createStep({
   id: 'task_pkg_publish_changeset',
   description: `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({Update_npm_dist: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -89,17 +89,14 @@ const taskPkgPublishChangeset = createStep({
     const context = inputData as Record<string, string>
     const prompt = `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.`
     const result = await danePackagePublisher.generate(prompt)
-    return {
-      ...context,
-      Update_npm_dist: context.Update_npm_dist ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskPkgSetLatestDistTag = createStep({
   id: 'task_pkg_set_latest_dist_tag',
   description: `Update npm dist-tag for published packages (agent assisted)`,
-  inputSchema: z.object({Update_npm_dist: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
@@ -120,7 +117,7 @@ const taskPkgSetLatestDistTag = createStep({
  */
 export const workflowPnpmChangsetPublisher = createWorkflow({
   id: 'workflow_pnpm_changset_publisher',
-  inputSchema: z.object({CRITICAL: z.string(), Include_create: z.array(z.string())}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskPkgGetPacakgesToPublish, taskPkgAssemblePackages, taskPkgBuildPackages, taskPkgVerifyBuild, taskPkgPublishChangeset, taskPkgSetLatestDistTag],
 })

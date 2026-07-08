@@ -212,6 +212,11 @@ class StepModel(BaseModel):
     input_fields: List[str] = Field(default_factory=list)
     output_fields: List[str] = Field(default_factory=list)
 
+    # True only if every input/output field is z.string() — see
+    # _is_all_string_schema() for why non-string schemas must fall back to
+    # the stub execute() body instead of the real agent-calling one.
+    schema_all_string: bool = True
+
     # Execution logic
     execute_description: str = Field(
         "", 

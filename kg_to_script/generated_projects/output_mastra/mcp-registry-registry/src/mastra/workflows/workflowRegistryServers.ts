@@ -17,8 +17,8 @@ import { registryRegistryServer } from '../agents'
 const taskFetchServersFromRegistry = createStep({
   id: 'task_fetch_servers_from_registry',
   description: `Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing.`,
-  inputSchema: z.object({and_returning_raw_response_for_post: z.string()}),
-  outputSchema: z.object({Normalize_registry: z.number()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -27,18 +27,15 @@ const taskFetchServersFromRegistry = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing.`
     const result = await registryRegistryServer.generate(prompt)
-    return {
-      ...context,
-      Normalize_registry: context.Normalize_registry ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskPostProcessServers = createStep({
   id: 'task_post_process_servers',
   description: `Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available.`,
-  inputSchema: z.object({Normalize_registry: z.number()}),
-  outputSchema: z.object({support_tag: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -47,18 +44,15 @@ const taskPostProcessServers = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available.`
     const result = await registryRegistryServer.generate(prompt)
-    return {
-      ...context,
-      support_tag: context.support_tag ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskFilterServers = createStep({
   id: 'task_filter_servers',
   description: `Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags.`,
-  inputSchema: z.object({support_tag: z.string()}),
-  outputSchema: z.object({post: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -67,17 +61,14 @@ const taskFilterServers = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags.`
     const result = await registryRegistryServer.generate(prompt)
-    return {
-      ...context,
-      post: context.post ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskGetServersFromRegistry = createStep({
   id: 'task_get_servers_from_registry',
   description: `Orchestrate fetching, post-processing, and filtering of servers for a given registryId and optional filters; return final server list or throw on error.`,
-  inputSchema: z.object({post: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
@@ -100,7 +91,7 @@ const taskGetServersFromRegistry = createStep({
  */
 export const workflowRegistryServers = createWorkflow({
   id: 'workflow_registry_servers',
-  inputSchema: z.object({and_returning_raw_response_for_post: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskFetchServersFromRegistry, taskPostProcessServers, taskFilterServers, taskGetServersFromRegistry],
 })

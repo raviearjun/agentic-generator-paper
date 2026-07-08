@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const clientToolsTool = createTool({
   id: 'clientToolsTool',
   description: `Abstract representation of the \`clientTools\` map supplied to the Mastra agent client; client-provided tools executed via \`clientTool.execute\`.`,
-  inputSchema: z.object({client: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

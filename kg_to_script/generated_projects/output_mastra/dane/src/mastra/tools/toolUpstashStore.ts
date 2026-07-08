@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolUpstashStore = createTool({
   id: 'toolUpstashStore',
   description: `Upstash HTTP store used by Memory; token-based auth.`,
-  inputSchema: z.object({token: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

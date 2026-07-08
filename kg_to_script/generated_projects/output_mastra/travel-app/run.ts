@@ -34,7 +34,7 @@ async function main() {
   const run2 = await workflowSyncCsvData.createRunAsync()
   const result2 = await run2.start({
     inputData: {
-      city: "",
+      input: "",
     },
   })
 

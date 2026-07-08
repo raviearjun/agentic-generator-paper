@@ -15,8 +15,8 @@ import { weatherAgent } from '../agents'
 const taskFetchWeather = createStep({
   id: 'task_fetch_weather',
   description: `Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects.`,
-  inputSchema: z.object({city_as_input_to_retrieve_forecast_data_from_the_Open: z.array(z.string())}),
-  outputSchema: z.object({You_are_a_local_activities_and_travel_expert_who_excels_at_weather: z.string(), Suggest_2_3_time: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -25,18 +25,14 @@ const taskFetchWeather = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects.`
     const result = await weatherAgent.generate(prompt)
-    return {
-      ...context,
-      You_are_a_local_activities_and_travel_expert_who_excels_at_weather: context.You_are_a_local_activities_and_travel_expert_who_excels_at_weather ?? result.text,
-      Suggest_2_3_time: context.Suggest_2_3_time ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
 const taskPlanActivities = createStep({
   id: 'task_plan_activities',
   description: `You are a local activities and travel expert who excels at weather-based planning. Analyze the weather data and provide practical activity recommendations.`,
-  inputSchema: z.object({You_are_a_local_activities_and_travel_expert_who_excels_at_weather: z.string(), Suggest_2_3_time: z.string()}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
@@ -97,7 +93,7 @@ Maintain this exact formatting for consistency, using the emoji and section head
  */
 export const workflowWeatherWorkflow = createWorkflow({
   id: 'workflow_weather_workflow',
-  inputSchema: z.object({city_as_input_to_retrieve_forecast_data_from_the_Open: z.array(z.string())}),
+  inputSchema: z.object({}),
   outputSchema: z.object({}),
   steps: [taskFetchWeather, taskPlanActivities],
 })

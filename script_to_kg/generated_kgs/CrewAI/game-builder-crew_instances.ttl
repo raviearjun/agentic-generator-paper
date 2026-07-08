@@ -88,8 +88,6 @@ Your expertise in programming in python. and do your best to produce perfect cod
     :configKey "verbose" ;
     :configValue "True" .
 
------------------------------------------------------------------
-
 :agent_qa_engineer rdf:type :LLMAgent ;
     :agentID "qa_engineer_agent" ;
     :agentRole "Software Quality Control Engineer" ;
@@ -118,8 +116,6 @@ You also check for security vulnerabilities, and logic errors""" .
 :config_qa_verbose rdf:type :Config ;
     :configKey "verbose" ;
     :configValue "True" .
-
------------------------------------------------------------------
 
 :agent_chief_qa_engineer rdf:type :LLMAgent ;
     :agentID "chief_qa_engineer_agent" ;

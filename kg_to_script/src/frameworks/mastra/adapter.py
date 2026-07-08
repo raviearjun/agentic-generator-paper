@@ -134,14 +134,35 @@ def _schema_from_json_like(text: str) -> Optional[str]:
     return "z.string()"
 
 
+_KNOWN_TYPE_WORDS = (
+    "string|str|text|int|integer|float|double|number|bool|boolean"
+    "|array|list|object|json|dict|record"
+)
+
+
 def _schema_from_inline_field_hints(text: str) -> Optional[str]:
+    """Match lines that are *entirely* a "field_name: type" declaration.
+
+    Deliberately strict: the whole line must be "name: type", and type must
+    be one of a fixed set of recognized type words. A looser version of this
+    (matching a colon/hyphen anywhere in a line, with free-text after it) used
+    to false-positive on ordinary prose containing a stray hyphen — e.g.
+    "in-depth analysis" or "JSON-RPC" — producing garbage fields like
+    `Conduct_an_in: z.string()` or `set_JSON: z.object({})` (the latter
+    doesn't even compile, since a bare `z.object({})` return value violates
+    Mastra's flat-string execute() contract).
+    """
     lines = (text or "").splitlines()
     fields: List[Tuple[str, str]] = []
     for line in lines:
-        match = re.search(r"([a-zA-Z_][a-zA-Z0-9_\- ]*)\s*[:=-]\s*([a-zA-Z][a-zA-Z0-9_/ -]*)", line)
+        match = re.match(
+            rf"^\s*([a-zA-Z_][a-zA-Z0-9_ ]*)\s*[:=]\s*({_KNOWN_TYPE_WORDS})\s*$",
+            line,
+            re.IGNORECASE,
+        )
         if not match:
             continue
-        field_name = match.group(1).strip().replace("-", "_").replace(" ", "_")
+        field_name = match.group(1).strip().replace(" ", "_")
         type_hint = match.group(2).strip()
         fields.append((field_name, _to_zod_type(type_hint)))
     return _object_schema_from_fields(fields)

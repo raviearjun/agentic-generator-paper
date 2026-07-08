@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const voiceProviderTool = createTool({
   id: 'voiceProviderTool',
   description: `Voice provider used by the agent for text-to-speech (speak) and speech-to-text (listen) operations via agent.voice endpoints.`,
-  inputSchema: z.object({Voice_provider_used_by_the_agent_for_text_to: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

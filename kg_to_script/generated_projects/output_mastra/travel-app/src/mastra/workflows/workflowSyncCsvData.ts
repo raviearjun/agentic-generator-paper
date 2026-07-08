@@ -15,8 +15,8 @@ import { travelAnalyzer } from '../agents'
 const taskSyncCsvData = createStep({
   id: 'task_sync_csv_data',
   description: `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.`,
-  inputSchema: z.object({city: z.string()}),
-  outputSchema: z.object({status: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -25,10 +25,7 @@ const taskSyncCsvData = createStep({
     const context = inputData as Record<string, string>
     const prompt = `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.`
     const result = await travelAnalyzer.generate(prompt)
-    return {
-      ...context,
-      status: context.status ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -39,8 +36,8 @@ const taskSyncCsvData = createStep({
  */
 export const workflowSyncCsvData = createWorkflow({
   id: 'workflow_sync_csv_data',
-  inputSchema: z.object({city: z.string()}),
-  outputSchema: z.object({status: z.string()}),
+  inputSchema: z.object({}),
+  outputSchema: z.object({}),
   steps: [taskSyncCsvData],
 })
   .then(taskSyncCsvData)

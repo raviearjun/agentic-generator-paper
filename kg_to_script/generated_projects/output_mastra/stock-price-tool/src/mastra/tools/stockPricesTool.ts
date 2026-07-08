@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const stockPricesTool = createTool({
   id: 'stockPricesTool',
   description: `Fetches the last day's closing stock price for a given symbol`,
-  inputSchema: z.object({symbol: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

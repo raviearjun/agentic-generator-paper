@@ -16,7 +16,7 @@ async function main() {
   const run1 = await workflowWeatherAgent.createRunAsync()
   const result1 = await run1.start({
     inputData: {
-      Translate_non: "",
+      input: "",
     },
   })
 

@@ -17,7 +17,7 @@ import { z } from 'zod'
 export const toolRegistryServers = createTool({
   id: 'toolRegistryServers',
   description: `Get servers from a specific MCP registry. Can filter by tag or search term. Internally fetches registry data, invokes post-processing, and filters results.`,
-  inputSchema: z.object({invokes_post: z.string()}),
+  inputSchema: z.object({}),  // TODO: Define input schema
   outputSchema: z.object({}),  // TODO: Define output schema
   execute: async (inputData) => {
     // TODO: Implement tool logic

@@ -2,12 +2,11 @@ import sys
 from job_posting.crew import JobPostingCrew
 
 def run():
-    # Replace with your inputs, it will automatically interpolate any tasks and agents information
     inputs = {
-        'company_domain':'careers.wbd.com',
-        'company_description': "Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world’s most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We're home to the world’s best storytellers, creating world-class products for consumers",
-        'hiring_needs': 'Production Assistant, for a TV production set in Los Angeles in June 2025',
-        'specific_benefits':'Weekly Pay, Employee Meals, healthcare',
+        'company_domain': 'openai.com',
+        'company_description': 'OpenAI is an AI research and deployment company that develops advanced language models and AI tools for consumers, developers, and enterprises.',
+        'hiring_needs': 'Software Engineers, Research Engineers, Machine Learning Engineers, Product Designers, and Technical Program Managers.',
+        'specific_benefits': 'Competitive salary, equity, comprehensive health insurance, flexible work arrangements, generous parental leave, learning and development budget, and retirement benefits.'
     }
     JobPostingCrew().crew().kickoff(inputs=inputs)
 
@@ -18,10 +17,10 @@ def train():
     Train the crew for a given number of iterations.
     """
     inputs = {
-        'company_domain':'careers.wbd.com',
-        'company_description': "Warner Bros. Discovery is a premier global media and entertainment company, offering audiences the world’s most differentiated and complete portfolio of content, brands and franchises across television, film, sports, news, streaming and gaming. We're home to the world’s best storytellers, creating world-class products for consumers",
-        'hiring_needs': 'Production Assistant, for a TV production set in Los Angeles in June 2025',
-        'specific_benefits':'Weekly Pay, Employee Meals, healthcare',
+        'company_domain': 'openai.com',
+        'company_description': 'OpenAI is an AI research and deployment company that develops advanced language models and AI tools for consumers, developers, and enterprises.',
+        'hiring_needs': 'Software Engineers, Research Engineers, Machine Learning Engineers, Product Designers, and Technical Program Managers.',
+        'specific_benefits': 'Competitive salary, equity, comprehensive health insurance, flexible work arrangements, generous parental leave, learning and development budget, and retirement benefits.'
     }
     try:
         JobPostingCrew().crew().train(n_iterations=int(sys.argv[1]), inputs=inputs)

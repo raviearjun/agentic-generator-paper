@@ -16,7 +16,7 @@ async function main() {
   const run1 = await chefWorkflow.createRunAsync()
   const result1 = await run1.start({
     inputData: {
-      In_my_kitchen_I_have: "",
+      input: "",
     },
   })
 

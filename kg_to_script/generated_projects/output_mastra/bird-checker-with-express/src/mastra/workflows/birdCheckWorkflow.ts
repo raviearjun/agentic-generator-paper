@@ -34,7 +34,7 @@ const imageMetadataTask = createStep({
   id: 'image_metadata_task',
   description: `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.`,
   inputSchema: z.object({}),
-  outputSchema: z.object({JSON_object_with_keys: z.string()}),
+  outputSchema: z.object({}),
   execute: async ({ inputData }) => {
     // context accumulates every field seen so far (this step's own inputData,
     // which already carries forward everything prior steps produced) so that
@@ -43,10 +43,7 @@ const imageMetadataTask = createStep({
     const context = inputData as Record<string, string>
     const prompt = `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.`
     const result = await birdChecker.generate(prompt)
-    return {
-      ...context,
-      JSON_object_with_keys: context.JSON_object_with_keys ?? result.text,
-    }
+    return { ...context, output: result.text }
   },
 })
 
@@ -60,7 +57,7 @@ const imageMetadataTask = createStep({
 export const birdCheckWorkflow = createWorkflow({
   id: 'bird_check_workflow',
   inputSchema: z.object({}),
-  outputSchema: z.object({JSON_object_with_keys: z.string()}),
+  outputSchema: z.object({}),
   steps: [getRandomImageTask, imageMetadataTask],
 })
   .then(getRandomImageTask)

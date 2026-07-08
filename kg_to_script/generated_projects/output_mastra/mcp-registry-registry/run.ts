@@ -16,7 +16,7 @@ async function main() {
   const run1 = await workflowRegistryServers.createRunAsync()
   const result1 = await run1.start({
     inputData: {
-      and_returning_raw_response_for_post: "",
+      input: "",
     },
   })
 

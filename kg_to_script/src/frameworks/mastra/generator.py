@@ -301,6 +301,23 @@ def _extract_zod_field_names(schema: Optional[str]) -> List[str]:
     return re.findall(r"(\w+):\s*z\.", schema)
 
 
+def _is_all_string_schema(schema: Optional[str]) -> bool:
+    """True if every field in the schema is z.string() (or there are no fields).
+
+    The real execute() body codegen casts inputData to Record<string, string>
+    and writes result.text (a string) into any missing output field — correct
+    only when every field really is a string. Some Mastra-native schemas have
+    genuinely non-string fields (e.g. `incrementedValue: z.number()`, from
+    _schema_from_json_like/_to_zod_type), where that cast and assignment
+    would produce code that fails to typecheck. Route those to the safer stub
+    instead of guessing at a numeric/boolean/array default value.
+    """
+    if not schema:
+        return True
+    types = re.findall(r"\w+:\s*z\.(\w+)", schema)
+    return all(t == "string" for t in types)
+
+
 def _sanitize_zod_schema(schema: Optional[str]) -> Optional[str]:
     """
     Sanitize Zod schema strings extracted from the KG.
@@ -496,6 +513,10 @@ def _generate_workflow_files(project: MastraProject, workflows_dir: Path) -> Non
             step.model_copy(update={
                 "input_fields": _extract_zod_field_names(step.input_schema),
                 "output_fields": _extract_zod_field_names(step.output_schema),
+                "schema_all_string": (
+                    _is_all_string_schema(step.input_schema)
+                    and _is_all_string_schema(step.output_schema)
+                ),
             })
             for step in sanitized_steps
         ]
