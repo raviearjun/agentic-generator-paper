@@ -10,7 +10,7 @@
         "projects": 16,
         "evaluated": 16,
         "errors": 0,
-        "oec_all": 0.6299478722576812,
+        "oec_all": 0.6381489304587395,
         "concept_coverage_rate": 0.9495509497453359,
         "avg_wgi": 0.9125631313131313,
         "avg_edge_f1": 0.8805555555555555,
@@ -3566,46 +3566,10 @@
           "code_element_count": 10,
           "oec": {
             "all_extracted": {
-              "score": 0.5714285714285714,
-              "matched": 20,
+              "score": 0.6285714285714286,
+              "matched": 22,
               "total": 35,
               "missing": [
-                {
-                  "category": "config",
-                  "name": "system_match_to_proposal_crew_path_to_jobs_csv",
-                  "important": false,
-                  "aliases": [
-                    "system_match_to_proposal_crew_path_to_jobs_csv",
-                    "path_to_jobs_csv",
-                    "src_match_to_proposal_data_jobs_csv",
-                    "jobs_csv",
-                    "path_to_jobs_csv_src_match_to_proposal_data_jobs_csv"
-                  ],
-                  "details": {
-                    "key": "path_to_jobs_csv",
-                    "owner": "match_to_proposal_crew",
-                    "owner_category": "system",
-                    "value": "./src/match_to_proposal/data/jobs.csv"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "system_match_to_proposal_crew_path_to_cv",
-                  "important": false,
-                  "aliases": [
-                    "system_match_to_proposal_crew_path_to_cv",
-                    "path_to_cv",
-                    "cv_md",
-                    "src_match_to_proposal_data_cv_md",
-                    "path_to_cv_src_match_to_proposal_data_cv_md"
-                  ],
-                  "details": {
-                    "key": "path_to_cv",
-                    "owner": "match_to_proposal_crew",
-                    "owner_category": "system",
-                    "value": "./src/match_to_proposal/data/cv.md"
-                  }
-                },
                 {
                   "category": "agent_goal",
                   "name": "cv_reader_goal_cv_reader",
@@ -3781,8 +3745,8 @@
                   "total": 2
                 },
                 "config": {
-                  "score": 0.6666666666666666,
-                  "matched": 4,
+                  "score": 1.0,
+                  "matched": 6,
                   "total": 6
                 },
                 "goal": {
@@ -6699,78 +6663,10 @@
           "code_element_count": 13,
           "oec": {
             "all_extracted": {
-              "score": 0.5740740740740741,
-              "matched": 31,
+              "score": 0.6481481481481481,
+              "matched": 35,
               "total": 54,
               "missing": [
-                {
-                  "category": "config",
-                  "name": "system_surprise_travel_crew_origin",
-                  "important": false,
-                  "aliases": [
-                    "system_surprise_travel_crew_origin",
-                    "origin",
-                    "s_o_paulo_gru",
-                    "origin_s_o_paulo_gru"
-                  ],
-                  "details": {
-                    "key": "origin",
-                    "owner": "surprise_travel_crew",
-                    "owner_category": "system",
-                    "value": "S\u00e3o Paulo, GRU"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "system_surprise_travel_crew_hotel_location",
-                  "important": false,
-                  "aliases": [
-                    "system_surprise_travel_crew_hotel_location",
-                    "hotel_location",
-                    "brooklyn",
-                    "hotel_location_brooklyn"
-                  ],
-                  "details": {
-                    "key": "hotel_location",
-                    "owner": "surprise_travel_crew",
-                    "owner_category": "system",
-                    "value": "Brooklyn"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "system_surprise_travel_crew_flight_information",
-                  "important": false,
-                  "aliases": [
-                    "system_surprise_travel_crew_flight_information",
-                    "flight_information",
-                    "gol_1234_leaving_at_june_30_th_2024_10_00",
-                    "flight_information_gol_1234_leaving_at_june_30_th_2024_10_00"
-                  ],
-                  "details": {
-                    "key": "flight_information",
-                    "owner": "surprise_travel_crew",
-                    "owner_category": "system",
-                    "value": "GOL 1234, leaving at June 30th, 2024, 10:00"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "system_surprise_travel_crew_trip_duration",
-                  "important": false,
-                  "aliases": [
-                    "system_surprise_travel_crew_trip_duration",
-                    "trip_duration",
-                    "14_days",
-                    "trip_duration_14_days"
-                  ],
-                  "details": {
-                    "key": "trip_duration",
-                    "owner": "surprise_travel_crew",
-                    "owner_category": "system",
-                    "value": "14 days"
-                  }
-                },
                 {
                   "category": "config",
                   "name": "env_surprise_travel_crew_api_key",
@@ -7034,8 +6930,8 @@
                   "total": 5
                 },
                 "config": {
-                  "score": 0.5333333333333333,
-                  "matched": 8,
+                  "score": 0.8,
+                  "matched": 12,
                   "total": 15
                 },
                 "goal": {
@@ -7773,7 +7669,7 @@
         "projects": 6,
         "evaluated": 6,
         "errors": 0,
-        "oec_all": 0.6930618312629258,
+        "oec_all": 0.6986173868184813,
         "concept_coverage_rate": 0.9354632699269225,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
@@ -9799,8 +9695,8 @@
           "code_element_count": 16,
           "oec": {
             "all_extracted": {
-              "score": 0.7666666666666667,
-              "matched": 46,
+              "score": 0.8,
+              "matched": 48,
               "total": 60,
               "missing": [
                 {
@@ -9904,40 +9800,6 @@
                 },
                 {
                   "category": "config",
-                  "name": "agent_executor_last_n_messages",
-                  "important": false,
-                  "aliases": [
-                    "agent_executor_last_n_messages",
-                    "last_n_messages",
-                    "3",
-                    "last_n_messages_3"
-                  ],
-                  "details": {
-                    "key": "last_n_messages",
-                    "owner": "executor",
-                    "owner_category": "agent",
-                    "value": "3"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_executor_work_dir",
-                  "important": false,
-                  "aliases": [
-                    "agent_executor_work_dir",
-                    "work_dir",
-                    "coding",
-                    "work_dir_coding"
-                  ],
-                  "details": {
-                    "key": "work_dir",
-                    "owner": "executor",
-                    "owner_category": "agent",
-                    "value": "coding"
-                  }
-                },
-                {
-                  "category": "config",
                   "name": "agent_executor_use_docker",
                   "important": false,
                   "aliases": [
@@ -10017,8 +9879,8 @@
                   "total": 6
                 },
                 "config": {
-                  "score": 0.5454545454545454,
-                  "matched": 6,
+                  "score": 0.7272727272727273,
+                  "matched": 8,
                   "total": 11
                 },
                 "language_model": {
@@ -10213,7 +10075,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/chat-agent",
           "status": "ok",
           "kg_element_count": 9,
-          "code_element_count": 4,
+          "code_element_count": 5,
           "oec": {
             "all_extracted": {
               "score": 0.7777777777777778,
@@ -10366,7 +10228,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/email-agent",
           "status": "ok",
           "kg_element_count": 27,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.8148148148148148,
@@ -10644,7 +10506,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/open-code",
           "status": "ok",
           "kg_element_count": 31,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.6451612903225806,
@@ -11023,7 +10885,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/pizza-orderer",
           "status": "ok",
           "kg_element_count": 22,
-          "code_element_count": 9,
+          "code_element_count": 10,
           "oec": {
             "all_extracted": {
               "score": 0.6818181818181818,
@@ -11278,7 +11140,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/stockbroker",
           "status": "ok",
           "kg_element_count": 23,
-          "code_element_count": 13,
+          "code_element_count": 14,
           "oec": {
             "all_extracted": {
               "score": 0.782608695652174,
@@ -11525,7 +11387,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/supervisor",
           "status": "ok",
           "kg_element_count": 92,
-          "code_element_count": 29,
+          "code_element_count": 30,
           "oec": {
             "all_extracted": {
               "score": 0.5760869565217391,
@@ -12511,7 +12373,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/trip-planner",
           "status": "ok",
           "kg_element_count": 26,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.8076923076923077,
@@ -12771,7 +12633,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/writer-agent",
           "status": "ok",
           "kg_element_count": 23,
-          "code_element_count": 13,
+          "code_element_count": 14,
           "oec": {
             "all_extracted": {
               "score": 0.782608695652174,

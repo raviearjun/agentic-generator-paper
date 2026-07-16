@@ -10,7 +10,7 @@
         "projects": 6,
         "evaluated": 6,
         "errors": 0,
-        "oec_all": 0.6930618312629258,
+        "oec_all": 0.6986173868184813,
         "concept_coverage_rate": 0.9354632699269225,
         "avg_wgi": 1.0,
         "avg_edge_f1": 1.0,
@@ -2036,8 +2036,8 @@
           "code_element_count": 16,
           "oec": {
             "all_extracted": {
-              "score": 0.7666666666666667,
-              "matched": 46,
+              "score": 0.8,
+              "matched": 48,
               "total": 60,
               "missing": [
                 {
@@ -2141,40 +2141,6 @@
                 },
                 {
                   "category": "config",
-                  "name": "agent_executor_last_n_messages",
-                  "important": false,
-                  "aliases": [
-                    "agent_executor_last_n_messages",
-                    "last_n_messages",
-                    "3",
-                    "last_n_messages_3"
-                  ],
-                  "details": {
-                    "key": "last_n_messages",
-                    "owner": "executor",
-                    "owner_category": "agent",
-                    "value": "3"
-                  }
-                },
-                {
-                  "category": "config",
-                  "name": "agent_executor_work_dir",
-                  "important": false,
-                  "aliases": [
-                    "agent_executor_work_dir",
-                    "work_dir",
-                    "coding",
-                    "work_dir_coding"
-                  ],
-                  "details": {
-                    "key": "work_dir",
-                    "owner": "executor",
-                    "owner_category": "agent",
-                    "value": "coding"
-                  }
-                },
-                {
-                  "category": "config",
                   "name": "agent_executor_use_docker",
                   "important": false,
                   "aliases": [
@@ -2254,8 +2220,8 @@
                   "total": 6
                 },
                 "config": {
-                  "score": 0.5454545454545454,
-                  "matched": 6,
+                  "score": 0.7272727272727273,
+                  "matched": 8,
                   "total": 11
                 },
                 "language_model": {

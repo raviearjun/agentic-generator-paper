@@ -24,7 +24,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/chat-agent",
           "status": "ok",
           "kg_element_count": 9,
-          "code_element_count": 4,
+          "code_element_count": 5,
           "oec": {
             "all_extracted": {
               "score": 0.7777777777777778,
@@ -177,7 +177,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/email-agent",
           "status": "ok",
           "kg_element_count": 27,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.8148148148148148,
@@ -455,7 +455,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/open-code",
           "status": "ok",
           "kg_element_count": 31,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.6451612903225806,
@@ -834,7 +834,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/pizza-orderer",
           "status": "ok",
           "kg_element_count": 22,
-          "code_element_count": 9,
+          "code_element_count": 10,
           "oec": {
             "all_extracted": {
               "score": 0.6818181818181818,
@@ -1089,7 +1089,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/stockbroker",
           "status": "ok",
           "kg_element_count": 23,
-          "code_element_count": 13,
+          "code_element_count": 14,
           "oec": {
             "all_extracted": {
               "score": 0.782608695652174,
@@ -1336,7 +1336,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/supervisor",
           "status": "ok",
           "kg_element_count": 92,
-          "code_element_count": 29,
+          "code_element_count": 30,
           "oec": {
             "all_extracted": {
               "score": 0.5760869565217391,
@@ -2322,7 +2322,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/trip-planner",
           "status": "ok",
           "kg_element_count": 26,
-          "code_element_count": 17,
+          "code_element_count": 18,
           "oec": {
             "all_extracted": {
               "score": 0.8076923076923077,
@@ -2582,7 +2582,7 @@
           "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_langgraph/writer-agent",
           "status": "ok",
           "kg_element_count": 23,
-          "code_element_count": 13,
+          "code_element_count": 14,
           "oec": {
             "all_extracted": {
               "score": 0.782608695652174,
