@@ -39,7 +39,7 @@ except ImportError:
 # Paths
 # ─────────────────────────────────────────────────────────────────────────────
 REPO    = Path(__file__).resolve().parent.parent
-KG_DIR  = REPO / "experiment_kg" 
+KG_DIR  = REPO / "generated_kgs"
 OUT_DIR = Path(__file__).parent
 OUT_DIR.mkdir(exist_ok=True)
 
@@ -516,7 +516,7 @@ def compute_prf1(metrics: dict, framework: str, example_stem: str = "") -> dict:
 
 def evaluate_framework(fw_name: str, fw_dir: Path, max_files: int | None = None) -> list[dict]:
     """
-    Walk experiment_kg/<Framework>/<PromptID>/<Model>/*.ttl and evaluate each file.
+    Walk generated_kgs/<Framework>/<PromptID>/<Model>/*.ttl and evaluate each file.
     Falls back to flat *.ttl scan if no prompt/model subdirectories exist.
     """
     results = []

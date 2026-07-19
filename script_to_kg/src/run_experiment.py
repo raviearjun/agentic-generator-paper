@@ -56,10 +56,10 @@ PROMPT_FILES = {
 # Each value points to the folder containing the actual framework source code.
 # AutoGen examples are Jupyter notebooks (.ipynb); CrewAI/LangGraph are project dirs.
 FRAMEWORK_SOURCES = {
-    "CrewAI":    REPO_ROOT / "GT_scripts" / "CrewAI",
-    "LangGraph": REPO_ROOT / "GT_scripts" / "LangGraph",
-    "AutoGen":   REPO_ROOT / "GT_scripts" / "AutoGen",
-    "Mastra AI": REPO_ROOT / "GT_scripts" / "Mastra AI",
+    "CrewAI":    REPO_ROOT / "ground_truth_scripts" / "CrewAI",
+    "LangGraph": REPO_ROOT / "ground_truth_scripts" / "LangGraph",
+    "AutoGen":   REPO_ROOT / "ground_truth_scripts" / "AutoGen",
+    "Mastra AI": REPO_ROOT / "ground_truth_scripts" / "Mastra AI",
 }
 
 MODEL_CONFIGS = {
@@ -80,7 +80,7 @@ MODEL_CONFIGS = {
     },
 }
 
-DEFAULT_ONTOLOGY = REPO_ROOT / "agentO.ttl"
+DEFAULT_ONTOLOGY = REPO_ROOT.parent / "agentO.ttl"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "experiment_kg"
 
 

@@ -26,3 +26,5 @@ output/*.py
 node_modules/
 legacy_reports/
 *.pdf
+
+.DS_Store

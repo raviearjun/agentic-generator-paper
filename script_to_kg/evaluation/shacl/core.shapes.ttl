@@ -1,0 +1,283 @@
+@prefix : <http://www.w3id.org/agentic-ai/shacl#> .
+@prefix agento: <http://www.w3id.org/agentic-ai/onto#> .
+@prefix beam: <http://w3id.org/beam/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ConfigShape a sh:NodeShape ;
+    rdfs:label "Config shape"@en ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:message "Config should have a :configKey value."@en ;
+            sh:minCount 1 ;
+            sh:path agento:configKey ;
+            sh:severity sh:Warning ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:message "Config should have a :configValue value."@en ;
+            sh:minCount 1 ;
+            sh:path agento:configValue ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass agento:Config .
+
+:DctermsDescriptionShape a sh:NodeShape ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:message "dcterms:description must be an xsd:string."@en ;
+            sh:path dcterms:description ;
+            sh:severity sh:Violation ] ;
+    sh:targetSubjectsOf dcterms:description .
+
+:DctermsReferenceShape a sh:NodeShape ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:message "dcterms:reference must be an xsd:string."@en ;
+            sh:path dcterms:reference ;
+            sh:severity sh:Violation ] ;
+    sh:targetSubjectsOf dcterms:reference .
+
+:DctermsTitleShape a sh:NodeShape ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:message "dcterms:title must be a single xsd:string."@en ;
+            sh:path dcterms:title ;
+            sh:severity sh:Violation ] ;
+    sh:targetSubjectsOf dcterms:title .
+
+:EnvironmentShape a sh:NodeShape ;
+    rdfs:label "Environment shape"@en ;
+    rdfs:comment "Environment rdfs:subClassOf Context in agentO.ttl."@en ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:message "Value of :envType on a :Environment must be a xsd:string."@en ;
+            sh:path agento:envType ;
+            sh:severity sh:Violation ],
+        [ sh:class beam:Resource ;
+            sh:message "Value of :containsResource on a :Environment must be of type beam:Resource."@en ;
+            sh:path agento:containsResource ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Config ;
+            sh:message "Value of :hasEnvironmentConfig on a :Environment must be of type agento:Config."@en ;
+            sh:path agento:hasEnvironmentConfig ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:Environment .
+
+:HumanAgentShape a sh:NodeShape ;
+    rdfs:label "HumanAgent shape"@en ;
+    rdfs:comment "HumanAgent rdfs:subClassOf prov:Agent in agentO.ttl."@en ;
+    sh:property [ sh:class agento:Task ;
+            sh:message "Value of :humanParticipatedIn on a :HumanAgent must be of type agento:Task."@en ;
+            sh:path agento:humanParticipatedIn ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:HumanAgent .
+
+:LLMAgentShape a sh:NodeShape ;
+    rdfs:label "LLMAgent shape"@en ;
+    rdfs:comment "LLMAgent rdfs:subClassOf prov:Agent, Tool in agentO.ttl."@en ;
+    sh:property [ sh:class agento:Prompt ;
+            sh:message "Value of :agentPrompt on a :LLMAgent must be of type agento:Prompt."@en ;
+            sh:path agento:agentPrompt ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:LLMAgent ;
+            sh:message "Value of :interactsWith on a :LLMAgent must be of type agento:LLMAgent."@en ;
+            sh:path agento:interactsWith ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Environment ;
+            sh:message "Value of :operatesIn on a :LLMAgent must be of type agento:Environment."@en ;
+            sh:path agento:operatesIn ;
+            sh:severity sh:Violation ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:message "LLMAgent should have a :agentRole value."@en ;
+            sh:minCount 1 ;
+            sh:path agento:agentRole ;
+            sh:severity sh:Warning ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:message "LLMAgent should have a :agentID value."@en ;
+            sh:minCount 1 ;
+            sh:path agento:agentID ;
+            sh:severity sh:Warning ],
+        [ sh:class agento:KnowledgeBase ;
+            sh:message "Value of :hasKnowledge on a :LLMAgent must be of type agento:KnowledgeBase."@en ;
+            sh:path agento:hasKnowledge ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Config ;
+            sh:message "Value of :hasAgentConfig on a :LLMAgent must be of type agento:Config."@en ;
+            sh:path agento:hasAgentConfig ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Goal ;
+            sh:message "Value of :hasAgentGoal on a :LLMAgent must be of type agento:Goal."@en ;
+            sh:path agento:hasAgentGoal ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:LanguageModel ;
+            sh:message "LLMAgent should have at least one :useLanguageModel (range :LanguageModel)."@en ;
+            sh:minCount 1 ;
+            sh:path agento:useLanguageModel ;
+            sh:severity sh:Warning ],
+        [ sh:class beam:Resource ;
+            sh:message "Value of :agentResourceUsage on a :LLMAgent must be of type beam:Resource."@en ;
+            sh:path agento:agentResourceUsage ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Tool ;
+            sh:message "Value of :agentToolUsage on a :LLMAgent must be of type agento:Tool."@en ;
+            sh:path agento:agentToolUsage ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Capability ;
+            sh:message "Value of :hasAgentCapability on a :LLMAgent must be of type agento:Capability."@en ;
+            sh:path agento:hasAgentCapability ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:LLMAgent .
+
+:ObjectiveShape a sh:NodeShape ;
+    rdfs:label "Objective shape"@en ;
+    rdfs:comment "Objective rdfs:subClassOf Context in agentO.ttl."@en ;
+    sh:property [ sh:class agento:Goal ;
+            sh:message "Value of :contributesToGoal on a :Objective must be of type agento:Goal."@en ;
+            sh:path agento:contributesToGoal ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:Objective .
+
+:PromptShape a sh:NodeShape ;
+    rdfs:label "Prompt shape"@en ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:message "Value of :promptContext on a :Prompt must be a xsd:string."@en ;
+            sh:path agento:promptContext ;
+            sh:severity sh:Violation ],
+        [ sh:datatype xsd:string ;
+            sh:message "Value of :promptInstruction on a :Prompt must be a xsd:string."@en ;
+            sh:path agento:promptInstruction ;
+            sh:severity sh:Violation ],
+        [ sh:datatype xsd:string ;
+            sh:message "Value of :promptOutputIndicator on a :Prompt must be a xsd:string."@en ;
+            sh:path agento:promptOutputIndicator ;
+            sh:severity sh:Violation ],
+        [ sh:datatype xsd:string ;
+            sh:message "Value of :promptInputData on a :Prompt must be a xsd:string."@en ;
+            sh:path agento:promptInputData ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:Prompt .
+
+:TaskShape a sh:NodeShape ;
+    rdfs:label "Task shape"@en ;
+    sh:property [ sh:class agento:Objective ;
+            sh:message "Value of :contributesToObjective on a :Task must be of type agento:Objective."@en ;
+            sh:path agento:contributesToObjective ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:LLMAgent ;
+            sh:message "Value of :performedByAgent on a :Task must be of type agento:LLMAgent."@en ;
+            sh:path agento:performedByAgent ;
+            sh:severity sh:Violation ],
+        [ sh:class beam:Resource ;
+            sh:message "Value of :requiresResource on a :Task must be of type beam:Resource."@en ;
+            sh:path agento:requiresResource ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Tool ;
+            sh:message "Value of :performedBy on a :Task must be of type agento:Tool."@en ;
+            sh:path agento:performedBy ;
+            sh:severity sh:Violation ],
+        [ sh:class beam:Resource ;
+            sh:message "Value of :producedResource on a :Task must be of type beam:Resource."@en ;
+            sh:path agento:producedResource ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Prompt ;
+            sh:message "Value of :taskPrompt on a :Task must be of type agento:Prompt."@en ;
+            sh:path agento:taskPrompt ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Capability ;
+            sh:message "Value of :requiresCapability on a :Task must be of type agento:Capability."@en ;
+            sh:path agento:requiresCapability ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:Task .
+
+:TeamShape a sh:NodeShape ;
+    rdfs:label "Team shape"@en ;
+    rdfs:comment "Team rdfs:subClassOf beam:System in agentO.ttl."@en ;
+    sh:property [ sh:class agento:Goal ;
+            sh:message "Value of :hasTeamGoal on a :Team must be of type agento:Goal."@en ;
+            sh:path agento:hasTeamGoal ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Config ;
+            sh:message "Value of :hasSystemConfig on a :Team must be of type agento:Config."@en ;
+            sh:path agento:hasSystemConfig ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:LLMAgent ;
+            sh:message "Value of :hasAgentMember on a :Team must be of type agento:LLMAgent."@en ;
+            sh:path agento:hasAgentMember ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:WorkflowPattern ;
+            sh:message "Team should have at least one :hasWorkflowPattern (range :WorkflowPattern)."@en ;
+            sh:minCount 1 ;
+            sh:path agento:hasWorkflowPattern ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass agento:Team .
+
+:ToolShape a sh:NodeShape ;
+    rdfs:label "Tool shape"@en ;
+    sh:property [ sh:class agento:Tool ;
+            sh:message "Value of :toolUsage on a :Tool must be of type agento:Tool."@en ;
+            sh:path agento:toolUsage ;
+            sh:severity sh:Violation ],
+        [ sh:class beam:Resource ;
+            sh:message "Value of :resourceUsage on a :Tool must be of type beam:Resource."@en ;
+            sh:path agento:resourceUsage ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Config ;
+            sh:message "Value of :hasToolConfig on a :Tool must be of type agento:Config."@en ;
+            sh:path agento:hasToolConfig ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Capability ;
+            sh:message "Value of :hasCapability on a :Tool must be of type agento:Capability."@en ;
+            sh:path agento:hasCapability ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:Tool .
+
+:WorkflowPatternShape a sh:NodeShape ;
+    rdfs:label "WorkflowPattern shape"@en ;
+    rdfs:comment "WorkflowPattern rdfs:subClassOf p-plan:Plan in agentO.ttl."@en ;
+    sh:property [ sh:class agento:WorkflowStep ;
+            sh:message "WorkflowPattern should have at least one :hasWorkflowStep (range :WorkflowStep)."@en ;
+            sh:minCount 1 ;
+            sh:path agento:hasWorkflowStep ;
+            sh:severity sh:Warning ],
+        [ sh:class agento:WorkflowPattern ;
+            sh:message "Value of :hasSubPattern on a :WorkflowPattern must be of type agento:WorkflowPattern."@en ;
+            sh:path agento:hasSubPattern ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:WorkflowPattern ;
+            sh:message "Value of :nextPattern on a :WorkflowPattern must be of type agento:WorkflowPattern."@en ;
+            sh:path agento:nextPattern ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:WorkflowPattern ;
+            sh:message "Value of :hasRelatedPattern on a :WorkflowPattern must be of type agento:WorkflowPattern."@en ;
+            sh:path agento:hasRelatedPattern ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:WorkflowPattern .
+
+:WorkflowStepShape a sh:NodeShape ;
+    rdfs:label "WorkflowStep shape"@en ;
+    rdfs:comment "WorkflowStep rdfs:subClassOf p-plan:Step in agentO.ttl."@en ;
+    sh:property [ sh:class agento:WorkflowStep ;
+            sh:message "Value of :nextStep on a :WorkflowStep must be of type agento:WorkflowStep."@en ;
+            sh:path agento:nextStep ;
+            sh:severity sh:Violation ],
+        [ sh:class agento:Task ;
+            sh:message "Value of :hasAssociatedTask on a :WorkflowStep must be of type agento:Task."@en ;
+            sh:path agento:hasAssociatedTask ;
+            sh:severity sh:Violation ],
+        [ sh:datatype xsd:integer ;
+            sh:maxCount 1 ;
+            sh:message "WorkflowStep should have a :stepOrder value."@en ;
+            sh:minCount 1 ;
+            sh:path agento:stepOrder ;
+            sh:severity sh:Warning ],
+        [ sh:class agento:WorkflowStep ;
+            sh:message "Value of :relatedStep on a :WorkflowStep must be of type agento:WorkflowStep."@en ;
+            sh:path agento:relatedStep ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass agento:WorkflowStep .
+
+:core a owl:Ontology ;
+    rdfs:label "Agentic AI Ontology - Core SHACL Shapes"@en ;
+    rdfs:comment "Structural SHACL shapes derived from agentO.ttl: class-level domain/range typing for object properties, XSD datatypes for data properties, and basic 'should have' cardinality. Self-contained SHACL Core only — no framework/project-specific coverage checks, no SPARQL-based constraints."@en .
+
