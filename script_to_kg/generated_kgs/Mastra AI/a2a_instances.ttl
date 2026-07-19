@@ -1,0 +1,224 @@
+# Execution time: 63.68 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Agent ID is provided at runtime as the constructor parameter `agentId`; represented here as the literal "agentId (constructor parameter)".
+# - No explicit agent role or system instructions/backstory found in the source; used placeholder values for :agentRole and :agentPrompt.
+# - No explicit language model specified; created a default :LanguageModel with dcterms:title "default".
+# - No explicit agent config objects discovered in this file; no :Config individuals were created.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agents
+:Agent_A2A_1 rdf:type :LLMAgent ;
+    :agentID "agentId (constructor parameter)" ;
+    :agentRole "A2A remote agent" ;
+    :agentPrompt :Prompt_Agent_A2A_1 ;
+    :useLanguageModel :LM_default ;
+    :agentToolUsage :Tool_A2A_API , :Tool_ProcessA2AStream ;
+    dcterms:description "Represents the remote agent accessed via the Mastra A2A client." .
+
+:Prompt_Agent_A2A_1 rdf:type :Prompt ;
+    :promptInstruction "No explicit system/backstory found in source. This prompt placeholder represents the agent accessed via A2A; actual instructions provided at runtime." .
+
+:LM_default rdf:type :LanguageModel ;
+    dcterms:title "default" ;
+    dcterms:description "Default language model placeholder (no explicit model configured in source)." .
+
+### Tools and Capabilities
+:Tool_A2A_API rdf:type :Tool ;
+    dcterms:title "Mastra A2A API" ;
+    dcterms:description "A2A JSON-RPC HTTP API endpoints used to interact with remote agents (agent-card, message/send, message/stream, tasks/*, pushNotificationConfig/*)." ;
+    :hasCapability :Capability_A2A_API .
+
+:Capability_A2A_API rdf:type :Capability ;
+    dcterms:description "Capabilities to send/receive messages, manage tasks, and configure push notifications via A2A JSON-RPC." .
+
+:Tool_ProcessA2AStream rdf:type :Tool ;
+    dcterms:title "processA2AStream" ;
+    dcterms:description "Utility to parse and yield typed A2A stream events (SSE -> typed Message/Task/TaskStatusUpdateEvent/TaskArtifactUpdateEvent)." ;
+    :hasCapability :Capability_ProcessStream .
+
+:Capability_ProcessStream rdf:type :Capability ;
+    dcterms:description "Process and deserialize server-sent A2A event streams into application-level event objects." .
+
+### Tasks and Prompts
+:Task_GetAgentCard rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_GetAgentCard ;
+    dcterms:description "Retrieve agent card metadata (getAgentCard / getExtendedAgentCard)." .
+
+:Prompt_GetAgentCard rdf:type :Prompt ;
+    :promptInstruction "Request agent card metadata via GET /.well-known/{agentId}/agent-card.json or via JSON-RPC agent/getAuthenticatedExtendedCard." ;
+    :promptOutputIndicator "AgentCard JSON object containing metadata about the agent." .
+
+:Task_SendMessage rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_SendMessage ;
+    dcterms:description "Send a single message to an agent and receive a message or task response." .
+
+:Prompt_SendMessage rdf:type :Prompt ;
+    :promptInstruction "Send a message to the agent using JSON-RPC method message/send with MessageSendParams." ;
+    :promptOutputIndicator "A SendMessageResponse (Message or Task)." .
+
+:Task_SendMessageStream rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_SendMessageStream ;
+    dcterms:description "Initiate a streaming message to receive real-time task events." .
+
+:Prompt_SendMessageStream rdf:type :Prompt ;
+    :promptInstruction "Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task." ;
+    :promptOutputIndicator "Streamed A2A events (Message, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent)." .
+
+:Task_GetTask rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_GetTask ;
+    dcterms:description "Query status and result of an existing task." .
+
+:Prompt_GetTask rdf:type :Prompt ;
+    :promptInstruction "Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result." ;
+    :promptOutputIndicator "GetTaskResponse containing current task data." .
+
+:Task_CancelTask rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_CancelTask ;
+    dcterms:description "Cancel a running task for the agent." .
+
+:Prompt_CancelTask rdf:type :Prompt ;
+    :promptInstruction "Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task." ;
+    :promptOutputIndicator "Task object representing the cancelled task or confirmation of cancellation." .
+
+:Task_ResubscribeTask rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_ResubscribeTask ;
+    dcterms:description "Resume a previously started task stream to receive ongoing updates." .
+
+:Prompt_ResubscribeTask rdf:type :Prompt ;
+    :promptInstruction "Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream." ;
+    :promptOutputIndicator "Streamed A2A events for the existing task." .
+
+:Task_SetPushNotificationConfig rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_SetPushNotificationConfig ;
+    dcterms:description "Set push notification configuration for a task." .
+
+:Prompt_SetPushNotificationConfig rdf:type :Prompt ;
+    :promptInstruction "Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object." ;
+    :promptOutputIndicator "Acknowledgement and the stored TaskPushNotificationConfig." .
+
+:Task_GetPushNotificationConfig rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_GetPushNotificationConfig ;
+    dcterms:description "Get push notification configuration for a task." .
+
+:Prompt_GetPushNotificationConfig rdf:type :Prompt ;
+    :promptInstruction "Call tasks/pushNotificationConfig/get JSON-RPC with identifying params." ;
+    :promptOutputIndicator "The TaskPushNotificationConfig for the requested task." .
+
+:Task_ListPushNotificationConfig rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_ListPushNotificationConfig ;
+    dcterms:description "List push notification configurations." .
+
+:Prompt_ListPushNotificationConfig rdf:type :Prompt ;
+    :promptInstruction "Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations." ;
+    :promptOutputIndicator "A list of TaskPushNotificationConfig objects." .
+
+:Task_DeletePushNotificationConfig rdf:type :Task ;
+    :performedByAgent :Agent_A2A_1 ;
+    :taskPrompt :Prompt_DeletePushNotificationConfig ;
+    dcterms:description "Delete a push notification configuration for a task." .
+
+:Prompt_DeletePushNotificationConfig rdf:type :Prompt ;
+    :promptInstruction "Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config." ;
+    :promptOutputIndicator "Confirmation of deletion (void response or success envelope)." .
+
+### Workflow Pattern and Steps
+:A2A_Client_Workflow rdf:type :WorkflowPattern ;
+    dcterms:title "Mastra A2A Client Workflow" ;
+    :hasWorkflowStep :Step_1_GetAgentCard ,
+                     :Step_2_SendMessage ,
+                     :Step_3_SendMessageStream ,
+                     :Step_4_GetTask ,
+                     :Step_5_CancelTask ,
+                     :Step_6_ResubscribeTask ,
+                     :Step_7_SetPushNotificationConfig ,
+                     :Step_8_GetPushNotificationConfig ,
+                     :Step_9_ListPushNotificationConfig ,
+                     :Step_10_DeletePushNotificationConfig ;
+    dcterms:description "Representative sequence of A2A client interactions exposed by the A2A class." .
+
+:Step_1_GetAgentCard rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :Task_GetAgentCard ;
+    :nextStep :Step_2_SendMessage ;
+    dcterms:description "Retrieve agent card / authenticated extended card." .
+
+:Step_2_SendMessage rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :Task_SendMessage ;
+    :nextStep :Step_3_SendMessageStream ;
+    dcterms:description "Send a message via message/send." .
+
+:Step_3_SendMessageStream rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :Task_SendMessageStream ;
+    :nextStep :Step_4_GetTask ;
+    dcterms:description "Open a streaming message/stream to receive real-time events." .
+
+:Step_4_GetTask rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :Task_GetTask ;
+    :nextStep :Step_5_CancelTask ;
+    dcterms:description "Query task status/result via tasks/get." .
+
+:Step_5_CancelTask rdf:type :WorkflowStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :Task_CancelTask ;
+    :nextStep :Step_6_ResubscribeTask ;
+    dcterms:description "Cancel tasks via tasks/cancel." .
+
+:Step_6_ResubscribeTask rdf:type :WorkflowStep ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :Task_ResubscribeTask ;
+    :nextStep :Step_7_SetPushNotificationConfig ;
+    dcterms:description "Resubscribe to streams via tasks/resubscribe." .
+
+:Step_7_SetPushNotificationConfig rdf:type :WorkflowStep ;
+    :stepOrder 7 ;
+    :hasAssociatedTask :Task_SetPushNotificationConfig ;
+    :nextStep :Step_8_GetPushNotificationConfig ;
+    dcterms:description "Set push notification config via tasks/pushNotificationConfig/set." .
+
+:Step_8_GetPushNotificationConfig rdf:type :WorkflowStep ;
+    :stepOrder 8 ;
+    :hasAssociatedTask :Task_GetPushNotificationConfig ;
+    :nextStep :Step_9_ListPushNotificationConfig ;
+    dcterms:description "Get push notification config via tasks/pushNotificationConfig/get." .
+
+:Step_9_ListPushNotificationConfig rdf:type :WorkflowStep ;
+    :stepOrder 9 ;
+    :hasAssociatedTask :Task_ListPushNotificationConfig ;
+    :nextStep :Step_10_DeletePushNotificationConfig ;
+    dcterms:description "List push notification configs via tasks/pushNotificationConfig/list." .
+
+:Step_10_DeletePushNotificationConfig rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 10 ;
+    :hasAssociatedTask :Task_DeletePushNotificationConfig ;
+    dcterms:description "Delete push notification config via tasks/pushNotificationConfig/delete." .
+
+### Team representation
+:MastraA2A_Client rdf:type :Team ;
+    dcterms:title "Mastra A2A Client" ;
+    :hasAgentMember :Agent_A2A_1 ;
+    :hasWorkflowPattern :A2A_Client_Workflow ;
+    dcterms:description "Represents the client-side component that orchestrates A2A interactions with a remote agent." .

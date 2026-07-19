@@ -1,0 +1,234 @@
+# Execution time: 39.43 seconds
+# Model used: gpt-5-mini
+# Prompt: P5
+
+# Framework: Mastra AI
+
+# Issues / Assumptions:
+# - Assumed agentRole "Chef" because no explicit role field provided.
+# - Created a single WorkflowPattern inferred from the various task functions in src/index.ts (only text() is invoked in main, but other task functions were included as sequential steps).
+# - Created LanguageModel individual for "gpt-4o" based on agent.model.name.
+# - Created a minimal Tool config for my-tool (id) though no external API keys were present.
+# - No multi-agent interactions detected.
+
+@prefix : <http://www.w3id.org/agentic-ai/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix beam: <http://w3id.org/beam/core#> .
+
+### Agent: Chef Agent
+:chefAgent rdf:type :LLMAgent ;
+    :agentID "Chef Agent" ;
+    :agentRole "Chef" ;
+    :agentPrompt :chefAgentPrompt ;
+    :useLanguageModel :gpt4o ;
+    :agentToolUsage :my_tool ;
+    :hasAgentConfig :chefConfig_model_provider , :chefConfig_model_name , :chefConfig_toolChoice ;
+    dcterms:title "Chef Agent" ;
+    dcterms:description "LLM-based chef assistant defined in src/mastra/agents/index.ts" .
+
+:chefAgentPrompt rdf:type :Prompt ;
+    :promptInstruction """You are Michel, a practical and experienced home chef who helps people cook great meals with whatever ingredients they have available. Your first priority is understanding what ingredients and equipment the user has access to, then suggesting achievable recipes. You explain cooking steps clearly and offer substitutions when needed, maintaining a friendly and encouraging tone throughout.""" ;
+    dcterms:description "Agent system instruction / persona" .
+
+### Language Model
+:gpt4o rdf:type :LanguageModel ;
+    dcterms:title "gpt-4o" ;
+    dcterms:description "Model used by Chef Agent (provider: OPEN_AI)" .
+
+### Agent Configs
+:chefConfig_model_provider rdf:type :Config ;
+    :configKey "model.provider" ;
+    :configValue "OPEN_AI" ;
+    dcterms:description "Provider setting for the agent model" .
+
+:chefConfig_model_name rdf:type :Config ;
+    :configKey "model.name" ;
+    :configValue "gpt-4o" ;
+    dcterms:description "Model name setting for the agent" .
+
+:chefConfig_toolChoice rdf:type :Config ;
+    :configKey "model.toolChoice" ;
+    :configValue "auto" ;
+    dcterms:description "Tool choice behaviour for the agent" .
+
+### Tool: my-tool
+:my_tool rdf:type :Tool ;
+    dcterms:title "my-tool" ;
+    dcterms:description "My tool description" ;
+    :hasCapability :my_tool_capability ;
+    :hasToolConfig :my_tool_config .
+
+:my_tool_capability rdf:type :Capability ;
+    dcterms:description "Executes the tool's registered logic (no input schema required)" .
+
+:my_tool_config rdf:type :Config ;
+    :configKey "id" ;
+    :configValue "my-tool" ;
+    dcterms:description "Identifier for the tool" .
+
+#################################################################
+# Workflow pattern inferred from functions in src/index.ts
+#################################################################
+:chefWorkflow rdf:type :WorkflowPattern ;
+    dcterms:title "Chef Agent Workflow" ;
+    dcterms:description "Sequential steps inferred from task functions in src/index.ts" ;
+    :hasWorkflowStep :chef_step1 , :chef_step2 , :chef_step3 , :chef_step4 , :chef_step5 , :chef_step6 , :chef_step7 , :chef_step8 , :chef_step9 .
+
+### Steps and Tasks (ordered)
+:chef_step1 rdf:type :StartStep , :WorkflowStep ;
+    :stepOrder 1 ;
+    :hasAssociatedTask :task_query_pantry ;
+    :nextStep :chef_step2 ;
+    dcterms:title "Query pantry / generate recipe (text)" .
+
+:task_query_pantry rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_query_pantry ;
+    dcterms:description "User asks what they can make given pantry ingredients (pasta, canned tomatoes, garlic, olive oil, dried herbs)." .
+
+:prompt_query_pantry rdf:type :Prompt ;
+    :promptInstruction "In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?" ;
+    :promptOutputIndicator "Natural language recipe suggestions and possible ingredient substitutions." .
+
+:chef_step2 rdf:type :WorkflowStep ;
+    :stepOrder 2 ;
+    :hasAssociatedTask :task_generate_text ;
+    :nextStep :chef_step3 ;
+    dcterms:title "generateText (duplicate generate call)" .
+
+:task_generate_text rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_generate_text ;
+    dcterms:description "Alternate/duplicate generate usage with same pantry query." .
+
+:prompt_generate_text rdf:type :Prompt ;
+    :promptInstruction "In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?" ;
+    :promptOutputIndicator "Natural language recipe suggestions." .
+
+:chef_step3 rdf:type :WorkflowStep ;
+    :stepOrder 3 ;
+    :hasAssociatedTask :task_textStream ;
+    :nextStep :chef_step4 ;
+    dcterms:title "textStream (streamed recipe for different ingredients)" .
+
+:task_textStream rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_textStream ;
+    dcterms:description "Streamed response for chicken/coconut/sweet potatoes/curry powder scenario." .
+
+:prompt_textStream rdf:type :Prompt ;
+    :promptInstruction "Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder." ;
+    :promptOutputIndicator "Streamed recipe text (incremental chunks) until completion." .
+
+:chef_step4 rdf:type :WorkflowStep ;
+    :stepOrder 4 ;
+    :hasAssociatedTask :task_generateStream ;
+    :nextStep :chef_step5 ;
+    dcterms:title "generateStream (array input streaming variant)" .
+
+:task_generateStream rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_generateStream ;
+    dcterms:description "Streaming variant with array input; yields streamed recipe." .
+
+:prompt_generateStream rdf:type :Prompt ;
+    :promptInstruction "Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder." ;
+    :promptOutputIndicator "Streamed recipe text (incremental chunks) until completion." .
+
+:chef_step5 rdf:type :WorkflowStep ;
+    :stepOrder 5 ;
+    :hasAssociatedTask :task_textObject ;
+    :nextStep :chef_step6 ;
+    dcterms:title "textObject (generate recipe as structured object / zod)" .
+
+:task_textObject rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_textObject ;
+    dcterms:description "Generate a lasagna recipe structured as an object with ingredients and steps." .
+
+:prompt_textObject rdf:type :Prompt ;
+    :promptInstruction "I want to make lasagna, can you generate a lasagna recipe for me?" ;
+    :promptOutputIndicator "JSON object with properties: ingredients (array of {name:string, amount:number}) and steps (array of strings)." .
+
+:chef_step6 rdf:type :WorkflowStep ;
+    :stepOrder 6 ;
+    :hasAssociatedTask :task_textObject_jsonschema ;
+    :nextStep :chef_step7 ;
+    dcterms:title "textObjectJsonSchema (generate using explicit JSON Schema)" .
+
+:task_textObject_jsonschema rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_textObject_jsonschema ;
+    dcterms:description "Generate lasagna recipe constrained by provided JSON Schema." .
+
+:prompt_textObject_jsonschema rdf:type :Prompt ;
+    :promptInstruction "I want to make lasagna, can you generate a lasagna recipe for me?" ;
+    :promptOutputIndicator "JSON matching the provided JSON Schema (ingredients and steps)." .
+
+:chef_step7 rdf:type :WorkflowStep ;
+    :stepOrder 7 ;
+    :hasAssociatedTask :task_generateObject ;
+    :nextStep :chef_step8 ;
+    dcterms:title "generateObject (array input variant producing structured object)" .
+
+:task_generateObject rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_generateObject ;
+    dcterms:description "Generate lasagna recipe with structured output (array input variant)." .
+
+:prompt_generateObject rdf:type :Prompt ;
+    :promptInstruction "I want to make lasagna, can you generate a lasagna recipe for me?" ;
+    :promptOutputIndicator "JSON object with ingredients and steps as per zod schema." .
+
+:chef_step8 rdf:type :WorkflowStep ;
+    :stepOrder 8 ;
+    :hasAssociatedTask :task_streamObject ;
+    :nextStep :chef_step9 ;
+    dcterms:title "streamObject (streamed structured recipe)" .
+
+:task_streamObject rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_streamObject ;
+    dcterms:description "Streamed generation of a lasagna recipe as structured object." .
+
+:prompt_streamObject rdf:type :Prompt ;
+    :promptInstruction "I want to make lasagna, can you generate a lasagna recipe for me?" ;
+    :promptOutputIndicator "Streamed JSON chunks composing a structured recipe object." .
+
+:chef_step9 rdf:type :EndStep , :WorkflowStep ;
+    :stepOrder 9 ;
+    :hasAssociatedTask :task_generateStreamObject ;
+    dcterms:title "generateStreamObject (streamed array-input structured generation)".
+
+:task_generateStreamObject rdf:type :Task ;
+    :performedByAgent :chefAgent ;
+    :taskPrompt :prompt_generateStreamObject ;
+    dcterms:description "Final streaming structured generation variant." .
+
+:prompt_generateStreamObject rdf:type :Prompt ;
+    :promptInstruction "I want to make lasagna, can you generate a lasagna recipe for me?" ;
+    :promptOutputIndicator "Streamed JSON object containing ingredients and steps." .
+
+#################################################################
+# Team / Mastra instance
+#################################################################
+:mastraInstance rdf:type :Team ;
+    dcterms:title "Mastra Instance (local)" ;
+    dcterms:description "Mastra instance created in src/mastra/index.ts containing Chef Agent" ;
+    :hasAgentMember :chefAgent ;
+    :hasWorkflowPattern :chefWorkflow ;
+    :hasSystemConfig :mastra_deployer_scope , :mastra_deployer_projectName .
+
+:mastra_deployer_scope rdf:type :Config ;
+    :configKey "deployer.scope" ;
+    :configValue "" ;
+    dcterms:description "CloudflareDeployer scope (empty string in source)" .
+
+:mastra_deployer_projectName rdf:type :Config ;
+    :configKey "deployer.projectName" ;
+    :configValue "" ;
+    dcterms:description "CloudflareDeployer projectName (empty string in source)" .
