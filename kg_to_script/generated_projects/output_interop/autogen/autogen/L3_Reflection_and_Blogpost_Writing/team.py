@@ -30,8 +30,8 @@ model_client = OpenAIChatCompletionClient(
 # ==================================================
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_writer = AssistantAgent(
+    name="writer",
     model_client=model_client,
     system_message="""
 Role:
@@ -46,8 +46,8 @@ You are a Writer.
 )
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_critic = AssistantAgent(
+    name="critic",
     model_client=model_client,
     system_message="""
 Role:
@@ -62,8 +62,8 @@ You are a Critic.
 )
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_seo = AssistantAgent(
+    name="seo_reviewer",
     model_client=model_client,
     system_message="""
 Role:
@@ -78,8 +78,8 @@ You are a SEO Reviewer.
 )
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_legal = AssistantAgent(
+    name="legal_reviewer",
     model_client=model_client,
     system_message="""
 Role:
@@ -94,8 +94,8 @@ You are a Legal Reviewer.
 )
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_ethics = AssistantAgent(
+    name="ethics_reviewer",
     model_client=model_client,
     system_message="""
 Role:
@@ -110,8 +110,8 @@ You are a Ethics Reviewer.
 )
 
 
-unnamed = AssistantAgent(
-    name="unnamed",
+unnamed_meta = AssistantAgent(
+    name="meta_reviewer",
     model_client=model_client,
     system_message="""
 Role:

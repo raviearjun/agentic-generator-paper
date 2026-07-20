@@ -25,7 +25,10 @@ const taskQueryPantry = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?`
+    const prompt = `In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const taskGenerateText = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?`
+    const prompt = `In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const taskTextStream = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.`
+    const prompt = `Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -76,7 +85,10 @@ const taskGenerateStream = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.`
+    const prompt = `Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -93,7 +105,10 @@ const taskTextObject = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?`
+    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -110,7 +125,10 @@ const taskTextObjectJsonschema = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?`
+    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -127,7 +145,10 @@ const taskGenerateObject = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?`
+    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -144,7 +165,10 @@ const taskStreamObject = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?`
+    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -161,7 +185,10 @@ const taskGenerateStreamObject = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?`
+    const prompt = `I want to make lasagna, can you generate a lasagna recipe for me?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chefAgent.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -1,12 +1,12 @@
 import asyncio
 
 from team import (
-    unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
-    unnamed,
+    unnamed_writer,
+    unnamed_critic,
+    unnamed_seo,
+    unnamed_legal,
+    unnamed_ethics,
+    unnamed_meta,
 )
 
 from autogen_agentchat.conditions import (
@@ -40,9 +40,9 @@ async def main():
         task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
        DeepLearning.AI. 确保博客100 字以内。 """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_writer, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_writer.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -62,9 +62,9 @@ async def main():
         task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
        DeepLearning.AI. 确保博客100 字以内。 """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_critic, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_critic.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -83,9 +83,9 @@ async def main():
 
         task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. 这里的 审查员 应该是你自己的角色 """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_seo, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_seo.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -104,9 +104,9 @@ async def main():
 
         task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''}. """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_legal, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_legal.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -125,9 +125,9 @@ async def main():
 
         task_prompt = """仅以 JSON 对象的格式返回审查结果  :{'审查员': '', '审查结果': ''} """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_ethics, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_ethics.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -146,9 +146,9 @@ async def main():
 
         task_prompt = """对所有审查员的反馈意见进行汇总，并对写作提出最终建议。 """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_meta, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_meta.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output
@@ -167,9 +167,9 @@ async def main():
         task_prompt = """撰写一篇简洁但引人入胜的博客，内容涉及
        DeepLearning.AI. 确保博客100 字以内。 """
         history.append(TextMessage(content=task_prompt, source="user"))
-        # Execute via the assigned agent: unnamed, passing the
+        # Execute via the assigned agent: unnamed_critic, passing the
         # accumulated history so this step can see every prior step's output.
-        result = await unnamed.run(task=history)
+        result = await unnamed_critic.run(task=history)
         history = [m for m in result.messages if isinstance(m, BaseChatMessage)]
 
         # Print step output

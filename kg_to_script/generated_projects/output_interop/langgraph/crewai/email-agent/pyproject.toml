@@ -3,7 +3,6 @@ name = "email_assistant_team_state_graphsystem"
 version = "0.1.0"
 description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
-readme = "README.md"
 requires-python = ">=3.10,<=3.13"
 
 dependencies = [

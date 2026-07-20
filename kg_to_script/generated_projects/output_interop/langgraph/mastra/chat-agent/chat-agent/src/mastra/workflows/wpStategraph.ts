@@ -23,7 +23,10 @@ const taskChat = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Invoke model with the system prompt and current state.messages; return response messages.`
+    const prompt = `Invoke model with the system prompt and current state.messages; return response messages.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await chatAgent.generate(prompt)
     return { ...context, output: result.text }
   },

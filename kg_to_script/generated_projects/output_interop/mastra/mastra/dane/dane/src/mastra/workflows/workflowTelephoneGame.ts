@@ -59,7 +59,10 @@ const taskTelStepC2 = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `When user confirms modification, call the haiku model to alter the message. Only return the new message.`
+    const prompt = `When user confirms modification, call the haiku model to alter the message. Only return the new message.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await dane.generate(prompt)
     return { ...context, output: result.text }
   },

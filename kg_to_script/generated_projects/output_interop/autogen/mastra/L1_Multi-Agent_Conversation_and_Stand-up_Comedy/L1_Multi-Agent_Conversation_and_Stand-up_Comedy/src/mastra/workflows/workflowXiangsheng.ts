@@ -25,7 +25,10 @@ const taskGuodegangInitiateChat1 = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; recipient=于谦; max_turns=6`
+    const prompt = `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; recipient=于谦; max_turns=6
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await unnamed.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const taskGuodegangInitiateChat2 = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; summary_method="reflection_with_llm"; summary_prompt="简洁的总结下这场相声表演。"`
+    const prompt = `message="我是郭德纲，于谦呀，我们给观众讲一段相声怎么样？"; summary_method="reflection_with_llm"; summary_prompt="简洁的总结下这场相声表演。"
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await unnamed.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const taskGuodegangSendFollowup = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `message='我们刚才的相声在讲什么?'; recipient=于谦`
+    const prompt = `message='我们刚才的相声在讲什么?'; recipient=于谦
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await unnamed.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -41,7 +41,10 @@ const taskGenerateSpec = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates.`
+    const prompt = `I have generated the following Open API specs: <list of fragments>. Merge them into a single spec and ensure the result is a valid OpenAPI YAML document. Remove code fences and unify components/paths to avoid duplicates.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await openapiSpecGenAgent.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -35,7 +35,10 @@ const taskLinkReportBrokenLinks = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.`
+    const prompt = `Format the broken links JSON into a human-friendly Slack message and send to the configured channel using slack_post_message tool.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await daneLinkChecker.generate(prompt)
     return { ...context, output: result.text }
   },

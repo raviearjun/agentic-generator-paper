@@ -23,7 +23,10 @@ const taskOnboardingPersonalInfo = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Hello, I'm here to help you get started with our product. Could you tell me your name and location?`
+    const prompt = `Hello, I'm here to help you get started with our product. Could you tell me your name and location?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await onboardingPersonalInformationAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -40,7 +43,10 @@ const taskOnboardingTopicPreference = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Great! Could you tell me what topics you are interested in reading about?`
+    const prompt = `Great! Could you tell me what topics you are interested in reading about?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await onboardingTopicPreferenceAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -57,7 +63,10 @@ const taskCustomerEngagementRequest = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Let's find something fun to read.`
+    const prompt = `Let's find something fun to read.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await customerEngagementAgent.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -71,11 +71,20 @@ def _create_jinja_env() -> Environment:
         if not s:
             return ""
         escaped = s.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
-        return _re.sub(
-            r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}",
-            lambda m: f"${{{var}.{m.group(1)} ?? ''}}",
-            escaped,
-        )
+        pattern = r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}"
+        if _re.search(pattern, escaped):
+            return _re.sub(
+                pattern,
+                lambda m: f"${{{var}.{m.group(1)} ?? ''}}",
+                escaped,
+            )
+        # Fallback: the instruction text has no {field}-style placeholder (e.g. a
+        # step whose source-side prompt is built dynamically at runtime rather than
+        # from a static, placeholder-bearing template), so there is nothing for the
+        # regex above to substitute. Surface whatever context prior steps produced
+        # anyway, so the agent has real material to act on instead of a bare,
+        # content-free instruction.
+        return escaped + f"\n\nContext from prior steps:\n${{JSON.stringify({var})}}"
 
     env.filters["ts_interpolate"] = _ts_interpolate
 

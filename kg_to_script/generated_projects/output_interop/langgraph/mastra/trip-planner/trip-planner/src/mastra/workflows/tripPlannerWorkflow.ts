@@ -25,7 +25,10 @@ const viewAccommodationsTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.`
+    const prompt = `List available accommodations with images, ratings, price, and brief details. Allow the user to open details of an accommodation.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tripPlannerAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const selectAccommodationTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.`
+    const prompt = `When a user selects an accommodation, present full details (name, rating, price, dates, guests) and provide a booking action trigger.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tripPlannerAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const confirmBookingTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.`
+    const prompt = `Construct a JSON payload with fields { accommodation, tripDetails } and call the 'book-accommodation' tool. After tool invocation, provide a human-facing confirmation message describing the booked accommodation and trip summary.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tripPlannerAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -76,7 +85,10 @@ const bookedConfirmationTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.`
+    const prompt = `Show booked accommodation summary including dates, guest count, address/name, rating and total price. If tool response includes booking reference, display it.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tripPlannerAgent.generate(prompt)
     return { ...context, output: result.text }
   },

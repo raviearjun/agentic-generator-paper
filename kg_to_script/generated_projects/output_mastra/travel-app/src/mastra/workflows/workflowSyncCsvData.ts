@@ -23,7 +23,10 @@ const taskSyncCsvData = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.`
+    const prompt = `Sync data from City CSV (src/data/city-data.csv). Read CSV rows, map columns to CityData, and call mastra.engine.syncRecords to sync City records. This step is executed by the Mastra engine runtime.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },

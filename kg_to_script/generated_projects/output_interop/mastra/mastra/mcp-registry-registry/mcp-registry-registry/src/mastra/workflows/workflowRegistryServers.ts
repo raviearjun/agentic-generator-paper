@@ -25,7 +25,10 @@ const taskFetchServersFromRegistry = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing.`
+    const prompt = `Fetch servers from the registry by locating the registry entry in local registryData, verifying servers_url, performing HTTP GET, and returning raw response for post-processing.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await registryRegistryServer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const taskPostProcessServers = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available.`
+    const prompt = `Normalize registry-specific response formats into canonical ServerEntry objects with id, name, description, createdAt, updatedAt using the registry's postProcessServers function when available.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await registryRegistryServer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const taskFilterServers = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags.`
+    const prompt = `Apply search filtering on server name or description; support tag-based filtering when server metadata includes tags.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await registryRegistryServer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -76,7 +85,10 @@ const taskGetServersFromRegistry = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Orchestrate fetching, post-processing, and filtering of servers for a given registryId and optional filters; return final server list or throw on error.`
+    const prompt = `Orchestrate fetching, post-processing, and filtering of servers for a given registryId and optional filters; return final server list or throw on error.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await registryRegistryServer.generate(prompt)
     return { ...context, output: result.text }
   },

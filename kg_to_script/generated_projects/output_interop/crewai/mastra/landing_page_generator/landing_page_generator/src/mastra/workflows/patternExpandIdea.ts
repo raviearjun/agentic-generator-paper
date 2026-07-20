@@ -50,7 +50,10 @@ const taskRefineIdea = createStep({
 
 Your final answer MUST be the updated complete comprehensive idea report with WHY, HOW, WHAT, a core message, key features and supporting arguments.
 
-YOU MUST RETURN THE COMPLETE IDEA REPORT AND THE DETAILS, You'll get a $100 tip if you do your best work!`
+YOU MUST RETURN THE COMPLETE IDEA REPORT AND THE DETAILS, You'll get a $100 tip if you do your best work!
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await seniorStrategist.generate(prompt)
     return { ...context, output: result.text }
   },

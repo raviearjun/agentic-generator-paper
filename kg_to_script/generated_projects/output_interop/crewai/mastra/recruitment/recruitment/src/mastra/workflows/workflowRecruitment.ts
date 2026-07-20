@@ -88,7 +88,10 @@ const taskReportCandidates = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.`
+    const prompt = `Compile a comprehensive report for recruiters on the best candidates to put forward. Summarize the findings from the previous tasks and provide clear recommendations based on the job requirements.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await reporter.generate(prompt)
     return { ...context, output: result.text }
   },

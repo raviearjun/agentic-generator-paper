@@ -25,7 +25,10 @@ const taskProposeChange = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Render the proposed change (code diff / description) to the user and request an explicit accept or reject decision.`
+    const prompt = `Render the proposed change (code diff / description) to the user and request an explicit accept or reject decision.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await langgraphAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -54,7 +57,10 @@ const taskHandleReject = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `On reject: call the update_file tool with REJECTED_CHANGE_CONTENT (or do not apply change) and submit a human message 'Rejected change.'.`
+    const prompt = `On reject: call the update_file tool with REJECTED_CHANGE_CONTENT (or do not apply change) and submit a human message 'Rejected change.'.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await langgraphAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -71,7 +77,10 @@ const taskFinalizeUi = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Render final accepted or rejected status in the UI and present an artifact view of the proposed change.`
+    const prompt = `Render final accepted or rejected status in the UI and present an artifact view of the proposed change.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await langgraphAgent.generate(prompt)
     return { ...context, output: result.text }
   },

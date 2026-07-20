@@ -11,7 +11,7 @@ from autogen_agentchat.conditions import (
 from autogen_agentchat.messages import BaseChatMessage, TextMessage
 
 INPUTS = {
-
+    "CONVERSATION": "Write an email to Alex (alex@example.com) letting them know the product launch has been moved from June 10 to June 24, and ask them to update the marketing calendar accordingly.",
 }
 
 
@@ -45,6 +45,7 @@ Required fields:
 - subject - The subject of the email
 - body - The body of the email
 - to - The recipient of the email """
+        task_prompt = task_prompt.format(**INPUTS)
         history.append(TextMessage(content=task_prompt, source="user"))
         # Execute via the assigned agent: email_assistant_agent, passing the
         # accumulated history so this step can see every prior step's output.

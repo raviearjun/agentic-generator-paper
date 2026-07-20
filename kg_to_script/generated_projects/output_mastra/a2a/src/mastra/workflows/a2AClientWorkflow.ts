@@ -42,7 +42,10 @@ const taskSendMessage = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Send a message to the agent using JSON-RPC method message/send with MessageSendParams.`
+    const prompt = `Send a message to the agent using JSON-RPC method message/send with MessageSendParams.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +62,10 @@ const taskSendMessageStream = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.`
+    const prompt = `Open a message/stream JSON-RPC request (SSE) to receive incremental A2A events for the initiated message/task.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -76,7 +82,10 @@ const taskGetTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result.`
+    const prompt = `Call tasks/get JSON-RPC with TaskQueryParams to retrieve task status and result.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -93,7 +102,10 @@ const taskCancelTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task.`
+    const prompt = `Call tasks/cancel JSON-RPC with TaskQueryParams to cancel a running task.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -110,7 +122,10 @@ const taskResubscribeTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.`
+    const prompt = `Call tasks/resubscribe JSON-RPC with TaskIdParams and stream true to reattach to an existing task stream.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -127,7 +142,10 @@ const taskSetPushNotificationConfig = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object.`
+    const prompt = `Call tasks/pushNotificationConfig/set JSON-RPC with a TaskPushNotificationConfig object.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -144,7 +162,10 @@ const taskGetPushNotificationConfig = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.`
+    const prompt = `Call tasks/pushNotificationConfig/get JSON-RPC with identifying params.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -161,7 +182,10 @@ const taskListPushNotificationConfig = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.`
+    const prompt = `Call tasks/pushNotificationConfig/list JSON-RPC to retrieve configurations.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -178,7 +202,10 @@ const taskDeletePushNotificationConfig = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config.`
+    const prompt = `Call tasks/pushNotificationConfig/delete JSON-RPC with identifying params to delete a config.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agentIdConstructorParameter.generate(prompt)
     return { ...context, output: result.text }
   },

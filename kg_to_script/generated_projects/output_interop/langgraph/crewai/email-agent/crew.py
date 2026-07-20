@@ -56,6 +56,7 @@ class EmailAssistantTeamStateGraphsystem:
     def task_interrupt(self) -> Task:
         return Task(
             config=self.tasks_config['task_interrupt'],
+            agent=self.email_assistant_agent(),
             human_input=True,
         )
 

@@ -41,7 +41,10 @@ Task:
 1. create a structured narrative changelog that highlights key updates and improvements.
 2. Include what packages were changed
 Structure: Opening, Major Updates, Technical Improvements, Documentation & Examples, Bug Fixes & Infrastructure
-Finally send this to the configured slack channel with slack_post_message tool.`
+Finally send this to the configured slack channel with slack_post_message tool.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await daneChangeLog.generate(prompt)
     return { ...context, output: result.text }
   },

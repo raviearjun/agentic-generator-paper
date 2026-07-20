@@ -28,7 +28,10 @@ const taskInitiateChat = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `让我们下棋吧，该你走了！`
+    const prompt = `让我们下棋吧，该你走了！
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await playerBlack.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -45,7 +48,10 @@ const taskBoardProxySummaryToWhite = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Summary of last board state and last move (provided by board proxy).`
+    const prompt = `Summary of last board state and last move (provided by board proxy).
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await boardProxy.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -62,7 +68,10 @@ const taskGetLegalMoves = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。`
+    const prompt = `调用 get_legal_moves() 获取当前合法走法列表（UCI 格式）。
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await playerWhite.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -79,7 +88,10 @@ const taskMakeMove = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `选择一个合法走法并调用 make_move(move) 来执行该步棋。`
+    const prompt = `选择一个合法走法并调用 make_move(move) 来执行该步棋。
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await playerWhite.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -96,7 +108,10 @@ const taskCheckMadeMove = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call check_made_move(msg) to determine if a move has been executed; if true, end nested chat iteration.`
+    const prompt = `Call check_made_move(msg) to determine if a move has been executed; if true, end nested chat iteration.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await boardProxy.generate(prompt)
     return { ...context, output: result.text }
   },

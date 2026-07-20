@@ -88,7 +88,10 @@ const taskInstagramAdCopy = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.`
+    const prompt = `Craft an engaging Instagram post copy. The copy should be punchy, captivating, concise, and aligned with the product marketing strategy. Focus on creating a message that resonates with the target audience and highlights the product's unique selling points.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await creativeContentCreatorAgent.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -41,7 +41,10 @@ const imageMetadataTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.`
+    const prompt = `View this image and let me know if it's a bird or not, and the scientific name of the bird without any explanation. Also summarize the location for this picture in one or two short sentences understandable by a high school student.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await birdChecker.generate(prompt)
     return { ...context, output: result.text }
   },

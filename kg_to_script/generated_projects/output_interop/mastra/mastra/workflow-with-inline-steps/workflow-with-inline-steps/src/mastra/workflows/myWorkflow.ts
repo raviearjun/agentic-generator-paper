@@ -25,7 +25,10 @@ const taskStepOne = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Execute: doubledValue = context.machineContext.triggerData.inputValue * 2`
+    const prompt = `Execute: doubledValue = context.machineContext.triggerData.inputValue * 2
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await mastraDefaultAgent.generate(prompt)
     return { ...context, output: result.text }
   },

@@ -21,39 +21,39 @@ class UnnamedProject:
     # ── Agents ──────────────────────────────────────────
 
     @agent
-    def unnamed(self) -> Agent:
+    def writer(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['writer'],
         )
 
     @agent
-    def unnamed(self) -> Agent:
+    def critic(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['critic'],
         )
 
     @agent
-    def unnamed(self) -> Agent:
+    def seo_reviewer(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['seo_reviewer'],
         )
 
     @agent
-    def unnamed(self) -> Agent:
+    def legal_reviewer(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['legal_reviewer'],
         )
 
     @agent
-    def unnamed(self) -> Agent:
+    def ethics_reviewer(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['ethics_reviewer'],
         )
 
     @agent
-    def unnamed(self) -> Agent:
+    def meta_reviewer(self) -> Agent:
         return Agent(
-            config=self.agents_config['unnamed'],
+            config=self.agents_config['meta_reviewer'],
         )
 
     # ── Tasks ───────────────────────────────────────────
@@ -62,49 +62,49 @@ class UnnamedProject:
     def task_write_blog(self) -> Task:
         return Task(
             config=self.tasks_config['task_write_blog'],
-            agent=self.unnamed(),
+            agent=self.writer(),
         )
 
     @task
     def task_critic_initiate_1(self) -> Task:
         return Task(
             config=self.tasks_config['task_critic_initiate_1'],
-            agent=self.unnamed(),
+            agent=self.critic(),
         )
 
     @task
     def task_nested_seo_review(self) -> Task:
         return Task(
             config=self.tasks_config['task_nested_seo_review'],
-            agent=self.unnamed(),
+            agent=self.seo_reviewer(),
         )
 
     @task
     def task_nested_legal_review(self) -> Task:
         return Task(
             config=self.tasks_config['task_nested_legal_review'],
-            agent=self.unnamed(),
+            agent=self.legal_reviewer(),
         )
 
     @task
     def task_nested_ethics_review(self) -> Task:
         return Task(
             config=self.tasks_config['task_nested_ethics_review'],
-            agent=self.unnamed(),
+            agent=self.ethics_reviewer(),
         )
 
     @task
     def task_meta_aggregate(self) -> Task:
         return Task(
             config=self.tasks_config['task_meta_aggregate'],
-            agent=self.unnamed(),
+            agent=self.meta_reviewer(),
         )
 
     @task
     def task_critic_initiate_2(self) -> Task:
         return Task(
             config=self.tasks_config['task_critic_initiate_2'],
-            agent=self.unnamed(),
+            agent=self.critic(),
         )
 
     # ── Crew ────────────────────────────────────────────

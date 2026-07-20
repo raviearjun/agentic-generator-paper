@@ -35,7 +35,10 @@ const taskEntryMessageOutput = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.`
+    const prompt = `User-supplied message forwarded to Dane agent for response; context includes threadId and resourceId.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await dane.generate(prompt)
     return { ...context, output: result.text }
   },

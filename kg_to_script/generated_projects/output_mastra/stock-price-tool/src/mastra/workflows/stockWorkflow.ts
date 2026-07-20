@@ -26,7 +26,10 @@ const taskInit = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Initialize the Stock Agent before handling requests.`
+    const prompt = `Initialize the Stock Agent before handling requests.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await stockAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -43,7 +46,10 @@ const taskQuery = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `What is the current stock price of Apple (AAPL)?`
+    const prompt = `What is the current stock price of Apple (AAPL)?
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await stockAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -60,7 +66,10 @@ const taskToolCall = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price.`
+    const prompt = `Call the stockPrices tool with symbol 'AAPL' to fetch the latest closing price.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await stockAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -77,7 +86,10 @@ const taskEnd = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Return the formatted current price to the user.`
+    const prompt = `Return the formatted current price to the user.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await stockAgent.generate(prompt)
     return { ...context, output: result.text }
   },

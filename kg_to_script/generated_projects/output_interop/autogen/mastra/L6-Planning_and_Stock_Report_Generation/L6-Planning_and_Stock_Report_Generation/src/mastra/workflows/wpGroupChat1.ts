@@ -25,7 +25,10 @@ const taskInitiateWriteBlog = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23.`
+    const prompt = `Write a blogpost about the stock price performance of Nvidia in the past month. Today's date is 2024-04-23.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await admin.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const taskPlannerPlan = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given the blogpost task, determine what information can be retrieved using Python code (e.g., historical prices, volumes) and produce a stepwise plan. After each step is executed, inspect results and direct remaining steps; on failure, suggest workarounds.`
+    const prompt = `Given the blogpost task, determine what information can be retrieved using Python code (e.g., historical prices, volumes) and produce a stepwise plan. After each step is executed, inspect results and direct remaining steps; on failure, suggest workarounds.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await planner.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const taskEngineerWriteCode = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Write Python code to retrieve stock data and produce analysis outputs based on the planner's specifications.`
+    const prompt = `Write Python code to retrieve stock data and produce analysis outputs based on the planner's specifications.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await engineer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -76,7 +85,10 @@ const taskExecutorRunCode = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Execute the latest code message from the engineer (look back up to last 3 messages for code), store artifacts in the 'coding' directory, and report outputs and errors.`
+    const prompt = `Execute the latest code message from the engineer (look back up to last 3 messages for code), store artifacts in the 'coding' directory, and report outputs and errors.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await executor.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -93,7 +105,10 @@ const taskWriterProduceBlog = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Write a blog post in markdown summarizing Nvidia's stock performance in the past month using provided analysis outputs. Use appropriate titles and place content in a pseudo mdcode block. Accept and apply admin feedback to refine.`
+    const prompt = `Write a blog post in markdown summarizing Nvidia's stock performance in the past month using provided analysis outputs. Use appropriate titles and place content in a pseudo mdcode block. Accept and apply admin feedback to refine.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await writer.generate(prompt)
     return { ...context, output: result.text }
   },

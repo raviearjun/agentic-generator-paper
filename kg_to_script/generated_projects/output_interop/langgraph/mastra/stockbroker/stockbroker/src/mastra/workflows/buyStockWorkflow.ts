@@ -25,7 +25,10 @@ const openBuyUiTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Open the buy stock user interface for the specified ticker and prefill price information. Expected output: UI displayed and ready for user input.`
+    const prompt = `Open the buy stock user interface for the specified ticker and prefill price information. Expected output: UI displayed and ready for user input.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tradeAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const executePurchaseTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload.`
+    const prompt = `Invoke the 'buy-stock' tool with JSON: { purchaseDetails: { ticker: <string>, quantity: <integer>, price: <number> } }. Expect the tool to return a confirmation payload.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tradeAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +65,10 @@ const confirmPurchaseTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Present the purchase confirmation message to the user, showing ticker, quantity, price, and total cost. Expected output: confirmation message shown in UI.`
+    const prompt = `Present the purchase confirmation message to the user, showing ticker, quantity, price, and total cost. Expected output: confirmation message shown in UI.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tradeAgent.generate(prompt)
     return { ...context, output: result.text }
   },

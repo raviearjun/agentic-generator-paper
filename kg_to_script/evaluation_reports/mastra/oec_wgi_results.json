@@ -1,17 +1,17 @@
 {
-  "root": "/Users/ravie/dev/agento/kg_to_script",
+  "root": "/Users/naura/projects/agentic-generator-paper/kg_to_script",
   "frameworks": [
     {
       "key": "mastra",
       "name": "Mastra",
-      "kg_dir": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI",
-      "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra",
+      "kg_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI",
+      "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra",
       "summary": {
         "projects": 20,
         "evaluated": 19,
         "errors": 1,
-        "oec_all": 0.7377462414636389,
-        "concept_coverage_rate": 0.9842235493293149,
+        "oec_all": 0.7319353676607742,
+        "concept_coverage_rate": 0.9842235493293148,
         "avg_wgi": 0.9147746818025455,
         "avg_edge_f1": 0.8528265107212475,
         "syntactic_correctness_rate": 1.0,
@@ -20,8 +20,8 @@
       "projects": [
         {
           "project": "a2a",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/a2a_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/a2a",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/a2a_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/a2a",
           "status": "ok",
           "kg_element_count": 53,
           "code_element_count": 26,
@@ -416,8 +416,8 @@
         },
         {
           "project": "agent1",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent1_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/agent1",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent1_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/agent1",
           "status": "ok",
           "kg_element_count": 38,
           "code_element_count": 12,
@@ -801,8 +801,8 @@
         },
         {
           "project": "agent",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/agent",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/agent_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/agent",
           "status": "ok",
           "kg_element_count": 51,
           "code_element_count": 22,
@@ -1179,8 +1179,8 @@
         },
         {
           "project": "bird-checker-with-express",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-express_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/bird-checker-with-express",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-express_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/bird-checker-with-express",
           "status": "ok",
           "kg_element_count": 25,
           "code_element_count": 8,
@@ -1520,8 +1520,8 @@
         },
         {
           "project": "bird-checker-with-nextjs-and-eval",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-nextjs-and-eval_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/bird-checker-with-nextjs-and-eval",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-nextjs-and-eval_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/bird-checker-with-nextjs-and-eval",
           "status": "ok",
           "kg_element_count": 29,
           "code_element_count": 8,
@@ -1895,8 +1895,8 @@
         },
         {
           "project": "bird-checker-with-nextjs",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-nextjs_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/bird-checker-with-nextjs",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/bird-checker-with-nextjs_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/bird-checker-with-nextjs",
           "status": "ok",
           "kg_element_count": 22,
           "code_element_count": 8,
@@ -2191,15 +2191,15 @@
         },
         {
           "project": "crypto-chatbot",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/crypto-chatbot_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/crypto-chatbot",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/crypto-chatbot_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/crypto-chatbot",
           "status": "error",
           "error": "Quote expected in string at ^ in ncise and helpful.\n\n^This is a guide for "
         },
         {
           "project": "dane",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/dane_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/dane",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/dane_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/dane",
           "status": "ok",
           "kg_element_count": 230,
           "code_element_count": 105,
@@ -3088,8 +3088,8 @@
         },
         {
           "project": "mcp-registry-registry",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/mcp-registry-registry_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/mcp-registry-registry",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/mcp-registry-registry_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/mcp-registry-registry",
           "status": "ok",
           "kg_element_count": 40,
           "code_element_count": 14,
@@ -3413,8 +3413,8 @@
         },
         {
           "project": "openapi-spec-writer",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/openapi-spec-writer_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/openapi-spec-writer",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/openapi-spec-writer_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/openapi-spec-writer",
           "status": "ok",
           "kg_element_count": 33,
           "code_element_count": 15,
@@ -3689,15 +3689,15 @@
         },
         {
           "project": "quick-start",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/quick-start_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/quick-start",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/quick-start_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/quick-start",
           "status": "ok",
           "kg_element_count": 32,
           "code_element_count": 9,
           "oec": {
             "all_extracted": {
-              "score": 0.5625,
-              "matched": 18,
+              "score": 0.5,
+              "matched": 16,
               "total": 32,
               "missing": [
                 {
@@ -3729,6 +3729,23 @@
                   }
                 },
                 {
+                  "category": "config",
+                  "name": "agent_cat_one_provider",
+                  "important": false,
+                  "aliases": [
+                    "agent_cat_one_provider",
+                    "provider",
+                    "open_ai",
+                    "provider_open_ai"
+                  ],
+                  "details": {
+                    "key": "provider",
+                    "owner": "cat_one",
+                    "owner_category": "agent",
+                    "value": "OPEN_AI"
+                  }
+                },
+                {
                   "category": "agent_goal",
                   "name": "agent_two_goal_agent_two",
                   "important": false,
@@ -3754,6 +3771,23 @@
                   "details": {
                     "source": "agent_two",
                     "target": "lm_llama_3"
+                  }
+                },
+                {
+                  "category": "config",
+                  "name": "agent_agent_two_provider",
+                  "important": false,
+                  "aliases": [
+                    "agent_agent_two_provider",
+                    "provider",
+                    "groq",
+                    "provider_groq"
+                  ],
+                  "details": {
+                    "key": "provider",
+                    "owner": "agent_two",
+                    "owner_category": "agent",
+                    "value": "GROQ"
                   }
                 },
                 {
@@ -3884,8 +3918,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 8,
+                  "score": 0.75,
+                  "matched": 6,
                   "total": 8
                 },
                 "goal": {
@@ -4025,15 +4059,15 @@
         },
         {
           "project": "stock-price-tool",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/stock-price-tool_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/stock-price-tool",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/stock-price-tool_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/stock-price-tool",
           "status": "ok",
           "kg_element_count": 27,
           "code_element_count": 12,
           "oec": {
             "all_extracted": {
-              "score": 0.8518518518518519,
-              "matched": 23,
+              "score": 0.8148148148148148,
+              "matched": 22,
               "total": 27,
               "missing": [
                 {
@@ -4048,6 +4082,23 @@
                   "details": {
                     "source": "stock_agent",
                     "target": "gpt_4_o_model"
+                  }
+                },
+                {
+                  "category": "config",
+                  "name": "agent_stock_agent_provider",
+                  "important": false,
+                  "aliases": [
+                    "agent_stock_agent_provider",
+                    "provider",
+                    "open_ai",
+                    "provider_open_ai"
+                  ],
+                  "details": {
+                    "key": "provider",
+                    "owner": "stock_agent",
+                    "owner_category": "agent",
+                    "value": "OPEN_AI"
                   }
                 },
                 {
@@ -4105,8 +4156,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 1.0,
-                  "matched": 2,
+                  "score": 0.5,
+                  "matched": 1,
                   "total": 2
                 },
                 "language_model": {
@@ -4268,8 +4319,8 @@
         },
         {
           "project": "travel-app",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/travel-app_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/travel-app",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/travel-app_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/travel-app",
           "status": "ok",
           "kg_element_count": 72,
           "code_element_count": 28,
@@ -4775,8 +4826,8 @@
         },
         {
           "project": "weather-agent1",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/weather-agent1_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/weather-agent1",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/weather-agent1_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/weather-agent1",
           "status": "ok",
           "kg_element_count": 13,
           "code_element_count": 6,
@@ -4991,8 +5042,8 @@
         },
         {
           "project": "weather-agent",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/weather-agent_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/weather-agent",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/weather-agent_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/weather-agent",
           "status": "ok",
           "kg_element_count": 21,
           "code_element_count": 8,
@@ -5264,8 +5315,8 @@
         },
         {
           "project": "workflow-ai-recruiter",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-ai-recruiter_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-ai-recruiter",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-ai-recruiter_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/workflow-ai-recruiter",
           "status": "ok",
           "kg_element_count": 20,
           "code_element_count": 8,
@@ -5493,8 +5544,8 @@
         },
         {
           "project": "workflow-with-inline-steps",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-inline-steps_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-inline-steps",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-inline-steps_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/workflow-with-inline-steps",
           "status": "ok",
           "kg_element_count": 13,
           "code_element_count": 6,
@@ -5658,17 +5709,34 @@
         },
         {
           "project": "workflow-with-memory",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-memory_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-memory",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-memory_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/workflow-with-memory",
           "status": "ok",
           "kg_element_count": 92,
           "code_element_count": 44,
           "oec": {
             "all_extracted": {
-              "score": 0.9347826086956522,
-              "matched": 86,
+              "score": 0.9239130434782609,
+              "matched": 85,
               "total": 92,
               "missing": [
+                {
+                  "category": "config",
+                  "name": "system_mastrainstance_logger_level",
+                  "important": false,
+                  "aliases": [
+                    "system_mastrainstance_logger_level",
+                    "logger_level",
+                    "debug",
+                    "logger_level_debug"
+                  ],
+                  "details": {
+                    "key": "logger_level",
+                    "owner": "mastrainstance",
+                    "owner_category": "system",
+                    "value": "debug"
+                  }
+                },
                 {
                   "category": "config",
                   "name": "system_mastrainstance_memory_connection_string",
@@ -5772,8 +5840,8 @@
                   "total": 1
                 },
                 "config": {
-                  "score": 0.7142857142857143,
-                  "matched": 5,
+                  "score": 0.5714285714285714,
+                  "matched": 4,
                   "total": 7
                 },
                 "language_model": {
@@ -6079,8 +6147,8 @@
         },
         {
           "project": "workflow-with-separate-steps",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-separate-steps_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/workflow-with-separate-steps",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/workflow-with-separate-steps_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/workflow-with-separate-steps",
           "status": "ok",
           "kg_element_count": 24,
           "code_element_count": 10,
@@ -6337,8 +6405,8 @@
         },
         {
           "project": "yc-directory",
-          "kg_path": "/Users/ravie/dev/agento/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/yc-directory_instances.ttl",
-          "output_dir": "/Users/ravie/dev/agento/kg_to_script/generated_projects/output_mastra/yc-directory",
+          "kg_path": "/Users/naura/projects/agentic-generator-paper/kg_to_script/../script_to_kg/generated_kgs/Mastra AI/yc-directory_instances.ttl",
+          "output_dir": "/Users/naura/projects/agentic-generator-paper/kg_to_script/generated_projects/output_mastra/yc-directory",
           "status": "ok",
           "kg_element_count": 21,
           "code_element_count": 8,

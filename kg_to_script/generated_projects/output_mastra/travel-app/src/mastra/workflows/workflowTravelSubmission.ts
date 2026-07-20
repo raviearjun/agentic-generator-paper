@@ -23,7 +23,10 @@ const taskOutboundFlight = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning.`
+    const prompt = `Available outboundFlight items will be provided. Select a single outbound flight based on travelForm (departureLocation, arrivalLocation, startDate, endDate) and flightPriority. ALWAYS pass entire date timestamps for departureTime and arrivalTime. Return ids (or flightNumber) and a short reasoning.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -40,7 +43,10 @@ const taskReturnFlight = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps.`
+    const prompt = `Available returnFlight items will be provided. Select a single return flight based on travelForm and flightPriority. ALWAYS return full flight objects for outbound and return flights and timestamps.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -57,7 +63,10 @@ const taskAccommodationHotels = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning.`
+    const prompt = `Given available hotels and the travelForm (arrivalCityId, hotelPriceRange), select up to 3 hotel options. Ignore 'reviewScore' and extract numeric rating from description/accessibility fields. Provide ids and reasoning.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -74,7 +83,10 @@ const taskAttraction = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available.`
+    const prompt = `Given a set of attractions for the arrival city and the user's interests, select three attractions, provide brief reasoning, and include price, duration, and rating where available.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -91,7 +103,10 @@ const taskAirbnbLocation = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning.`
+    const prompt = `Search for Airbnb location matches for the arrival city and select up to 3 unique place ids to be used in the subsequent Airbnb search. Provide ids and reasoning.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -108,7 +123,10 @@ const taskAccommodationAirbnb = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning.`
+    const prompt = `Given Airbnb search results and travelForm (typeOfPlace, startDate, endDate), select up to 3 Airbnb options, then pick the top result to return. Provide ids and reasoning.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await travelAnalyzer.generate(prompt)
     return { ...context, output: result.text }
   },

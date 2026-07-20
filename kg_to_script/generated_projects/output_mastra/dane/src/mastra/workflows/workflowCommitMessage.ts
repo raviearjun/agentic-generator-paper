@@ -47,7 +47,10 @@ const taskCommitGenerateMessage = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.`
+    const prompt = `Given the git diff, generate a conventional commit message; obey guidelines (start with verb, concise, first line <50 chars, add body if needed). Return commitMessage, generated flag, and guidelines array.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await daneCommitMessage.generate(prompt)
     return { ...context, output: result.text }
   },

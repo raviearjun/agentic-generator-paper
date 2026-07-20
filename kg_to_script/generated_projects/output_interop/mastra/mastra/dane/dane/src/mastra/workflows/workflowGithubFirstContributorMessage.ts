@@ -35,7 +35,10 @@ const taskFirstMessageGenerator = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.`
+    const prompt = `Given PR title, body, and diff plus Mastra docs, generate a friendly intro, a checklist (if applicable), and an outro thanking the contributor. Do not summarize code or give code advice.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await daneNewContributor.generate(prompt)
     return { ...context, output: result.text }
   },

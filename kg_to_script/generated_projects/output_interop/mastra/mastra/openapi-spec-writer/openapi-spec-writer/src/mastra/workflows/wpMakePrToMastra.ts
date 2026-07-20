@@ -28,7 +28,10 @@ const taskAddToGithub = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences.`
+    const prompt = `Can you take this text blob and format it into proper YAML? Ensure valid OpenAPI syntax and remove surrounding code fences.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await openapiSpecGenAgent.generate(prompt)
     return { ...context, output: result.text }
   },

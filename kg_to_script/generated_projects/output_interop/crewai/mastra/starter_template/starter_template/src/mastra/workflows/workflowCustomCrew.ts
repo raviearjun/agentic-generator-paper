@@ -53,7 +53,10 @@ const task2 = createStep({
 
 If you do your BEST WORK, I'll give you a $10,000 commission!
 
-Make sure to do something else.`
+Make sure to do something else.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await agent2Name.generate(prompt)
     return { ...context, output: result.text }
   },

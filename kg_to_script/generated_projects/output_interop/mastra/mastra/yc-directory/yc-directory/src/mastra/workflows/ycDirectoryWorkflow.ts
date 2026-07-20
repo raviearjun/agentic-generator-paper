@@ -25,7 +25,10 @@ const fetchYcDirectoryTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.`
+    const prompt = `Invoke the 'yc-directory' tool to retrieve the full 2024 YC directory. Return the array of company objects exactly as provided by the tool.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await ycDirectoryAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -42,7 +45,10 @@ const processYcDataTask = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.`
+    const prompt = `Format the retrieved YC directory data for user-friendly responses. Ensure each company mentions its batch and includes name, industries, and short summary.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await ycDirectoryAgent.generate(prompt)
     return { ...context, output: result.text }
   },

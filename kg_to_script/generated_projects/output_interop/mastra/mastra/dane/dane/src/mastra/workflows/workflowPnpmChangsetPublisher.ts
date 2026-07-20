@@ -34,7 +34,10 @@ Publish Requirements:
 - EXCLUDE @mastra/dane from consideration
 
 Please list all packages that need building grouped by their directory.
-DO NOT NOT USE the 'pnpmBuild' tool during this step.`
+DO NOT NOT USE the 'pnpmBuild' tool during this step.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await danePackagePublisher.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -87,7 +90,10 @@ const taskPkgPublishChangeset = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.`
+    const prompt = `All packages have been built and verified. Publish the changeset for the verified packages and ensure atomic publish and error reporting.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await danePackagePublisher.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -104,7 +110,10 @@ const taskPkgSetLatestDistTag = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Update npm dist-tag for published packages (agent assisted)`
+    const prompt = `Update npm dist-tag for published packages (agent assisted)
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await danePackagePublisher.generate(prompt)
     return { ...context, output: result.text }
   },

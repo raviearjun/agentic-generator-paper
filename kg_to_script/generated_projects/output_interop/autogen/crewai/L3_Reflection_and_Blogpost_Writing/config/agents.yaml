@@ -1,4 +1,24 @@
-unnamed:
+writer:
+  role: Writer
+  goal: Writer
+  backstory: You are a Writer.
+critic:
+  role: Critic
+  goal: Critic
+  backstory: You are a Critic.
+seo_reviewer:
+  role: SEO Reviewer
+  goal: SEO Reviewer
+  backstory: You are a SEO Reviewer.
+legal_reviewer:
+  role: Legal Reviewer
+  goal: Legal Reviewer
+  backstory: You are a Legal Reviewer.
+ethics_reviewer:
+  role: Ethics Reviewer
+  goal: Ethics Reviewer
+  backstory: You are a Ethics Reviewer.
+meta_reviewer:
   role: Meta Reviewer
   goal: Meta Reviewer
   backstory: You are a Meta Reviewer.

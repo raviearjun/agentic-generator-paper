@@ -42,7 +42,10 @@ const task2 = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.`
+    const prompt = `Create a dialogue heavy screenplay from the discussion, between two persons. Do NOT write parentheticals. Leave out wrylies. You MUST SKIP directional notes.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await scriptwriter.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -59,7 +62,10 @@ const task3 = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...`
+    const prompt = `Format the script exactly like this:   ## (person 1): (first text line from person 1)    ## (person 2): (first text line from person 2) ...
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await formatter.generate(prompt)
     return { ...context, output: result.text }
   },

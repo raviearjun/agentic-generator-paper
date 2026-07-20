@@ -23,7 +23,10 @@ const taskStepOne = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Doubles triggerData.inputValue and returns an object with { doubledValue }.`
+    const prompt = `Doubles triggerData.inputValue and returns an object with { doubledValue }.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await mastraAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -40,7 +43,10 @@ const taskStepThree = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Triples triggerData.inputValue and returns an object with { tripledValue }.`
+    const prompt = `Triples triggerData.inputValue and returns an object with { tripledValue }.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await mastraAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -57,7 +63,10 @@ const taskStepTwo = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1.`
+    const prompt = `Reads the payload from stepOne (doubledValue) and returns an object with { incrementedValue } which is doubledValue + 1.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await mastraAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -74,7 +83,10 @@ const taskStepFour = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even.`
+    const prompt = `Reads the payload from stepThree (tripledValue) and returns an object with { isEven } indicating whether tripledValue is even.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await mastraAgent.generate(prompt)
     return { ...context, output: result.text }
   },

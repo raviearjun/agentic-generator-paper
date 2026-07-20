@@ -23,7 +23,10 @@ const taskStart = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Start step for the supervisor StateGraph that initializes routing to the 'router' step.`
+    const prompt = `Start step for the supervisor StateGraph that initializes routing to the 'router' step.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await supervisor.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -51,7 +54,10 @@ const taskRouter = createStep({
 You're a highly helpful AI assistant, tasked with routing the user's query to the appropriate tool.
 You should analyze the user's input, and choose the appropriate tool to use.
 
-The expected output is a single route name: one of {stockbroker, tripPlanner, openCode, orderPizza, generalInput, writerAgent}.`
+The expected output is a single route name: one of {stockbroker, tripPlanner, openCode, orderPizza, generalInput, writerAgent}.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await router.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -68,7 +74,10 @@ const taskStockbroker = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Tool: stockbroker — can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio.`
+    const prompt = `Tool: stockbroker — can fetch the price of a ticker, purchase/sell a ticker, or get the user's portfolio.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await stockbroker.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -85,7 +94,10 @@ const taskTripPlanner = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Tool: tripPlanner — helps the user plan their trip; can suggest restaurants and places to stay for a given location.`
+    const prompt = `Tool: tripPlanner — helps the user plan their trip; can suggest restaurants and places to stay for a given location.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await tripPlanner.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -102,7 +114,10 @@ const taskOpenCode = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Tool: openCode — can write a React TODO app for the user. Only call this tool if they request a TODO app.`
+    const prompt = `Tool: openCode — can write a React TODO app for the user. Only call this tool if they request a TODO app.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await openCode.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -119,7 +134,10 @@ const taskOrderPizza = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Tool: orderPizza — can order a pizza for the user.`
+    const prompt = `Tool: orderPizza — can order a pizza for the user.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await orderPizza.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -146,7 +164,10 @@ If the user asks what you can do, describe these tools.
 
 If the last message is a tool result, describe what the action was, congratulate the user, or send a friendly followup in response to the tool action. Ensure this is a clear and concise message.
 
-Otherwise, just answer as normal.`
+Otherwise, just answer as normal.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await generalInput.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -163,7 +184,10 @@ const taskWriterAgent = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Tool: writerAgent — can write a text document for the user. Only call this tool if they request a text document.`
+    const prompt = `Tool: writerAgent — can write a text document for the user. Only call this tool if they request a text document.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await writerAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -180,7 +204,10 @@ const taskEnd = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `End step for the supervisor StateGraph indicating the workflow is complete.`
+    const prompt = `End step for the supervisor StateGraph indicating the workflow is complete.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await supervisor.generate(prompt)
     return { ...context, output: result.text }
   },

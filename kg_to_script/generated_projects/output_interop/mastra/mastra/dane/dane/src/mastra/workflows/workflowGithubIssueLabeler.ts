@@ -35,7 +35,10 @@ const taskIssueLabelIssue = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Given issue title, body, and available repo labels, propose one or more labels to assign.`
+    const prompt = `Given issue title, body, and available repo labels, propose one or more labels to assign.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await daneIssueLabeler.generate(prompt)
     return { ...context, output: result.text }
   },

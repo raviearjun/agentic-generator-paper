@@ -23,7 +23,10 @@ const taskFetchWeather = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects.`
+    const prompt = `Fetches weather forecast for a given city. Use triggerData.city as input to retrieve forecast data from the Open-Meteo APIs and return an array of daily forecast objects.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await weatherAgent.generate(prompt)
     return { ...context, output: result.text }
   },
@@ -80,7 +83,10 @@ Guidelines:
 - Consider activity intensity based on temperature
 - Keep descriptions concise but informative
 
-Maintain this exact formatting for consistency, using the emoji and section headers as shown.`
+Maintain this exact formatting for consistency, using the emoji and section headers as shown.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await weatherAgent.generate(prompt)
     return { ...context, output: result.text }
   },

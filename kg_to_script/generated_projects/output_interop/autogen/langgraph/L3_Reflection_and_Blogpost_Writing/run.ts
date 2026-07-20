@@ -10,7 +10,7 @@ try {
 
 // Fill in real values for each field below, then run with `npm run dev`.
 const inputs: Record<string, string> = {
-  input: "",
+  input: "Write a concise but engaging blogpost about DeepLearning.AI. Make sure the blogpost is within 100 words."
 };
 
 async function main() {

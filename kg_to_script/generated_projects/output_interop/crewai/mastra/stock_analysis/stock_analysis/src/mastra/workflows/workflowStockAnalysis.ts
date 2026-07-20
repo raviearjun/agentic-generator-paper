@@ -82,7 +82,10 @@ const taskRecommend = createStep({
     // {placeholder} references below can resolve to real values instead of
     // being sent to the agent as inert literal text.
     const context = inputData as Record<string, string>
-    const prompt = `Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. Consider all aspects, including financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings.`
+    const prompt = `Review and synthesize the analyses provided by the Financial Analyst and the Research Analyst. Combine these insights to form a comprehensive investment recommendation. Consider all aspects, including financial health, market sentiment, and qualitative data from EDGAR filings. Include insider trading activity and upcoming events like earnings.
+
+Context from prior steps:
+${JSON.stringify(context)}`
     const result = await investmentAdvisorAgent.generate(prompt)
     return { ...context, output: result.text }
   },
